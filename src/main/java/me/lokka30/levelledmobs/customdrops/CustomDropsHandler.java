@@ -269,7 +269,7 @@ public class CustomDropsHandler {
         info.hasOverride = false;
         boolean usesGroupIds = false;
 
-        final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.chunkKillOptions.disableVanillaDrops;
+        final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.chunkKillOptions.getDisableVanillaDrops();
 
         for (final String id : getDropIds(info)) {
             if (this.customItemGroups == null || !this.customItemGroups.containsKey(id.trim())) {

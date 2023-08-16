@@ -90,14 +90,14 @@ public class EntityDeathListener implements Listener {
             // Only counts if mob is killed by player
             if (hasReachedEntityDeathChunkMax(lmEntity, lmEntity.getLivingEntity().getKiller())){
                 final ChunkKillOptions opts = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).chunkKillOptions;
-                if (opts.disableVanillaDrops != null && opts.disableVanillaDrops){
+                if (opts.getDisableVanillaDrops()){
                     event.getDrops().clear();
                     disableXpDrops = true;
                 }
-                if (opts.disableItemBoost != null && opts.disableItemBoost){
+                if (opts.getDisableItemBoost()){
                     doNotMultiplyDrops = true;
                 }
-                if (opts.disableXpDrops != null && opts.disableXpDrops){
+                if (opts.getDisableXpDrops()){
                     doNotBoostXp = true;
                 }
             }

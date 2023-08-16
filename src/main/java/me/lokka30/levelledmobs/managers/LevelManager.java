@@ -1439,7 +1439,7 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.lockEntitySettings && !customDropsRuleSet.useDropTableIds.isEmpty()){
             final String customDrops = String.join(";", customDropsRuleSet.useDropTableIds);
             lmEntity.getPDC().set(main.namespacedKeys.lockedDropRules, PersistentDataType.STRING, customDrops);
-            if (customDropsRuleSet.chunkKillOptions.disableVanillaDrops)
+            if (customDropsRuleSet.chunkKillOptions.getDisableVanillaDrops())
                 lmEntity.getPDC().set(main.namespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER, 1);
         }
 

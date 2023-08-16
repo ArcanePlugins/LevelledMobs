@@ -16,6 +16,18 @@ public class ChunkKillOptions implements MergableRule, Cloneable{
         return (disableVanillaDrops == null && disableItemBoost == null && disableXpDrops == null);
     }
 
+    public boolean getDisableVanillaDrops(){
+        return this.disableVanillaDrops != null && this.disableVanillaDrops;
+    }
+
+    public boolean getDisableItemBoost(){
+        return this.disableItemBoost != null && this.disableItemBoost;
+    }
+
+    public boolean getDisableXpDrops(){
+        return this.disableXpDrops != null && this.disableXpDrops;
+    }
+
     public void merge(final @Nullable MergableRule mergableRule){
         if (!(mergableRule instanceof final ChunkKillOptions chunkKillOptions)){
             return;
