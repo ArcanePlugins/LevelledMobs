@@ -758,7 +758,7 @@ public class RulesParsingManager {
             parsingInfo.maxAdjacentChunks = 10;
         }
         parseSpawnerParticle(ymlHelper.getString(cs, "spawner-particles"));
-        parseDeathMessages(cs.getConfigurationSection("death-messages"));
+        parseDeathMessages(cs);
 
         final Set<String> nametagVisibility = ymlHelper.getStringSet(cs,
             "nametag-visibility-method");
@@ -805,8 +805,12 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseDeathMessages(final @Nullable ConfigurationSection cs){
-        if (cs == null) return;
+    private void parseDeathMessages(final @NotNull ConfigurationSection csParent){
+        final ConfigurationSection cs = objTo_CS(csParent, "death-messages");
+
+        if (cs == null) {
+            return;
+        }
 
         final DeathMessages deathMessages = new DeathMessages();
 
