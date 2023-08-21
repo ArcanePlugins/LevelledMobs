@@ -173,6 +173,10 @@ public class MobDataManager {
         }
 
         final float multiplierValue = multiplier.value();
+        if ((addition == Addition.CUSTOM_ITEM_DROP || addition == Addition.CUSTOM_XP_DROP)
+                && multiplierValue == -1){
+            return Float.MIN_VALUE;
+        }
 
         if (fineTuning.useStacked != null && fineTuning.useStacked || multiplier.useStacked()) {
             debugLog(main, ATTRIBUTE_MULTIPLIERS, multiplier +

@@ -566,9 +566,9 @@ public class LevelManager implements LevelInterface {
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
             // Get currentDrops added per level valu
-            final double additionValue = main.mobDataManager.getAdditionsForLevel(lmEntity,
+            final float additionValue = main.mobDataManager.getAdditionsForLevel(lmEntity,
                 Addition.CUSTOM_ITEM_DROP, 2.0f);
-            if (additionValue == -1) {
+            if (additionValue == Float.MIN_VALUE) {
                 Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
                     "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel()));
@@ -691,9 +691,17 @@ public class LevelManager implements LevelInterface {
     //Calculates the XP dropped when a levellable creature dies.
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final double xp) {
         if (lmEntity.isLevelled()) {
-            final double dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity,
+            final float dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity,
                 Addition.CUSTOM_XP_DROP, 3.0f);
             double newXp = 0;
+
+            if (dropAddition == Float.MIN_VALUE){
+                Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS,
+                        String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b0&7",
+                                lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp));
+                return 0;
+            }
+
             if (dropAddition > -1) {
                 newXp = Math.round(xp + (xp * dropAddition));
             }
