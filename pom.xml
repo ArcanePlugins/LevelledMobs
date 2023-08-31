@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.12.1 b778</version>
+  <version>3.12.1 b779</version>
 
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Solution</description>
@@ -18,7 +18,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <bstats.version>3.0.1</bstats.version>
+    <bstats.version>3.0.2</bstats.version>
 
     <paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
     <shade.version>3.5.0</shade.version>

@@ -41,7 +41,7 @@ public class NmsNametagSender implements NametagSender {
             return;
         }
 
-        final SchedulerWrapper scheduler = new SchedulerWrapper(player, () ->
+        final SchedulerWrapper scheduler = new SchedulerWrapper(livingEntity, () ->
                 sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible));
         scheduler.run();
     }
