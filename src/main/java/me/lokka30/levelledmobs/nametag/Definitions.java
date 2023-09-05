@@ -243,7 +243,13 @@ public class Definitions {
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String)
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[])
 
-        this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod("a");
+        String methodName = "a";
+        if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_20 && ver.getRevision() >= 2){
+            // 1.20.2+
+            methodName = "c";
+        }
+
+        this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod(methodName);
         this.method_TranslatableWithArgs = clazz_IChatBaseComponent.getDeclaredMethod("a",
             String.class, Object[].class);
     }
@@ -281,7 +287,16 @@ public class Definitions {
         String methodName;
 
         switch (ver.getMajorVersionEnum()) {
-            case V1_20 -> methodName = "aj";
+            case V1_20 -> {
+                if (ver.getRevision() >= 2){
+                    // 1.20.2+
+                    methodName = "am";
+                }
+                else{
+                    // 1.20 - 1.20.1
+                    methodName = "aj";
+                }
+            }
             case V1_19 -> {
                 if (ver.getRevision() >= 4) {
                     methodName = "aj";
@@ -310,7 +325,8 @@ public class Definitions {
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
         if (ver.getMinecraftVersion() >= 1.20){
-            methodName = "af";
+            methodName = ver.getRevision() >= 2 ?
+                "ai" : "af";
         }
         else if (ver.getMinecraftVersion() >= 1.18){
             if (ver.getRevision() >= 4){
@@ -333,17 +349,34 @@ public class Definitions {
 
         this.method_PlayergetHandle = clazz_CraftPlayer.getDeclaredMethod("getHandle");
 
+        // starting with 1.20.2 it is:
+        // net.minecraft.server.network.ServerCommonPacketListenerImpl ->
+
+        // 1.20.1 and older:
         // net.minecraft.server.network.ServerGamePacketListenerImpl ->
+
         //    void send(net.minecraft.network.protocol.Packet) ->
 
-        methodName = ver.getMinecraftVersion() >= 1.18 ?
-            "a" : "sendPacket";
+        if (ver.getMinecraftVersion() >= 1.18){
+            if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_20 && ver.getRevision() >= 2){
+                methodName = "b";
+            }
+            else{
+                methodName = "a";
+            }
+        }
+        else{
+            methodName ="sendPacket";
+        }
+
         this.method_Send = clazz_ServerPlayerConnection.getDeclaredMethod(methodName, clazz_Packet);
 
-        methodName = ver.getMinecraftVersion() >= 1.18 ?
-            "c" : "getAll";
-        // java.util.List getAll() ->
-        this.method_getAll = clazz_DataWatcher.getDeclaredMethod(methodName);
+        if (ver.getMinecraftVersion() <= 1.18) {
+            methodName = ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_18 ?
+                    "c" : "getAll";
+            // java.util.List getAll() ->
+            this.method_getAll = clazz_DataWatcher.getDeclaredMethod(methodName);
+        }
 
         methodName = ver.getMinecraftVersion() >= 1.18 ?
             "a" : "register";
@@ -373,24 +406,24 @@ public class Definitions {
         this.method_GetDescriptionId = clazz_EntityTypes.getDeclaredMethod("g");
 
         if (this.isOneNinteenThreeOrNewer()) {
-            // new methods here were added in 1.19.3
+            // the methods here were added in 1.19.3
 
-            // java.util.List getNonDefaultValues() -> c
+            // java.util.List getNonDefaultValues() ->
             this.method_getNonDefaultValues = clazz_DataWatcher.getDeclaredMethod("c");
 
-            // define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) -> a
+            // define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
             this.method_SynchedEntityData_Define = clazz_DataWatcher.getMethod("a",
                 clazz_DataWatcherObject, Object.class);
 
-            // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
+            // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
             methodName = ver.getMinecraftVersion() >= 1.20 ? "c" : "b";
             this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod(methodName,
                 clazz_DataWatcherObject);
             this.method_DataWatcher_GetItem.setAccessible(true);
 
-            // net.minecraft.network.syncher.SynchedEntityData$DataItem -> abq$a:
-            //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() -> e
+            // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
+            //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
             this.method_DataWatcherItem_Value = clazz_DataWatcher_Item.getDeclaredMethod("e");
         }
     }
