@@ -290,7 +290,7 @@ public class Definitions {
             case V1_20 -> {
                 if (ver.getRevision() >= 2){
                     // 1.20.2+
-                    methodName = "am";
+                    methodName = "al";
                 }
                 else{
                     // 1.20 - 1.20.1
@@ -326,7 +326,7 @@ public class Definitions {
         //   int getId() ->
         if (ver.getMinecraftVersion() >= 1.20){
             methodName = ver.getRevision() >= 2 ?
-                "ai" : "af";
+                "ah" : "af";
         }
         else if (ver.getMinecraftVersion() >= 1.18){
             if (ver.getRevision() >= 4){
