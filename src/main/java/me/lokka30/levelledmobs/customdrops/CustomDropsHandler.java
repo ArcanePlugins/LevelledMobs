@@ -764,7 +764,7 @@ public class CustomDropsHandler {
             info.groupIDsDroppedAlready.put(dropItem.groupId, count);
         }
 
-        if (newItem.getType() == Material.PLAYER_HEAD) {
+        if (newItem.getType() == Material.PLAYER_HEAD && !"none".equalsIgnoreCase(dropItem.mobHeadTexture)) {
             main.mobHeadManager.updateMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
         }
 
