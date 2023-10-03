@@ -23,12 +23,6 @@
 
   <repositories>
     <repository>
-      <name>SpigotMC Repo</name>
-      <id>spigot-repo</id>
-      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-      <!-- required for dependencies [spigot-api] -->
-    </repository>
-    <repository>
       <id>papermc</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
       <!-- required for dependencies [folia-api, paper-api] -->

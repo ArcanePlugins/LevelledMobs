@@ -26,11 +26,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- LevelledMobs Version Control -->
-    <revision>4.0.0-alpha1</revision>
+    <revision>4.0.0-alpha2</revision>
 
     <kotlin.version>1.8.21</kotlin.version>
     <configurate.version>4.1.2</configurate.version>
-    <spigotapi.version>1.19.4-R0.1-SNAPSHOT</spigotapi.version>
     <jupiter.version>5.9.2</jupiter.version>
     <folia.version>1.20.1-R0.1-SNAPSHOT</folia.version>
     <paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>

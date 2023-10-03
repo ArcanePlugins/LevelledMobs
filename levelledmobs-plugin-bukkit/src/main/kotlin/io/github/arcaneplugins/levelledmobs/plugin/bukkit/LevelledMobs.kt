@@ -18,10 +18,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.command.Commands
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigManager
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.listener.ListenerManager
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.ExceptionUtil
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.QuickTimer
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.RuleManager
+import org.bukkit.command.PluginCommand
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -42,14 +46,11 @@ class LevelledMobs : JavaPlugin() {
 
     }
 
-    lateinit var configManager: ConfigManager
-        private set
+    lateinit var configManager: ConfigManager private set
+    lateinit var ruleManager: RuleManager private set
 
-    lateinit var ruleManager: RuleManager
-        private set
-
-    lateinit var listenerManager: ListenerManager
-        private set
+    private lateinit var listenerManager: ListenerManager
+    private lateinit var commands: Commands
 
     override fun onLoad() {
         lmInstance = this
@@ -60,30 +61,49 @@ class LevelledMobs : JavaPlugin() {
             configManager = ConfigManager()
             ruleManager = RuleManager()
             listenerManager = ListenerManager()
+            commands = Commands()
         } catch (ex: Exception) {
             ExceptionUtil.printExceptionNicely(
                 ex = ex,
-                context = "An error has occurred whilst loading LevelledMobs"
+                context = "An error has occurred while loading LevelledMobs"
             )
         }
     }
 
     override fun onEnable() {
+        val timer = QuickTimer()
+
         try {
             configManager.load()
             ruleManager.load()
             listenerManager.load()
+            registerCommands()
         } catch(ex: Exception) {
             ExceptionUtil.printExceptionNicely(
                 ex = ex,
-                context = "An error has occurred whilst enabling LevelledMobs"
+                context = "An error has occurred while enabling LevelledMobs"
             )
+        }
+
+        Log.info("Start-up complete (took ${timer.getTimer()} ms)")
+    }
+
+    private fun registerCommands(){
+        Log.info("Commands: Registering commands...")
+
+        val levelledMobsCommand: PluginCommand? = this.getCommand("levelledmobs")
+        if (levelledMobsCommand == null){
+            Log.severe("Command levelledmobs is unavailable, is it not registered in plugin.yml?")
+        }
+        else{
+            levelledMobsCommand.setExecutor(this.commands)
         }
     }
 
-    // TODO Use in upcoming reload subcommand.
     // TODO Document function.
     fun reload() {
+        Log.info("Reloading configuration files...")
+
         try {
             configManager.load()
         } catch (ex: Exception) {
@@ -91,7 +111,10 @@ class LevelledMobs : JavaPlugin() {
                 ex = ex,
                 context = "An error has occurred whilst reloading LevelledMobs"
             )
+            return
         }
+
+        Log.info("Reload complete.")
     }
 
 }
