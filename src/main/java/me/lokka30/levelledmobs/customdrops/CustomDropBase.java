@@ -90,11 +90,11 @@ public abstract class CustomDropBase implements Cloneable {
         }
 
         if (!numberOrNumberRange.contains("-")) {
-            if (!Utils.isInteger(numberOrNumberRange)) {
+            if (!Utils.isDouble(numberOrNumberRange)) {
                 return false;
             }
 
-            this.amount = Integer.parseInt(numberOrNumberRange);
+            this.amount = (int) Double.parseDouble(numberOrNumberRange);
             this.hasAmountRange = false;
             return true;
         }
@@ -104,11 +104,11 @@ public abstract class CustomDropBase implements Cloneable {
             return false;
         }
 
-        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) {
+        if (!Utils.isDouble(nums[0].trim()) || !Utils.isDouble(nums[1].trim())) {
             return false;
         }
-        this.amountRangeMin = Integer.parseInt(nums[0].trim());
-        this.amountRangeMax = Integer.parseInt(nums[1].trim());
+        this.amountRangeMin = (int)Double.parseDouble(nums[0].trim());
+        this.amountRangeMax = (int)Double.parseDouble(nums[1].trim());
         this.hasAmountRange = true;
 
         return true;
