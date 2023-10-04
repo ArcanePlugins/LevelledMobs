@@ -742,7 +742,7 @@ public class LevelManager implements LevelInterface {
                 nametag = deathMessage.replace("%death_nametag%", nametag);
                 final Player player = lmEntity.getPlayerForLevelling();
                 nametag = nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
-                nametag = replaceStringPlaceholders(nametag, lmEntity, true);
+                nametag = replaceStringPlaceholders(nametag, lmEntity, true, player);
                 preserveMobName = false;
                 hadCustomDeathMessage = true;
             }
@@ -874,6 +874,7 @@ public class LevelManager implements LevelInterface {
         final String roundedMaxHealthInt = String.valueOf((int) Utils.round(maxHealth));
         final double percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0);
         final int percentHealth = percentHealthTemp < 1.0 ? 1 : (int) percentHealthTemp;
+        final String playerId = player != null ? player.getUniqueId().toString() : "";
 
         String tieredPlaceholder = main.rulesManager.getRuleTieredPlaceholder(lmEntity);
         if (tieredPlaceholder == null) {
@@ -905,6 +906,7 @@ public class LevelManager implements LevelInterface {
             String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockY()));
         result = result.replace("%z%",
             String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
+        result = result.replace("%player-uuid%", playerId);
 
         if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
             result = ExternalCompatibilityManager.getPapiPlaceholder(player, result);

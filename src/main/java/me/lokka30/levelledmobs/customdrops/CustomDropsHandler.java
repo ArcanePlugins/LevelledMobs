@@ -1077,14 +1077,9 @@ public class CustomDropsHandler {
         }
 
         for (String command : customCommand.commands) {
-
-            final String playerName = info.wasKilledByPlayer ?
-                Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
-                "";
-
-            command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
-            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity,false);
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity,false,
+                    info.lmEntity.getLivingEntity().getKiller());
             if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
                 command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command);
             }
