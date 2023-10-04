@@ -24,6 +24,8 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.listener.ListenerManag
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.ExceptionUtil
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.QuickTimer
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.nametag.Definitions
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.RuleManager
 import org.bukkit.command.PluginCommand
 import org.bukkit.plugin.java.JavaPlugin
@@ -51,6 +53,8 @@ class LevelledMobs : JavaPlugin() {
 
     private lateinit var listenerManager: ListenerManager
     private lateinit var commands: Commands
+    lateinit var verInfo: ServerVersionInfo
+    lateinit var definitions: Definitions
 
     override fun onLoad() {
         lmInstance = this
@@ -62,6 +66,8 @@ class LevelledMobs : JavaPlugin() {
             ruleManager = RuleManager()
             listenerManager = ListenerManager()
             commands = Commands()
+            verInfo = ServerVersionInfo()
+            definitions = Definitions()
         } catch (ex: Exception) {
             ExceptionUtil.printExceptionNicely(
                 ex = ex,
@@ -78,6 +84,8 @@ class LevelledMobs : JavaPlugin() {
             ruleManager.load()
             listenerManager.load()
             registerCommands()
+            verInfo.load()
+            definitions.load()
         } catch(ex: Exception) {
             ExceptionUtil.printExceptionNicely(
                 ex = ex,
