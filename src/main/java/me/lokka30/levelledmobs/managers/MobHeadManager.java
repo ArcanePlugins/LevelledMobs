@@ -152,7 +152,7 @@ public class MobHeadManager {
             textureCode = dropItem.mobHeadTexture;
         }
 
-        final GameProfile profile = new GameProfile(id, null);
+        final GameProfile profile = new GameProfile(id, "PlayerHead");
         if (textureCode != null) {
             profile.getProperties().put("textures", new Property("textures", textureCode));
         }
