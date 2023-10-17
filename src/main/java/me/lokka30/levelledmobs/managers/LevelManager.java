@@ -9,7 +9,6 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
@@ -42,6 +41,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.result.NametagResult;
@@ -53,7 +53,6 @@ import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.HealthIndicator;
-import me.lokka30.levelledmobs.rules.LevelTierMatching;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
@@ -186,12 +185,12 @@ public class LevelManager implements LevelInterface {
         int maxLevel = maxLevel_Pre;
 
         if (minLevel == -1 || maxLevel == -1) {
-            final int[] levels = getMinAndMaxLevels(lmEntity);
+            final MinAndMaxHolder levels = getMinAndMaxLevels(lmEntity);
             if (minLevel == -1) {
-                minLevel = levels[0];
+                minLevel = levels.min;
             }
             if (maxLevel == -1) {
-                maxLevel = levels[1];
+                maxLevel = levels.max;
             }
         }
 
@@ -240,140 +239,6 @@ public class LevelManager implements LevelInterface {
         }
 
         return randomLevelling.generateLevel(minLevel, maxLevel);
-    }
-
-    private int @Nullable [] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity) {
-        final PlayerLevellingOptions options = main.rulesManager.getRulePlayerLevellingOptions(
-            lmEntity);
-
-        if (options == null || options.enabled != null && !options.enabled) {
-            return null;
-        }
-
-        final Player player = lmEntity.getPlayerForLevelling();
-        if (player == null) {
-            return null;
-        }
-
-        int levelSource;
-        final String variableToUse =
-                Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
-        final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
-        final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.usePlayerMaxLevel;
-        final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
-        final PlayerLevelSourceResult playerLevelSourceResult = getPlayerLevelSourceNumber(
-            lmEntity.getPlayerForLevelling(), lmEntity, variableToUse);
-        final double origLevelSource =
-            playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
-
-        levelSource = (int) Math.round(origLevelSource * scale);
-        if (levelSource < 1) {
-            levelSource = 1;
-        }
-        final int[] results = {1, 1};
-        String tierMatched = null;
-        final String capDisplay = options.levelCap == null ? "" : "cap: " + options.levelCap + ", ";
-
-        if (usePlayerMax) {
-            results[0] = levelSource;
-            results[1] = results[0];
-        } else if (matchPlayerLvl) {
-            results[1] = levelSource;
-        } else {
-            boolean foundMatch = false;
-            for (final LevelTierMatching tier : options.levelTiers) {
-                boolean meetsMin = false;
-                boolean meetsMax = false;
-                boolean hasStringMatch = false;
-
-                if (!playerLevelSourceResult.isNumericResult && tier.sourceTierName != null) {
-                    hasStringMatch = playerLevelSourceResult.stringResult.equalsIgnoreCase(
-                        tier.sourceTierName);
-                } else if (playerLevelSourceResult.isNumericResult) {
-                    meetsMin = (tier.minLevel == null || levelSource >= tier.minLevel);
-                    meetsMax = (tier.maxLevel == null || levelSource <= tier.maxLevel);
-                }
-
-                if (meetsMin && meetsMax || hasStringMatch) {
-                    if (tier.valueRanges[0] > 0) {
-                        results[0] = tier.valueRanges[0];
-                    }
-                    if (tier.valueRanges[1] > 0) {
-                        results[1] = tier.valueRanges[1];
-                    }
-                    tierMatched = tier.toString();
-                    foundMatch = true;
-                    break;
-                }
-            }
-
-            if (!foundMatch) {
-                if (playerLevelSourceResult.isNumericResult) {
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
-                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource,
-                        capDisplay));
-                } else {
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-src: '%s', %sno tiers matched",
-                        lmEntity.getNameIfBaby(), player.getName(),
-                        playerLevelSourceResult.stringResult, capDisplay));
-                }
-                return null;
-            }
-        }
-
-        String varianceDebug = "";
-        if (playerLevelSourceResult.randomVarianceResult != null){
-            results[1] += playerLevelSourceResult.randomVarianceResult;
-            if (results[1] < 1)
-                results[1] = 1;
-            if (results[0] > results[1])
-                results[0] = results[1];
-            varianceDebug = String.format(", var: %s", playerLevelSourceResult.randomVarianceResult);
-        }
-
-        if (options.levelCap != null) {
-            if (results[0] > options.levelCap) {
-                results[0] = options.levelCap;
-            }
-            if (results[1] > options.levelCap) {
-                results[1] = options.levelCap;
-            }
-        }
-
-        final String homeName = playerLevelSourceResult.homeNameUsed != null ?
-            String.format(" (%s)", playerLevelSourceResult.homeNameUsed) : "";
-
-        if (tierMatched == null) {
-            Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, %sresult: %s",
-                lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
-                varianceDebug, levelSource, capDisplay, Arrays.toString(results)));
-        } else {
-            if (playerLevelSourceResult.isNumericResult) {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, tier: %s, %sresult: %s",
-                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
-                    varianceDebug, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
-            } else {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: '%s'%s, tier: %s, %sresult: %s",
-                    lmEntity.getNameIfBaby(), player.getName(),
-                    playerLevelSourceResult.stringResult, varianceDebug, tierMatched,
-                    capDisplay, Arrays.toString(results)));
-            }
-        }
-
-        if (options.recheckPlayers != null && options.recheckPlayers) {
-            final String numberOrString = playerLevelSourceResult.isNumericResult ?
-                    String.valueOf(playerLevelSourceResult.numericResult) : playerLevelSourceResult.stringResult;
-            if (numberOrString != null)
-                lmEntity.getPDC().set(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING, numberOrString);
-        }
-        lmEntity.playerLevellingAllowDecrease = options.decreaseLevel;
-
-        return results;
     }
 
     public @NotNull PlayerLevelSourceResult getPlayerLevelSourceNumber(final @Nullable Player player,
@@ -498,35 +363,36 @@ public class LevelManager implements LevelInterface {
         return sourceResult;
     }
 
-    public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
+    public MinAndMaxHolder getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
         // if called from summon command then lmEntity is null
 
         int minLevel = main.rulesManager.getRuleMobMinLevel(lmInterface);
         int maxLevel = main.rulesManager.getRuleMobMaxLevel(lmInterface);
 
-        if (main.configUtils.playerLevellingEnabled && lmInterface instanceof LivingEntityWrapper &&
+        if (main.configUtils.playerLevellingEnabled && lmInterface instanceof final LivingEntityWrapper lmEntity &&
             ((LivingEntityWrapper) lmInterface).getPlayerForLevelling() != null) {
-            final int[] playerLevellingResults = getPlayerLevels((LivingEntityWrapper) lmInterface);
+            final PlayerLevellingOptions options = main.rulesManager.getRulePlayerLevellingOptions(
+                    lmEntity);
+
+            MinAndMaxHolder playerLevellingResults = null;
+            if (options != null && options.getEnabled()){
+                playerLevellingResults = options.getPlayerLevels(lmEntity);
+            }
+
             if (playerLevellingResults != null) {
-                minLevel = playerLevellingResults[0];
-                maxLevel = playerLevellingResults[1];
+                // this will only be false if no tiers were met and there was a cap specified
+                if (playerLevellingResults.useMin) minLevel = playerLevellingResults.min;
+                maxLevel = playerLevellingResults.max;
             }
         }
 
         // this will prevent an unhandled exception:
-        if (minLevel < 1) {
-            minLevel = 1;
-        }
-        if (maxLevel < 1) {
-            maxLevel = 1;
-        }
+        minLevel = Math.max(minLevel, 1);
+        maxLevel = Math.max(maxLevel, 1);
+        minLevel = Math.min(minLevel, maxLevel);
 
-        if (minLevel > maxLevel) {
-            minLevel = maxLevel;
-        }
-
-        return new int[]{minLevel, maxLevel};
+        return new MinAndMaxHolder(minLevel, maxLevel);
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
@@ -1281,7 +1147,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final PlayerLevellingOptions opts = main.rulesManager.getRulePlayerLevellingOptions(lmEntity);
-        if (player.getUniqueId().toString().equals(playerId) && opts != null && opts.recheckPlayers != null && opts.recheckPlayers){
+        if (player.getUniqueId().toString().equals(playerId) && opts != null && opts.getRecheckPlayers()){
             final String previousResult = lmEntity.getPDC().get(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING);
             if (previousResult == null) {
                 return true;

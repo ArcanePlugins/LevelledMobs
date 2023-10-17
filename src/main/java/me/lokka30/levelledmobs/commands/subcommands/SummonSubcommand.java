@@ -15,6 +15,7 @@ import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityPlaceholder;
+import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.RequestedLevel;
 import me.lokka30.levelledmobs.util.PaperUtils;
@@ -445,30 +446,28 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             messages.forEach(sender::sendMessage);
         }
 
-        final int[] levels = main.levelManager.getMinAndMaxLevels(options.lmPlaceholder);
-        final int minLevel = levels[0];
-        final int maxLevel = levels[1];
+        final MinAndMaxHolder levels = main.levelManager.getMinAndMaxLevels(options.lmPlaceholder);
 
-        if (options.requestedLevel.getLevelMin() < minLevel && !sender.hasPermission(
+        if (options.requestedLevel.getLevelMin() < levels.min && !sender.hasPermission(
             "levelledmobs.command.summon.bypass-level-limit") && !options.override) {
-            options.requestedLevel.setMinAllowedLevel(minLevel);
+            options.requestedLevel.setMinAllowedLevel(levels.min);
 
             List<String> messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.level-limited.min");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%minLevel%", String.valueOf(minLevel));
+            messages = Utils.replaceAllInList(messages, "%minLevel%", String.valueOf(levels.min));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
 
-        if (options.requestedLevel.getLevelMax() > maxLevel && !sender.hasPermission(
+        if (options.requestedLevel.getLevelMax() > levels.max && !sender.hasPermission(
             "levelledmobs.command.summon.bypass-level-limit") && !options.override) {
-            options.requestedLevel.setMaxAllowedLevel(maxLevel);
+            options.requestedLevel.setMaxAllowedLevel(levels.max);
 
             List<String> messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.level-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxLevel%", String.valueOf(maxLevel));
+            messages = Utils.replaceAllInList(messages, "%maxLevel%", String.valueOf(levels.max));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
