@@ -1,0 +1,77 @@
+# English (United States)
+
+command:
+  common:
+    no-access-missing-permission:
+      - "%prefix-severe% You don't have access to that; it requires the permission '&b%permission%&7'."
+
+    no-access-not-player:
+      - "%prefix-severe% You don't have access to that; it is only accessible to players."
+
+  levelledmobs:
+    invalid-subcommand:
+      - "%prefix-severe% Invalid subcommand '&b%subcommand%&7'."
+      - "%prefix-info% Run '&b&n[/lm help](run_command=/lm help)&7' for a list of available commands."
+
+    subcommand:
+      about: |
+        
+        &8┌ [LevelledMobs](color=aqua-blue format=bold) &8v%version%
+        &8│
+        &8│ &7by [ArcanePlugins](color=blue format=underlined open_url=https://github.com/ArcanePlugins) &8•&7 [lokka30](color=gray format=italic open_url=https://github.com/lokka30), [PenalBuffalo](color=gray format=italic open_url=https://github.com/stumper66) & [UltimaOath](color=gray format=italic open_url=https://github.com/Oathkeeper).
+        &8│
+        &8│ &8Copyright © 2020 - 2023 [LevelledMobs Contributors](color=dark_gray format=italic open_url=https://github.com/ArcanePlugins/LevelledMobs/wiki/Credits).
+        &8│ &8LevelledMobs is [GNU AGPL v3 Free Software](color=dark_gray format=italic open_url=https://github.com/ArcanePlugins/LevelledMobs/blob/master/LICENSE.md).
+        &8│
+        &8│ &7Quick Links: [Resource](color=blue format=underlined open_url=https://spigotmc.org/resources/74304)&8 • [Wiki](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs/Wiki)&8 • [Credits](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs/wiki/Credits)&8 • [Source](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs)
+        &8│
+        &8└ &7Run [/lm help](color=blue format=underlined run_command=/lm help) &7for help in using LevelledMobs.
+
+      confirm:
+        start:
+          - "%prefix-info% Confirming action..."
+
+        complete:
+          - "%prefix-info% Action confirmed."
+
+        none:
+          - "%prefix-warning% You do not have any actions to confirm."
+
+      reload:
+        start:
+          - "%prefix-info% Reloading configuration..."
+
+        complete-success:
+          - "%prefix-info% Reload complete."
+
+        complete-failure:
+          - "%prefix-severe% Reload failed; check console for more information."
+
+      summon:
+        not-summonable:
+          - "%prefix-severe% The entity type '&b%entity-type%&7' is not summonable."
+
+        summoning:
+          - "%prefix-info% Summoning a levelled '&b%entity-name%&7'."
+
+entity-name:
+  CREEPER: "Creeper"
+  WITHER_SKELETON: "Wither Skeleton"
+
+generic:
+  list-delimiter: "&7, &b"
+
+  prefix:
+    info: "&f&lLM:&7"
+    warning: "&e&lLM:&7"
+    severe: "&c&lLM:&7"
+
+number:
+  1: "1"
+  2: "2"
+  3: "3"
+
+metadata:
+  version:
+    current: 1
+    original: 1

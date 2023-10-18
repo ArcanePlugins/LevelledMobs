@@ -6,38 +6,67 @@
   ~ license that can be found in the LICENSE.md file.
   -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.arcaneplugins.levelledmobs</groupId>
-  <artifactId>levelledmobs-parent</artifactId>
-  <version>4</version>
-  <modules>
-    <module>levelledmobs-api-bukkit</module>
-    <module>levelledmobs-plugin-bukkit</module>
-  </modules>
-  <packaging>pom</packaging>
+    <groupId>io.github.arcaneplugins.levelledmobs</groupId>
+    <artifactId>levelledmobs-parent</artifactId>
+    <version>4</version>
+    <packaging>pom</packaging>
 
-  <name>LevelledMobs Parent</name>
-  <description>Parent for LevelledMobs' source code modules.</description>
+    <name>LevelledMobs Parent</name>
+    <modules>
+        <module>levelledmobs-plugin-bukkit</module>
+        <module>levelledmobs-api-bukkit</module>
+    </modules>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.9.10</kotlin.version>
+    </properties>
 
-    <!-- LevelledMobs Version Control -->
-    <revision>4.0.0-alpha2</revision>
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-    <kotlin.version>1.8.21</kotlin.version>
-    <configurate.version>4.1.2</configurate.version>
-    <jupiter.version>5.9.2</jupiter.version>
-    <folia.version>1.20.1-R0.1-SNAPSHOT</folia.version>
-    <paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
-    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-    <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
-  </properties>
-
-  <build>
-    <defaultGoal>clean install</defaultGoal>
-  </build>
+    <build>
+        <defaultGoal>clean package</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

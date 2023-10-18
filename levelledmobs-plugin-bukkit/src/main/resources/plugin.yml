@@ -1,128 +1,18 @@
+api-version: '1.19'
+authors: ['lokka30', 'PenalBuffalo', 'UltimaOath']
+description: 'The Ultimate RPG Mob Levelling Solution'
+main: 'io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs'
 name: 'LevelledMobs'
 version: '${project.version}'
-description: '${project.description}'
-authors: [ 'lokka30', 'PenalBuffalo', 'UltimaOath' ]
-website: 'https://github.com/lokka30/LevelledMobs/'
-folia-supported: true
+website: 'https://github.com/ArcanePlugins/LevelledMobs/'
 
-main: 'io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs'
-api-version: '1.20'
-load: 'POSTWORLD'
+softdepend:
+  - 'Essentials'      # EssentialsX is soft-dep as it is used for the 'home distance' placeholder. # TODO implement
+  - 'NBTAPI'          # NBTAPI is soft-dep as the custom drops system allows NBT control.
+  - 'PlaceholderAPI'  # PlaceholderAPI is soft-dep as LM supplies placeholders for it.
+  - 'SimplePets'      # SimplePets is soft-dep as we must use its API for compatibility.
+  - 'WorldEdit'       # Needs to be listed here as LM will use the its API for WorldGuard.
+  - 'WorldGuard'      # WorldGuard is soft-dep for the Region API usage.
 
-commands:
-  levelledmobs:
-    description: 'Manage the LevelledMobs plugin'
-    aliases: [ 'leveledmobs', 'lm', 'lvlmobs' ]
-    usage: '/<command> [subcommand]'
-
-permissions:
-  levelledmobs.*:
-    description: 'Access to all LevelledMobs permissions.'
-    default: op
-    children:
-      levelledmobs.command.*: true
-      levelledmobs.debug: true
-      levelledmobs.receive-update-notifications: true
-      levelledmobs.compatibility-notice: true
-
-  levelledmobs.command.*:
-    description: 'Access to all LevelledMobs commands.'
-    default: op
-    children:
-      levelledmobs.command: true
-      levelledmobs.command.summon.*: true
-      levelledmobs.command.kill.*: true
-      levelledmobs.command.reload: true
-      levelledmobs.command.info: true
-      levelledmobs.command.compatibility: true
-      levelledmobs.command.spawner.*: true
-      levelledmobs.command.rules: true
-
-  levelledmobs.command:
-    description: 'Access to `/levelledmobs`.'
-    default: true
-
-  levelledmobs.command.summon.*:
-    description: 'Access to all `/levelledmobs summon` permissions.'
-    default: op
-    children:
-      levelledmobs.command.summon: true
-      levelledmobs.command.summon.bypass-level-limit: true
-
-  levelledmobs.command.summon:
-    description: 'Access to `/levelledmobs summon`.'
-    default: op
-
-  levelledmobs.command.summon.bypass-level-limit:
-    decription: 'Makes LevelledMobs ignore the levels specified in `/levelledmobs summon` if they are above the level limit in your configuration.'
-    default: op
-    children:
-      levelledmobs.command.summon: true
-
-  levelledmobs.command.kill.*:
-    description: 'Access to all `/levelledmobs kill` permissions.'
-    default: op
-    children:
-      levelledmobs.command.kill.all: true
-      levelledmobs.command.kill.near: true
-
-  levelledmobs.command.kill:
-    description: 'Access to `/levelledmobs kill`.'
-    default: op
-
-  levelledmobs.command.kill.all:
-    description: 'Access to `/levelledmobs kill all`.'
-    default: op
-    children:
-      levelledmobs.command.kill: true
-
-  levelledmobs.command.kill.near:
-    description: 'Access to `/levelledmobs kill near`.'
-    default: op
-    children:
-      levelledmobs.command.kill: true
-
-  levelledmobs.command.reload:
-    description: 'Access to `/levelledmobs reload`.'
-    default: op
-
-  levelledmobs.command.info:
-    description: 'Access to `/levelledmobs info`.'
-    default: true
-
-  levelledmobs.command.compatibility:
-    description: 'Access to `/levelledmobs compatibility`.'
-    default: op
-
-  levelledmobs.command.spawner.*:
-    description: 'Access to all `/levelledmobs spawner` commands.'
-    default: op
-    children:
-      levelledmobs.command.spawner: true
-      levelledmobs.command.spawner.copy: true
-
-  levelledmobs.command.spawner:
-    description: 'Access to `/levelledmobs spawner`.'
-    default: op
-
-  levelledmobs.command.spawner.copy:
-    description: 'Access to `/levelledmobs spawner copy`.'
-    default: op
-    children:
-      levelledmobs.command.spawner: true
-
-  levelledmobs.command.rules:
-    description: 'Access to `/levelledmobs rules`.'
-    default: op
-
-  levelledmobs.debug:
-    description: 'Ability to utilise debug functionality, if enabled in the settings file.'
-    default: op
-
-  levelledmobs.receive-update-notifications:
-    description: 'Receive update checker notifications in chat on join, if enabled.'
-    default: op
-
-  levelledmobs.compatibility-notice:
-    description: 'Ability to view the compatibility notice on join if any possible incompatibilities are found on startup.'
-    default: op
+libraries:
+  - 'org.spongepowered:configurate-yaml:4.1.2' # remember to synchronise with pom.xml
