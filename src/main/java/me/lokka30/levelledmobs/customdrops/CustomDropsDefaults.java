@@ -27,6 +27,7 @@ class CustomDropsDefaults {
     public int minLevel;
     public int maxLevel;
     public boolean equipOffhand;
+    public boolean equipOnHelmet;
     int customModelData;
     int maxDropGroup;
     int minPlayerLevel;
@@ -68,6 +69,7 @@ class CustomDropsDefaults {
         this.overallPermissions = new LinkedList<>();
         this.runOnSpawn = false;
         this.runOnDeath = true;
+        this.equipOnHelmet = false;
     }
 
     void setDefaultsFromDropItem(@NotNull final CustomDropBase dropBase) {
@@ -98,6 +100,7 @@ class CustomDropsDefaults {
             this.equipOffhand = dropItem.equipOffhand;
             this.nbtData = dropItem.nbtData;
             this.itemFlagsStrings = dropItem.itemFlagsStrings;
+            this.equipOnHelmet = dropItem.equipOnHelmet;
         } else if (dropBase instanceof final CustomCommand command) {
             this.runOnSpawn = command.runOnSpawn;
             this.runOnDeath = command.runOnDeath;

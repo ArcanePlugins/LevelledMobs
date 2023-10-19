@@ -488,6 +488,7 @@ public class CustomDropsParser {
 
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped",
             this.defaults.onlyDropIfEquipped);
+        item.equipOnHelmet = ymlHelper.getBoolean(cs, "equip-on-helmet", this.defaults.equipOnHelmet);
         item.equipOffhand = ymlHelper.getBoolean(cs, "equip-offhand", this.defaults.equipOffhand);
         item.priority = ymlHelper.getInt(cs, "priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs, "nomultiplier", this.defaults.noMultiplier);
@@ -1164,6 +1165,9 @@ public class CustomDropsParser {
         }
         if (item.onlyDropIfEquipped) {
             sb.append(", &bonlyDropIfEquipped&r");
+        }
+        if (item.equipOnHelmet){
+            sb.append(", &bequipHelmet&r");
         }
         if (item.itemFlags != null && !item.itemFlags.isEmpty()) {
             sb.append(", itemflags: &b");

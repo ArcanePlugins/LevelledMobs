@@ -1340,7 +1340,8 @@ public class LevelManager implements LevelInterface {
                 equipment.setChestplateDropChance(0);
                 equippedItemsInfo.chestplate = pair.getValue();
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)
-                || material.name().endsWith("_HEAD") && !hadPlayerHead) {
+                || material.name().endsWith("_HEAD") || pair.getValue().equipOnHelmet
+                && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
                 equippedItemsInfo.helmet = pair.getValue();

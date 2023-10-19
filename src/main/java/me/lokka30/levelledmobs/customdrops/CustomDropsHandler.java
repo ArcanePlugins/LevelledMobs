@@ -1169,6 +1169,7 @@ public class CustomDropsHandler {
             case COD -> new ItemStack(Material.COOKED_COD);
             case MUTTON -> new ItemStack(Material.COOKED_MUTTON);
             case PORKCHOP -> new ItemStack(Material.COOKED_PORKCHOP);
+            case RABBIT -> new ItemStack(Material.COOKED_RABBIT);
             case SALMON -> new ItemStack(Material.COOKED_SALMON);
             default -> itemStack;
         };
