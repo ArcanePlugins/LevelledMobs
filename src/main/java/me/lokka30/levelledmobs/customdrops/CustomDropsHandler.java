@@ -941,6 +941,10 @@ public class CustomDropsHandler {
             return false;
         }
 
+        if (customDropItem.equipOnHelmet && item.isSimilar(equipment.getHelmet())){
+            return true;
+        }
+
         switch (item.getType()) {
             case LEATHER_HELMET:
             case CHAINMAIL_HELMET:

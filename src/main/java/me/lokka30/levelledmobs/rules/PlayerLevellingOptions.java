@@ -122,6 +122,7 @@ public class PlayerLevellingOptions implements Cloneable {
         final double origLevelSource =
                 playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
 
+        applyValueToPdc(lmEntity, playerLevelSourceResult);
         levelSource = Math.max((int) Math.round(origLevelSource * scale), 1);
 
         final MinAndMaxHolder results = new MinAndMaxHolder(1, 1);
@@ -232,6 +233,21 @@ public class PlayerLevellingOptions implements Cloneable {
         lmEntity.playerLevellingAllowDecrease = options.decreaseLevel;
 
         return results;
+    }
+
+    private void applyValueToPdc(final @NotNull LivingEntityWrapper lmEntity,
+                                 final @NotNull PlayerLevelSourceResult playerLevel){
+        final String value = playerLevel.isNumericResult ?
+                String.valueOf(playerLevel.numericResult) : playerLevel.stringResult;
+
+        try {
+            lmEntity.getPDC().set(
+                    lmEntity.main.namespacedKeys.playerLevellingValue,
+                    PersistentDataType.STRING,
+                    value
+            );
+        }
+        catch (Exception ignored){}
     }
 
     public String toString() {

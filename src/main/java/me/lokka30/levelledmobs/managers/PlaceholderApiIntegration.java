@@ -179,8 +179,15 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
         lmEntity.free();
 
-        return nametag != null ?
-            nametag : "";
+        if (nametag != null){
+            if (nametag.endsWith("&r")){
+                nametag = nametag.substring(0, nametag.length() - 2);
+            }
+            return nametag;
+        }
+        else{
+            return "";
+        }
     }
 
     private @Nullable LivingEntity getMobBeingLookedAt(final @NotNull Player player) {

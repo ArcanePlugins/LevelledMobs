@@ -19,6 +19,7 @@ public class NamespacedKeys {
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
         hasCustomNameTag = new NamespacedKey(main, "hasCustomNameTag");
         playerLevellingId = new NamespacedKey(main, "playerLevelling_Id");
+        playerLevellingValue = new NamespacedKey(main, "playerLevelling_Value");
         chanceRuleAllowed = new NamespacedKey(main, "chanceRule_Allowed");
         chanceRuleDenied = new NamespacedKey(main, "chanceRule_Denied");
         denyLmNametag = new NamespacedKey(main, "denyLM_Nametag");
@@ -64,6 +65,7 @@ public class NamespacedKeys {
     public final NamespacedKey overridenEntityNameKey;
     public final NamespacedKey hasCustomNameTag;
     public final NamespacedKey playerLevellingId;
+    public final NamespacedKey playerLevellingValue;
     public final NamespacedKey chanceRuleAllowed;
     public final NamespacedKey chanceRuleDenied;
     public final NamespacedKey denyLmNametag;
