@@ -147,6 +147,10 @@ mobs-multiply-head-drops: false
 # ||  the latest rules applied by comparing a stored hash string.
 check-mob-hash: true
 
+# ||  When using the LM Summon command should it print the results
+# ||  in the console or player that executed the command
+print-lm-summon-results: true
+
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
