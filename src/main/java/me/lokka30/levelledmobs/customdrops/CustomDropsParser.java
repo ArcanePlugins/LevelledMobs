@@ -35,6 +35,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.flywaydb.core.internal.util.logging.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,6 +86,7 @@ public class CustomDropsParser {
         }
 
         if (isDropsEnabledForAnyRule) {
+            handler.clearGroupIdMappings();
             parseCustomDrops(customDropsCfg);
         }
     }
@@ -437,6 +439,7 @@ public class CustomDropsParser {
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs, "minlevel", this.defaults.minLevel);
         dropBase.maxLevel = ymlHelper.getInt(cs, "maxlevel", this.defaults.maxLevel);
+        parseGroupLimits(dropBase, cs);
 
         dropBase.minPlayerLevel = ymlHelper.getInt(cs, "min-player-level",
             this.defaults.minPlayerLevel);
@@ -450,6 +453,9 @@ public class CustomDropsParser {
             this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = ymlHelper.getInt(cs, "maxdropgroup", this.defaults.maxDropGroup);
         dropBase.groupId = ymlHelper.getString(cs, "groupid", dropBase.groupId);
+        if (dropBase.groupId != null) {
+            handler.setDropInstanceFromId(dropBase.groupId, dropInstance);
+        }
 
         dropInstance.utilizesGroupIds = !Utils.isNullOrEmpty(dropBase.groupId);
 
@@ -481,23 +487,25 @@ public class CustomDropsParser {
             return;
         }
 
-        final CustomDropItem item = (CustomDropItem) dropBase;
+        parseCustomItem(cs, (CustomDropItem) dropBase);
+    }
 
+    private void parseCustomItem(final @NotNull ConfigurationSection cs, final @NotNull CustomDropItem item){
         checkEquippedChance(item, cs);
         parseItemFlags(item, cs);
 
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped",
-            this.defaults.onlyDropIfEquipped);
+                this.defaults.onlyDropIfEquipped);
         item.equipOnHelmet = ymlHelper.getBoolean(cs, "equip-on-helmet", this.defaults.equipOnHelmet);
         item.equipOffhand = ymlHelper.getBoolean(cs, "equip-offhand", this.defaults.equipOffhand);
         item.priority = ymlHelper.getInt(cs, "priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs, "nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = ymlHelper.getBoolean(cs, "nospawner", this.defaults.noSpawner);
         item.customModelDataId = ymlHelper.getInt(cs, "custommodeldata",
-            this.defaults.customModelData);
+                this.defaults.customModelData);
         item.externalType = ymlHelper.getString(cs, "type", this.defaults.externalType);
         item.externalAmount = ymlHelper.getDouble2(cs, "external-amount",
-            this.defaults.externalAmount);
+                this.defaults.externalAmount);
         item.mobHeadTexture = ymlHelper.getString(cs, "mobhead-texture");
         final String mobHeadIdStr = ymlHelper.getString(cs, "mobhead-id");
         if (mobHeadIdStr != null) {
@@ -509,12 +517,12 @@ public class CustomDropsParser {
         }
 
         dropInstance.overrideStockDrops = ymlHelper.getBoolean(cs, "override",
-            dropInstance.overrideStockDrops);
+                dropInstance.overrideStockDrops);
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs, "damage"))) {
             if (!item.setDamageRangeFromString(ymlHelper.getString(cs, "damage"))) {
                 Utils.logger.warning(String.format("Invalid number range for damage on %s, %s",
-                    dropInstance.getMobOrGroupName(), ymlHelper.getString(cs, "damage")));
+                        dropInstance.getMobOrGroupName(), ymlHelper.getString(cs, "damage")));
             }
         }
         if (!cs.getStringList(ymlHelper.getKeyNameFromConfig(cs, "lore")).isEmpty()) {
@@ -524,7 +532,7 @@ public class CustomDropsParser {
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs, "excludemobs"))) {
             final String[] excludes = Objects.requireNonNull(ymlHelper.getString(cs, "excludemobs"))
-                .split(";");
+                    .split(";");
             item.excludedMobs.clear();
             for (final String exclude : excludes) {
                 item.excludedMobs.add(exclude.trim());
@@ -538,21 +546,43 @@ public class CustomDropsParser {
                 final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, item.nbtData);
                 if (result.hadException()) {
                     Utils.logger.warning(
-                        String.format("custom drop %s for %s has invalid NBT data: %s",
-                            item.getMaterial(), dropInstance.getMobOrGroupName(),
-                            result.exceptionMessage));
+                            String.format("custom drop %s for %s has invalid NBT data: %s",
+                                    item.getMaterial(), dropInstance.getMobOrGroupName(),
+                                    result.exceptionMessage));
                 } else if (result.itemStack != null) {
                     item.setItemStack(result.itemStack);
                     this.dropsUtilizeNBTAPI = true;
                 }
             } else if (!hasMentionedNBTAPI_Missing) {
                 Utils.logger.warning(
-                    "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
+                        "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
                 hasMentionedNBTAPI_Missing = true;
             }
         }
 
         applyMetaAttributes(item);
+    }
+
+    private void parseGroupLimits(final @NotNull CustomDropBase base, final @NotNull ConfigurationSection csParent){
+        final ConfigurationSection cs = objTo_CS(csParent, "group-limits");
+        if (cs == null) return;
+
+        if(base.groupId == null) return;
+
+        final GroupLimits limits = new GroupLimits();
+        limits.amount = ymlHelper.getInt(cs, "amount");
+        limits.drop = ymlHelper.getInt(cs, "drop");
+        limits.equip = ymlHelper.getInt(cs, "equip");
+        limits.retries = ymlHelper.getInt(cs, "retries");
+
+        if (!limits.isEmpty()){
+            if (dropInstance != null){
+                dropInstance.groupLimits = limits;
+            }
+            else{
+                Utils.logger.warning("drop instance was null, unable to add group-limits");
+            }
+        }
     }
 
     private void parseCustomCommand(final @NotNull CustomCommand customCommand, final @NotNull ConfigurationSection cs){
@@ -1069,6 +1099,10 @@ public class CustomDropsParser {
                 item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
             sb.append(String.format("  &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
                 item.getAmountAsString(), baseItem.chance));
+            if (dropInstance.groupLimits != null){
+                sb.append(", ");
+                sb.append(dropInstance.groupLimits);
+            }
         } else if (baseItem instanceof final CustomCommand cc) {
             sb.append(String.format("  COMMAND, chance: &b%s&r, run-on-spawn: %s, run-on-death: %s",
                     baseItem.chance, cc.runOnSpawn, cc.runOnDeath));
@@ -1115,7 +1149,8 @@ public class CustomDropsParser {
             sb.append(", gId: &b");
             sb.append(baseItem.groupId);
             sb.append("&r");
-            if (baseItem.maxDropGroup > 0) {
+
+            if (baseItem.maxDropGroup > 0 && dropInstance.groupLimits == null) {
                 sb.append(", maxDropGroup: &b");
                 sb.append(baseItem.maxDropGroup);
                 sb.append("&r");

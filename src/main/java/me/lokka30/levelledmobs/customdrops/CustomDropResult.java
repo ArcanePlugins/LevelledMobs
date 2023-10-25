@@ -15,12 +15,13 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 2.6.0
  */
-public record CustomDropResult(List<Map.Entry<ItemStack, CustomDropItem>> stackToItem, boolean hasOverride) {
+public record CustomDropResult(List<Map.Entry<ItemStack, CustomDropItem>> stackToItem, boolean hasOverride, boolean didAnythingDrop) {
 
     public CustomDropResult(final @NotNull List<Map.Entry<ItemStack, CustomDropItem>> stackToItem,
-                            final boolean hasOverride) {
+                            final boolean hasOverride, boolean didAnythingDrop) {
         this.stackToItem = stackToItem;
         this.hasOverride = hasOverride;
+        this.didAnythingDrop = didAnythingDrop;
     }
 
     @Override

@@ -50,6 +50,7 @@ public class CustomDropInstance {
     public Float overallChance;
     public final @NotNull List<String> overallPermissions;
     public boolean overrideStockDrops;
+    public @Nullable GroupLimits groupLimits;
     boolean utilizesGroupIds;
     final boolean isBabyMob;
 

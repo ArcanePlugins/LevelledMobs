@@ -59,6 +59,7 @@ public class CustomDropsHandler {
         this.customDropsitems_Babies = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
         this.customDropIDs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.groupIdToInstance = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         customDropsParser = new CustomDropsParser(main, this);
         this.ymlHelper = customDropsParser.ymlHelper;
         this.customEquippedItems = new WeakHashMap<>();
@@ -77,6 +78,8 @@ public class CustomDropsHandler {
     private final Map<String, CustomDropInstance> customDropsitems_groups;
     // these are drops defined by a drop table
     final Map<String, CustomDropInstance> customDropIDs;
+    // mappings of groupIds to drop instance
+    private final Map<String, CustomDropInstance> groupIdToInstance;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
     public final ExternalCustomDrops externalCustomDrops;
@@ -227,7 +230,7 @@ public class CustomDropsHandler {
                 }
                 processingInfo.writeAnyDebugMessages();
             }
-            return new CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride);
+            return new CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride, false);
         }
 
         getCustomItemsFromDropInstance(processingInfo); // payload
@@ -260,7 +263,7 @@ public class CustomDropsHandler {
             processingInfo.writeAnyDebugMessages();
         }
 
-        return new CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride);
+        return new CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride, postCount > 0);
     }
 
     private DropInstanceBuildResult buildDropsListFromGroupsAndEntity(final List<String> groups,
@@ -592,8 +595,12 @@ public class CustomDropsHandler {
                 count = info.groupIDsDroppedAlready.get(dropBase.groupId);
             }
 
-            if (dropBase.maxDropGroup > 0 && count >= dropBase.maxDropGroup
-                || dropBase.maxDropGroup == 0 && count > 0) {
+            final CustomDropInstance dropInstance = customDropIDs.get(info.customDropId);
+            final int maxDropGroup = dropInstance == null || dropInstance.groupLimits == null ?
+                    dropBase.maxDropGroup : dropInstance.groupLimits.drop;
+
+            if (maxDropGroup > 0 && count >= maxDropGroup
+                || maxDropGroup == 0 && count > 0) {
                 if (isCustomDropsDebuggingEnabled()) {
                     if (dropBase instanceof CustomDropItem) {
                         info.addDebugMessage(String.format(
@@ -1186,5 +1193,18 @@ public class CustomDropsHandler {
 
     private boolean isCustomDropsDebuggingEnabled() {
         return main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS);
+    }
+
+    public @Nullable CustomDropInstance getDropInstanceFromGroupId(final @Nullable String groupId){
+        if (groupId == null) return null;
+        return this.groupIdToInstance.get(groupId);
+    }
+
+    public void setDropInstanceFromId(final @NotNull String groupId, final @NotNull CustomDropInstance dropInstance){
+        this.groupIdToInstance.put(groupId, dropInstance);
+    }
+
+    public void clearGroupIdMappings(){
+        this.groupIdToInstance.clear();
     }
 }

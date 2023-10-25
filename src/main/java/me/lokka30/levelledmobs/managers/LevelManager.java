@@ -30,9 +30,11 @@ import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
+import me.lokka30.levelledmobs.customdrops.CustomDropInstance;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
+import me.lokka30.levelledmobs.customdrops.GroupLimits;
 import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
@@ -1322,29 +1324,50 @@ public class LevelManager implements LevelInterface {
         boolean hadMainItem = false;
         boolean hadPlayerHead = false;
         final EquippedItemsInfo equippedItemsInfo = new EquippedItemsInfo();
+        final Map<String, Integer> equippedCountPerGroup = new TreeMap<>();
+        int equippedSoFar = 0;
+
+        Collections.shuffle(dropResult.stackToItem());
 
         for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem()) {
             final ItemStack itemStack = pair.getKey();
             final Material material = itemStack.getType();
+            final CustomDropItem item = pair.getValue();
+            final CustomDropInstance dropInstance = main.customDropsHandler.getDropInstanceFromGroupId(item.groupId);
+            final GroupLimits groupLimits = dropInstance != null ? dropInstance.groupLimits : null;
+            final boolean hasEquipLimits = groupLimits != null && item.groupId != null;
+
+            if (hasEquipLimits){
+                if (equippedCountPerGroup.containsKey(item.groupId)) {
+                    equippedSoFar = equippedCountPerGroup.get(item.groupId);
+                }
+
+                if (equippedSoFar >= groupLimits.equip){
+                    Utils.debugLog(main, DebugType.CUSTOM_DROPS, String.format(
+                            "Reached equip limit of %s, mob: %s, item: %s, group: %s",
+                            groupLimits.equip, lmEntity.getNameIfBaby(), material, item.groupId));
+                    continue;
+                }
+            }
 
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true);
                 equipment.setBootsDropChance(0);
-                equippedItemsInfo.boots = pair.getValue();
+                equippedItemsInfo.boots = item;
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true);
                 equipment.setLeggingsDropChance(0);
-                equippedItemsInfo.leggings = pair.getValue();
+                equippedItemsInfo.leggings = item;
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
                 equipment.setChestplateDropChance(0);
-                equippedItemsInfo.chestplate = pair.getValue();
+                equippedItemsInfo.chestplate = item;
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)
-                || material.name().endsWith("_HEAD") || pair.getValue().equipOnHelmet
+                || material.name().endsWith("_HEAD") || item.equipOnHelmet
                 && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
-                equippedItemsInfo.helmet = pair.getValue();
+                equippedItemsInfo.helmet = item;
                 if (material == Material.PLAYER_HEAD) {
                     hadPlayerHead = true;
                 }
@@ -1352,13 +1375,19 @@ public class LevelManager implements LevelInterface {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
                     equipment.setItemInMainHandDropChance(0);
-                    equippedItemsInfo.mainHand = pair.getValue();
+                    equippedItemsInfo.mainHand = item;
                     hadMainItem = true;
-                } else if (pair.getValue().equipOffhand) {
+                } else if (item.equipOffhand) {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
-                    equippedItemsInfo.offhand = pair.getValue();
+                    equippedItemsInfo.offhand = item;
                 }
+            }
+
+            equippedSoFar++;
+
+            if (hasEquipLimits){
+                equippedCountPerGroup.put(item.groupId, equippedSoFar);
             }
         }
 

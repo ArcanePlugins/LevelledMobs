@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 2.4.0
  */
-class CustomDropsDefaults {
+public class CustomDropsDefaults {
 
     boolean noMultiplier;
     boolean noSpawner;

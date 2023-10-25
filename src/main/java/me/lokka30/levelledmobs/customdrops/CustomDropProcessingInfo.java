@@ -34,18 +34,19 @@ class CustomDropProcessingInfo {
     }
 
     public LivingEntityWrapper lmEntity;
-    double addition;
     Player mobKiller;
     @NotNull final Map<String, Integer> playerLevelVariableCache;
+    DeathCause deathCause;
+    double addition;
     boolean isSpawner;
     boolean equippedOnly;
     boolean deathByFire;
     boolean wasKilledByPlayer;
-    DeathCause deathCause;
     boolean doNotMultiplyDrops;
     boolean hasOverride;
     boolean hasCustomDropId;
     boolean hasEquippedItems;
+    boolean didAnythingDrop;
     public String customDropId;
     List<ItemStack> newDrops;
     @NotNull final Map<String, Integer> groupIDsDroppedAlready;
