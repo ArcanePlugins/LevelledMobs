@@ -119,6 +119,7 @@ public class PlayerLevellingOptions implements Cloneable {
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
         final PlayerLevelSourceResult playerLevelSourceResult = lmEntity.main.levelManager.getPlayerLevelSourceNumber(
                 lmEntity.getPlayerForLevelling(), lmEntity, variableToUse);
+
         final double origLevelSource =
                 playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
 
@@ -141,7 +142,8 @@ public class PlayerLevellingOptions implements Cloneable {
                 boolean meetsMax = false;
                 boolean hasStringMatch = false;
 
-                if (!playerLevelSourceResult.isNumericResult && tier.sourceTierName != null) {
+
+                if (tier.sourceTierName != null) {
                     hasStringMatch = playerLevelSourceResult.stringResult.equalsIgnoreCase(
                             tier.sourceTierName);
                 } else if (playerLevelSourceResult.isNumericResult) {

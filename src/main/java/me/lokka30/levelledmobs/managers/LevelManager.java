@@ -249,9 +249,8 @@ public class LevelManager implements LevelInterface {
             return new PlayerLevelSourceResult(1);
         }
 
-        double origLevelSource;
-        final PlayerLevelSourceResult sourceResult = new PlayerLevelSourceResult(1);
-        sourceResult.homeNameUsed = "spawn";
+        double origLevelSource = 1.0;
+        String homeNameUsed = "spawn";
 
         if ("%level%".equalsIgnoreCase(variableToUse)) {
             origLevelSource = player.getLevel();
@@ -270,7 +269,7 @@ public class LevelManager implements LevelInterface {
             final PlayerHomeCheckResult result = ExternalCompatibilityManager.getPlayerHomeLocation(
                 player, allowBed);
             if (result.homeNameUsed != null) {
-                sourceResult.homeNameUsed = result.homeNameUsed;
+                homeNameUsed = result.homeNameUsed;
             }
 
             Location useLocation = result.location;
@@ -278,11 +277,11 @@ public class LevelManager implements LevelInterface {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(main, player);
                 useLocation = netherOrWorldSpawnResult.location();
                 if (netherOrWorldSpawnResult.isWorldPortalLocation()) {
-                    sourceResult.homeNameUsed = "world_portal";
+                    homeNameUsed = "world_portal";
                 } else if (netherOrWorldSpawnResult.isNetherPortalLocation()) {
-                    sourceResult.homeNameUsed = "nether_portal";
+                    homeNameUsed = "nether_portal";
                 } else {
-                    sourceResult.homeNameUsed = "spawn";
+                    homeNameUsed= "spawn";
                 }
             }
 
@@ -293,18 +292,18 @@ public class LevelManager implements LevelInterface {
             origLevelSource = useLocation.distance(player.getLocation());
         } else if ("%bed_distance%".equalsIgnoreCase(variableToUse)) {
             Location useLocation = player.getBedSpawnLocation();
-            sourceResult.homeNameUsed = "bed";
+            homeNameUsed = "bed";
 
             if (useLocation == null || useLocation.getWorld() != player.getWorld()) {
                 final PlayerNetherOrWorldSpawnResult result = Utils.getPortalOrWorldSpawn(main,
                     player);
                 useLocation = result.location();
                 if (result.isWorldPortalLocation()) {
-                    sourceResult.homeNameUsed = "world_portal";
+                    homeNameUsed = "world_portal";
                 } else if (result.isNetherPortalLocation()) {
-                    sourceResult.homeNameUsed = "nether_portal";
+                    homeNameUsed = "nether_portal";
                 } else {
-                    sourceResult.homeNameUsed = "spawn";
+                    homeNameUsed = "spawn";
                 }
             }
 
@@ -340,20 +339,25 @@ public class LevelManager implements LevelInterface {
                         variableToUse, player.getName(), l.getBlockX(), l.getBlockY(),
                         l.getBlockZ(), player.getWorld().getName()));
                 } else {
-                    try {
-                        origLevelSource = Double.parseDouble(PAPIResult);
-                    } catch (Exception ignored) {
-                        origLevelSource = player.getLevel();
-                        Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                            "Got invalid number for '%s', result: '%s' from PAPI. Player %s at %s,%s,%s in %s",
-                            variableToUse, PAPIResult, player.getName(), l.getBlockX(),
-                            l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
+                    if (Utils.isDouble(PAPIResult)){
+                        try {
+                            origLevelSource = Double.parseDouble(PAPIResult);
+                        } catch (Exception ignored) {
+                            origLevelSource = player.getLevel();
+                        }
+                    }
+                    else{
+                        final PlayerLevelSourceResult result = new PlayerLevelSourceResult(PAPIResult);
+                        result.homeNameUsed = homeNameUsed;
+                        return result;
                     }
                 }
             }
         }
 
+        final PlayerLevelSourceResult sourceResult = new PlayerLevelSourceResult((int) Math.round(origLevelSource));
         final Integer maxRandomVariance = main.rulesManager.getRuleMaxRandomVariance(lmEntity);
+
         if (maxRandomVariance != null){
             sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance + 1);
             if (ThreadLocalRandom.current().nextBoolean()){
@@ -361,7 +365,6 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        sourceResult.numericResult = (int) Math.round(origLevelSource);
         return sourceResult;
     }
 
