@@ -1338,17 +1338,17 @@ public class LevelManager implements LevelInterface {
             final CustomDropItem item = pair.getValue();
             final CustomDropInstance dropInstance = main.customDropsHandler.getDropInstanceFromGroupId(item.groupId);
             final GroupLimits groupLimits = dropInstance != null ? dropInstance.groupLimits : null;
-            final boolean hasEquipLimits = groupLimits != null && item.groupId != null;
+            final boolean hasEquipLimits = groupLimits != null && item.groupId != null && groupLimits.hasCapEquipped();
 
             if (hasEquipLimits){
                 if (equippedCountPerGroup.containsKey(item.groupId)) {
                     equippedSoFar = equippedCountPerGroup.get(item.groupId);
                 }
 
-                if (equippedSoFar >= groupLimits.equip){
-                    Utils.debugLog(main, DebugType.CUSTOM_DROPS, String.format(
+                if (groupLimits.hasReachedCapEquipped(equippedSoFar)){
+                    Utils.debugLog(main, DebugType.GROUP_LIMITS, String.format(
                             "Reached equip limit of %s, mob: %s, item: %s, group: %s",
-                            groupLimits.equip, lmEntity.getNameIfBaby(), material, item.groupId));
+                            groupLimits.capEquipped, lmEntity.getNameIfBaby(), material, item.groupId));
                     continue;
                 }
             }

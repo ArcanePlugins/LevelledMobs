@@ -44,7 +44,11 @@ defaults:
   equipped: 1.0
   equip-offhand: true
   override: false
-  maxdropgroup: 1
+  group-limits:
+    cap-per-item: 0
+    cap-total: 0
+    cap-equipped: 0
+    retries: 0
   priority: 0
   player-caused: true
   item-flags: ''

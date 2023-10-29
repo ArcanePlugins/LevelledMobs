@@ -40,6 +40,7 @@ public class CustomDropsDefaults {
     String playerLevelVariable;
     String nbtData;
     List<String> itemFlagsStrings;
+    public GroupLimits groupLimits;
     public final List<String> permissions;
     final List<String> overallPermissions;
     CachedModalList<DeathCause> causeOfDeathReqs;

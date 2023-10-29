@@ -35,7 +35,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.flywaydb.core.internal.util.logging.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +51,7 @@ public class CustomDropsParser {
     CustomDropsParser(final LevelledMobs main, final CustomDropsHandler handler) {
         this.main = main;
         this.defaults = new CustomDropsDefaults();
+        this.defaults.groupId = "defaults";
         this.handler = handler;
         this.ymlHelper = new YmlParsingHelper();
     }
@@ -565,14 +565,18 @@ public class CustomDropsParser {
 
     private void parseGroupLimits(final @NotNull CustomDropBase base, final @NotNull ConfigurationSection csParent){
         final ConfigurationSection cs = objTo_CS(csParent, "group-limits");
-        if (cs == null) return;
+        if (cs == null) {
+            if (defaults.groupLimits != null && dropInstance != null)
+                dropInstance.groupLimits = defaults.groupLimits;
+            return;
+        }
 
         if(base.groupId == null) return;
 
         final GroupLimits limits = new GroupLimits();
-        limits.amount = ymlHelper.getInt(cs, "amount");
-        limits.drop = ymlHelper.getInt(cs, "drop");
-        limits.equip = ymlHelper.getInt(cs, "equip");
+        limits.capPerItem = ymlHelper.getInt(cs, "cap-per-item");
+        limits.capTotal = ymlHelper.getInt(cs, "cap-total");
+        limits.capEquipped = ymlHelper.getInt(cs, "cap-equipped");
         limits.retries = ymlHelper.getInt(cs, "retries");
 
         if (!limits.isEmpty()){

@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
+
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.levelledmobs.util.MessageUtils;
@@ -28,6 +30,7 @@ class CustomDropProcessingInfo {
 
     CustomDropProcessingInfo() {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.itemsDroppedById = new TreeMap<>();
         this.allDropInstances = new LinkedList<>();
         this.playerLevelVariableCache = new TreeMap<>();
         this.stackToItem = new LinkedList<>();
@@ -35,7 +38,7 @@ class CustomDropProcessingInfo {
 
     public LivingEntityWrapper lmEntity;
     Player mobKiller;
-    @NotNull final Map<String, Integer> playerLevelVariableCache;
+    final @NotNull Map<String, Integer> playerLevelVariableCache;
     DeathCause deathCause;
     double addition;
     boolean isSpawner;
@@ -46,15 +49,52 @@ class CustomDropProcessingInfo {
     boolean hasOverride;
     boolean hasCustomDropId;
     boolean hasEquippedItems;
-    boolean didAnythingDrop;
+    int retryNumber;
     public String customDropId;
     List<ItemStack> newDrops;
-    @NotNull final Map<String, Integer> groupIDsDroppedAlready;
+    public CustomDropInstance dropInstance;
+    final @NotNull Map<String, Integer> groupIDsDroppedAlready;
+    final @NotNull Map<UUID, Integer> itemsDroppedById;
     Map<Integer, List<CustomDropBase>> prioritizedDrops;
     @Nullable CustomDropsRuleSet dropRules;
-    @NotNull final List<CustomDropInstance> allDropInstances;
+    final @NotNull List<CustomDropInstance> allDropInstances;
     private StringBuilder debugMessages;
     public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
+
+    public void itemGotDropped(final @NotNull CustomDropBase dropBase){
+        final String useGroupId = dropBase.groupId != null ?
+                dropBase.groupId : "default";
+
+        int count = groupIDsDroppedAlready.containsKey(useGroupId) ?
+                groupIDsDroppedAlready.get(useGroupId) + 1 :
+                1;
+
+        groupIDsDroppedAlready.put(useGroupId, count);
+
+        count = itemsDroppedById.containsKey(dropBase.uid) ?
+                itemsDroppedById.get(dropBase.uid) + 1 :
+                1;
+
+        itemsDroppedById.put(dropBase.uid, count);
+    }
+
+    public int getDropItemsCountForGroup(final @NotNull CustomDropBase dropBase){
+        final String useGroupId = dropBase.groupId != null ?
+                dropBase.groupId : "default";
+
+        return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
+    }
+
+    public int getItemsDropsById(final @NotNull CustomDropBase dropBase){
+        return itemsDroppedById.getOrDefault(dropBase.uid, 0);
+    }
+
+    public int getItemsDropsByGroup(final @NotNull CustomDropBase dropBase){
+        final String useGroupId = dropBase.groupId != null ?
+                dropBase.groupId : "default";
+
+        return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
+    }
 
     void addDebugMessage(final String message) {
         if (this.debugMessages == null) {

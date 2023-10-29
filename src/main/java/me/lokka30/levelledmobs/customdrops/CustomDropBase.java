@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
+
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +28,10 @@ public abstract class CustomDropBase implements Cloneable {
         this.amount = defaults.amount;
         this.permissions = new LinkedList<>();
         this.playeerVariableMatches = new LinkedList<>();
+        this.uid = UUID.randomUUID();
     }
 
+    final public UUID uid;
     private int amount;
     int amountRangeMin;
     private int amountRangeMax;
