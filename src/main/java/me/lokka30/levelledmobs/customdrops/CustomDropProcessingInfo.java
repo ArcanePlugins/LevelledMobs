@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * @author stumper66
  * @since 2.4.1
  */
-class CustomDropProcessingInfo {
+public class CustomDropProcessingInfo {
 
     CustomDropProcessingInfo() {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -66,7 +66,7 @@ class CustomDropProcessingInfo {
 
     public void itemGotDropped(final @NotNull CustomDropBase dropBase, final int amountDropped){
 
-        if (dropBase.groupId != null) {
+        if (dropBase.hasGroupId()) {
             final int count = groupIDsDroppedAlready.getOrDefault(
                     dropBase.groupId, 0) + amountDropped;
 
@@ -78,7 +78,7 @@ class CustomDropProcessingInfo {
     }
 
     public int getDropItemsCountForGroup(final @NotNull CustomDropBase dropBase){
-        final String useGroupId = dropBase.groupId != null ?
+        final String useGroupId = dropBase.hasGroupId() ?
                 dropBase.groupId : "default";
 
         return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
@@ -89,7 +89,7 @@ class CustomDropProcessingInfo {
     }
 
     public int getItemsDropsByGroup(final @NotNull CustomDropBase dropBase){
-        final String useGroupId = dropBase.groupId != null ?
+        final String useGroupId = dropBase.hasGroupId() ?
                 dropBase.groupId : "default";
 
         return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);

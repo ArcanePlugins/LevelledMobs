@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.13.0 b793</version>
+  <version>3.13.0 b794</version>
 
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Solution</description>
@@ -19,12 +19,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <bstats.version>3.0.2</bstats.version>
-
     <paper.version>1.20.2-R0.1-SNAPSHOT</paper.version>
+    <folia.version>1.20.1-R0.1-SNAPSHOT</folia.version>
     <shade.version>3.5.0</shade.version>
-    <essentialsx.version>2.19.7</essentialsx.version>
+    <essentialsx.version>2.20.1</essentialsx.version>
     <placeholderapi.version>2.11.3</placeholderapi.version>
-    <authlib.version>3.3.39</authlib.version>
     <worldguard.version>7.0.9</worldguard.version>
     <protocollib.version>5.1.0</protocollib.version>
     <item-nbt.version>2.11.3</item-nbt.version>
@@ -121,6 +120,10 @@
       <id>sk89q-repo</id>
       <url>https://maven.enginehub.org/repo/</url>
     </repository>
+    <repository>
+      <id>First Dark</id> <!-- Mojang Authlib -->
+      <url>https://maven.firstdarkdev.xyz/#/releases</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -160,7 +163,7 @@
     <dependency>
       <groupId>dev.folia</groupId>
       <artifactId>folia-api</artifactId>
-      <version>1.20.1-R0.1-SNAPSHOT</version>
+      <version>${folia.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -173,12 +176,6 @@
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
       <version>${placeholderapi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.mojang</groupId>
-      <artifactId>authlib</artifactId>
-      <version>${authlib.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

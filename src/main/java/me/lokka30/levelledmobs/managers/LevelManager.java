@@ -364,6 +364,7 @@ public class LevelManager implements LevelInterface {
             }
         }
 
+        sourceResult.homeNameUsed = homeNameUsed;
         return sourceResult;
     }
 

@@ -460,11 +460,11 @@ public class CustomDropsParser {
             dropBase.groupId = ymlHelper.getString(cs, "groupid");
         }
 
-        if (dropBase.groupId != null) {
+        if (dropBase.hasGroupId()) {
             handler.setDropInstanceFromId(dropBase.groupId, dropInstance);
         }
 
-        dropInstance.utilizesGroupIds = !Utils.isNullOrEmpty(dropBase.groupId);
+        dropInstance.utilizesGroupIds = dropBase.hasGroupId();
         parseGroupLimits(dropBase, cs);
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs, "amount"))) {
@@ -577,7 +577,7 @@ public class CustomDropsParser {
             return;
         }
 
-        if(base.groupId == null) return;
+        if(!base.hasGroupId()) return;
 
         final GroupLimits limits = new GroupLimits();
         limits.capPerItem = ymlHelper.getInt(cs, "cap-per-item");
@@ -1147,7 +1147,7 @@ public class CustomDropsParser {
             sb.append(baseItem.causeOfDeathReqs);
         }
 
-        if (!Utils.isNullOrEmpty(baseItem.groupId)) {
+        if (baseItem.hasGroupId()) {
             sb.append(", gId: &b");
             sb.append(baseItem.groupId);
             sb.append("&r");

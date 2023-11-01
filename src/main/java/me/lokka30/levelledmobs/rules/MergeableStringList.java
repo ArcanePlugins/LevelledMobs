@@ -68,6 +68,10 @@ public class MergeableStringList {
         return this.items.isEmpty();
     }
 
+    public boolean isNotEmpty(){
+        return !this.isEmpty();
+    }
+
     public String toString() {
         if (items == null || items.isEmpty()) {
             return super.toString();

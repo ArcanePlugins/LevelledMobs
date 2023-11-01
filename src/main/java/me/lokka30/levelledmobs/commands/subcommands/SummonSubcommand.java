@@ -387,7 +387,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         return List.of();
     }
 
-    enum SummonType {
+    public enum SummonType {
         HERE,
         AT_PLAYER,
         AT_LOCATION

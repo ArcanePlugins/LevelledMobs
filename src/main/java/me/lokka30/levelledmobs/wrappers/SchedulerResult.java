@@ -30,6 +30,7 @@ public class SchedulerResult {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isCancelled(){
         if (isRunningFolia){
             if (foliaTask != null)

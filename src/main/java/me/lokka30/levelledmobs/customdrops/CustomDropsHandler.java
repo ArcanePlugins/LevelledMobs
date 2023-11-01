@@ -429,7 +429,7 @@ public class CustomDropsHandler {
                 for (final CustomDropBase drop : items) {
                     // loop thru all drops in this groupid
 
-                    if (drop.groupId != null){
+                    if (drop.hasGroupId()){
                         info.dropInstance = this.groupIdToInstance.get(drop.groupId);
                         info.groupLimits = this.groupLimitsMap.getOrDefault(drop.groupId, defaultLimits);
                         maxRetries = Math.min(info.groupLimits != null ? info.groupLimits.retries : 1, retriesHardcodedMax);
@@ -605,7 +605,6 @@ public class CustomDropsHandler {
             return;
         }
 
-        final boolean hasGroupId = !Utils.isNullOrEmpty(dropBase.groupId);
         int maxDropGroup = 0;
         if (info.groupLimits != null && info.groupLimits.hasCapSelect()){
             maxDropGroup = Math.max(info.groupLimits.capSelect, 0);
@@ -614,7 +613,7 @@ public class CustomDropsHandler {
             maxDropGroup = dropBase.maxDropGroup;
         }
 
-        if (!info.equippedOnly && hasGroupId) {
+        if (!info.equippedOnly && dropBase.hasGroupId()) {
             // legacy section, only executed if the old 'maxdropgroup' was used
             // instead of 'group-limits.capSelect'
             final int groupDroppedCount = info.getItemsDropsByGroup(dropBase);
@@ -639,11 +638,11 @@ public class CustomDropsHandler {
             }
         }
 
-        if (dropBase instanceof CustomCommand) {
+        if (dropBase instanceof final CustomCommand customCommand) {
             // ------------------------------------------ commands get executed here then function returns ---------------------------------------------------
-            executeCommand((CustomCommand) dropBase, info);
+            executeCommand(customCommand, info);
 
-            if (hasGroupId) {
+            if (dropBase.hasGroupId()) {
                 if (isCustomDropsDebuggingEnabled()) {
                     final int count = info.getItemsDropsByGroup(dropBase);
                     String msg = String.format(
@@ -694,14 +693,14 @@ public class CustomDropsHandler {
             newDropAmount = dropItem.getAmountRangeMin() + change;
         }
 
-        if (hasGroupId && info.groupLimits != null){
+        if (dropItem.hasGroupId() && info.groupLimits != null){
             final GroupLimits gl = info.groupLimits;
 
             if (gl.hasCapPerItem()){
                 newDropAmount = Math.min(newDropAmount, gl.capPerItem);
             }
 
-            if (gl.hasCapTotal() && dropBase.groupId != null){
+            if (gl.hasCapTotal() && dropItem.hasGroupId()){
                 final int hasDroppedSoFar = info.getDropItemsCountForGroup(dropBase);
                 if (gl.capTotal - hasDroppedSoFar > gl.capTotal){
                     newDropAmount = gl.capTotal;
@@ -802,10 +801,6 @@ public class CustomDropsHandler {
         }
 
         if (!info.equippedOnly) info.itemGotDropped(dropBase, newDropAmount);
-
-        if (newItem.getType() == Material.PLAYER_HEAD && !"none".equalsIgnoreCase(dropItem.mobHeadTexture)) {
-            main.mobHeadManager.updateMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
-        }
 
         info.newDrops.add(newItem);
         info.stackToItem.add(Utils.getPair(newItem, dropItem));
@@ -1261,11 +1256,6 @@ public class CustomDropsHandler {
         return main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS);
     }
 
-    public @Nullable CustomDropInstance getDropInstanceFromGroupId(final @Nullable String groupId){
-        if (groupId == null) return null;
-        return this.groupIdToInstance.get(groupId);
-    }
-
     public void setDropInstanceFromId(final @NotNull String groupId, final @NotNull CustomDropInstance dropInstance){
         this.groupIdToInstance.put(groupId, dropInstance);
     }
@@ -1273,7 +1263,7 @@ public class CustomDropsHandler {
     public @Nullable GroupLimits getGroupLimits(final @NotNull CustomDropBase dropBase){
         final GroupLimits limitsDefault = this.groupLimitsMap.get("default");
 
-        if (dropBase.groupId == null || !this.groupLimitsMap.containsKey(dropBase.groupId)) {
+        if (!dropBase.hasGroupId() || !this.groupLimitsMap.containsKey(dropBase.groupId)) {
             return limitsDefault;
         }
 

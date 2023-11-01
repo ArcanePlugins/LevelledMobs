@@ -174,7 +174,7 @@ public class MetricsInfo {
                 continue;
             }
 
-            if (ruleInfo.mobNBT_Data != null && !ruleInfo.mobNBT_Data.isEmpty()) {
+            if (ruleInfo.mobNBT_Data != null && ruleInfo.mobNBT_Data.isNotEmpty()) {
                 return "Yes";
             }
         }

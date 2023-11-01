@@ -22,7 +22,6 @@ import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.MobDataManager;
-import me.lokka30.levelledmobs.managers.MobHeadManager;
 import me.lokka30.levelledmobs.managers.MobsQueueManager;
 import me.lokka30.levelledmobs.managers.NametagQueueManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
@@ -64,7 +63,6 @@ public final class LevelledMobs extends JavaPlugin {
     public PlayerInteractEventListener playerInteractEventListener;
     public NamespacedKeys namespacedKeys;
     public Companion companion;
-    public MobHeadManager mobHeadManager;
     public RulesParsingManager rulesParsingManager;
     public RulesManager rulesManager;
     public MobsQueueManager mobsQueueManager;
@@ -110,7 +108,6 @@ public final class LevelledMobs extends JavaPlugin {
         this.mobsQueueManager = new MobsQueueManager(this);
         this.companion = new Companion(this);
         this.mobDataManager = new MobDataManager(this);
-        this.mobHeadManager = new MobHeadManager(this);
         this.rulesParsingManager = new RulesParsingManager(this);
         this.rulesManager = new RulesManager(this);
         this.nametagTimerChecker = new NametagTimerChecker(this);

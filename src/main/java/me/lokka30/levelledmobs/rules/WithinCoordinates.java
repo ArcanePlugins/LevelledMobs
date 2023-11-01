@@ -119,7 +119,7 @@ public class WithinCoordinates {
         Z
     }
 
-    private enum InfinityDirection{
+    public enum InfinityDirection{
         NONE,
         ASCENDING,
         DESCENDING

@@ -181,7 +181,7 @@ public class RuleInfo {
                     skipSettingValue = true;
                 } else if (presetValue instanceof final MergeableStringList mergingPreset
                     && ruleValue != null) {
-                    if (mergingPreset.doMerge && !mergingPreset.isEmpty()) {
+                    if (mergingPreset.doMerge && mergingPreset.isNotEmpty()) {
                         final MergeableStringList current = (MergeableStringList) ruleValue;
                         current.items.addAll(mergingPreset.items);
                         skipSettingValue = true;

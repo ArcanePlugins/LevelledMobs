@@ -69,6 +69,10 @@ public abstract class CustomDropBase implements Cloneable {
         this.hasAmountRange = false;
     }
 
+    public boolean hasGroupId(){
+        return this.groupId != null && !this.groupId.isBlank();
+    }
+
     int getAmountRangeMin() {
         return this.amountRangeMin;
     }
