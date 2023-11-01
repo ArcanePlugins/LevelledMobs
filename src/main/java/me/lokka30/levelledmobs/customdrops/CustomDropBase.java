@@ -46,6 +46,7 @@ public abstract class CustomDropBase implements Cloneable {
     public float chance;
     boolean playerCausedOnly;
     boolean noSpawner;
+    public boolean isDefaultDrop;
     public String groupId;
     String playerLevelVariable;
     final public @NotNull List<String> permissions;

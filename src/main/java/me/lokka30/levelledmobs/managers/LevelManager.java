@@ -30,7 +30,6 @@ import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
-import me.lokka30.levelledmobs.customdrops.CustomDropInstance;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
@@ -249,7 +248,7 @@ public class LevelManager implements LevelInterface {
             return new PlayerLevelSourceResult(1);
         }
 
-        double origLevelSource = 1.0;
+        double origLevelSource;
         String homeNameUsed = "spawn";
 
         if ("%level%".equalsIgnoreCase(variableToUse)) {
@@ -1336,9 +1335,8 @@ public class LevelManager implements LevelInterface {
             final ItemStack itemStack = pair.getKey();
             final Material material = itemStack.getType();
             final CustomDropItem item = pair.getValue();
-            final CustomDropInstance dropInstance = main.customDropsHandler.getDropInstanceFromGroupId(item.groupId);
-            final GroupLimits groupLimits = dropInstance != null ? dropInstance.groupLimits : null;
-            final boolean hasEquipLimits = groupLimits != null && item.groupId != null && groupLimits.hasCapEquipped();
+            final GroupLimits groupLimits = main.customDropsHandler.getGroupLimits(item);
+            final boolean hasEquipLimits = groupLimits != null && groupLimits.hasCapEquipped();
 
             if (hasEquipLimits){
                 if (equippedCountPerGroup.containsKey(item.groupId)) {
@@ -1632,7 +1630,6 @@ public class LevelManager implements LevelInterface {
             main.levelManager.updateNametagWithDelay(lmEntity);
         }
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
-
     }
 
     private void applyAttribs(final @NotNull LivingEntityWrapper lmEntity, final @NotNull List<String> nbtDatas){

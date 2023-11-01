@@ -34,35 +34,33 @@
 # +-------------------------------------------------------------------------------------------LM3
 defaults:
   chance: 0.2
-  use-chunk-kill-max: true
+  overall_chance: 1.0
   amount: 1
-  minLevel: -1
-  maxLevel: -1
-  custommodeldata: -1
-  nomultiplier: true
-  nospawner: false
   equipped: 1.0
   equip-offhand: true
-  override: false
-  group-limits:
-    cap-per-item: 0
-    cap-total: 0
-    cap-equipped: 0
-    retries: 0
-  priority: 0
+  equip-on-helmet: false
+  only-drop-if-equipped: false
   player-caused: true
+  nomultiplier: true
+  nospawner: false
+  use-chunk-kill-max: true
+  overall_permission: ''
+  override: false
+  minLevel: -1
+  maxLevel: -1
   item-flags: ''
   groupid: ''
-  overall_chance: 0.0
-  nbt-data: ''
-  only-drop-if-equipped: false
-  # the following defaults are for custom commands only:
+  group-limits:
+    cap-select: -1
+    cap-per-item: -1
+    cap-total: -1
+    cap-equipped: -1
+    retries: 0
+
+  # The following are for CustomCommand Drops only:
   run-on-spawn: false
   run-on-death: true
-  min-player-level: -1
-  max-player-level: -1
-  player-level-variable: ''
-  player-variable-match-value: ''
+  delay: 0
 
 
 # +-------------------------------------------------------------------------------------------LM3
@@ -97,14 +95,18 @@ all_ground_mobs:
 all_aquatic_mobs:
   -
 
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   Section 03 - EntityType Drops                                                          +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
 
-#AXOLOTL:
-#  -
+    # +-------------------------------------------------------------------------------------------LM3
+    # +                                                                                          +LM3
+    # +   Section 03 - EntityType Drops                                                          +LM3
+    # +                                                                                          +LM3
+  # +-------------------------------------------------------------------------------------------LM3
+
+ALLAY:
+  -
+
+AXOLOTL:
+  -
 
 BAT:
   -
@@ -113,6 +115,9 @@ BEE:
   -
 
 BLAZE:
+  -
+
+CAMEL:
   -
 
 CAT:
@@ -160,14 +165,17 @@ EVOKER:
 FOX:
   -
 
+FROG:
+  -
+
 GHAST:
   -
 
-#GLOW_SQUID:
-#  -
+GLOW_SQUID:
+  -
 
-#GOAT:
-#  -
+GOAT:
+  -
 
 GUARDIAN:
   -
@@ -256,6 +264,9 @@ SKELETON_HORSE:
 SLIME:
   -
 
+SNIFFER:
+  -
+
 SNOWMAN:
   -
 
@@ -269,6 +280,9 @@ STRAY:
   -
 
 STRIDER:
+  -
+
+TADPOLE:
   -
 
 TRADER_LLAMA:
@@ -290,6 +304,9 @@ VINDICATOR:
   -
 
 WANDERING_TRADER:
+  -
+
+WARDEN:
   -
 
 WITCH:
@@ -319,38 +336,45 @@ ZOMBIE_VILLAGER:
 ZOMBIFIED_PIGLIN:
   -
 
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   Section 04 - Drop Tables                                                               +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
+    # +-------------------------------------------------------------------------------------------LM3
+    # +                                                                                          +LM3
+    # +   Section 04 - Drop Tables                                                               +LM3
+    # +                                                                                          +LM3
+  # +-------------------------------------------------------------------------------------------LM3
 drop-table:
-  basic_overworld:
-    - STICK:
-        amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 1
-    - COBBLESTONE:
-        amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 1
-  basic_nether:
-    - NETHERRACK:
-        amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 2
-    - SOUL_SAND:
-        amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 2
+  armor_and_weapons:
+    - IRON_HELMET:
+        groupid: iron_armor
+        group-limits:
+          cap-per-item: -1
+          cap-total: 2
+          cap-equipped: 2
+        equipped: 0.075
+        chance: 0.015
+    - IRON_CHESTPLATE:
+        groupid: iron_armor
+        equipped: 0.025
+        chance: 0.015
+    - IRON_LEGGINGS:
+        groupid: iron_armor
+        equipped: 0.075
+        chance: 0.015
+    - IRON_BOOTS:
+        groupid: iron_armor
+        equipped: 0.075
+        chance: 0.015
+    - IRON_SWORD:
+        groupid: iron_weapons
+        group-limits:
+          cap-per-item: -1
+          cap-total: 1
+          cap-equipped: 1
+        equipped: 0.075
+        chance: 0.015
+    - IRON_AXE:
+        groupid: iron_weapons
+        equipped: 0.075
+        chance: 0.015
 
 
 # +-------------------------------------------------------------------------------------------LM3

@@ -51,7 +51,7 @@ public class CustomDropsParser {
     CustomDropsParser(final LevelledMobs main, final CustomDropsHandler handler) {
         this.main = main;
         this.defaults = new CustomDropsDefaults();
-        this.defaults.groupId = "defaults";
+        this.defaults.groupId = defaultName;
         this.handler = handler;
         this.ymlHelper = new YmlParsingHelper();
     }
@@ -64,6 +64,7 @@ public class CustomDropsParser {
     public boolean dropsUtilizeNBTAPI;
     private CustomDropBase dropBase;
     private CustomDropInstance dropInstance;
+    private final String defaultName = "default";
 
     public void loadDrops(final YamlConfiguration customDropsCfg) {
         this.dropsUtilizeNBTAPI = false;
@@ -89,6 +90,8 @@ public class CustomDropsParser {
             handler.clearGroupIdMappings();
             parseCustomDrops(customDropsCfg);
         }
+
+        Utils.debugLog(main, DebugType.CUSTOM_DROPS, "Group Limits: " + handler.groupLimitsMap);
     }
 
     public @NotNull CustomDropsDefaults getDefaults(){
@@ -104,6 +107,7 @@ public class CustomDropsParser {
         // configure bogus items so we can utilize the existing attribute parse logic
         final CustomDropItem drop = new CustomDropItem(this.defaults);
         drop.setMaterial(Material.AIR);
+        drop.isDefaultDrop = true;
         dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD);
         dropInstance.customItems.add(drop);
 
@@ -115,6 +119,7 @@ public class CustomDropsParser {
         this.defaults.override = dropInstance.overrideStockDrops;
         this.defaults.overallChance = dropInstance.overallChance;
         this.defaults.overallPermissions.addAll(dropInstance.overallPermissions);
+        handler.customDropIDs.put(this.defaults.groupId, dropInstance);
     }
 
     private void parseCustomDrops(final @NotNull ConfigurationSection config) {
@@ -133,7 +138,7 @@ public class CustomDropsParser {
                     dropInstance = new CustomDropInstance(
                         EntityType.AREA_EFFECT_CLOUD); // entity type doesn't matter
                     parseCustomDrops2((List<?>) itemGroup.getValue());
-                    if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
+                    if (!dropInstance.customItems.isEmpty() || dropInstance.getOverrideStockDrops()) {
                         handler.customItemGroups.put(itemGroupName, dropInstance);
                         handler.customDropIDs.put(itemGroupName, dropInstance);
                     }
@@ -226,14 +231,14 @@ public class CustomDropsParser {
                             if (refDrop.utilizesGroupIds) {
                                 dropInstance.utilizesGroupIds = true;
                             }
-                            if (refDrop.overrideStockDrops) {
+                            if (refDrop.getOverrideStockDrops()) {
                                 dropInstance.overrideStockDrops = true;
                             }
                         }
                     }
                 } // end if not entity table
 
-                if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
+                if (!dropInstance.customItems.isEmpty() || dropInstance.getOverrideStockDrops()) {
                     if (isUniversalGroup) {
                         if (handler.getCustomDropsitems_groups().containsKey(
                             universalGroup.toString())) {
@@ -274,7 +279,7 @@ public class CustomDropsParser {
             final int itemsCount =
                 handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
             sbMain.append(String.format(
-                "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s",
+                "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
                 handler.getCustomDropsitems().size(), itemsCount, handler.customItemGroups.size(),
                 dropsCount, commandsCount));
 
@@ -372,7 +377,7 @@ public class CustomDropsParser {
                         if (refDrop.utilizesGroupIds) {
                             dropInstance.utilizesGroupIds = true;
                         }
-                        if (refDrop.overrideStockDrops) {
+                        if (refDrop.getOverrideStockDrops()) {
                             dropInstance.overrideStockDrops = true;
                         }
                     }
@@ -439,7 +444,6 @@ public class CustomDropsParser {
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs, "minlevel", this.defaults.minLevel);
         dropBase.maxLevel = ymlHelper.getInt(cs, "maxlevel", this.defaults.maxLevel);
-        parseGroupLimits(dropBase, cs);
 
         dropBase.minPlayerLevel = ymlHelper.getInt(cs, "min-player-level",
             this.defaults.minPlayerLevel);
@@ -452,12 +456,16 @@ public class CustomDropsParser {
         dropBase.playerCausedOnly = ymlHelper.getBoolean(cs, "player-caused",
             this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = ymlHelper.getInt(cs, "maxdropgroup", this.defaults.maxDropGroup);
-        dropBase.groupId = ymlHelper.getString(cs, "groupid", dropBase.groupId);
+        if (!dropBase.isDefaultDrop){
+            dropBase.groupId = ymlHelper.getString(cs, "groupid");
+        }
+
         if (dropBase.groupId != null) {
             handler.setDropInstanceFromId(dropBase.groupId, dropInstance);
         }
 
         dropInstance.utilizesGroupIds = !Utils.isNullOrEmpty(dropBase.groupId);
+        parseGroupLimits(dropBase, cs);
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs, "amount"))) {
             if (!dropBase.setAmountRangeFromString(ymlHelper.getString(cs, "amount"))) {
@@ -516,8 +524,8 @@ public class CustomDropsParser {
             }
         }
 
-        dropInstance.overrideStockDrops = ymlHelper.getBoolean(cs, "override",
-                dropInstance.overrideStockDrops);
+        dropInstance.overrideStockDrops = ymlHelper.getBoolean2(cs, "override",
+                this.defaults.override);
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs, "damage"))) {
             if (!item.setDamageRangeFromString(ymlHelper.getString(cs, "damage"))) {
@@ -566,8 +574,6 @@ public class CustomDropsParser {
     private void parseGroupLimits(final @NotNull CustomDropBase base, final @NotNull ConfigurationSection csParent){
         final ConfigurationSection cs = objTo_CS(csParent, "group-limits");
         if (cs == null) {
-            if (defaults.groupLimits != null && dropInstance != null)
-                dropInstance.groupLimits = defaults.groupLimits;
             return;
         }
 
@@ -577,15 +583,11 @@ public class CustomDropsParser {
         limits.capPerItem = ymlHelper.getInt(cs, "cap-per-item");
         limits.capTotal = ymlHelper.getInt(cs, "cap-total");
         limits.capEquipped = ymlHelper.getInt(cs, "cap-equipped");
+        limits.capSelect = ymlHelper.getInt(cs, "cap-select");
         limits.retries = ymlHelper.getInt(cs, "retries");
 
-        if (!limits.isEmpty()){
-            if (dropInstance != null){
-                dropInstance.groupLimits = limits;
-            }
-            else{
-                Utils.logger.warning("drop instance was null, unable to add group-limits");
-            }
+        if (!limits.isEmpty() || base.isDefaultDrop){
+            handler.groupLimitsMap.put(base.groupId, limits);
         }
     }
 
@@ -757,7 +759,7 @@ public class CustomDropsParser {
                 continue;
             }
 
-            final boolean isDefault = "default".equalsIgnoreCase(map.getKey().toString());
+            final boolean isDefault = defaultName.equalsIgnoreCase(map.getKey().toString());
             int enchantmentLevel = 0;
 
             if (!isDefault) {
@@ -1040,7 +1042,7 @@ public class CustomDropsParser {
             final CustomDropInstance dropInstance = isBaby ?
                 handler.customDropsitems_Babies.get(ent) : handler.getCustomDropsitems().get(ent);
 
-            final String override = dropInstance.overrideStockDrops ? " (override)" : "";
+            final String override = dropInstance.getOverrideStockDrops() ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "
                 + dropInstance.overallChance + ")" : "";
             sbMain.append(System.lineSeparator());
@@ -1069,7 +1071,7 @@ public class CustomDropsParser {
 
         for (final Map.Entry<String, CustomDropInstance> customDrops : handler.getCustomDropsitems_groups().entrySet()) {
             final CustomDropInstance dropInstance = customDrops.getValue();
-            final String override = dropInstance.overrideStockDrops ? " (override)" : "";
+            final String override = dropInstance.getOverrideStockDrops() ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "
                 + dropInstance.overallChance + ")" : "";
             if (!sbMain.isEmpty()) {
@@ -1103,10 +1105,6 @@ public class CustomDropsParser {
                 item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
             sb.append(String.format("  &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
                 item.getAmountAsString(), baseItem.chance));
-            if (dropInstance.groupLimits != null){
-                sb.append(", ");
-                sb.append(dropInstance.groupLimits);
-            }
         } else if (baseItem instanceof final CustomCommand cc) {
             sb.append(String.format("  COMMAND, chance: &b%s&r, run-on-spawn: %s, run-on-death: %s",
                     baseItem.chance, cc.runOnSpawn, cc.runOnDeath));
@@ -1154,7 +1152,7 @@ public class CustomDropsParser {
             sb.append(baseItem.groupId);
             sb.append("&r");
 
-            if (baseItem.maxDropGroup > 0 && dropInstance.groupLimits == null) {
+            if (baseItem.maxDropGroup > 0 && !handler.groupLimitsMap.containsKey(dropBase.groupId)) {
                 sb.append(", maxDropGroup: &b");
                 sb.append(baseItem.maxDropGroup);
                 sb.append("&r");

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.levelledmobs.util.MessageUtils;
@@ -50,6 +52,7 @@ class CustomDropProcessingInfo {
     boolean hasCustomDropId;
     boolean hasEquippedItems;
     int retryNumber;
+    public @Nullable GroupLimits groupLimits;
     public String customDropId;
     List<ItemStack> newDrops;
     public CustomDropInstance dropInstance;
@@ -61,20 +64,16 @@ class CustomDropProcessingInfo {
     private StringBuilder debugMessages;
     public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
 
-    public void itemGotDropped(final @NotNull CustomDropBase dropBase){
-        final String useGroupId = dropBase.groupId != null ?
-                dropBase.groupId : "default";
+    public void itemGotDropped(final @NotNull CustomDropBase dropBase, final int amountDropped){
 
-        int count = groupIDsDroppedAlready.containsKey(useGroupId) ?
-                groupIDsDroppedAlready.get(useGroupId) + 1 :
-                1;
+        if (dropBase.groupId != null) {
+            final int count = groupIDsDroppedAlready.getOrDefault(
+                    dropBase.groupId, 0) + amountDropped;
 
-        groupIDsDroppedAlready.put(useGroupId, count);
+            groupIDsDroppedAlready.put(dropBase.groupId, count);
+        }
 
-        count = itemsDroppedById.containsKey(dropBase.uid) ?
-                itemsDroppedById.get(dropBase.uid) + 1 :
-                1;
-
+        final int count = itemsDroppedById.getOrDefault(dropBase.uid, 0) + amountDropped;
         itemsDroppedById.put(dropBase.uid, count);
     }
 
@@ -96,6 +95,14 @@ class CustomDropProcessingInfo {
         return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
     }
 
+    void addDebugMessage(final DebugType debugType, final String message) {
+        if (!LevelledMobs.getInstance().companion.debugsEnabled.contains(debugType)){
+            return;
+        }
+
+        addDebugMessage(message);
+    }
+
     void addDebugMessage(final String message) {
         if (this.debugMessages == null) {
             this.debugMessages = new StringBuilder();
@@ -109,7 +116,7 @@ class CustomDropProcessingInfo {
     }
 
     void writeAnyDebugMessages() {
-        if (this.debugMessages == null) {
+        if (this.debugMessages == null || this.debugMessages.isEmpty()) {
             return;
         }
 

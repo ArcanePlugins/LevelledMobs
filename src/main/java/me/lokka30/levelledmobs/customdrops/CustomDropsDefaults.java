@@ -40,7 +40,6 @@ public class CustomDropsDefaults {
     String playerLevelVariable;
     String nbtData;
     List<String> itemFlagsStrings;
-    public GroupLimits groupLimits;
     public final List<String> permissions;
     final List<String> overallPermissions;
     CachedModalList<DeathCause> causeOfDeathReqs;
@@ -83,7 +82,9 @@ public class CustomDropsDefaults {
         this.maxDropGroup = dropBase.maxDropGroup;
         this.noSpawner = dropBase.noSpawner;
         this.playerCausedOnly = dropBase.playerCausedOnly;
-        this.groupId = dropBase.groupId;
+        if (!"default".equals(dropBase.groupId)){
+            this.groupId = dropBase.groupId;
+        }
         this.minPlayerLevel = dropBase.minPlayerLevel;
         this.maxPlayerLevel = dropBase.maxPlayerLevel;
         this.playerLevelVariable = dropBase.playerLevelVariable;

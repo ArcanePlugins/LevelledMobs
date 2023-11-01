@@ -122,6 +122,10 @@ public enum DebugType {
 
     CUSTOM_DROPS,
 
+    CUSTOM_EQUIPS,
+
+    MOB_GROUPS,
+
     GROUP_LIMITS,
 
     THREAD_LOCKS,
