@@ -51,7 +51,7 @@ defaults:
   item-flags: ''
   groupid: ''
   group-limits:
-    cap-select: -1
+    cap-select: 1
     cap-per-item: -1
     cap-total: -1
     cap-equipped: -1
