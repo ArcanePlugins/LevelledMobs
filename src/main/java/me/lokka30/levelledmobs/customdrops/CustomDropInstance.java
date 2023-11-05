@@ -49,7 +49,7 @@ public class CustomDropInstance {
     public final @NotNull List<CustomDropBase> customItems;
     public Float overallChance;
     public final @NotNull List<String> overallPermissions;
-    public boolean overrideStockDrops;
+    public Boolean overrideStockDrops;
     boolean utilizesGroupIds;
     final boolean isBabyMob;
 
@@ -58,9 +58,8 @@ public class CustomDropInstance {
             throw new NullPointerException("dropInstance");
         }
 
-        if (dropInstance.overrideStockDrops) {
-            this.overrideStockDrops = true;
-        }
+        this.overrideStockDrops = dropInstance.overrideStockDrops;
+
         if (dropInstance.utilizesGroupIds) {
             this.utilizesGroupIds = true;
         }
@@ -82,13 +81,17 @@ public class CustomDropInstance {
         return this.associatedMob;
     }
 
+    public boolean getOverrideStockDrops(){
+        return this.overrideStockDrops != null && this.overrideStockDrops;
+    }
+
     public @NotNull String toString() {
         if (this.associatedMob != null) {
-            return this.overrideStockDrops ?
+            return this.getOverrideStockDrops() ?
                 this.associatedMob.name() + " - override" :
                 this.associatedMob.name();
         } else if (this.entityGroup != null) {
-            return this.overrideStockDrops ?
+            return this.getOverrideStockDrops() ?
                 this.entityGroup + " - override" :
                 this.entityGroup.toString();
         } else {

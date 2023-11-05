@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
+
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.levelledmobs.util.MessageUtils;
@@ -24,36 +28,80 @@ import org.jetbrains.annotations.Nullable;
  * @author stumper66
  * @since 2.4.1
  */
-class CustomDropProcessingInfo {
+public class CustomDropProcessingInfo {
 
     CustomDropProcessingInfo() {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.itemsDroppedById = new TreeMap<>();
         this.allDropInstances = new LinkedList<>();
         this.playerLevelVariableCache = new TreeMap<>();
         this.stackToItem = new LinkedList<>();
     }
 
     public LivingEntityWrapper lmEntity;
-    double addition;
     Player mobKiller;
-    @NotNull final Map<String, Integer> playerLevelVariableCache;
+    final @NotNull Map<String, Integer> playerLevelVariableCache;
+    DeathCause deathCause;
+    double addition;
     boolean isSpawner;
     boolean equippedOnly;
     boolean deathByFire;
     boolean wasKilledByPlayer;
-    DeathCause deathCause;
     boolean doNotMultiplyDrops;
     boolean hasOverride;
     boolean hasCustomDropId;
     boolean hasEquippedItems;
+    int retryNumber;
+    public @Nullable GroupLimits groupLimits;
     public String customDropId;
     List<ItemStack> newDrops;
-    @NotNull final Map<String, Integer> groupIDsDroppedAlready;
+    public CustomDropInstance dropInstance;
+    final @NotNull Map<String, Integer> groupIDsDroppedAlready;
+    final @NotNull Map<UUID, Integer> itemsDroppedById;
     Map<Integer, List<CustomDropBase>> prioritizedDrops;
     @Nullable CustomDropsRuleSet dropRules;
-    @NotNull final List<CustomDropInstance> allDropInstances;
+    final @NotNull List<CustomDropInstance> allDropInstances;
     private StringBuilder debugMessages;
     public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
+
+    public void itemGotDropped(final @NotNull CustomDropBase dropBase, final int amountDropped){
+
+        if (dropBase.hasGroupId()) {
+            final int count = groupIDsDroppedAlready.getOrDefault(
+                    dropBase.groupId, 0) + amountDropped;
+
+            groupIDsDroppedAlready.put(dropBase.groupId, count);
+        }
+
+        final int count = itemsDroppedById.getOrDefault(dropBase.uid, 0) + amountDropped;
+        itemsDroppedById.put(dropBase.uid, count);
+    }
+
+    public int getDropItemsCountForGroup(final @NotNull CustomDropBase dropBase){
+        final String useGroupId = dropBase.hasGroupId() ?
+                dropBase.groupId : "default";
+
+        return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
+    }
+
+    public int getItemsDropsById(final @NotNull CustomDropBase dropBase){
+        return itemsDroppedById.getOrDefault(dropBase.uid, 0);
+    }
+
+    public int getItemsDropsByGroup(final @NotNull CustomDropBase dropBase){
+        final String useGroupId = dropBase.hasGroupId() ?
+                dropBase.groupId : "default";
+
+        return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
+    }
+
+    void addDebugMessage(final DebugType debugType, final String message) {
+        if (!LevelledMobs.getInstance().companion.debugsEnabled.contains(debugType)){
+            return;
+        }
+
+        addDebugMessage(message);
+    }
 
     void addDebugMessage(final String message) {
         if (this.debugMessages == null) {
@@ -68,7 +116,7 @@ class CustomDropProcessingInfo {
     }
 
     void writeAnyDebugMessages() {
-        if (this.debugMessages == null) {
+        if (this.debugMessages == null || this.debugMessages.isEmpty()) {
             return;
         }
 

@@ -28,6 +28,7 @@ public class CustomDropItem extends CustomDropBase {
     public float equippedSpawnChance;
     public boolean noMultiplier;
     public boolean onlyDropIfEquipped;
+    public boolean equipOnHelmet;
     public String customName;
     public String mobHeadTexture;
     public List<String> lore;
@@ -72,6 +73,7 @@ public class CustomDropItem extends CustomDropBase {
         this.noMultiplier = defaults.noMultiplier;
         this.onlyDropIfEquipped = defaults.onlyDropIfEquipped;
         this.equipOffhand = defaults.equipOffhand;
+        this.equipOnHelmet = defaults.equipOnHelmet;
     }
 
     public CustomDropItem cloneItem() {

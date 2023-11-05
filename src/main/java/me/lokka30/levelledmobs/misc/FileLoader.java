@@ -27,7 +27,7 @@ public final class FileLoader {
     public static final int SETTINGS_FILE_VERSION = 35;    // Last changed: v3.12.0 b770
     public static final int MESSAGES_FILE_VERSION = 8;     // Last changed: v3.4.0 b621
     public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
-    public static final int RULES_FILE_VERSION = 3;        // Last changed: v3.4.0 b621
+    public static final int RULES_FILE_VERSION = 4;        // Last changed: v3.13.0 b789
 
     private FileLoader() {
         throw new UnsupportedOperationException();
@@ -35,7 +35,7 @@ public final class FileLoader {
 
     @Nullable public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
         final int compatibleVersion) {
-        cfgName = cfgName + ".yml";
+        cfgName += ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
 

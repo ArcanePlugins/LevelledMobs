@@ -403,17 +403,17 @@ default-rule:
 # +-------------------------------------------------------------------------------------------LM3
 custom-rules:
   - enabled: true
-    name: 'CR - NoLevel All Passive + EntityTypes'
+    name: 'NoLevel All Passive + EntityTypes'
     use-preset: allowed_worlds
     conditions:
       entities:
         allowed-groups: [ 'all_passive_mobs' ]
-        allowed-list: [ 'BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN' ]
+        allowed-list: [ 'BABY_', 'BAT', 'ENDER_DRAGON', 'PHANTOM', 'RAVAGER', 'WANDERING_TRADER', 'VEX', 'VILLAGER', 'WARDEN', 'WITHER', 'ZOMBIE_VILLAGER' ]
     apply-settings:
       maxLevel: 0
 
   - enabled: true
-    name: 'CR - Custom Nether Levelling'
+    name: 'Custom Nether Levelling'
     conditions:
       worlds: 'world_nether'
     strategies:
@@ -423,12 +423,15 @@ custom-rules:
         period: 0
 
   - enabled: true
-    name: 'CR - Custom Entity Attributes'
+    name: 'Custom Entity Attributes'
     use-preset: allowed_worlds
     apply-settings:
       multipliers:
         custom-mob-level:
           ENDERMAN:
+            max-health: 0.0
+            movement-speed: 0.0
+          ENDERMITE:
             max-health: 0.0
             movement-speed: 0.0
           SILVERFISH:
@@ -440,7 +443,7 @@ custom-rules:
             max-health: 1.0
 
   - enabled: true
-    name: 'CR - Custom Zombie Piglin Levelling'
+    name: 'Custom Zombie Piglin Levelling'
     conditions:
       worlds: 'world_nether'
       entities: 'ZOMBIFIED_PIGLIN'
@@ -466,4 +469,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 3
+file-version: 4

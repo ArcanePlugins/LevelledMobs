@@ -168,8 +168,6 @@ public class Companion {
 
         if (!isReload) {
             main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
-            main.mobHeadManager.loadTextures(
-                Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
 
             // remove legacy files if they exist
             final String[] legacyFile = {"attributes.yml", "drops.yml"};

@@ -1,4 +1,4 @@
-<div align="center">
+<div style="text-align: center;">
 
 <img src="https://i.ibb.co/ySgMPd0/Levelled-Mobs-Banner-v2-0.png" width="600" height="300" alt="LevelledMobs Banner"></img>
 
@@ -9,25 +9,25 @@ Level-up mobs on your server, RPG-style! Perfect for Survival mode.
 Maintained by PenalBuffalo, UltimaOath and lokka30.
 
 <a href="https://www.discord.io/arcaneplugins">
-<img src="https://img.shields.io/badge/Chat%20%2F%20Support-on%20Discord-skyblue?style=for-the-badge&logo=discord&logoColor=white" alt="Support available on Discord"></img>
+<img src="https://img.shields.io/badge/Chat%20%2F%20Support-on%20Discord-skyblue?style=for-the-badge&logo=discord&logoColor=white" alt="Support available on Discord">
 </a>
 <a href="https://www.spigotmc.org/conversations/add?to=lokka30">
-<img src="https://img.shields.io/badge/Chat%20%2F%20Support-Spigot%20PM-skyblue?style=for-the-badge&logo=googlemessages" alt="Support available through Spigot PMs"></img>
+<img src="https://img.shields.io/badge/Chat%20%2F%20Support-Spigot%20PM-skyblue?style=for-the-badge&logo=googlemessages" alt="Support available through Spigot PMs">
 </a>
 
 <br />
 
 <a href="https://github.com/lokka30/LevelledMobs/wiki">
-<img src="https://img.shields.io/badge/Documentation-on%20Wiki-skyblue?style=for-the-badge&logo=wikipedia" alt="Documentation available on the Wiki"></img>
+<img src="https://img.shields.io/badge/Documentation-on%20Wiki-skyblue?style=for-the-badge&logo=wikipedia" alt="Documentation available on the Wiki">
 </a>
 <a href="https://github.com/lokka30/LevelledMobs">
-<img src="https://img.shields.io/badge/Source%20Code-on%20GitHub-skyblue?style=for-the-badge&logo=github" alt="Source Code available on GitHub"></img>
+<img src="https://img.shields.io/badge/Source%20Code-on%20GitHub-skyblue?style=for-the-badge&logo=github" alt="Source Code available on GitHub">
 </a>
 
 <br />
 
 <a href="https://github.com/lokka30/LevelledMobs/wiki/Credits">
-<img src="https://img.shields.io/badge/Contributors-View%20Credits-skyblue?style=for-the-badge" alt="Contributors listed in Credits Page"></img>
+<img src="https://img.shields.io/badge/Contributors-View%20Credits-skyblue?style=for-the-badge" alt="Contributors listed in Credits Page">
 </a>
 
 ### [SpigotMC Resource Page](https://www.spigotmc.org/resources/levelledmobs.74304/)
@@ -51,8 +51,8 @@ It can hook with your favourite plugins, such as *EcoSkills*, *Aurelium Skills*,
 
 <br />
 
-<div align="center">
-<img src="https://i.ibb.co/ZBfws4Y/LM-Gallery.png" width="500" height="300">
+<div style="text-align: center;">
+<img src="https://i.ibb.co/ZBfws4Y/LM-Gallery.png" width="500" height="300" alt="LM Gallery">
 </div>
 
 <br /><hr /><br />

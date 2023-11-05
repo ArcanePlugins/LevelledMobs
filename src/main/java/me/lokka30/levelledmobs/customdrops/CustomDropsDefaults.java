@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 2.4.0
  */
-class CustomDropsDefaults {
+public class CustomDropsDefaults {
 
     boolean noMultiplier;
     boolean noSpawner;
@@ -27,6 +27,7 @@ class CustomDropsDefaults {
     public int minLevel;
     public int maxLevel;
     public boolean equipOffhand;
+    public boolean equipOnHelmet;
     int customModelData;
     int maxDropGroup;
     int minPlayerLevel;
@@ -68,6 +69,7 @@ class CustomDropsDefaults {
         this.overallPermissions = new LinkedList<>();
         this.runOnSpawn = false;
         this.runOnDeath = true;
+        this.equipOnHelmet = false;
     }
 
     void setDefaultsFromDropItem(@NotNull final CustomDropBase dropBase) {
@@ -80,7 +82,9 @@ class CustomDropsDefaults {
         this.maxDropGroup = dropBase.maxDropGroup;
         this.noSpawner = dropBase.noSpawner;
         this.playerCausedOnly = dropBase.playerCausedOnly;
-        this.groupId = dropBase.groupId;
+        if (!"default".equals(dropBase.groupId)){
+            this.groupId = dropBase.groupId;
+        }
         this.minPlayerLevel = dropBase.minPlayerLevel;
         this.maxPlayerLevel = dropBase.maxPlayerLevel;
         this.playerLevelVariable = dropBase.playerLevelVariable;
@@ -98,6 +102,7 @@ class CustomDropsDefaults {
             this.equipOffhand = dropItem.equipOffhand;
             this.nbtData = dropItem.nbtData;
             this.itemFlagsStrings = dropItem.itemFlagsStrings;
+            this.equipOnHelmet = dropItem.equipOnHelmet;
         } else if (dropBase instanceof final CustomCommand command) {
             this.runOnSpawn = command.runOnSpawn;
             this.runOnDeath = command.runOnDeath;

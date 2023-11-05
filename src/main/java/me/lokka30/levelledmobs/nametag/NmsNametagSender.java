@@ -118,7 +118,8 @@ public class NmsNametagSender implements NametagSender {
         final @NotNull Object internalLivingEntity
     ) throws InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        if (!def.isOneNinteenThreeOrNewer()) {
+        // 1.18 and older uses the legacy function
+        if (LevelledMobs.getInstance().getVerInfo().getMinorVersion() <= 18) {
             return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity);
         }
 

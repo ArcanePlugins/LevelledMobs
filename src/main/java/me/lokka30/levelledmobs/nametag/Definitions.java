@@ -440,11 +440,15 @@ public class Definitions {
         String fieldName = ver.getMinecraftVersion() >= 1.20 ? "c" : "b";
         this.field_Connection = clazz_EntityPlayer.getDeclaredField(fieldName);
 
-        if (this.isOneNinteenThreeOrNewer) {
+        if (ver.getMinorVersion() >= 19) {
             // net.minecraft.network.syncher.SynchedEntityData ->
-            //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById -> e
+            //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
             // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
-            this.field_Int2ObjectMap = clazz_DataWatcher.getDeclaredField("e");
+
+            final String methodName =  this.isOneNinteenThreeOrNewer() ?
+                    "e" : "f";
+
+            this.field_Int2ObjectMap = clazz_DataWatcher.getDeclaredField(methodName);
             this.field_Int2ObjectMap.setAccessible(true);
         }
     }

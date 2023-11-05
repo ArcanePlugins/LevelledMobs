@@ -9,7 +9,6 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
@@ -34,6 +33,7 @@ import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
+import me.lokka30.levelledmobs.customdrops.GroupLimits;
 import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
@@ -42,6 +42,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.result.NametagResult;
@@ -53,7 +54,6 @@ import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.HealthIndicator;
-import me.lokka30.levelledmobs.rules.LevelTierMatching;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
@@ -186,12 +186,12 @@ public class LevelManager implements LevelInterface {
         int maxLevel = maxLevel_Pre;
 
         if (minLevel == -1 || maxLevel == -1) {
-            final int[] levels = getMinAndMaxLevels(lmEntity);
+            final MinAndMaxHolder levels = getMinAndMaxLevels(lmEntity);
             if (minLevel == -1) {
-                minLevel = levels[0];
+                minLevel = levels.min;
             }
             if (maxLevel == -1) {
-                maxLevel = levels[1];
+                maxLevel = levels.max;
             }
         }
 
@@ -242,140 +242,6 @@ public class LevelManager implements LevelInterface {
         return randomLevelling.generateLevel(minLevel, maxLevel);
     }
 
-    private int @Nullable [] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity) {
-        final PlayerLevellingOptions options = main.rulesManager.getRulePlayerLevellingOptions(
-            lmEntity);
-
-        if (options == null || options.enabled != null && !options.enabled) {
-            return null;
-        }
-
-        final Player player = lmEntity.getPlayerForLevelling();
-        if (player == null) {
-            return null;
-        }
-
-        int levelSource;
-        final String variableToUse =
-                Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
-        final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
-        final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.usePlayerMaxLevel;
-        final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
-        final PlayerLevelSourceResult playerLevelSourceResult = getPlayerLevelSourceNumber(
-            lmEntity.getPlayerForLevelling(), lmEntity, variableToUse);
-        final double origLevelSource =
-            playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
-
-        levelSource = (int) Math.round(origLevelSource * scale);
-        if (levelSource < 1) {
-            levelSource = 1;
-        }
-        final int[] results = {1, 1};
-        String tierMatched = null;
-        final String capDisplay = options.levelCap == null ? "" : "cap: " + options.levelCap + ", ";
-
-        if (usePlayerMax) {
-            results[0] = levelSource;
-            results[1] = results[0];
-        } else if (matchPlayerLvl) {
-            results[1] = levelSource;
-        } else {
-            boolean foundMatch = false;
-            for (final LevelTierMatching tier : options.levelTiers) {
-                boolean meetsMin = false;
-                boolean meetsMax = false;
-                boolean hasStringMatch = false;
-
-                if (!playerLevelSourceResult.isNumericResult && tier.sourceTierName != null) {
-                    hasStringMatch = playerLevelSourceResult.stringResult.equalsIgnoreCase(
-                        tier.sourceTierName);
-                } else if (playerLevelSourceResult.isNumericResult) {
-                    meetsMin = (tier.minLevel == null || levelSource >= tier.minLevel);
-                    meetsMax = (tier.maxLevel == null || levelSource <= tier.maxLevel);
-                }
-
-                if (meetsMin && meetsMax || hasStringMatch) {
-                    if (tier.valueRanges[0] > 0) {
-                        results[0] = tier.valueRanges[0];
-                    }
-                    if (tier.valueRanges[1] > 0) {
-                        results[1] = tier.valueRanges[1];
-                    }
-                    tierMatched = tier.toString();
-                    foundMatch = true;
-                    break;
-                }
-            }
-
-            if (!foundMatch) {
-                if (playerLevelSourceResult.isNumericResult) {
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
-                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource,
-                        capDisplay));
-                } else {
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-src: '%s', %sno tiers matched",
-                        lmEntity.getNameIfBaby(), player.getName(),
-                        playerLevelSourceResult.stringResult, capDisplay));
-                }
-                return null;
-            }
-        }
-
-        String varianceDebug = "";
-        if (playerLevelSourceResult.randomVarianceResult != null){
-            results[1] += playerLevelSourceResult.randomVarianceResult;
-            if (results[1] < 1)
-                results[1] = 1;
-            if (results[0] > results[1])
-                results[0] = results[1];
-            varianceDebug = String.format(", var: %s", playerLevelSourceResult.randomVarianceResult);
-        }
-
-        if (options.levelCap != null) {
-            if (results[0] > options.levelCap) {
-                results[0] = options.levelCap;
-            }
-            if (results[1] > options.levelCap) {
-                results[1] = options.levelCap;
-            }
-        }
-
-        final String homeName = playerLevelSourceResult.homeNameUsed != null ?
-            String.format(" (%s)", playerLevelSourceResult.homeNameUsed) : "";
-
-        if (tierMatched == null) {
-            Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, %sresult: %s",
-                lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
-                varianceDebug, levelSource, capDisplay, Arrays.toString(results)));
-        } else {
-            if (playerLevelSourceResult.isNumericResult) {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, tier: %s, %sresult: %s",
-                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
-                    varianceDebug, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
-            } else {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: '%s'%s, tier: %s, %sresult: %s",
-                    lmEntity.getNameIfBaby(), player.getName(),
-                    playerLevelSourceResult.stringResult, varianceDebug, tierMatched,
-                    capDisplay, Arrays.toString(results)));
-            }
-        }
-
-        if (options.recheckPlayers != null && options.recheckPlayers) {
-            final String numberOrString = playerLevelSourceResult.isNumericResult ?
-                    String.valueOf(playerLevelSourceResult.numericResult) : playerLevelSourceResult.stringResult;
-            if (numberOrString != null)
-                lmEntity.getPDC().set(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING, numberOrString);
-        }
-        lmEntity.playerLevellingAllowDecrease = options.decreaseLevel;
-
-        return results;
-    }
-
     public @NotNull PlayerLevelSourceResult getPlayerLevelSourceNumber(final @Nullable Player player,
         final @NotNull LivingEntityWrapper lmEntity ,final @NotNull String variableToUse) {
         if (player == null) {
@@ -383,8 +249,7 @@ public class LevelManager implements LevelInterface {
         }
 
         double origLevelSource;
-        final PlayerLevelSourceResult sourceResult = new PlayerLevelSourceResult(1);
-        sourceResult.homeNameUsed = "spawn";
+        String homeNameUsed = "spawn";
 
         if ("%level%".equalsIgnoreCase(variableToUse)) {
             origLevelSource = player.getLevel();
@@ -403,7 +268,7 @@ public class LevelManager implements LevelInterface {
             final PlayerHomeCheckResult result = ExternalCompatibilityManager.getPlayerHomeLocation(
                 player, allowBed);
             if (result.homeNameUsed != null) {
-                sourceResult.homeNameUsed = result.homeNameUsed;
+                homeNameUsed = result.homeNameUsed;
             }
 
             Location useLocation = result.location;
@@ -411,11 +276,11 @@ public class LevelManager implements LevelInterface {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(main, player);
                 useLocation = netherOrWorldSpawnResult.location();
                 if (netherOrWorldSpawnResult.isWorldPortalLocation()) {
-                    sourceResult.homeNameUsed = "world_portal";
+                    homeNameUsed = "world_portal";
                 } else if (netherOrWorldSpawnResult.isNetherPortalLocation()) {
-                    sourceResult.homeNameUsed = "nether_portal";
+                    homeNameUsed = "nether_portal";
                 } else {
-                    sourceResult.homeNameUsed = "spawn";
+                    homeNameUsed= "spawn";
                 }
             }
 
@@ -426,18 +291,18 @@ public class LevelManager implements LevelInterface {
             origLevelSource = useLocation.distance(player.getLocation());
         } else if ("%bed_distance%".equalsIgnoreCase(variableToUse)) {
             Location useLocation = player.getBedSpawnLocation();
-            sourceResult.homeNameUsed = "bed";
+            homeNameUsed = "bed";
 
             if (useLocation == null || useLocation.getWorld() != player.getWorld()) {
                 final PlayerNetherOrWorldSpawnResult result = Utils.getPortalOrWorldSpawn(main,
                     player);
                 useLocation = result.location();
                 if (result.isWorldPortalLocation()) {
-                    sourceResult.homeNameUsed = "world_portal";
+                    homeNameUsed = "world_portal";
                 } else if (result.isNetherPortalLocation()) {
-                    sourceResult.homeNameUsed = "nether_portal";
+                    homeNameUsed = "nether_portal";
                 } else {
-                    sourceResult.homeNameUsed = "spawn";
+                    homeNameUsed = "spawn";
                 }
             }
 
@@ -473,20 +338,25 @@ public class LevelManager implements LevelInterface {
                         variableToUse, player.getName(), l.getBlockX(), l.getBlockY(),
                         l.getBlockZ(), player.getWorld().getName()));
                 } else {
-                    try {
-                        origLevelSource = Double.parseDouble(PAPIResult);
-                    } catch (Exception ignored) {
-                        origLevelSource = player.getLevel();
-                        Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                            "Got invalid number for '%s', result: '%s' from PAPI. Player %s at %s,%s,%s in %s",
-                            variableToUse, PAPIResult, player.getName(), l.getBlockX(),
-                            l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
+                    if (Utils.isDouble(PAPIResult)){
+                        try {
+                            origLevelSource = Double.parseDouble(PAPIResult);
+                        } catch (Exception ignored) {
+                            origLevelSource = player.getLevel();
+                        }
+                    }
+                    else{
+                        final PlayerLevelSourceResult result = new PlayerLevelSourceResult(PAPIResult);
+                        result.homeNameUsed = homeNameUsed;
+                        return result;
                     }
                 }
             }
         }
 
+        final PlayerLevelSourceResult sourceResult = new PlayerLevelSourceResult((int) Math.round(origLevelSource));
         final Integer maxRandomVariance = main.rulesManager.getRuleMaxRandomVariance(lmEntity);
+
         if (maxRandomVariance != null){
             sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance + 1);
             if (ThreadLocalRandom.current().nextBoolean()){
@@ -494,39 +364,40 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        sourceResult.numericResult = (int) Math.round(origLevelSource);
+        sourceResult.homeNameUsed = homeNameUsed;
         return sourceResult;
     }
 
-    public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
+    public MinAndMaxHolder getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
         // if called from summon command then lmEntity is null
 
         int minLevel = main.rulesManager.getRuleMobMinLevel(lmInterface);
         int maxLevel = main.rulesManager.getRuleMobMaxLevel(lmInterface);
 
-        if (main.configUtils.playerLevellingEnabled && lmInterface instanceof LivingEntityWrapper &&
+        if (main.configUtils.playerLevellingEnabled && lmInterface instanceof final LivingEntityWrapper lmEntity &&
             ((LivingEntityWrapper) lmInterface).getPlayerForLevelling() != null) {
-            final int[] playerLevellingResults = getPlayerLevels((LivingEntityWrapper) lmInterface);
+            final PlayerLevellingOptions options = main.rulesManager.getRulePlayerLevellingOptions(
+                    lmEntity);
+
+            MinAndMaxHolder playerLevellingResults = null;
+            if (options != null && options.getEnabled()){
+                playerLevellingResults = options.getPlayerLevels(lmEntity);
+            }
+
             if (playerLevellingResults != null) {
-                minLevel = playerLevellingResults[0];
-                maxLevel = playerLevellingResults[1];
+                // this will only be false if no tiers were met and there was a cap specified
+                if (playerLevellingResults.useMin) minLevel = playerLevellingResults.min;
+                maxLevel = playerLevellingResults.max;
             }
         }
 
         // this will prevent an unhandled exception:
-        if (minLevel < 1) {
-            minLevel = 1;
-        }
-        if (maxLevel < 1) {
-            maxLevel = 1;
-        }
+        minLevel = Math.max(minLevel, 1);
+        maxLevel = Math.max(maxLevel, 1);
+        minLevel = Math.min(minLevel, maxLevel);
 
-        if (minLevel > maxLevel) {
-            minLevel = maxLevel;
-        }
-
-        return new int[]{minLevel, maxLevel};
+        return new MinAndMaxHolder(minLevel, maxLevel);
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
@@ -742,7 +613,7 @@ public class LevelManager implements LevelInterface {
                 nametag = deathMessage.replace("%death_nametag%", nametag);
                 final Player player = lmEntity.getPlayerForLevelling();
                 nametag = nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
-                nametag = replaceStringPlaceholders(nametag, lmEntity, true);
+                nametag = replaceStringPlaceholders(nametag, lmEntity, true, player);
                 preserveMobName = false;
                 hadCustomDeathMessage = true;
             }
@@ -874,6 +745,7 @@ public class LevelManager implements LevelInterface {
         final String roundedMaxHealthInt = String.valueOf((int) Utils.round(maxHealth));
         final double percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0);
         final int percentHealth = percentHealthTemp < 1.0 ? 1 : (int) percentHealthTemp;
+        final String playerId = player != null ? player.getUniqueId().toString() : "";
 
         String tieredPlaceholder = main.rulesManager.getRuleTieredPlaceholder(lmEntity);
         if (tieredPlaceholder == null) {
@@ -905,6 +777,7 @@ public class LevelManager implements LevelInterface {
             String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockY()));
         result = result.replace("%z%",
             String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
+        result = result.replace("%player-uuid%", playerId);
 
         if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
             result = ExternalCompatibilityManager.getPapiPlaceholder(player, result);
@@ -1279,7 +1152,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final PlayerLevellingOptions opts = main.rulesManager.getRulePlayerLevellingOptions(lmEntity);
-        if (player.getUniqueId().toString().equals(playerId) && opts != null && opts.recheckPlayers != null && opts.recheckPlayers){
+        if (player.getUniqueId().toString().equals(playerId) && opts != null && opts.getRecheckPlayers()){
             final String previousResult = lmEntity.getPDC().get(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING);
             if (previousResult == null) {
                 return true;
@@ -1454,28 +1327,49 @@ public class LevelManager implements LevelInterface {
         boolean hadMainItem = false;
         boolean hadPlayerHead = false;
         final EquippedItemsInfo equippedItemsInfo = new EquippedItemsInfo();
+        final Map<String, Integer> equippedCountPerGroup = new TreeMap<>();
+        int equippedSoFar = 0;
+
+        Collections.shuffle(dropResult.stackToItem());
 
         for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem()) {
             final ItemStack itemStack = pair.getKey();
             final Material material = itemStack.getType();
+            final CustomDropItem item = pair.getValue();
+            final GroupLimits groupLimits = main.customDropsHandler.getGroupLimits(item);
+            final boolean hasEquipLimits = groupLimits != null && groupLimits.hasCapEquipped();
+
+            if (hasEquipLimits){
+                if (equippedCountPerGroup.containsKey(item.groupId)) {
+                    equippedSoFar = equippedCountPerGroup.get(item.groupId);
+                }
+
+                if (groupLimits.hasReachedCapEquipped(equippedSoFar)){
+                    Utils.debugLog(main, DebugType.GROUP_LIMITS, String.format(
+                            "Reached equip limit of %s, mob: %s, item: %s, group: %s",
+                            groupLimits.capEquipped, lmEntity.getNameIfBaby(), material, item.groupId));
+                    continue;
+                }
+            }
 
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true);
                 equipment.setBootsDropChance(0);
-                equippedItemsInfo.boots = pair.getValue();
+                equippedItemsInfo.boots = item;
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true);
                 equipment.setLeggingsDropChance(0);
-                equippedItemsInfo.leggings = pair.getValue();
+                equippedItemsInfo.leggings = item;
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
                 equipment.setChestplateDropChance(0);
-                equippedItemsInfo.chestplate = pair.getValue();
+                equippedItemsInfo.chestplate = item;
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)
-                || material.name().endsWith("_HEAD") && !hadPlayerHead) {
+                || material.name().endsWith("_HEAD") || item.equipOnHelmet
+                && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
-                equippedItemsInfo.helmet = pair.getValue();
+                equippedItemsInfo.helmet = item;
                 if (material == Material.PLAYER_HEAD) {
                     hadPlayerHead = true;
                 }
@@ -1483,13 +1377,19 @@ public class LevelManager implements LevelInterface {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
                     equipment.setItemInMainHandDropChance(0);
-                    equippedItemsInfo.mainHand = pair.getValue();
+                    equippedItemsInfo.mainHand = item;
                     hadMainItem = true;
-                } else if (pair.getValue().equipOffhand) {
+                } else if (item.equipOffhand) {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
-                    equippedItemsInfo.offhand = pair.getValue();
+                    equippedItemsInfo.offhand = item;
                 }
+            }
+
+            equippedSoFar++;
+
+            if (hasEquipLimits){
+                equippedCountPerGroup.put(item.groupId, equippedSoFar);
             }
         }
 
@@ -1731,7 +1631,6 @@ public class LevelManager implements LevelInterface {
             main.levelManager.updateNametagWithDelay(lmEntity);
         }
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
-
     }
 
     private void applyAttribs(final @NotNull LivingEntityWrapper lmEntity, final @NotNull List<String> nbtDatas){

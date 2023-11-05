@@ -21,10 +21,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.rules.PlayerLevellingOptions;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.rules.RuleInfo;
@@ -482,6 +484,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 final RuleInfo pi = effectiveRules.get(i);
 
                 for (final Field f : pi.getClass().getDeclaredFields()) {
+                    String showValue = null;
+
                     if (Modifier.isPrivate(f.getModifiers())) {
                         continue;
                     }
@@ -492,10 +496,13 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                     if (printedKeys.contains(f.getName())) {
                         continue;
                     }
-                    if (f.getName().equals("ruleSourceNames")) {
+                    if (f.getName().equals("ruleSourceNames") || f.getName().equals("ruleIsEnabled")) {
                         continue;
                     }
                     final Object value = f.get(pi);
+                    if (value instanceof final PlayerLevellingOptions opts){
+                        showValue = getPlayerLevellingFormatting(opts, lmEntity);
+                    }
                     if (value instanceof Map && ((Map<?, ?>) value).isEmpty()) {
                         continue;
                     }
@@ -507,11 +514,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                             value.toString()))) {
                         continue;
                     }
-                    if (f.getName().equals("ruleIsEnabled")) {
-                        continue;
-                    }
 
-                    String showValue = f.getName() + ", value: " + value;
+                    if (showValue == null){
+                        showValue = f.getName() + ", value: " + value;
+                    }
                     showValue += ", &1source: " + (
                         pi.ruleSourceNames.containsKey(f.getName()) ? pi.ruleSourceNames.get(
                             f.getName()) : pi.getRuleName()
@@ -543,6 +549,44 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         } else {
             sender.sendMessage(MessageUtils.colorizeAll(sb.toString()));
         }
+    }
+
+    private @NotNull String getPlayerLevellingFormatting(final @NotNull PlayerLevellingOptions opts,
+                                                         final @NotNull LivingEntityWrapper lmEntity){
+        StringBuilder sb = new StringBuilder("playerLevellingOptions, value: ");
+
+        String userId = null;
+        String plValue = null;
+
+        if (lmEntity.getPDC().has(main.namespacedKeys.playerLevellingId)) {
+            userId = lmEntity.getPDC().get(main.namespacedKeys.playerLevellingId, PersistentDataType.STRING);
+        }
+        if (lmEntity.getPDC().has(main.namespacedKeys.playerLevellingValue)) {
+            plValue = lmEntity.getPDC().get(main.namespacedKeys.playerLevellingValue, PersistentDataType.STRING);
+        }
+
+        if (plValue != null){
+            sb.append(plValue);
+        }
+
+        boolean foundName = false;
+        if (userId != null){
+            final UUID uuid = UUID.fromString(userId);
+            final Player player = Bukkit.getPlayer(uuid);
+            if (player != null){
+                foundName = true;
+                if (plValue != null) sb.append(", ");
+
+                sb.append("plr: ").append(player.getName());
+            }
+        }
+
+        if (plValue != null || foundName){
+            sb.append(", ");
+        }
+
+        sb.append(opts);
+        return sb.toString();
     }
 
     @Override

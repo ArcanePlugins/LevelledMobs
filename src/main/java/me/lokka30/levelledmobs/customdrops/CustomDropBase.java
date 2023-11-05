@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
+
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +28,10 @@ public abstract class CustomDropBase implements Cloneable {
         this.amount = defaults.amount;
         this.permissions = new LinkedList<>();
         this.playeerVariableMatches = new LinkedList<>();
+        this.uid = UUID.randomUUID();
     }
 
+    final public UUID uid;
     private int amount;
     int amountRangeMin;
     private int amountRangeMax;
@@ -42,7 +46,8 @@ public abstract class CustomDropBase implements Cloneable {
     public float chance;
     boolean playerCausedOnly;
     boolean noSpawner;
-    String groupId;
+    public boolean isDefaultDrop;
+    public String groupId;
     String playerLevelVariable;
     final public @NotNull List<String> permissions;
     final public @NotNull List<String> playeerVariableMatches;
@@ -62,6 +67,10 @@ public abstract class CustomDropBase implements Cloneable {
             this.amount = 1;
         }
         this.hasAmountRange = false;
+    }
+
+    public boolean hasGroupId(){
+        return this.groupId != null && !this.groupId.isBlank();
     }
 
     int getAmountRangeMin() {
@@ -90,11 +99,11 @@ public abstract class CustomDropBase implements Cloneable {
         }
 
         if (!numberOrNumberRange.contains("-")) {
-            if (!Utils.isInteger(numberOrNumberRange)) {
+            if (!Utils.isDouble(numberOrNumberRange)) {
                 return false;
             }
 
-            this.amount = Integer.parseInt(numberOrNumberRange);
+            this.amount = (int) Double.parseDouble(numberOrNumberRange);
             this.hasAmountRange = false;
             return true;
         }
@@ -104,11 +113,11 @@ public abstract class CustomDropBase implements Cloneable {
             return false;
         }
 
-        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) {
+        if (!Utils.isDouble(nums[0].trim()) || !Utils.isDouble(nums[1].trim())) {
             return false;
         }
-        this.amountRangeMin = Integer.parseInt(nums[0].trim());
-        this.amountRangeMax = Integer.parseInt(nums[1].trim());
+        this.amountRangeMin = (int)Double.parseDouble(nums[0].trim());
+        this.amountRangeMax = (int)Double.parseDouble(nums[1].trim());
         this.hasAmountRange = true;
 
         return true;
