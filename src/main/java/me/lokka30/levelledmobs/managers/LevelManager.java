@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -145,6 +146,7 @@ public class LevelManager implements LevelInterface {
     private boolean hasMentionedNBTAPI_Missing;
     public boolean doCheckMobHash;
     private final Map<String, RandomLevellingStrategy> randomLevellingCache;
+    private Instant lastLEWCacheClearing;
     public EntitySpawnListener entitySpawnListener;
 
     /**
@@ -746,6 +748,7 @@ public class LevelManager implements LevelInterface {
         final double percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0);
         final int percentHealth = percentHealthTemp < 1.0 ? 1 : (int) percentHealthTemp;
         final String playerId = player != null ? player.getUniqueId().toString() : "";
+        final String playerName = player != null ? player.getName() : "";
 
         String tieredPlaceholder = main.rulesManager.getRuleTieredPlaceholder(lmEntity);
         if (tieredPlaceholder == null) {
@@ -778,6 +781,11 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%z%",
             String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
         result = result.replace("%player-uuid%", playerId);
+        result = result.replace("%player%", playerName);
+        result = result.replace("%displayname%",
+                (lmEntity.getLivingEntity().getCustomName() == null ?
+                        Utils.capitalize(lmEntity.getNameIfBaby().replaceAll("_", " ")) :
+                        lmEntity.getLivingEntity().getCustomName()));
 
         if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
             result = ExternalCompatibilityManager.getPapiPlaceholder(player, result);
@@ -845,6 +853,7 @@ public class LevelManager implements LevelInterface {
                if (firstPlayer == null) return;
 
                final Consumer<ScheduledTask> task = scheduledTask1 -> {
+                   checkLEWCache();
                    final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
                    if (entitiesPerPlayer != null) {
                        runNametagCheck_aSync(entitiesPerPlayer);
@@ -861,11 +870,31 @@ public class LevelManager implements LevelInterface {
                 final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
 
                 if (entitiesPerPlayer != null) {
-                    final Runnable runnable2 = () -> runNametagCheck_aSync(entitiesPerPlayer);
+                    final Runnable runnable2 = () -> {
+                        checkLEWCache();
+                        runNametagCheck_aSync(entitiesPerPlayer);
+                    };
                     Bukkit.getScheduler().runTaskAsynchronously(main, runnable2);
                 }
             };
             nametagTimerTask = new SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period));
+        }
+    }
+
+    private void checkLEWCache(){
+        if (lastLEWCacheClearing == null){
+            lastLEWCacheClearing = Instant.now();
+            return;
+        }
+
+        final long duration = lastLEWCacheClearing.until(Instant.now(), ChronoUnit.MINUTES);
+
+        if (duration >= 3){
+            if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
+                Utils.debugLog(main, DebugType.LEW_CACHE, "Clearing LEW cache, " + LivingEntityWrapper.getLEWDebug());
+            }
+            lastLEWCacheClearing = Instant.now();
+            LivingEntityWrapper.clearCache();
         }
     }
 
@@ -1337,7 +1366,7 @@ public class LevelManager implements LevelInterface {
             final Material material = itemStack.getType();
             final CustomDropItem item = pair.getValue();
             final GroupLimits groupLimits = main.customDropsHandler.getGroupLimits(item);
-            final boolean hasEquipLimits = groupLimits != null && groupLimits.hasCapEquipped();
+            final boolean hasEquipLimits = item.hasGroupId() && groupLimits != null && groupLimits.hasCapEquipped();
 
             if (hasEquipLimits){
                 if (equippedCountPerGroup.containsKey(item.groupId)) {

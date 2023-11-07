@@ -41,7 +41,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length <= 1) {
-            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation / spawn_distance");
+            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation / spawn_distance, lew_count");
             return;
         }
 
@@ -66,9 +66,33 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             showPlayerLocation(sender);
         } else if ("spawn_distance".equalsIgnoreCase(args[1])) {
             showSpawnDistance(sender, args);
+        } else if ("lew_debug".equalsIgnoreCase(args[1])) {
+            showLEWDebug(sender);
+        } else if ("lew_clear".equalsIgnoreCase(args[1])) {
+            clearLEWCache(sender);
         } else {
             showMessage("other.create-debug");
         }
+    }
+
+    private void showLEWDebug(final @NotNull CommandSender sender){
+        if (!sender.hasPermission("levelledmobs.command.debug.lew_debug")) {
+            main.configUtils.sendNoPermissionMsg(sender);
+            return;
+        }
+
+        final String result = LivingEntityWrapper.getLEWDebug();
+        sender.sendMessage(result);
+    }
+
+    private void clearLEWCache(final @NotNull CommandSender sender){
+        if (!sender.hasPermission("levelledmobs.command.debug.lew_clear")) {
+            main.configUtils.sendNoPermissionMsg(sender);
+            return;
+        }
+
+        LivingEntityWrapper.clearCache();
+        sender.sendMessage("Cleared the LEW cache");
     }
 
     private void showSpawnDistance(final @NotNull CommandSender sender, final String @NotNull [] args){
@@ -208,7 +232,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         final String @NotNull [] args) {
 
         if (args.length <= 2) {
-            return List.of("create", "chunk_kill_count", "mylocation", "nbt_dump", "spawn_distance");
+            return List.of("create", "chunk_kill_count", "lew_clear", "lew_debug", "mylocation", "nbt_dump", "spawn_distance");
         }
         if ("chunk_kill_count".equalsIgnoreCase(args[1])) {
             return List.of("reset");

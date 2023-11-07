@@ -10,6 +10,7 @@ import java.util.UUID;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LastMobKilledInfo;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Location;
@@ -148,7 +149,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
         final LastMobKilledInfo mobInfo = this.playerDeathInfo.get(player.getUniqueId());
         return mobInfo == null || mobInfo.entityName == null ?
-                "" : mobInfo.entityName + "&r";
+                "" : MessageUtils.colorizeAll(mobInfo.entityName + "&r");
     }
 
     private @NotNull String getMobNametagWithinPlayerSight(final @Nullable Player player) {
