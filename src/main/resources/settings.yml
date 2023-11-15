@@ -151,6 +151,9 @@ check-mob-hash: true
 # ||  in the console or player that executed the command
 print-lm-summon-results: true
 
+# ||  The amount of time that should elapse before the LEW cache
+# ||  is cleared.
+lew-cache-clear-period: 3m
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.

@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.managers;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -887,11 +888,19 @@ public class LevelManager implements LevelInterface {
             return;
         }
 
-        final long duration = lastLEWCacheClearing.until(Instant.now(), ChronoUnit.MINUTES);
+        final long duration = lastLEWCacheClearing.until(Instant.now(), ChronoUnit.MILLIS);
+        final long configDuration = main.helperSettings.getIntTimeUnitMS(
+                main.settingsCfg, "lew-cache-clear-period", 180000L);
 
-        if (duration >= 3){
+        if (duration >= configDuration){
             if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
-                Utils.debugLog(main, DebugType.LEW_CACHE, "Clearing LEW cache, " + LivingEntityWrapper.getLEWDebug());
+                if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
+                    final DecimalFormat formatter = new DecimalFormat("#,###");
+
+                    Utils.debugLog(main, DebugType.LEW_CACHE,
+                            "Reached %s ms, clearing LEW cache, %s".formatted(
+                                    formatter.format(configDuration), LivingEntityWrapper.getLEWDebug()));
+                }
             }
             lastLEWCacheClearing = Instant.now();
             LivingEntityWrapper.clearCache();
