@@ -1,4 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl
 
-class EntityDamageByEntityListener {
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper
+
+class EntityDamageByEntityListener : ListenerWrapper() {
 }

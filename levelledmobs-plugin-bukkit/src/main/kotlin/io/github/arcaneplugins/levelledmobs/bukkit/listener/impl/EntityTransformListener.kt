@@ -1,4 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl
 
-class EntityTransformListener {
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper
+
+class EntityTransformListener : ListenerWrapper() {
 }

@@ -1,4 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl
 
-class PlayerJoinListener {
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper
+
+class PlayerJoinListener : ListenerWrapper() {
 }

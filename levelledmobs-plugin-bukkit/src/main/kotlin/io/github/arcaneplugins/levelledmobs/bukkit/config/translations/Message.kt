@@ -139,55 +139,6 @@ Path to the message's key in the translation file.
             }
         }
 
-    fun formatMd(messageStr: MutableList<String>, replacements: MutableList<String>): Component{
-        var component = Component.empty()
-
-        for (line in 0..<messageStr.size){
-            var toParse = messageStr[line]
-
-            if (toParse.isBlank()){
-                component = component.append(Component.newline())
-                continue
-            }
-
-            toParse = toParse
-                .replace(
-                    "%prefix-info%",
-                    Message.GENERIC_PREFIX_INFO.def[0]
-                )
-                .replace(
-                    "%prefix-warning%",
-                    GENERIC_PREFIX_WARNING.def[0]
-                )
-                .replace(
-                    "%prefix-severe%",
-                    GENERIC_PREFIX_SEVERE.def[0]
-                )
-
-            if (replacements.size % 2 == 0) {
-                var j = 0
-                while (j < replacements.size) {
-                    toParse = toParse.replace(replacements[j], replacements[j + 1])
-                    j += 2
-                }
-            } else {
-                sev(
-                    "Skipping placeholder replacement in message '$messageStr' " +
-                            "as an odd number of placeholder parameters were entered.",
-                    true
-                )
-            }
-
-            component = component.append(MineDown.parse(toParse))
-
-            if (line > 0) {
-                component = component.append(Component.newline())
-            }
-        }
-
-        return component
-    }
-
     fun sendTo(
         sender: CommandSender,
         replacements: MutableList<String>
@@ -199,6 +150,55 @@ Path to the message's key in the translation file.
     companion object{
         fun joinDelimited(args: Iterable<String?>?): String {
             return java.lang.String.join(GENERIC_LIST_DELIMITER.declared!![0], args)
+        }
+
+        fun formatMd(messageStr: MutableList<String>, replacements: MutableList<String>? = null): Component{
+            var component = Component.empty()
+
+            for (line in 0..<messageStr.size){
+                var toParse = messageStr[line]
+
+                if (toParse.isBlank()){
+                    component = component.append(Component.newline())
+                    continue
+                }
+
+                toParse = toParse
+                    .replace(
+                        "%prefix-info%",
+                        Message.GENERIC_PREFIX_INFO.def[0]
+                    )
+                    .replace(
+                        "%prefix-warning%",
+                        GENERIC_PREFIX_WARNING.def[0]
+                    )
+                    .replace(
+                        "%prefix-severe%",
+                        GENERIC_PREFIX_SEVERE.def[0]
+                    )
+
+                if (replacements != null && replacements.size % 2 == 0) {
+                    var j = 0
+                    while (j < replacements.size) {
+                        toParse = toParse.replace(replacements[j], replacements[j + 1])
+                        j += 2
+                    }
+                } else if (replacements != null){
+                    sev(
+                        "Skipping placeholder replacement in message '$messageStr' " +
+                                "as an odd number of placeholder parameters were entered.",
+                        true
+                    )
+                }
+
+                component = component.append(MineDown.parse(toParse))
+
+                if (line > 0) {
+                    component = component.append(Component.newline())
+                }
+            }
+
+            return component
         }
     }
 }

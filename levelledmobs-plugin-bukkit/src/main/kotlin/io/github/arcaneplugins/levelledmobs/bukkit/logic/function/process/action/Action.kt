@@ -1,4 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 
-class Action {
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process
+import org.spongepowered.configurate.CommentedConfigurationNode
+
+abstract class Action(
+    parentProcess: Process,
+    actionNode: CommentedConfigurationNode
+) {
+    abstract fun run(context: Context)
 }

@@ -1,4 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl
 
-class LevellingStrategyRequestListener {
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper
+
+class LevellingStrategyRequestListener : ListenerWrapper() {
 }
