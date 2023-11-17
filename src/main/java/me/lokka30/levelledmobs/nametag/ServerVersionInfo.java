@@ -107,9 +107,13 @@ public class ServerVersionInfo {
 
     public boolean getIsRunningFolia(){
         if (this.isRunningFolia == null) {
-            this.isRunningFolia = Bukkit.getVersion().toLowerCase().contains("folia");
+            try {
+                Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+                this.isRunningFolia = true;
+            } catch (ClassNotFoundException e) {
+                this.isRunningFolia = false;
+            }
         }
-
         return this.isRunningFolia;
     }
 
