@@ -167,7 +167,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         if (!Utils.isNullOrEmpty(nametag)) {
             final boolean useCustomNameForNametags = main.helperSettings.getBoolean(
                 main.settingsCfg, "use-customname-for-mob-nametags");
-            nametag = main.levelManager.updateNametag(lmEntity, nametag, useCustomNameForNametags).getNametagNonNull();
+            nametag = main.levelManager.updateNametag(lmEntity, nametag, useCustomNameForNametags, false).getNametagNonNull();
 
             if ("disabled".equalsIgnoreCase(nametag)) {
                 return "";
