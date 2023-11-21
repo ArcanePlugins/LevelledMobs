@@ -104,20 +104,26 @@ public class EntityDamageListener implements Listener {
             }
         }
 
+        boolean wasDamagedByEntity = false;
+        if (event instanceof final EntityDamageByEntityEvent entityDamageByEntityEvent){
+            wasDamagedByEntity = true;
+            if (entityDamageByEntityEvent.getDamager() instanceof Player player) {
+                lmEntity.playerForPermissionsCheck = player;
+            }
+        }
         final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
             lmEntity);
         final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
 
-        if (nametagVisibleTime > 0L && event instanceof final EntityDamageByEntityEvent entityDamageByEntityEvent &&
+        if (nametagVisibleTime > 0L && wasDamagedByEntity &&
             nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)) {
 
-            if (entityDamageByEntityEvent.getDamager() instanceof Player) {
+            if (lmEntity.playerForPermissionsCheck != null) {
                 if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
                     lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
                 }
 
-                lmEntity.playersNeedingNametagCooldownUpdate.add(
-                    (Player) entityDamageByEntityEvent.getDamager());
+                lmEntity.playersNeedingNametagCooldownUpdate.add(lmEntity.playerForPermissionsCheck);
             }
         }
 
