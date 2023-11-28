@@ -486,7 +486,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             if (distFromPlayer > 0 && target != null) {
                 location = getSpawnLocation(target, location, options.lmPlaceholder.getEntityType());
                 if (location == null){
-                    sender.sendMessage("location was null");
+                    sender.sendMessage("Unable to find a suitable spawn location");
                     return;
                 }
             } else if (target == null && sender instanceof BlockCommandSender) {
