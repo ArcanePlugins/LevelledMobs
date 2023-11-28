@@ -14,12 +14,14 @@ class StringReplacer(var text: String) {
     fun replaceIfExists(
         target: String,
         operation: Supplier<Any?>?
-    ){
+    ): StringReplacer{
         val newText = operation?.get().toString()
 
         if (text.contains(target, ignoreCase = true)){
             replace(target, newText)
         }
+
+        return this
     }
 
     fun replace(replace: String, replaceWith: Double) : StringReplacer{

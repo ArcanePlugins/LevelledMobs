@@ -47,7 +47,7 @@ object CustomDropHandler {
         Retrieve Entity-Type Drops
          */
         debug(DebugCategory.DROPS_GENERIC) { "Adding entity-type drops (size=${cds.size})" }
-        cds.addAll(getDefinedCustomDropsForEntity(entity.type, context))
+        cds.addAll(getDefinedCustomDropsForEntityType(entity.type, context))
 
         /*
         Stage 2

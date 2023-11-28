@@ -25,18 +25,18 @@ class ItemCustomDrop(
     val material: Material,
     recipient: CustomDropRecipient
 ): CustomDrop(StandardCustomDropType.ITEM.name, recipient) {
-    private val name: String? = null
-    private var amount = RangedInt(1)
-    private var customModelData: Int? = null
-    private var noMultiplier = true //TODO
-    private val itemFlags = mutableSetOf<ItemFlag>()
-    private var durabilityLoss = 0
+    val name: String? = null
+    var amount = RangedInt(1)
+    var customModelData: Int? = null
+    var noMultiplier = true //TODO
+    val itemFlags = mutableSetOf<ItemFlag>()
+    var durabilityLoss = 0
     val enchantments = mutableSetOf<EnchantTuple>()
-    private var equipmentChance = 0f
-    private val allowedEquipmentSlots = mutableSetOf<EquipmentSlot>()
-    private var lmItemsExternalType: String? = null //TODO
-    private val lmItemsExternalAmount: String? = null //TODO
-    private var onlyDropIfEquipped = true
+    var equipmentChance = 0f
+    val allowedEquipmentSlots = mutableSetOf<EquipmentSlot>()
+    var lmItemsExternalType: String? = null //TODO
+    val lmItemsExternalAmount: String? = null //TODO
+    var onlyDropIfEquipped = true
 
     fun attemptToApplyEquipment(
         entity: LivingEntity

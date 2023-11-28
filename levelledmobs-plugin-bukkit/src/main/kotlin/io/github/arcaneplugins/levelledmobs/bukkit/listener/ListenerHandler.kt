@@ -4,14 +4,14 @@ import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.*
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.inf
 
 object ListenerHandler {
-    val primaryListeners = mutableSetOf(
+    private val primaryListeners = mutableSetOf(
         ActionParseListener(),
-        ConditionParseListener(),
-        LevellingStrategyRequestListener(),
-        TestListener()
+//        ConditionParseListener(),
+//        LevellingStrategyRequestListener(),
+//        TestListener()
     )
 
-    val secondaryListeners = mutableSetOf(
+    private val secondaryListeners = mutableSetOf(
         EntityBreedListener(),
         EntityDamageByEntityListener(),
         EntityDamageListener(),

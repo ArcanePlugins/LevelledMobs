@@ -1,10 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Ageable
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -27,6 +29,10 @@ class Context {
         this.world = world
     }
 
+    var entityType: EntityType? = null
+    var father: LivingEntity? = null
+    var mother: LivingEntity? = null
+    val linkedFunctions = mutableListOf<LmFunction>()
     val miscContext = mutableMapOf<String, Supplier<Any>>()
     var event: Event? = null
     var location: Location? = null
@@ -50,6 +56,7 @@ class Context {
                 this.livingEntity = value
             }
             if (value != null) {
+                this.entityType = entity!!.type
                 this.location = value.location
             }
         }
@@ -93,6 +100,33 @@ class Context {
         entity: Entity
     ): Context{
         this.entity = entity
+        return this
+    }
+
+    fun withLinkedFunction(
+        linkedFunction: LmFunction
+    ): Context{
+        this.linkedFunctions.add(linkedFunction)
+        return this
+    }
+
+    fun withFather(father: LivingEntity): Context{
+        this.father = father
+        return this
+    }
+
+    fun withMother(mother: LivingEntity): Context{
+        this.mother = mother
+        return this
+    }
+
+    fun withPlayer(player: Player): Context{
+        this.player = player
+        return this
+    }
+
+    fun withEvent(event: Event): Context{
+        this.event
         return this
     }
 }

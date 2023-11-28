@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util.modal
 
 abstract class ModalCollection<T>(
-    val items: MutableSet<T>,
+    val items: MutableCollection<T>,
     var mode: Mode
 ) {
     fun contains(

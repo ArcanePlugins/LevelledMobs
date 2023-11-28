@@ -15,7 +15,6 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.RunFunctionAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetDeathLabelAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetDropTablesAction
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetPermanentLabelAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.TestAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.UpdateLabelsAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.SetBuffsAction
@@ -48,7 +47,6 @@ class ActionParseListener : ListenerWrapper(true) {
             "set-drop-tables" -> addAction(event, SetDropTablesAction(process, node))
             "set-level" -> addAction(event, SetLevelAction(process, node))
             "set-packet-label" -> addAction(event, SetPacketLabelAction(process, node))
-            "set-permanent-label" -> addAction(event, SetPermanentLabelAction(process, node))
             "test" -> addAction(event, TestAction(process, node))
             "update-labels" -> addAction(event, UpdateLabelsAction(process, node))
         }

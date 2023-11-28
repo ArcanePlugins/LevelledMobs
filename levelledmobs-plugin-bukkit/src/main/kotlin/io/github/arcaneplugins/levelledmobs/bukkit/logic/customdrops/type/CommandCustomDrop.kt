@@ -16,7 +16,7 @@ class CommandCustomDrop(
     val commandRunEvents = mutableSetOf<String>()
     var commandDelay = 0L
 
-    private fun execute(
+    fun execute(
         eventType: CustomDropsEventType,
         context: Context
     ){

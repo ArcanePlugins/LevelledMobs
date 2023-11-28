@@ -6,19 +6,11 @@ import org.bukkit.event.HandlerList
 
 class FunctionPreParseEvent(
     val function: LmFunction
-) : Event(), Cancellable {
+) : Event() {
     companion object{
         val HANDLERS = HandlerList()
     }
     var cancelled = false
-
-    override fun isCancelled(): Boolean {
-        return cancelled
-    }
-
-    override fun setCancelled(state: Boolean) {
-        this.cancelled = state
-    }
 
     override fun getHandlers(): HandlerList{
         return HANDLERS

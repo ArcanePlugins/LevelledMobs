@@ -141,7 +141,7 @@ Path to the message's key in the translation file.
 
     fun sendTo(
         sender: CommandSender,
-        replacements: MutableList<String>
+        replacements: MutableList<String>?
     ){
         val declaredMaybeNull = declared ?: return
         sender.sendMessage(formatMd(declaredMaybeNull, replacements))

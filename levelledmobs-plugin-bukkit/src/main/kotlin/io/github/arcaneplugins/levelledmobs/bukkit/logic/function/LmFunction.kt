@@ -42,4 +42,9 @@ class LmFunction(
 
         return false
     }
+
+    fun exitAll(context: Context){
+        exiting = true
+        context.linkedFunctions.forEach { lmFunction: LmFunction ->  lmFunction.exiting = true }
+    }
 }

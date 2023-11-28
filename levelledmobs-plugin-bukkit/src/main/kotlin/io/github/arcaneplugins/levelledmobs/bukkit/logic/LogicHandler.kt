@@ -65,11 +65,11 @@ object LogicHandler {
         Example: between(7, 1, 5) -> 0
             (7 is not between 1 and 5 (inclusive), so 0 (false) was returned.)
          */
-        LogicHandler.CRUNCH_EVAL_ENV.addFunction("between", 3,
-            ToDoubleFunction<DoubleArray> { d: DoubleArray ->
-                if (d[0] >= d[1] && d[0] <= d[2]
-                ) 1.0 else 0.0
-            })
+        CRUNCH_EVAL_ENV.addFunction("between", 3
+        ) { d: DoubleArray ->
+            if (d[0] >= d[1] && d[0] <= d[2]
+            ) 1.0 else 0.0
+        }
 
         /*
         Syntax: clamp(num, lower, upper)
@@ -80,13 +80,13 @@ object LogicHandler {
         Example: clamp(7, 1, 5) -> 5
             (7 is larger than the upper bound of 5, so 5 was returned.)
          */
-        LogicHandler.CRUNCH_EVAL_ENV.addFunction("clamp", 3,
-            ToDoubleFunction<DoubleArray> { d: DoubleArray ->
-                min(
-                    d[2],
-                    max(d[0], d[1])
-                )
-            })
+        CRUNCH_EVAL_ENV.addFunction("clamp", 3
+        ) { d: DoubleArray ->
+            min(
+                d[2],
+                max(d[0], d[1])
+            )
+        }
     }
 
     val CONTEXT_PLACEHOLDER_HANDLER = ContextPlaceholderHandler()
@@ -709,7 +709,7 @@ object LogicHandler {
 
             val functionPreParseEvent = FunctionPreParseEvent(function)
             Bukkit.getPluginManager().callEvent(functionPreParseEvent)
-            if (functionPreParseEvent.isCancelled) continue
+            if (functionPreParseEvent.cancelled) continue
 
             /* parse processes */
             parseProcesses(function)
@@ -788,7 +788,7 @@ object LogicHandler {
             /* call pre-parse process event */
             val processPreParseEvent = ProcessPreParseEvent(process)
             Bukkit.getPluginManager().callEvent(processPreParseEvent)
-            if (processPreParseEvent.isCancelled) continue
+            if (processPreParseEvent.cancelled) continue
 
             /* add presets */
             if(processNode.hasChild("presets")) {

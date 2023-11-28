@@ -43,7 +43,6 @@ class BroadcastMessageToNearbyPlayersAction(
             throw RuntimeException("Action requires a location context")
         }
 
-        //val lines = arrayOfNulls<String>(message.size)
         val lines = mutableListOf<String>()
         for (line in message) {
             lines.add(replacePapiAndContextPlaceholders(line, context))

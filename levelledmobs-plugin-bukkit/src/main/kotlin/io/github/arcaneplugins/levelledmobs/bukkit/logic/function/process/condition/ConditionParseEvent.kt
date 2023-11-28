@@ -10,20 +10,12 @@ class ConditionParseEvent(
     val identifier: String,
     val process: Process,
     val node: CommentedConfigurationNode
-): Event(), Cancellable {
+): Event() {
     companion object{
         val HANDLERS = HandlerList()
     }
     var claimed = false
     var cancelled = false
-
-    override fun isCancelled(): Boolean {
-        return this.cancelled
-    }
-
-    override fun setCancelled(state: Boolean) {
-        this.cancelled = state
-    }
 
     override fun getHandlers(): HandlerList {
         return HANDLERS

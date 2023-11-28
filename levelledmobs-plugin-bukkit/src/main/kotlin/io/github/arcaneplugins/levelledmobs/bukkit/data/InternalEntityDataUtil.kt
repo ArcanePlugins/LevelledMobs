@@ -184,13 +184,13 @@ object InternalEntityDataUtil : EntityDataUtil() {
                     getLabelHandlerFormulaMap(
                         entity!!, requirePersistence
                     )
-                labelHandlerFormulaMap.forEach { (labelHandlerId: String?, formula: String?) ->
-                    LabelRegistry.getLabelHandlers()
-                        .stream()
-                        .filter { lh -> lh.getId().equals(labelHandlerId) }
-                        .findFirst()
-                        .ifPresent { labelHandler -> labelHandler.update(entity, player, context) }
-                }
+//                labelHandlerFormulaMap.forEach { (labelHandlerId: String?, formula: String?) ->
+//                    LabelRegistry.getLabelHandlers()
+//                        .stream()
+//                        .filter { lh -> lh.getId().equals(labelHandlerId) }
+//                        .findFirst()
+//                        .ifPresent { labelHandler -> labelHandler.update(entity, player, context) }
+//                }
             }
     }
 

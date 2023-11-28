@@ -56,11 +56,13 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.arcaneplugins.arcaneframework</groupId>
+<!--            <groupId>io.github.arcaneplugins.arcaneframework</groupId>-->
+            <groupId>nomaven</groupId>
             <artifactId>arcaneframework-bukkit</artifactId>
             <version>0.2.11</version>
-            <scope>system</scope>
-            <systemPath>${env.LIBS}/arcaneframework-bukkit-0.2.11.jar</systemPath>
+            <scope>compile</scope>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${env.LIBS}/arcaneframework-bukkit-0.2.11.jar</systemPath>-->
         </dependency>
         <dependency>
             <groupId>io.github.arcaneplugins.levelledmobs</groupId>
@@ -72,7 +74,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
