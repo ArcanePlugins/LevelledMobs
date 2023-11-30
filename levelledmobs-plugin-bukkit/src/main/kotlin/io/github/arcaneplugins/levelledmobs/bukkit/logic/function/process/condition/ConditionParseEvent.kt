@@ -13,6 +13,11 @@ class ConditionParseEvent(
 ): Event() {
     companion object{
         val HANDLERS = HandlerList()
+
+        @JvmStatic
+        fun getHandlerList(): HandlerList{
+            return HANDLERS
+        }
     }
     var claimed = false
     var cancelled = false

@@ -28,7 +28,6 @@ abstract class ListenerWrapper(
      * @return {@code false} if registration failed, AND the listener is considered 'imperative'.
      */
     fun register(): Boolean{
-        Log.inf("calling register on ${this.javaClass.name}, ${this.javaClass.superclass}")
         try {
             Bukkit.getPluginManager().registerEvents(this, LevelledMobs.lmInstance)
         } catch (ex: Exception) {

@@ -42,7 +42,7 @@ object DebugHandler {
                     .getList(String::class.java, LinkedList())
 
                 debugCategoryIter@ for (debugCategory: DebugCategory in DebugCategory.entries) {
-                    for (disabledCategoryStr: String? in disabledCategoriesStr) {
+                    for (disabledCategoryStr: String in disabledCategoriesStr) {
                         if (debugCategory.name.equals(
                                 disabledCategoryStr,
                                 ignoreCase = true

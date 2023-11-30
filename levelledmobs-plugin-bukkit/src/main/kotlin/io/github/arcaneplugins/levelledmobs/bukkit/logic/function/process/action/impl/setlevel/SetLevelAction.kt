@@ -17,11 +17,13 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.LevelTuple
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils.emptyIfNull
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.spongepowered.configurate.CommentedConfigurationNode
+import java.lang.IllegalArgumentException
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Function
 import kotlin.math.floor
@@ -79,10 +81,12 @@ class SetLevelAction(
             strategies.addAll(stratReqEvent.strategies)
         }
 
-        require(!formula.equals("no-level", ignoreCase = true) && strategies.size == 0) {
-            "SetLevelAction requres at least 1 levelling strategy, unless specifying " +
+        if(!formula.equals("no-level", ignoreCase = true) && strategies.isEmpty()) {
+            throw IllegalArgumentException(
+                "SetLevelAction requres at least 1 levelling strategy, unless specifying " +
                     "no-level. " +
                     "For a simple context-based formula, you can use the Basic Levelling Strategy."
+            )
         }
     }
 

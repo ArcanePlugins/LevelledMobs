@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util.math
 
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
 import kotlin.math.min
@@ -62,7 +63,7 @@ class RangedInt : Comparable<RangedInt> {
         val rightEnd = leftEnd // index which the right side ends. constant
 
         // iterate through each character in the input. divide it between left and right side
-        for (i in 0..chars.size) {
+        for (i in chars.indices) {
             val c = chars[i]
 
             // we're looking for the range splitter here. if it doesn't exist, the ranged int is

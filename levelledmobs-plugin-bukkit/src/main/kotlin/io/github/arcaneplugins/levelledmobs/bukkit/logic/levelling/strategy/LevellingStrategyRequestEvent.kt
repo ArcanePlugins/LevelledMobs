@@ -21,12 +21,20 @@ class LevellingStrategyRequestEvent(
     val strategyId: String,
     val strategyNode: CommentedConfigurationNode
 ): Event() {
-   companion object val HANDLER_LIST = HandlerList()
+   companion object
+    {
+        val HANDLERS = HandlerList()
+
+        @JvmStatic
+        fun getHandlerList(): HandlerList{
+            return HANDLERS
+        }
+    }
     var claimed = false
     var cancelled = false
     val strategies = mutableSetOf<LevellingStrategy>()
 
     override fun getHandlers(): HandlerList {
-        return HANDLER_LIST
+        return HANDLERS
     }
 }

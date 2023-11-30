@@ -13,6 +13,7 @@ class ActionParseEvent(
     companion object{
         val HANDLERS = HandlerList()
 
+        @JvmStatic
         fun getHandlerList(): HandlerList{
             return HANDLERS
         }

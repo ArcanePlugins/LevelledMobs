@@ -20,6 +20,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.SetBuffsAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.SetLevelAction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setpacketlabel.SetPacketLabelAction
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 
@@ -49,6 +50,7 @@ class ActionParseListener : ListenerWrapper(true) {
             "set-packet-label" -> addAction(event, SetPacketLabelAction(process, node))
             "test" -> addAction(event, TestAction(process, node))
             "update-labels" -> addAction(event, UpdateLabelsAction(process, node))
+            else -> Log.war("onActionParse: got unknown identifier: ${event.identifier}")
         }
     }
 
