@@ -9,7 +9,6 @@ import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitTask
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.serialize.SerializationException
-import java.util.*
 
 object TaskHandler {
     private var mobScanTask: BukkitTask? = null

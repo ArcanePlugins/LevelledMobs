@@ -31,7 +31,8 @@ class BroadcastMessageToServerAction(
 
     override fun run(context: Context) {
         debug(DebugCategory.FUNCTIONS_GENERIC) {
-            "BroadcastMessageToServerAction is running with message=$message, requiredPermission=$requiredPermission"
+            "BroadcastMessageToServerAction is running with message='$message'," +
+                    "requiredPermission='$requiredPermission'."
         }
 
         val lines = mutableListOf<String>()
@@ -52,7 +53,7 @@ class BroadcastMessageToServerAction(
 
         for (player in Bukkit.getOnlinePlayers()) {
             debug(DebugCategory.FUNCTIONS_GENERIC) {"BroadcastMessageToServerAction is checking perms of ${player.name}"}
-            if (!requiresPermission() || player.hasPermission(requiredPermission)) continue
+            if (requiresPermission() && !player.hasPermission(requiredPermission)) continue
             debug(DebugCategory.FUNCTIONS_GENERIC) {"BroadcastMessageToServerAction is sending msg to ${player.name}"}
             player.sendMessage(msg)
         }

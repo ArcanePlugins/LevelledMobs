@@ -13,7 +13,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.inf
 import org.bukkit.plugin.java.JavaPlugin
 
 class LevelledMobs : JavaPlugin() {
-    companion object{
+    companion object {
         lateinit var lmInstance: LevelledMobs private set
     }
 
@@ -31,7 +31,7 @@ class LevelledMobs : JavaPlugin() {
     override fun onEnable() {
 
 
-        try{
+        try {
             assertRunningSpigot()
             configHandler.load()
             ListenerHandler.loadPrimary()
@@ -39,8 +39,7 @@ class LevelledMobs : JavaPlugin() {
             LogicHandler.load()
             ListenerHandler.loadSecondary()
             CommandHandler.load(LoadingStage.ON_ENABLE)
-        }
-        catch (ex: Exception){
+        } catch (ex: Exception) {
             ExceptionUtil.printExceptionNicely(
                 ex = ex,
                 context = "An error has occurred while enabling LevelledMobs"
@@ -48,7 +47,7 @@ class LevelledMobs : JavaPlugin() {
         }
     }
 
-    fun reload(){
+    fun reload() {
         TaskHandler.stopTasks()
         LogicHandler.unload()
         configHandler.load()
@@ -62,7 +61,7 @@ class LevelledMobs : JavaPlugin() {
         inf("Plugin disabled")
     }
 
-    private fun assertRunningSpigot(){
+    private fun assertRunningSpigot() {
         if (SupportChecker.SPIGOTMC_OR_DERIVATIVE) return
 
         throw io.github.arcaneplugins.levelledmobs.bukkit.util.SilentException(
