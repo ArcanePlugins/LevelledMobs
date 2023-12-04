@@ -117,22 +117,37 @@ public class ServerVersionInfo {
         return this.isRunningFolia;
     }
 
+    /**
+     * @return The first digit of the version (1.20.3 would return 1)
+     */
     public int getMajorVersion() {
         return this.majorVersion;
     }
 
+    /**
+     * @return An enum of the Minecraft version
+     */
     public MinecraftMajorVersion getMajorVersionEnum(){
         return this.majorVersionEnum;
     }
 
+    /**
+     * @return The second digit of the version (1.20.3 would return 20)
+     */
     public int getMinorVersion() {
         return this.minorVersion;
     }
 
+    /**
+     * @return The last digit of the version (1.20.3 would return 3)
+     */
     public int getRevision() {
         return this.revision;
     }
 
+    /**
+     * @return A double representing the last 2 digits of the version (1.20.3 would return 20.3)
+     */
     public double getMinecraftVersion() {
         return minecraftVersion;
     }
@@ -151,6 +166,6 @@ public class ServerVersionInfo {
     }
 
     public enum MinecraftMajorVersion{
-        V1_16, V1_17, V1_18, V1_19, V1_20
+        V1_16, V1_17, V1_18, V1_19, V1_20, V1_21
     }
 }

@@ -57,7 +57,6 @@ public class Definitions {
     Method method_ComponentAppend;
     Method method_EmptyComponent;
     Method method_TextComponent;
-    Method method_Translatable;
     Method method_TranslatableWithArgs;
     Method method_getHandle;
     Method method_getEntityData;
@@ -94,7 +93,7 @@ public class Definitions {
                 ver.getMinecraftVersion() >= 1.20d;
 
         // protocollib is used on 1.16
-        if (ver.getMinecraftVersion() < 1.17) return;
+        if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_16) return;
 
         try {
             buildClasses();
@@ -193,6 +192,7 @@ public class Definitions {
     }
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
+        // # {"fileName":"MutableComponent.java","id":"sourceFile"}
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
         // 1.19.0 = a, everything else  = b
         String methodName = ver.getMinecraftVersion() == 1.19 && ver.getRevision() == 0 ||
@@ -208,13 +208,16 @@ public class Definitions {
     }
 
     private void getMethodTextComponents() throws NoSuchMethodException {
+        // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
         //     net.minecraft.network.chat.MutableComponent empty()
 
         if (ver.getMinecraftVersion() >= 1.19) {
             String methodName;
             if (ver.getMinecraftVersion() >= 1.20){
-                methodName = "h";
+                methodName = ver.getRevision() >= 3 ?
+                        // 1.20.3+ or 1.20.0 - 2
+                        "i" : "h";
             }
             else {
                 // 1.19.0 = g, 1.19.1+ = h
@@ -239,17 +242,10 @@ public class Definitions {
             return;
         }
 
+        // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
-        // net.minecraft.network.chat.MutableComponent translatable(java.lang.String)
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[])
 
-        String methodName = "a";
-        if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_20 && ver.getRevision() >= 2){
-            // 1.20.2+
-            methodName = "c";
-        }
-
-        this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod(methodName);
         this.method_TranslatableWithArgs = clazz_IChatBaseComponent.getDeclaredMethod("a",
             String.class, Object[].class);
     }
@@ -283,13 +279,18 @@ public class Definitions {
     private void buildSimpleMethods() throws NoSuchMethodException {
         this.method_getHandle = clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
 
+        // # {"fileName":"Entity.java","id":"sourceFile"}
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         String methodName;
 
         switch (ver.getMajorVersionEnum()) {
             case V1_20 -> {
-                if (ver.getRevision() >= 2){
-                    // 1.20.2+
+                if (ver.getRevision() >= 3){
+                    // 1.20.3+
+                    methodName = "an";
+                }
+                else if (ver.getRevision() == 2){
+                    // 1.20.2
                     methodName = "al";
                 }
                 else{
@@ -322,11 +323,18 @@ public class Definitions {
         this.method_set = clazz_DataWatcher.getMethod(methodName, clazz_DataWatcherObject,
             Object.class);
 
+        // # {"fileName":"ChunkStatusUpdateListener.java","id":"sourceFile"}
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
         if (ver.getMinecraftVersion() >= 1.20){
-            methodName = ver.getRevision() >= 2 ?
-                "ah" : "af";
+            if (ver.getRevision() >= 3){
+                // 1.20.3+
+                methodName = "aj";
+            }
+            else{
+                methodName = ver.getRevision() >= 2 ?
+                        "ah" : "af";
+            }
         }
         else if (ver.getMinecraftVersion() >= 1.18){
             if (ver.getRevision() >= 4){
@@ -350,6 +358,7 @@ public class Definitions {
         this.method_PlayergetHandle = clazz_CraftPlayer.getDeclaredMethod("getHandle");
 
         // starting with 1.20.2 it is:
+        // # {"fileName":"ServerCommonPacketListenerImpl.java","id":"sourceFile"}
         // net.minecraft.server.network.ServerCommonPacketListenerImpl ->
 
         // 1.20.1 and older:
@@ -378,11 +387,12 @@ public class Definitions {
             this.method_getAll = clazz_DataWatcher.getDeclaredMethod(methodName);
         }
 
-        methodName = ver.getMinecraftVersion() >= 1.18 ?
-            "a" : "register";
-
+        // # {"fileName":"SynchedEntityData.java","id":"sourceFile"}
         // net.minecraft.network.syncher.SynchedEntityData ->
         //    define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
+        methodName = ver.getMinecraftVersion() >= 1.18 ?
+                "a" : "register";
+
         this.method_define = clazz_DataWatcher.getDeclaredMethod(methodName,
             clazz_DataWatcherObject, Object.class);
 
@@ -399,10 +409,10 @@ public class Definitions {
                 Component.class);
         }
 
-        // java.util.Optional byString(java.lang.String) -> a
+        // java.util.Optional byString(java.lang.String) ->
         this.method_EntityTypeByString = clazz_EntityTypes.getDeclaredMethod("a", String.class);
 
-        // java.lang.String getDescriptionId() -> g
+        // java.lang.String getDescriptionId() ->
         this.method_GetDescriptionId = clazz_EntityTypes.getDeclaredMethod("g");
 
         if (this.isOneNinteenThreeOrNewer()) {
@@ -435,6 +445,7 @@ public class Definitions {
         // net.minecraft.network.syncher.EntityDataSerializer BOOLEAN
         this.field_BOOLEAN = clazz_DataWatcherRegistry.getDeclaredField("i");
 
+        // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
         String fieldName = ver.getMinecraftVersion() >= 1.20 ? "c" : "b";
