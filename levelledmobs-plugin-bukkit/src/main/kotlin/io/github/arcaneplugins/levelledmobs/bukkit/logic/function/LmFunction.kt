@@ -1,7 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function
 
+import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.debug
 import org.spongepowered.configurate.CommentedConfigurationNode
 
 class LmFunction(
@@ -19,12 +22,15 @@ class LmFunction(
         }
 
     fun run(context: Context, overrideConditions: Boolean){
+        debug(DebugCategory.FUNCTIONS_GENERIC) {"Running function ${identifier}."}
+
         for (process in processes){
             if (exiting){
                 this.exiting = false
                 return
             }
 
+            debug(DebugCategory.FUNCTIONS_GENERIC) {"Calling process ${process.identifier} in function ${identifier}."}
             process.call(context, overrideConditions)
         }
     }

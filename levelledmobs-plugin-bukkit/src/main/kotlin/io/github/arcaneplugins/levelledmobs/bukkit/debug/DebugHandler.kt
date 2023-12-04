@@ -38,7 +38,7 @@ object DebugHandler {
                     }
                 }
             } else if (parentNode.hasChild("not-in-list")) {
-                val disabledCategoriesStr = parentNode.node("in-list")
+                val disabledCategoriesStr = parentNode.node("not-in-list")
                     .getList(String::class.java, LinkedList())
 
                 debugCategoryIter@ for (debugCategory: DebugCategory in DebugCategory.entries) {

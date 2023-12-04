@@ -26,7 +26,6 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPostParseEve
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPreParseEvent
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.preset.Preset
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.debug
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.inf
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.sev
@@ -49,7 +48,6 @@ import redempt.crunch.functional.EvaluationEnvironment
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Predicate
-import java.util.function.ToDoubleFunction
 import kotlin.math.max
 import kotlin.math.min
 
@@ -132,14 +130,14 @@ object LogicHandler {
     fun runFunctionsWithTriggers(
         context: Context,
         triggers: MutableList<String>
-    ){
-        val clearExitStatus =
-            Runnable {
-                lmFunctions.forEach(Consumer<LmFunction> { lmf: LmFunction ->
-                    lmf.exiting = false
-                })
-            }
-        clearExitStatus.run()
+    ) {
+        debug(DebugCategory.FUNCTIONS_GENERIC) {"Running functions with triggers: $triggers"}
+
+        lmFunctions.forEach { it.exiting = false }
+
+        lmFunctions
+            .filter { it.hasAnyTriggers(triggers) }
+            .forEach { it.run(context, false) }
     }
 
     private fun parseGroups(){

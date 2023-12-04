@@ -4,6 +4,8 @@ import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil.setSpawnReason
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil.setWasSummoned
+import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory
+import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler.runFunctionsWithTriggers
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context
@@ -13,6 +15,8 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.Cus
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.debug
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -24,6 +28,8 @@ class EntitySpawnListener : ListenerWrapper(true) {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun handle(event: EntitySpawnEvent)
     {
+        debug(DebugCategory.LISTENERS) {"EntitySpawnListener is handling an event."}
+
         /*
         LevelledMobs only concerns LivingEntities
          */

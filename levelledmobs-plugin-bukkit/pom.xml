@@ -56,13 +56,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-<!--            <groupId>io.github.arcaneplugins.arcaneframework</groupId>-->
-            <groupId>nomaven</groupId>
+            <groupId>io.github.arcaneplugins.arcaneframework</groupId>
             <artifactId>arcaneframework-bukkit</artifactId>
             <version>0.2.11</version>
             <scope>compile</scope>
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${env.LIBS}/arcaneframework-bukkit-0.2.11.jar</systemPath>-->
         </dependency>
         <dependency>
             <groupId>io.github.arcaneplugins.levelledmobs</groupId>
