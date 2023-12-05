@@ -595,8 +595,6 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         final int minDistFromPlayer = Math.min(main.settingsCfg.getInt(
                 "summon-command-spawn-min-distance-from-player", 3), maxDistFromPlayer);
 
-        Utils.logger.info("min: " + minDistFromPlayer + ", max: " + maxDistFromPlayer);
-
         final List<Block> blockCandidates = new LinkedList<>();
         int blocksNeeded;
         if (entityType == EntityType.ENDERMAN || entityType == EntityType.RAVAGER)

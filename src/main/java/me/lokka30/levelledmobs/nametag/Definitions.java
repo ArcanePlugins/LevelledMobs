@@ -57,6 +57,7 @@ public class Definitions {
     Method method_ComponentAppend;
     Method method_EmptyComponent;
     Method method_TextComponent;
+    Method method_Translatable;
     Method method_TranslatableWithArgs;
     Method method_getHandle;
     Method method_getEntityData;
@@ -243,6 +244,18 @@ public class Definitions {
         }
 
         // # {"fileName":"Component.java","id":"sourceFile"}
+        // net.minecraft.network.chat.Component ->
+        // net.minecraft.network.chat.MutableComponent translatable(java.lang.String) ->
+
+        String methodName = "a";
+        if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_20 && ver.getRevision() >= 2){
+            // 1.20.2+
+            methodName = "c";
+        }
+
+        this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod(methodName,
+                String.class);
+
         // net.minecraft.network.chat.Component ->
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[])
 
