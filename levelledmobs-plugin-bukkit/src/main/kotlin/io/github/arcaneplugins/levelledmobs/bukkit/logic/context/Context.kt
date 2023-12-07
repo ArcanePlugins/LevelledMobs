@@ -10,7 +10,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
-import java.util.*
 import java.util.function.Supplier
 
 class Context {
@@ -85,11 +84,6 @@ class Context {
                 livingEntity!!.type.toString()
             }
         }
-
-    fun getApplicableGroups() : Set<String>{
-        // todo: make this do something useful
-        return TreeSet<String>()
-    }
 
     /* methods */
     fun replacePlaceholders(from: String): String {

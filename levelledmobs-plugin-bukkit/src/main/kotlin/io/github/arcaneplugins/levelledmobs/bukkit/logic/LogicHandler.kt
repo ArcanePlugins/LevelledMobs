@@ -33,6 +33,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.war
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.RangedInt
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.TimeUtils
 import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.impl.ModalEntityTypeSet
+import java.util.Collections
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -45,7 +46,6 @@ import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.serialize.SerializationException
 import redempt.crunch.Crunch
 import redempt.crunch.functional.EvaluationEnvironment
-import java.util.*
 import java.util.function.Consumer
 import java.util.function.Predicate
 import kotlin.math.max
@@ -294,10 +294,11 @@ object LogicHandler {
 
             try{
                 recipient = DropTableRecipient(
-                    Objects.requireNonNull(
-                        dropTableNode.node("drop-table").string!!,
-                        "Drop table at path '${dropTableNode.path()}' does not specify a drop table ID."
-                    ),
+//                    Objects.requireNonNull(
+//                        dropTableNode.node("drop-table").string!!,
+//                        "Drop table at path '${dropTableNode.path()}' does not specify a drop table ID."
+//                    )
+                    dropTableNode.node("drop-table").string!!,
                     mutableListOf(),
                     dropTableNode.node("overall-chance").getFloat(100.0f),
                     dropTableNode.node("overall-permissions")
@@ -364,7 +365,7 @@ object LogicHandler {
                 }
 
                 recipient = MobGroupRecipient(
-                    LinkedList(),
+                    mutableListOf(),
                     mobGroupNode.node("overall-chance").getFloat(100.0f),
                     mobGroupNode.node("overall-permissions")
                         .getList(String::class.java, emptyList()),

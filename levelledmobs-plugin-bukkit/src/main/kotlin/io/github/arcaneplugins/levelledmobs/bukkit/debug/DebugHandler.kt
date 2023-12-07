@@ -2,9 +2,10 @@ package io.github.arcaneplugins.levelledmobs.bukkit.debug
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.war
+import java.util.EnumSet
+import java.util.LinkedList
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurateException
-import java.util.*
 
 object DebugHandler {
     val enabledCategories: EnumSet<DebugCategory> = EnumSet.noneOf(DebugCategory::class.java)

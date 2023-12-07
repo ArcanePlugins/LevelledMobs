@@ -67,7 +67,9 @@ class Process(
         var conditionsMet = 0
 
         for (condition in conditions){
-            if (condition.applies(context)){
+            val result = condition.applies(context)
+            debug(DebugCategory.CONDITION){ "Condition: ${condition.name}, entity: ${context.entity}, result: $result" }
+            if (result){
                 conditionsMet++
             }
         }

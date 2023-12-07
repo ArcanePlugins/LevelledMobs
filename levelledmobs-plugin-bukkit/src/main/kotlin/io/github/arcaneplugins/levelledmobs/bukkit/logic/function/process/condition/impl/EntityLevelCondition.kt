@@ -5,6 +5,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.Condition
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.LevelledState
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.war
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.RangedInt
 import org.spongepowered.configurate.CommentedConfigurationNode
@@ -12,7 +13,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode
 class EntityLevelCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Entity Level", process, node) {
     val levelledState: LevelledState
     var requiredLevelRange: RangedInt? = null
 

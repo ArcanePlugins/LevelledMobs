@@ -2,9 +2,9 @@ package io.github.arcaneplugins.levelledmobs.bukkit.util.modal.impl
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.BuffType
 import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.ModalCollection
+import java.util.EnumSet
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurateException
-import java.util.*
 
 class ModalBuffTypeSet(
     items: EnumSet<BuffType>,

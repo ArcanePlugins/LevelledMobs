@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.Comman
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EquipmentUtils
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.debug
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -289,13 +290,15 @@ class EntityDeathListener : ListenerWrapper(true) {
                 debug(DebugCategory.DROPS_GENERIC) { "[Mult] LastStack=$lastStack" }
                 val result = mutableListOf<ItemStack>()
                     //arrayOfNulls<ItemStack>(additionalStacks + 1)
-                for (i in 1..additionalStacks) {
+                for (i in 1..<additionalStacks) {
                     val itemStack = stack.clone()
                     itemStack.amount = stack.maxStackSize
                     result.add(itemStack)
                 }
                 stack.amount = lastStack
-                result[additionalStacks] = stack
+                if (result.isNotEmpty()){
+                    result[additionalStacks] = stack
+                }
                 result
             }
 

@@ -7,8 +7,8 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.sev
+import java.util.Optional
 import org.spongepowered.configurate.CommentedConfigurationNode
-import java.util.*
 
 class RunFunctionAction(
     val process: Process,

@@ -60,4 +60,9 @@ enum class DebugCategory {
      */
     FUNCTIONS_GENERIC,
 
+    /**
+     * When enabled, every time a condition is evaluated it will show
+     * the result and context
+     */
+    CONDITION
 }

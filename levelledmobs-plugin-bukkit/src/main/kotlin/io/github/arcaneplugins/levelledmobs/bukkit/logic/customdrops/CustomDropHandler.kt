@@ -13,10 +13,10 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.M
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.debug
+import java.util.Collections
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.CreatureSpawnEvent
-import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 
@@ -59,7 +59,7 @@ object CustomDropHandler {
         for (dropTableId in dropTableIds) {
             for (recip in DROP_TABLE_RECIPIENTS) {
                 if (!recip.id.equals(dropTableId, ignoreCase = true)) continue
-                if (CustomDropHandler.doesCustomDropRecipientNotMeetConditions(recip, context)) continue
+                if (doesCustomDropRecipientNotMeetConditions(recip, context)) continue
                 cds.addAll(recip.drops)
             }
         }
@@ -180,7 +180,7 @@ object CustomDropHandler {
         for (cd in cds) {
             val dropGroupId = cd.dropGroupId
             if (!dropGroupDropsMap.containsKey(dropGroupId)) {
-                dropGroupDropsMap[dropGroupId] = LinkedList()
+                dropGroupDropsMap[dropGroupId] = mutableListOf()
             }
             dropGroupDropsMap[dropGroupId]!!.add(cd)
         }
@@ -218,7 +218,7 @@ object CustomDropHandler {
 
                 val priority = drop.priority
                 if (!shuffledIndexes.containsKey(priority)) {
-                    shuffledIndexes[priority] = LinkedList()
+                    shuffledIndexes[priority] = mutableListOf()
                 }
 
                 shuffledIndexes[priority]!!.add(index)

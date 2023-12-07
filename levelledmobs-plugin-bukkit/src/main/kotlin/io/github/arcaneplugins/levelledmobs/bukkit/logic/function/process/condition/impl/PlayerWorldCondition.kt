@@ -12,7 +12,7 @@ import org.spongepowered.configurate.ConfigurateException
 class PlayerWorldCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Player World", process, node) {
     var modalList: ModalList<String>? = null
 
     init {

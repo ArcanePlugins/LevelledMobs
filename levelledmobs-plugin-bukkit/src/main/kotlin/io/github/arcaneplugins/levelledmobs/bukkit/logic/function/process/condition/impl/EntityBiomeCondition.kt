@@ -15,7 +15,7 @@ import java.util.stream.Collectors
 class EntityBiomeCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Entity Biome", process, node) {
     var biomeModalList: ModalList<Biome>? = null
     var groupModalList: ModalList<Group>? = null
 

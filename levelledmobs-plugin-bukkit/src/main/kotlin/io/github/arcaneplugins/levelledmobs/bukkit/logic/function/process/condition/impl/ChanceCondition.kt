@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom
 class ChanceCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Chance", process, node) {
     val chance = node.node("value").getFloat(100.0f)
 
     override fun applies(context: Context): Boolean {

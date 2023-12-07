@@ -50,6 +50,7 @@ functions:
   - function: 'label-updater'
     description: 'This function updates the labels of levelled entities automatically.'
     triggers:
+      - 'on-entity-damage-by-entity'
       - 'on-entity-damage'
       - 'on-entity-regain-health'
       - 'on-player-join'

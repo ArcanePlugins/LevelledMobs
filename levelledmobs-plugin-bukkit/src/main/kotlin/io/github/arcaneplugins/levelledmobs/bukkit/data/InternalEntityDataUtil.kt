@@ -15,7 +15,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.persistence.PersistentDataType
-import java.util.*
 import javax.annotation.Nonnull
 
 object InternalEntityDataUtil : EntityDataUtil() {
@@ -128,12 +127,12 @@ object InternalEntityDataUtil : EntityDataUtil() {
     fun getLabelHandlerFormulaMap(
         entity: LivingEntity,
         requirePersistence: Boolean
-    ): Map<String, String> {
+    ): MutableMap<String, String> {
         return getPdcNonNull(entity)[EntityKeyStore.LABEL_HANDLER_FORMULAS, DataType.asMap(
             DataType.STRING,
             DataType.STRING
         )]
-            ?: return HashMap()
+            ?: return mutableMapOf()
     }
 
     fun setLabelHandlerFormulaMap(
@@ -156,12 +155,13 @@ object InternalEntityDataUtil : EntityDataUtil() {
         val labelHandlerFormulaMap = getLabelHandlerFormulaMap(
             entity, requirePersistence
         )
+
         labelHandlerFormulaMap.forEach { (labelHandlerId: String?, formula: String?) ->
             LabelRegistry.labelHandlers
                 .stream()
-                .filter { lh -> lh.id.equals(labelHandlerId) }
+                .filter { lh -> lh.id == labelHandlerId }
                 .findFirst()
-                .ifPresent { labelHandler -> labelHandler.update(entity, context) }
+                .ifPresent { labelHandler -> labelHandler.update(context, formula) }
         }
     }
 
@@ -199,7 +199,6 @@ object InternalEntityDataUtil : EntityDataUtil() {
         to: Int,
         requirePersistence: Boolean
     ) {
-        Objects.requireNonNull(entity, "entity")
         setData(entity, EntityKeyStore.LEVEL, PersistentDataType.INTEGER, to, requirePersistence)
     }
 

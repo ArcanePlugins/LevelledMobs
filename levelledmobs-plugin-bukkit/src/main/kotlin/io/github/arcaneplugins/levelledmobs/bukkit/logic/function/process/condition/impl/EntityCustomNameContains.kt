@@ -12,7 +12,7 @@ import org.spongepowered.configurate.ConfigurateException
 class EntityCustomNameContains(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Entity Custom Name", process, node) {
     var modalList: ModalList<String>? = null
 
     init {

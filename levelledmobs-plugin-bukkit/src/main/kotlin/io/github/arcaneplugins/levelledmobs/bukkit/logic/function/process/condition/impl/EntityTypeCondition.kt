@@ -16,7 +16,7 @@ import java.util.stream.Collectors
 class EntityTypeCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Entity Type", process, node) {
     var entityTypeModalList: ModalList<EntityType>? = null
     var groupModalList: ModalList<Group>? = null
 

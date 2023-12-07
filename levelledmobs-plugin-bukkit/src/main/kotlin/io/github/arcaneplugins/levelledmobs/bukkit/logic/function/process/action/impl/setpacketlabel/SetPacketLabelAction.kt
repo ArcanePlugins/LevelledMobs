@@ -6,25 +6,34 @@ import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry.setPrimaryLabelHandler
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.impl.NmsHandler
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.debug
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.TimeUtils.parseTimeToTicks
+import java.util.EnumSet
+import org.bukkit.entity.LivingEntity
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.serialize.SerializationException
-import java.util.*
 
 class SetPacketLabelAction(
     val process: Process,
     val node: CommentedConfigurationNode
-): Action(process, node) {
+): Action(process, node), LabelHandler {
+    override val id = "Packet"
     val formula: String
     val visibilityMethods: EnumSet<VisibilityMethod> =
         EnumSet.noneOf(VisibilityMethod::class.java)
     val visibilityDuration: Long
     val primary: Boolean
-    companion object val LABEL_ID = "Packet"
+    companion object {
+        val LABEL_ID = "Packet"
+    }
 
     init {
+        LabelRegistry.labelHandlers.add(this)
         formula = actionNode.node("formula").getString("")
 
         val visibilityMethodsStr: List<String> = try {
@@ -59,5 +68,25 @@ class SetPacketLabelAction(
 
         debug(DebugCategory.PACKET_LABELS) { "SetPacketLabelAction#run; sending empty update packet" }
         //SetPacketLabelAction.PacketLabelHandler.INSTANCE.update(lent, context)
+    }
+
+    override fun update(
+        context: Context,
+        formula: String
+    ) {
+        NmsHandler.update(context, formula)
+    }
+
+    override fun deferEntityUpdate(entity: LivingEntity, context: Context) {
+        Log.inf("SetPacketLabelAction, inside defer entity update")
+        //TODO customisable range. may want to use a more efficient nearby entities method too
+//        entity
+//            .getNearbyEntities(50.0, 50.0, 50.0)
+//            .stream()
+//            .filter { otherEntity: Entity? -> otherEntity is Player }
+//            .map { player: Entity? -> player as Player? }
+//            .forEach { player: Player? ->
+//                update(entity,player!!, context)
+//            }
     }
 }

@@ -41,8 +41,9 @@ class StandardPlaceholders : ContextPlaceholder {
                 replaceIfExists("%entity-type%") { lent.type.name }
                 replaceIfExists("%entity-biome%") { lent.location.block.biome.name }
                 replaceIfExists("%entity-health%") { round2dp(lent.health).toString() }
-                replaceIfExists("%entity-health-rounded%") { lent.health.toInt() }
+                replaceIfExists("%entity-health-rounded%") { round2dp(lent.health).toInt() }
                 replaceIfExists("%entity-max-health%") { round2dp(lent.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.value).toString() }
+                replaceIfExists("%entity-max-health-rounded%") { round2dp(lent.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.value).toInt() }
                 replaceIfExists("%entity-level%") { EntityDataUtil.getLevel(lent, false).toString() }
                 replaceIfExists("%entity-min-level%") { EntityDataUtil.getMinLevel(lent, false).toString() }
                 replaceIfExists("%entity-max-level%") { EntityDataUtil.getMaxLevel(lent, false).toString() }

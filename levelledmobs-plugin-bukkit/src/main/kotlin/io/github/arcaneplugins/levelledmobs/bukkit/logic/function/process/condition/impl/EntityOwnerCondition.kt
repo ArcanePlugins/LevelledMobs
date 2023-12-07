@@ -8,7 +8,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode
 class EntityOwnerCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Entity Owner", process, node) {
     override fun applies(context: Context): Boolean {
 
         requireNotNull(context.livingEntity) { "LivingEntity context must not be null" }

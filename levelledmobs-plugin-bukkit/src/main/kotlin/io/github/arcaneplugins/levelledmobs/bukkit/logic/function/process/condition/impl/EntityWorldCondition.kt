@@ -12,7 +12,7 @@ import org.spongepowered.configurate.ConfigurateException
 class EntityWorldCondition(
     process: Process,
     node: CommentedConfigurationNode
-): Condition(process, node) {
+): Condition("Entity World", process, node) {
     var modalList: ModalList<String>? = null
 
     init {

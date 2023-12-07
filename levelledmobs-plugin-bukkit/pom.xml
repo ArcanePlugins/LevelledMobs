@@ -56,7 +56,8 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.arcaneplugins.arcaneframework</groupId>
+<!--            <groupId>io.github.arcaneplugins.arcaneframework</groupId>-->
+            <groupId>nomaven</groupId>
             <artifactId>arcaneframework-bukkit</artifactId>
             <version>0.2.11</version>
             <scope>compile</scope>

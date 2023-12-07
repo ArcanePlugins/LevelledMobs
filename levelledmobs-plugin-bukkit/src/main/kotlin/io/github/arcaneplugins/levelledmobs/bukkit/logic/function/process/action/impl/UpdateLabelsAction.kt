@@ -4,6 +4,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil.u
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import org.spongepowered.configurate.CommentedConfigurationNode
 
 class UpdateLabelsAction(
@@ -13,10 +14,6 @@ class UpdateLabelsAction(
     override fun run(context: Context) {
         if (context.livingEntity != null){
             updateLabels(context.livingEntity!!, context, false)
-        }
-
-        if (context.player != null){
-            updateLabels(context.player!!, context, false)
         }
     }
 }

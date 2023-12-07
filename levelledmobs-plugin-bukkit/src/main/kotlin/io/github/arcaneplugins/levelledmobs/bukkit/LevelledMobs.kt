@@ -7,9 +7,12 @@ import io.github.arcaneplugins.levelledmobs.bukkit.config.ConfigHandler
 import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandler
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerHandler
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.impl.NmsHandler
 import io.github.arcaneplugins.levelledmobs.bukkit.task.TaskHandler
 import io.github.arcaneplugins.levelledmobs.bukkit.util.ExceptionUtil
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log.inf
+import io.github.arcaneplugins.levelledmobs.bukkit.util.NmsDefinitions
 import org.bukkit.plugin.java.JavaPlugin
 
 class LevelledMobs : JavaPlugin() {
@@ -39,6 +42,7 @@ class LevelledMobs : JavaPlugin() {
             LogicHandler.load()
             ListenerHandler.loadSecondary()
             CommandHandler.load(LoadingStage.ON_ENABLE)
+            NmsDefinitions.load()
         } catch (ex: Exception) {
             ExceptionUtil.printExceptionNicely(
                 ex = ex,
