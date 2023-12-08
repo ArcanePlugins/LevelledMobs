@@ -93,7 +93,7 @@ public class SpigotUtils {
         }
 
         final NametagResult nametagResult = main.levelManager.getNametag(lmKiller, true, true);
-        final String deathMessage = nametagResult.getNametagNonNull()
+        String deathMessage = nametagResult.getNametagNonNull()
                 .replace("%player%", event.getEntity().getName());
         if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) {
             return lmKiller;
@@ -105,11 +105,14 @@ public class SpigotUtils {
                 nametag = nametag.replace("{DisplayName}", main.levelManager.replaceStringPlaceholders(
                         nametagResult.getcustomDeathMessage(), lmKiller, false, null, false));
             }
-
             event.setDeathMessage(
                     MessageUtils.colorizeAll(nametag.replace("%player%", event.getEntity().getName())));
         }
         else {
+            if (deathMessage.contains("{DisplayName}")){
+                deathMessage = deathMessage.replace("{DisplayName}", Utils.capitalize(lmKiller.getNameIfBaby()));
+            }
+
             event.setDeathMessage(
                     MessageUtils.colorizeAll(Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage)));
         }
