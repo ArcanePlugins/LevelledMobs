@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.result;
 
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +17,9 @@ public class NametagResult {
 
     private @Nullable String nametag;
     public @Nullable String overriddenName;
-    public boolean hadCustomDeathMessage;
+    private boolean _hadCustomDeathMessage;
+    private String _customDeathMessage;
+    public LivingEntity killerMob;
 
     public @Nullable String getNametag(){
         return this.nametag;
@@ -34,5 +37,18 @@ public class NametagResult {
 
     public boolean isNullOrEmpty(){
         return this.nametag == null || this.nametag.isEmpty();
+    }
+
+    public void setDeathMessage(final @Nullable String customDeathMessage){
+        this._customDeathMessage = customDeathMessage;
+        this._hadCustomDeathMessage = customDeathMessage != null;
+    }
+
+    public boolean hadCustomDeathMessage(){
+        return this._hadCustomDeathMessage;
+    }
+
+    public String getcustomDeathMessage(){
+        return this._customDeathMessage;
     }
 }

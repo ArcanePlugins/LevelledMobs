@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.util;
 
 import java.util.List;
+
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NametagResult;
@@ -91,17 +92,22 @@ public class SpigotUtils {
             return lmKiller;
         }
 
-        final NametagResult nametagResult = main.levelManager.getNametag(lmKiller, true);
+        final NametagResult nametagResult = main.levelManager.getNametag(lmKiller, true, true);
         final String deathMessage = nametagResult.getNametagNonNull()
                 .replace("%player%", event.getEntity().getName());
         if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) {
             return lmKiller;
         }
 
-        if (nametagResult.hadCustomDeathMessage){
+        if (nametagResult.hadCustomDeathMessage()){
+            String nametag = nametagResult.getNametagNonNull();
+            if (nametag.contains("{DisplayName}")){
+                nametag = nametag.replace("{DisplayName}", main.levelManager.replaceStringPlaceholders(
+                        nametagResult.getcustomDeathMessage(), lmKiller, false, null, false));
+            }
+
             event.setDeathMessage(
-                    MessageUtils.colorizeAll(nametagResult.getNametagNonNull(
-                    ).replace("%player%", event.getEntity().getName())));
+                    MessageUtils.colorizeAll(nametag.replace("%player%", event.getEntity().getName())));
         }
         else {
             event.setDeathMessage(

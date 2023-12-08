@@ -20,12 +20,12 @@ public class StringReplacer {
         }
     }
 
-    public StringReplacer replace(final @NotNull String replace, final double replaceWith){
-        return replace(replace, String.valueOf(replaceWith));
+    public void replace(final @NotNull String replace, final double replaceWith){
+        replace(replace, String.valueOf(replaceWith));
     }
 
-    public StringReplacer replace(final @NotNull String replace, final int replaceWith){
-        return replace(replace, String.valueOf(replaceWith));
+    public void replace(final @NotNull String replace, final int replaceWith){
+        replace(replace, String.valueOf(replaceWith));
     }
 
     public StringReplacer replace(final @NotNull String replace, final @Nullable String replaceWith){
@@ -33,5 +33,13 @@ public class StringReplacer {
 
         text = text.replace(replace, replaceWithText);
         return this;
+    }
+
+    public boolean isEmpty(){
+        return this.text.isEmpty();
+    }
+
+    public boolean contains(final @NotNull CharSequence s){
+        return this.text.contains(s);
     }
 }

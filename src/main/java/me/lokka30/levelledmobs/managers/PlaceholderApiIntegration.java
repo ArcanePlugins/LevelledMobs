@@ -10,6 +10,7 @@ import java.util.UUID;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LastMobKilledInfo;
+import me.lokka30.levelledmobs.misc.StringReplacer;
 import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.util.Utils;
@@ -41,11 +42,8 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
     public void putPlayerOrMobDeath(final @NotNull Player player,
         final @Nullable LivingEntityWrapper lmEntity, final boolean isPlayerDeath) {
-        LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
-        if (mobInfo == null) {
-            mobInfo = new LastMobKilledInfo();
-            this.mobsByPlayerTracking.put(player.getUniqueId(), mobInfo);
-        }
+        LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.computeIfAbsent(
+                player.getUniqueId(), k -> new LastMobKilledInfo());
 
         mobInfo.entityLevel = lmEntity != null && lmEntity.isLevelled() ?
             lmEntity.getMobLevel() : null;
@@ -167,7 +165,8 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         if (!Utils.isNullOrEmpty(nametag)) {
             final boolean useCustomNameForNametags = main.helperSettings.getBoolean(
                 main.settingsCfg, "use-customname-for-mob-nametags");
-            nametag = main.levelManager.updateNametag(lmEntity, nametag, useCustomNameForNametags, false).getNametagNonNull();
+            nametag = main.levelManager.updateNametag(lmEntity, new StringReplacer(nametag),
+                    useCustomNameForNametags, null).getNametagNonNull();
 
             if ("disabled".equalsIgnoreCase(nametag)) {
                 return "";
