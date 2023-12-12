@@ -247,13 +247,7 @@ public class Definitions {
         // net.minecraft.network.chat.Component ->
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String) ->
 
-        String methodName = "a";
-        if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_20 && ver.getRevision() >= 2){
-            // 1.20.2+
-            methodName = "c";
-        }
-
-        this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod(methodName,
+        this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod("c",
                 String.class);
 
         // net.minecraft.network.chat.Component ->
