@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.wrappers;
 
 import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,38 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         clearEntityData();
         synchronized (cachedLM_Wrappers_Lock) {
             cache.push(this);
+        }
+    }
+
+    public static @NotNull String getLEWDebug(){
+        int totalSize;
+        int nonEmpties = 0;
+
+        synchronized (cachedLM_Wrappers_Lock) {
+            totalSize = cache.size();
+            Enumeration<LivingEntityWrapper> enumeration = cache.elements();
+            while (enumeration.hasMoreElements()){
+                final LivingEntityWrapper lew = enumeration.nextElement();
+                if (lew.hasCache) nonEmpties++;
+            }
+        }
+
+        return String.format("size: %s, nonempties: %s", totalSize, nonEmpties);
+    }
+
+    public static void clearCache(){
+        final List<LivingEntityWrapper> nonEmpties = new LinkedList<>();
+
+        synchronized (cachedLM_Wrappers_Lock) {
+            while (!cache.isEmpty()) {
+                final LivingEntityWrapper lew = cache.pop();
+                if (lew.hasCache) nonEmpties.add(lew);
+            }
+
+            for (LivingEntityWrapper lew : nonEmpties){
+                cache.push(lew);
+            }
+            nonEmpties.clear();
         }
     }
 

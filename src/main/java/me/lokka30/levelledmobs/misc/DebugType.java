@@ -142,5 +142,7 @@ public enum DebugType {
 
     DENIED_RULE_WITH_COORDINATES,
 
-    MOB_HASH
+    MOB_HASH,
+
+    LEW_CACHE
 }

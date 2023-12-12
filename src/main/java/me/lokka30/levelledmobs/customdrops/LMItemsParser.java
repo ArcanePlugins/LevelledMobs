@@ -84,7 +84,7 @@ public class LMItemsParser {
                 Object value = item.externalExtras.get(key);
                 if (value instanceof String stringValue && stringValue.contains("%")){
                     if (info != null) {
-                        value = main.levelManager.replaceStringPlaceholders(stringValue, info.lmEntity, true, info.mobKiller);
+                        value = main.levelManager.replaceStringPlaceholders(stringValue, info.lmEntity, true, info.mobKiller, false);
                     }
                     else if (ExternalCompatibilityManager.hasPapiInstalled()) {
                         value = ExternalCompatibilityManager.getPapiPlaceholder(null, stringValue);

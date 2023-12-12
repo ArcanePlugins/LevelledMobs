@@ -560,7 +560,7 @@ public class RulesManager {
 
     @SuppressWarnings("deprecation")
     @Nullable public String getRuleEntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity,
-                                                        final boolean useCustomNameForNametags) {
+                                                        final boolean forceCustomName) {
         Map<String, List<LevelTierMatching>> entityNameOverrides_Level = null;
         Map<String, LevelTierMatching> entityNameOverrides = null;
 
@@ -611,11 +611,13 @@ public class RulesManager {
             Collections.shuffle(namesInfo);
         }
 
+        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(
+                main.settingsCfg, "use-customname-for-mob-nametags");
         final String entityName = Utils.capitalize(lmEntity.getNameIfBaby().replaceAll("_", " "));
         String result = namesInfo.get(0);
         result = result.replace("%entity-name%", entityName);
         result = result.replace("%displayname%",
-            (lmEntity.getLivingEntity().getCustomName() == null || useCustomNameForNametags ?
+            (lmEntity.getLivingEntity().getCustomName() == null || forceCustomName || useCustomNameForNametags ?
                 entityName : lmEntity.getLivingEntity().getCustomName()));
 
         if (namesInfo.size() > 1) {

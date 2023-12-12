@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,11 +62,18 @@ public class MobsQueueManager {
             return;
         }
 
+        item.lmEntity.inUseCount.getAndIncrement();
+
         if (main.getVerInfo().getIsRunningFolia()){
-            processItem(item);
+            final SchedulerWrapper wrapper = new SchedulerWrapper(
+                    item.lmEntity.getLivingEntity(), () -> {
+                processItem(item);
+                item.lmEntity.free();
+            });
+
+            wrapper.run();
         }
         else{
-            item.lmEntity.inUseCount.getAndIncrement();
             this.queue.offer(item);
         }
     }

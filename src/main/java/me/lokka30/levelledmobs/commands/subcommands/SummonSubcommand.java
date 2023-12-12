@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.commands.subcommands;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,7 @@ import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -479,24 +481,13 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         if (options.summonType == SummonType.HERE || options.summonType == SummonType.AT_PLAYER) {
             final int distFromPlayer = main.settingsCfg.getInt(
                 "summon-command-spawn-distance-from-player", 5);
+            final int minDistFromPlayer = main.settingsCfg.getInt(
+                    "summon-command-spawn-min-distance-from-player", 0);
             if (distFromPlayer > 0 && target != null) {
-                int useDistFromPlayer = distFromPlayer;
-                final Location origLocation = location;
-                // try up to 50 times to find a open spot to spawn the mob.  Keep getting closer to the player if needed
-                for (int i = 0; i < 50; i++) {
-                    useDistFromPlayer -= i;
-                    if (useDistFromPlayer <= 0) {
-                        location = location.add(0, 1, 0);
-                        break;
-                    }
-
-                    location = getLocationNearPlayer(target, origLocation, useDistFromPlayer);
-                    final Location location_YMinus1 = location.add(0.0, -1.0, 0.0);
-                    if (location.getBlock().isPassable() && location_YMinus1.getBlock()
-                        .isPassable()) {
-                        location = location.add(0, 1, 0);
-                        break; // found an open spot
-                    }
+                location = getSpawnLocation(target, location, options.lmPlaceholder.getEntityType());
+                if (location == null){
+                    sender.sendMessage("Unable to find a suitable spawn location");
+                    return;
                 }
             } else if (target == null && sender instanceof BlockCommandSender) {
                 // increase the y by one so they don't spawn inside the command block
@@ -584,6 +575,88 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             default -> throw new IllegalStateException(
                     "Unexpected SummonType value of " + options.summonType + "!");
         }
+    }
+
+    private @Nullable Location getSpawnLocation(final @NotNull Player player,
+        final @NotNull Location location, final @NotNull EntityType entityType) {
+        if (location.getWorld() == null) return null;
+
+        Integer maxDistFromPlayer = main.helperSettings.getInt2(main.settingsCfg,
+                "summon-command-spawn-max-distance-from-player", null);
+
+        if (maxDistFromPlayer == null){
+            // legacy name
+            maxDistFromPlayer = main.helperSettings.getInt2(main.settingsCfg,
+                    "summon-command-spawn-distance-from-player", null);
+        }
+
+        if (maxDistFromPlayer == null) maxDistFromPlayer = 5;
+
+        final int minDistFromPlayer = Math.min(main.settingsCfg.getInt(
+                "summon-command-spawn-min-distance-from-player", 3), maxDistFromPlayer);
+
+        final List<Block> blockCandidates = new LinkedList<>();
+        int blocksNeeded;
+        if (entityType == EntityType.ENDERMAN || entityType == EntityType.RAVAGER)
+            blocksNeeded = 3;
+        else
+            blocksNeeded = 2;
+
+        for (int i = 0; i < 10; i++) {
+            final int useDistance = minDistFromPlayer != maxDistFromPlayer ?
+                    ThreadLocalRandom.current().nextInt(minDistFromPlayer, maxDistFromPlayer) : maxDistFromPlayer;
+            final Location startingLocation = getLocationNearPlayer(player, location, useDistance);
+            Location tempLocation = startingLocation.clone();
+            boolean foundBlock = false;
+            final int maxYVariance = Math.max(maxDistFromPlayer - useDistance, 10);
+
+            for (int y = 0; y < maxYVariance; y++){
+                final Block block = tempLocation.add(0.0, Math.min(y, 1.0), 0.0).getBlock();
+                // start at player level and keep going up until a solid block is found
+                if (block.getType().isSolid()) {
+                    blockCandidates.add(block);
+                    foundBlock = true;
+                    break;
+                }
+            }
+
+            if (!foundBlock){
+                tempLocation = startingLocation.clone();
+                for (int y = 1; y <= maxYVariance; y++){
+                    final Block block = tempLocation.add(0.0, -1.0, 0.0).getBlock();
+                    // start at player level and keep going down until a solid block is found
+                    if (block.getType().isSolid()) {
+                        blockCandidates.add(block);
+                        break;
+                    }
+                }
+            }
+
+            if (blockCandidates.size() >= 10) break;
+        }
+
+        if (blockCandidates.isEmpty())
+            return null;
+
+        Collections.shuffle(blockCandidates);
+
+        // return first block from the candiates that has 2 air spaces above it
+        for (final Block block : blockCandidates){
+            boolean notGoodSpot = false;
+            for (int i = 1; i < blocksNeeded + 1; i++){
+                final Block temp =  location.getWorld().getBlockAt(block.getX(), block.getY() + i, block.getZ());
+                if (!temp.isPassable()){
+                    notGoodSpot = true;
+                    break;
+                }
+            }
+
+            if (notGoodSpot) continue;
+
+            return block.getLocation().add(0.5, (blocksNeeded - 1), 0.5);
+        }
+
+        return null;
     }
 
     @Contract("_, _, _ -> new")

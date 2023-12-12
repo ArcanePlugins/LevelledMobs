@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.listeners.paper;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.nametag.KyoriNametags;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
@@ -135,11 +136,16 @@ public class PlayerDeathListener {
                 main.getDefinitions().mm;
 
         Component newCom;
-        if (nametagResult.hadCustomDeathMessage){
+        if (nametagResult.hadCustomDeathMessage()){
             final TextReplacementConfig replacementConfig = TextReplacementConfig.builder().matchLiteral("%player%")
                     .replacement(buildPlayerComponent(event.getEntity())).build();
             newCom = cs.deserialize(mobName)
                     .replaceText(replacementConfig);
+            if (nametagResult.hadCustomDeathMessage()){
+                final TextReplacementConfig displayName = TextReplacementConfig.builder().matchLiteral("{DisplayName}")
+                        .replacement(KyoriNametags.generateDeathMessage(mobKey, nametagResult)).build();
+                newCom = newCom.replaceText(displayName);
+            }
         }
         else if (displayNameIndex < 0){
             // creature-death-nametag in rules.yml doesn't contain %displayname%

@@ -51,6 +51,12 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
             populateWeightedRandom(minLevel, maxLevel);
         }
 
+        // populateWeightedRandom(..) should've populated randomArray but if weightedRandom
+        // was empty then it won't do anything
+        if (this.randomArray == null) {
+            return getRandomLevel(minLevel, maxLevel);
+        }
+
         final int useArrayNum = ThreadLocalRandom.current().nextInt(0, this.randomArray.length);
         return this.randomArray[useArrayNum];
     }
@@ -134,7 +140,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         }
     }
 
-    private int[] parseNumberRange(final String range) {
+    private int[] parseNumberRange(final @NotNull String range) {
         final int[] results = {-1, -1};
 
         if (!range.contains("-")) {

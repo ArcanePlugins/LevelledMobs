@@ -66,11 +66,11 @@ public class ComponentUtils {
 
         try {
             if (LevelledMobs.getInstance().getVerInfo().getMinecraftVersion() >= 1.19d) {
-                if (args == null || args.length == 0) {
+                if (args == null || args.length == 0 || args[0] == null){
                     return def.method_Translatable.invoke(null, key);
-                } else {
-                    return def.method_TranslatableWithArgs.invoke(null, key, args);
                 }
+
+                return def.method_TranslatableWithArgs.invoke(null, key, args);
             } else {
                 if (args == null || args.length == 0) {
                     return def.clazz_TranslatableComponent

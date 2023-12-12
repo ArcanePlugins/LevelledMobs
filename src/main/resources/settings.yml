@@ -107,7 +107,11 @@ customize-summon-command-limit: 10
 
 # ||  What is the max distance the summon command will
 # ||  spawn mobs away from players?
-summon-command-spawn-distance-from-player: 5
+summon-command-spawn-max-distance-from-player: 5
+
+# ||  What is the min distance the summon command will
+# ||  spawn mobs away from players?
+summon-command-spawn-min-distance-from-player: 3
 
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This sets a hard limit on the number of times a command
@@ -151,6 +155,9 @@ check-mob-hash: true
 # ||  in the console or player that executed the command
 print-lm-summon-results: true
 
+# ||  The amount of time that should elapse before the LEW cache
+# ||  is cleared.
+lew-cache-clear-period: 3m
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.

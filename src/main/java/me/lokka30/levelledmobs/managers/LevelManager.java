@@ -6,8 +6,10 @@ package me.lokka30.levelledmobs.managers;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,6 +45,7 @@ import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
+import me.lokka30.levelledmobs.misc.StringReplacer;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.result.NametagResult;
@@ -145,6 +148,7 @@ public class LevelManager implements LevelInterface {
     private boolean hasMentionedNBTAPI_Missing;
     public boolean doCheckMobHash;
     private final Map<String, RandomLevellingStrategy> randomLevellingCache;
+    private Instant lastLEWCacheClearing;
     public EntitySpawnListener entitySpawnListener;
 
     /**
@@ -591,38 +595,42 @@ public class LevelManager implements LevelInterface {
     }
 
     @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
-        String nametag;
-        boolean hadCustomDeathMessage = false;
+        StringReplacer nametag;
+        String customDeathMessage = null;
         if (isDeathNametag) {
-            nametag = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
+            nametag = new StringReplacer(main.rulesManager.getRuleNametagCreatureDeath(lmEntity));
         } else {
             checkLockedNametag(lmEntity);
 
-            nametag = lmEntity.lockedNametag == null || lmEntity.lockedNametag.isEmpty() ?
+            final String nametagText = lmEntity.lockedNametag == null || lmEntity.lockedNametag.isEmpty() ?
                 main.rulesManager.getRuleNametag(lmEntity) :
                 lmEntity.lockedNametag;
+            nametag = new StringReplacer(nametagText);
         }
 
-        if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) {
+        if ("disabled".equalsIgnoreCase(nametag.text) || "none".equalsIgnoreCase(nametag.text)) {
             return new NametagResult(null);
         }
 
         if (isDeathNametag){
             final String deathMessage = main.rulesManager.getDeathMessage(lmEntity);
             if (deathMessage != null && !deathMessage.isEmpty()){
-                nametag = deathMessage.replace("%death_nametag%", nametag);
+                nametag = new StringReplacer(deathMessage.replace("%death_nametag%", nametag.text));
                 final Player player = lmEntity.getPlayerForLevelling();
-                nametag = nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
-                nametag = replaceStringPlaceholders(nametag, lmEntity, true, player);
-                preserveMobName = false;
-                hadCustomDeathMessage = true;
+                nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
+                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, preserveMobName);
+                //nametag.replaceIfExists("{DisplayName}", () -> main.rulesManager.getRuleNametagCreatureDeath(lmEntity));
+                preserveMobName = true;
+                if (nametag.contains("{DisplayName}")){
+                    customDeathMessage = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
+                }
             }
         }
 
-        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg,
-            "use-customname-for-mob-nametags");
         // ignore if 'disabled'
         if (nametag.isEmpty()) {
+            final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg,
+                    "use-customname-for-mob-nametags");
             if (useCustomNameForNametags) {
                 return new NametagResult(lmEntity.getTypeName());
             } else {
@@ -630,52 +638,33 @@ public class LevelManager implements LevelInterface {
             }
         }
         if (!lmEntity.isLevelled()) {
-            nametag = "";
+            nametag.text = "";
         }
 
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, preserveMobName, hadCustomDeathMessage);
+        return updateNametag(lmEntity, nametag, preserveMobName, customDeathMessage);
     }
 
-    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
-                                                final boolean useCustomNameForNametags) {
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, false, false);
-    }
-
-    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
-                                                final boolean useCustomNameForNametags, final boolean preserveMobName,
-                                                final boolean hadCustomDeathMessage) {
+    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull StringReplacer nametag,
+                                                final boolean preserveMobName,
+                                                final String customDeathMessage) {
         if (nametag.isEmpty()) {
-            final NametagResult result = new NametagResult(nametag);
-            result.hadCustomDeathMessage = hadCustomDeathMessage;
+            final NametagResult result = new NametagResult(nametag.text);
+            result.setDeathMessage(customDeathMessage);
             return result;
         }
 
         checkLockedNametag(lmEntity);
         final String overridenName = lmEntity.lockedOverrideName == null ?
-            main.rulesManager.getRuleEntityOverriddenName(lmEntity, useCustomNameForNametags) :
+            main.rulesManager.getRuleEntityOverriddenName(lmEntity, false) :
             lmEntity.lockedOverrideName;
 
-        boolean hasOverridenName = (overridenName != null && !overridenName.isEmpty());
-        String displayName = overridenName;
+        replaceStringPlaceholders(nametag, lmEntity, false, null, preserveMobName);
 
-        if (preserveMobName)
-            displayName =  "{DisplayName}";
-        else if (!hasOverridenName)
-            displayName = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
-
-        if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
-            displayName = lmEntity.getLivingEntity().getCustomName();
-        }
-
-        nametag = replaceStringPlaceholders(nametag, lmEntity, false);
-
-        // This is after colorize so that color codes in nametags dont get translated
-        nametag = nametag.replace("%displayname%", displayName) + "&r";
         String indicatorStr = "";
         String colorOnly = "";
 
-        if (nametag.toLowerCase().contains("%health-indicator%") ||
-                nametag.toLowerCase().contains("%health-indicator-color%")) {
+        if (nametag.text.contains("%health-indicator%") ||
+                nametag.text.contains("%health-indicator-color%")) {
             final HealthIndicator indicator = lmEntity.getMainInstance().rulesManager.getRuleNametagIndicator(lmEntity);
 
             if (indicator != null){
@@ -685,17 +674,18 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        nametag = nametag.replace("%health-indicator%", indicatorStr);
-        nametag = nametag.replace("%health-indicator-color%", colorOnly);
+        nametag.replace("%health-indicator%", indicatorStr);
+        nametag.replace("%health-indicator-color%", colorOnly);
 
-        if (nametag.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
-            nametag = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag);
+        if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
+            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag.text);
         }
 
-        final NametagResult result = new NametagResult(nametag);
+        final NametagResult result = new NametagResult(nametag.text);
         // this field is only used for sending nametags to client
         result.overriddenName = overridenName;
-        result.hadCustomDeathMessage = hadCustomDeathMessage;
+        result.setDeathMessage(customDeathMessage);
+        result.killerMob =lmEntity.getLivingEntity();
 
         return result;
     }
@@ -728,14 +718,20 @@ public class LevelManager implements LevelInterface {
     }
 
     public @NotNull String replaceStringPlaceholders(final @NotNull String text,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI) {
-        return replaceStringPlaceholders(text, lmEntity, usePAPI, null);
+        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI,
+        final @Nullable Player player, final boolean preserveMobName) {
+        return replaceStringPlaceholders(
+                new StringReplacer(text),
+                lmEntity,
+                usePAPI,
+                player,
+                preserveMobName
+        );
     }
 
-    public @NotNull String replaceStringPlaceholders(final @NotNull String text,
+    private @NotNull String replaceStringPlaceholders(final @NotNull StringReplacer text,
         @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI,
-        final @Nullable Player player) {
-        String result = text;
+        final @Nullable Player player, final boolean preserveMobName) {
 
         final double maxHealth = getMobAttributeValue(lmEntity);
         final double entityHealth = getMobHealth(lmEntity);
@@ -746,44 +742,61 @@ public class LevelManager implements LevelInterface {
         final double percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0);
         final int percentHealth = percentHealthTemp < 1.0 ? 1 : (int) percentHealthTemp;
         final String playerId = player != null ? player.getUniqueId().toString() : "";
+        final String playerName = player != null ? player.getName() : "";
 
         String tieredPlaceholder = main.rulesManager.getRuleTieredPlaceholder(lmEntity);
         if (tieredPlaceholder == null) {
             tieredPlaceholder = "";
         }
 
-        final String locationStr = String.format("%s %s %s",
-            lmEntity.getLivingEntity().getLocation().getBlockX(),
-            lmEntity.getLivingEntity().getLocation().getBlockY(),
-            lmEntity.getLivingEntity().getLocation().getBlockZ());
-
         // replace them placeholders ;)
-        result = result.replace("%mob-lvl%", String.valueOf(lmEntity.getMobLevel()));
-        result = result.replace("%entity-name%",
+        text.replace("%mob-lvl%", lmEntity.getMobLevel());
+        text.replace("%entity-name%",
             Utils.capitalize(lmEntity.getNameIfBaby().replace("_", " ")));
-        result = result.replace("%entity-health%", String.valueOf(Utils.round(entityHealth)));
-        result = result.replace("%entity-health-rounded%", String.valueOf(entityHealthRounded));
-        result = result.replace("%entity-max-health%", roundedMaxHealth);
-        result = result.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
-        result = result.replace("%heart_symbol%", "❤");
-        result = result.replace("%tiered%", tieredPlaceholder);
-        result = result.replace("%wg_region%", lmEntity.getWGRegionName());
-        result = result.replace("%world%", lmEntity.getWorldName());
-        result = result.replace("%location%", locationStr);
-        result = result.replace("%health%-percent%", String.valueOf(percentHealth));
-        result = result.replace("%x%",
-            String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockX()));
-        result = result.replace("%y%",
-            String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockY()));
-        result = result.replace("%z%",
-            String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
-        result = result.replace("%player-uuid%", playerId);
+        text.replace("%entity-health%", Utils.round(entityHealth));
+        text.replace("%entity-health-rounded%", entityHealthRounded);
+        text.replace("%entity-max-health%", roundedMaxHealth);
+        text.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
+        text.replace("%heart_symbol%", "❤");
+        text.replace("%tiered%", tieredPlaceholder);
+        text.replace("%wg_region%", lmEntity.getWGRegionName());
+        text.replace("%world%", lmEntity.getWorldName());
+        text.replaceIfExists("%location%", () -> String.format("%s %s %s",
+                lmEntity.getLivingEntity().getLocation().getBlockX(),
+                lmEntity.getLivingEntity().getLocation().getBlockY(),
+                lmEntity.getLivingEntity().getLocation().getBlockZ()));
+        text.replace("%health%-percent%", percentHealth);
+        text.replace("%x%", lmEntity.getLivingEntity().getLocation().getBlockX());
+        text.replace("%y%", lmEntity.getLivingEntity().getLocation().getBlockY());
+        text.replace("%z%", lmEntity.getLivingEntity().getLocation().getBlockZ());
+        text.replace("%player-uuid%", playerId);
+        text.replace("%player%", playerName);
+        text.replaceIfExists("%displayname%", () -> {
+            final boolean useCustomNameForNametags = main.helperSettings.getBoolean(
+                    main.settingsCfg, "use-customname-for-mob-nametags");
+            final String overridenName = lmEntity.lockedOverrideName == null ?
+                    main.rulesManager.getRuleEntityOverriddenName(lmEntity, false) :
+                    lmEntity.lockedOverrideName;
 
-        if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
-            result = ExternalCompatibilityManager.getPapiPlaceholder(player, result);
+            boolean hasOverridenName = (overridenName != null && !overridenName.isEmpty());
+            String useDisplayname = overridenName;
+
+            if (preserveMobName)
+                useDisplayname =  "{DisplayName}";
+            else if (!hasOverridenName)
+                useDisplayname = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
+
+            if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
+                useDisplayname = lmEntity.getLivingEntity().getCustomName();
+            }
+            return useDisplayname;
+        });
+
+        if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
+            text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text);
         }
 
-        return result;
+        return text.text;
     }
 
     public void updateNametagWithDelay(final @NotNull LivingEntityWrapper lmEntity) {
@@ -845,6 +858,7 @@ public class LevelManager implements LevelInterface {
                if (firstPlayer == null) return;
 
                final Consumer<ScheduledTask> task = scheduledTask1 -> {
+                   checkLEWCache();
                    final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
                    if (entitiesPerPlayer != null) {
                        runNametagCheck_aSync(entitiesPerPlayer);
@@ -861,11 +875,39 @@ public class LevelManager implements LevelInterface {
                 final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
 
                 if (entitiesPerPlayer != null) {
-                    final Runnable runnable2 = () -> runNametagCheck_aSync(entitiesPerPlayer);
+                    final Runnable runnable2 = () -> {
+                        checkLEWCache();
+                        runNametagCheck_aSync(entitiesPerPlayer);
+                    };
                     Bukkit.getScheduler().runTaskAsynchronously(main, runnable2);
                 }
             };
             nametagTimerTask = new SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period));
+        }
+    }
+
+    private void checkLEWCache(){
+        if (lastLEWCacheClearing == null){
+            lastLEWCacheClearing = Instant.now();
+            return;
+        }
+
+        final long duration = lastLEWCacheClearing.until(Instant.now(), ChronoUnit.MILLIS);
+        final long configDuration = main.helperSettings.getIntTimeUnitMS(
+                main.settingsCfg, "lew-cache-clear-period", 180000L);
+
+        if (duration >= configDuration){
+            if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
+                if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
+                    final DecimalFormat formatter = new DecimalFormat("#,###");
+
+                    Utils.debugLog(main, DebugType.LEW_CACHE,
+                            "Reached %s ms, clearing LEW cache, %s".formatted(
+                                    formatter.format(configDuration), LivingEntityWrapper.getLEWDebug()));
+                }
+            }
+            lastLEWCacheClearing = Instant.now();
+            LivingEntityWrapper.clearCache();
         }
     }
 
@@ -1337,7 +1379,7 @@ public class LevelManager implements LevelInterface {
             final Material material = itemStack.getType();
             final CustomDropItem item = pair.getValue();
             final GroupLimits groupLimits = main.customDropsHandler.getGroupLimits(item);
-            final boolean hasEquipLimits = groupLimits != null && groupLimits.hasCapEquipped();
+            final boolean hasEquipLimits = item.hasGroupId() && groupLimits != null && groupLimits.hasCapEquipped();
 
             if (hasEquipLimits){
                 if (equippedCountPerGroup.containsKey(item.groupId)) {
