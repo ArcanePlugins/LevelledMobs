@@ -597,6 +597,7 @@ public class CustomDropsParser {
         customCommand.delay = ymlHelper.getInt(cs, "delay", 0);
         customCommand.runOnSpawn = ymlHelper.getBoolean(cs, "run-on-spawn", false);
         customCommand.runOnDeath = ymlHelper.getBoolean(cs, "run-on-death", true);
+        customCommand.mobScale = ymlHelper.getDouble2(cs, "mob-scale", null);
         parseRangedVariables(customCommand, cs);
 
         if (customCommand.commands.isEmpty()) {

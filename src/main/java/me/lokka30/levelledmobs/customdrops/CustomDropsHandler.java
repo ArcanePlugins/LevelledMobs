@@ -1152,6 +1152,16 @@ public class CustomDropsHandler {
             command = processRangedCommand(command, customCommand);
             command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity,false,
                     info.lmEntity.getLivingEntity().getKiller(), false);
+            String mobScale = "";
+            String mobScaleRounded = "";
+            if (customCommand.mobScale != null){
+                final float newScale = (float) info.lmEntity.getMobLevel() * customCommand.mobScale.floatValue();
+                mobScale = String.valueOf(newScale);
+                mobScaleRounded = String.valueOf((int)Utils.round(newScale));
+            }
+            command = command.replace("%mob-scale%", mobScale);
+            command = command.replace("%mob-scale-rounded%", mobScaleRounded);
+
             if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
                 command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command);
             }
