@@ -952,7 +952,7 @@ public class RulesManager {
         }
 
         if (ri.conditions_Permission != null) {
-            if (lmEntity.playerForPermissionsCheck == null) {
+            if (lmEntity.associatedPlayer == null) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION,
                     String.format("&b%s&7, mob: &b%s&7, no player was provided",
                         ri.getRuleName(), lmEntity.getNameIfBaby()));
@@ -960,11 +960,11 @@ public class RulesManager {
             }
 
             if (!doesPlayerPassPermissionChecks(ri.conditions_Permission,
-                lmEntity.playerForPermissionsCheck)) {
+                lmEntity.associatedPlayer)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION,
                     String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
                         ri.getRuleName(), lmEntity.getNameIfBaby(),
-                        lmEntity.playerForPermissionsCheck.getName()));
+                        lmEntity.associatedPlayer.getName()));
                 return false;
             }
         }

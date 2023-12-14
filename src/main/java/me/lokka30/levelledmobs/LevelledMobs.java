@@ -19,7 +19,9 @@ import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
+import me.lokka30.levelledmobs.listeners.EntityDeathListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.MobDataManager;
 import me.lokka30.levelledmobs.managers.MobsQueueManager;
@@ -61,6 +63,7 @@ public final class LevelledMobs extends JavaPlugin {
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
     public PlayerInteractEventListener playerInteractEventListener;
+    public EntityDeathListener entityDeathListener;
     public NamespacedKeys namespacedKeys;
     public Companion companion;
     public RulesParsingManager rulesParsingManager;
@@ -76,6 +79,7 @@ public final class LevelledMobs extends JavaPlugin {
     public YmlParsingHelper helperSettings;
     public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
+    public DebugManager debugManager;
     private Definitions definitions;
     private ServerVersionInfo ver;
     private static LevelledMobs instance;
@@ -102,6 +106,7 @@ public final class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.debugManager = new DebugManager();
         this.ver = new ServerVersionInfo();
         this.definitions = new Definitions();
         this.nametagQueueManager = new NametagQueueManager(this);
@@ -117,6 +122,7 @@ public final class LevelledMobs extends JavaPlugin {
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
         this.levelInterface = new LevelManager(this);
+        this.entityDeathListener = new EntityDeathListener(this);
         if (!companion.loadFiles(false)) {
             // had fatal error reading required files
             Bukkit.getPluginManager().disablePlugin(this);

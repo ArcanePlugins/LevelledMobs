@@ -23,9 +23,11 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
@@ -261,30 +263,6 @@ public class CustomDropsParser {
                 }
             } // next mob or group
         } // next root item from file
-
-        if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
-            int dropsCount = 0;
-            int commandsCount = 0;
-            for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
-                for (final CustomDropBase base : cdi.customItems) {
-                    if (base instanceof CustomDropItem) {
-                        dropsCount++;
-                    } else if (base instanceof CustomCommand) {
-                        commandsCount++;
-                    }
-                }
-            }
-
-            final StringBuilder sbMain = new StringBuilder();
-            final int itemsCount =
-                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
-            sbMain.append(String.format(
-                "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
-                handler.getCustomDropsitems().size(), itemsCount, handler.customItemGroups.size(),
-                dropsCount, commandsCount));
-
-            showCustomDropsDebugInfo(sbMain);
-        }
     }
 
     private void parseCustomDrops2(final List<?> itemConfigurations) {
@@ -1024,7 +1002,32 @@ public class CustomDropsParser {
         return false;
     }
 
-    private void showCustomDropsDebugInfo(final StringBuilder sbMain) {
+    public void showCustomDropsDebugInfo(final @NotNull CommandSender sender) {
+        final StringBuilder sbMain = new StringBuilder();
+
+        if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
+            int dropsCount = 0;
+            int commandsCount = 0;
+            for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
+                for (final CustomDropBase base : cdi.customItems) {
+                    if (base instanceof CustomDropItem) {
+                        dropsCount++;
+                    } else if (base instanceof CustomCommand) {
+                        commandsCount++;
+                    }
+                }
+            }
+
+            final int itemsCount =
+                    handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
+            final int customItemGroupCount = handler.customItemGroups != null ?
+                    handler.customItemGroups.size() : 0;
+            sbMain.append(String.format(
+                    "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
+                    handler.getCustomDropsitems().size(), itemsCount, customItemGroupCount,
+                    dropsCount, commandsCount));
+        }
+
         // build string list to alphabeticalize the drops by entity type including babies
         final SortedMap<String, EntityType> typeNames = new TreeMap<>();
 
@@ -1091,7 +1094,7 @@ public class CustomDropsParser {
             }
         }
 
-        Utils.logger.info(sbMain.toString());
+        sender.sendMessage(MessageUtils.colorizeAll(sbMain.toString()));
     }
 
     private @NotNull String showCustomDropsDebugInfo2(final CustomDropBase baseItem) {

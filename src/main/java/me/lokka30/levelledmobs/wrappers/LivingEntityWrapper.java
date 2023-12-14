@@ -105,7 +105,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public String pendingPlayerIdToSet;
     public String lockedNametag;
     public String lockedOverrideName;
-    public Player playerForPermissionsCheck;
+    public Player associatedPlayer;
     public CommandSender summonedSender;
 
     public @NotNull static LivingEntityWrapper getInstance(final LivingEntity livingEntity,
@@ -201,7 +201,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.prevChanceRuleResults = null;
         this.sourceSpawnerName = null;
         this.sourceSpawnEggName = null;
-        this.playerForPermissionsCheck = null;
+        this.associatedPlayer = null;
         this.playersNeedingNametagCooldownUpdate = null;
         this.nametagCooldownTime = 0;
         this.nbtData = null;
@@ -444,7 +444,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         synchronized (playerLock) {
             this.playerForLevelling = player;
         }
-        this.playerForPermissionsCheck = player;
+        this.associatedPlayer = player;
     }
 
     public @Nullable FineTuningAttributes getFineTuningAttributes() {

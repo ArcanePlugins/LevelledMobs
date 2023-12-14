@@ -171,9 +171,9 @@ public class CustomDropsHandler {
             }
         }
 
-        if (lmEntity.getLivingEntity().getKiller() != null) {
+        if (lmEntity.associatedPlayer != null) {
             processingInfo.wasKilledByPlayer = true;
-            processingInfo.mobKiller = lmEntity.getLivingEntity().getKiller();
+            processingInfo.mobKiller = lmEntity.associatedPlayer;
         } else {
             processingInfo.wasKilledByPlayer = false;
         }
@@ -1151,7 +1151,7 @@ public class CustomDropsHandler {
         for (String command : customCommand.commands) {
             command = processRangedCommand(command, customCommand);
             command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity,false,
-                    info.lmEntity.getLivingEntity().getKiller(), false);
+                    info.lmEntity.associatedPlayer, false);
             String mobScale = "";
             String mobScaleRounded = "";
             if (customCommand.mobScale != null){

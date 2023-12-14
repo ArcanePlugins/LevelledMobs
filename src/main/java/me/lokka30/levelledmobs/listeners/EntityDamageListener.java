@@ -49,13 +49,21 @@ public class EntityDamageListener implements Listener {
     // When the mob is damaged, update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageEvent(@NotNull final EntityDamageEvent event) {
-        if (event.getFinalDamage() == 0.0) {
-            return;
-        }
         if (!(event.getEntity() instanceof LivingEntity)) {
             return;
         }
-        if (event.getFinalDamage() == 0.0) {
+
+        final boolean isCritical = event.getFinalDamage() == 0.0;
+
+        if (event instanceof final EntityDamageByEntityEvent edee && isCritical &&
+                edee.getDamager() instanceof Player player) {
+            // this is so custom drops can associate the killer if the mob was
+            // killed via a custom projectile such as magic
+            main.entityDeathListener.damageMappings.put(edee.getEntity().getUniqueId(), player);
+            return;
+        }
+
+        if (isCritical) {
             return;
         }
 
@@ -108,7 +116,7 @@ public class EntityDamageListener implements Listener {
         if (event instanceof final EntityDamageByEntityEvent entityDamageByEntityEvent){
             wasDamagedByEntity = true;
             if (entityDamageByEntityEvent.getDamager() instanceof Player player) {
-                lmEntity.playerForPermissionsCheck = player;
+                lmEntity.associatedPlayer = player;
             }
         }
         final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
@@ -118,12 +126,12 @@ public class EntityDamageListener implements Listener {
         if (nametagVisibleTime > 0L && wasDamagedByEntity &&
             nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)) {
 
-            if (lmEntity.playerForPermissionsCheck != null) {
+            if (lmEntity.associatedPlayer != null) {
                 if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
                     lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
                 }
 
-                lmEntity.playersNeedingNametagCooldownUpdate.add(lmEntity.playerForPermissionsCheck);
+                lmEntity.playersNeedingNametagCooldownUpdate.add(lmEntity.associatedPlayer);
             }
         }
 

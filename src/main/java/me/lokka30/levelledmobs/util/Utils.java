@@ -10,6 +10,9 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.DeathCause;
 import me.lokka30.levelledmobs.misc.CachedModalList;
@@ -23,6 +26,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -46,6 +50,7 @@ public final class Utils {
     }
 
     @NotNull public static final MicroLogger logger = new MicroLogger("&bLevelledMobs:&7 ");
+    private static final Pattern timeUnitPattern = Pattern.compile("(\\d+\\.?\\d+|\\d+)?(\\w+)");
 
     /**
      * Rounds value to 2 decimal points.
@@ -465,5 +470,101 @@ public final class Utils {
         }
 
         return hashChanged;
+    }
+
+    public static Long parseTimeUnit(final @Nullable String input, final Long defaultTime,
+                                     final boolean useMS, final @Nullable CommandSender sender) {
+        if (input == null) {
+            return defaultTime;
+        }
+        if ("0".equals(input)) {
+            return 0L;
+        }
+
+        final Matcher match = timeUnitPattern.matcher(input);
+
+        if (!match.matches() || match.groupCount() != 2) {
+            if (sender != null)
+                sender.sendMessage("Invalid time: " + input);
+            else
+                Utils.logger.warning("Invalid time: " + input);
+
+            return defaultTime;
+        }
+
+        long time;
+        double remainder = 0.0;
+        String numberPart = match.group(1) != null ? match.group(1) : match.group(2);
+        final String unit = match.group(1) != null ? match.group(2).toLowerCase() : "";
+
+        if (numberPart.contains(".")) {
+            final String[] split = numberPart.split("\\.");
+            try {
+                remainder = 1.0 - Double.parseDouble("0." + split[1]);
+                numberPart = split[0];
+            } catch (Exception e) {
+                if (sender != null)
+                    sender.sendMessage("Invalid time: " + input);
+                else
+                    Utils.logger.warning("Invalid time: " + input);
+
+                return defaultTime;
+            }
+        }
+
+        try {
+            time = Long.parseLong(numberPart);
+        } catch (Exception e) {
+            if (sender != null)
+                sender.sendMessage("Invalid time: " + input);
+            else
+                Utils.logger.warning("Invalid time: " + input);
+
+            return defaultTime;
+        }
+
+        Duration duration = null;
+        switch (unit) {
+            case "ms", "millisecond", "milliseconds" -> duration = Duration.ofMillis(time);
+            case "s", "second", "seconds" -> {
+                duration = Duration.ofSeconds(time);
+                if (remainder > 0.0) {
+                    duration = duration.plusMillis((long) (1000.0 * remainder));
+                }
+            }
+            case "m", "minute", "minutes" -> {
+                duration = Duration.ofMinutes(time);
+                if (remainder > 0.0) {
+                    duration = duration.plusMillis((long) (60000.0 * remainder));
+                }
+            }
+            case "h", "hour", "hours" -> {
+                duration = Duration.ofHours(time);
+                if (remainder > 0.0) {
+                    duration = duration.plusMillis((long) (3600000.0 * remainder));
+                }
+            }
+            case "d", "day", "days" -> {
+                duration = Duration.ofDays(time);
+                if (remainder > 0.0) {
+                    duration = duration.plusSeconds((long) (86400.0 * remainder));
+                }
+            }
+            case "" -> duration = useMS ? Duration.ofMillis(time) : Duration.ofSeconds(time);
+            default -> {
+                if (sender != null)
+                    sender.sendMessage("Invalid time unit specified: " + input + " (" + unit + ")");
+                else
+                    Utils.logger.warning("Invalid time unit specified: " + input + " (" + unit + ")");
+            }
+        }
+
+        if (duration != null) {
+            return useMS ?
+                    duration.toMillis() :
+                    duration.getSeconds();
+        }
+
+        return defaultTime;
     }
 }

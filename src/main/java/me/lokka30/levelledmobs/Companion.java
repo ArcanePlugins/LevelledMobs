@@ -33,7 +33,6 @@ import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.CombustListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageListener;
-import me.lokka30.levelledmobs.listeners.EntityDeathListener;
 import me.lokka30.levelledmobs.listeners.EntityNametagListener;
 import me.lokka30.levelledmobs.listeners.EntityRegainHealthListener;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
@@ -277,7 +276,7 @@ public class Companion {
 
         pluginManager.registerEvents(main.levelManager.entitySpawnListener, main);
         pluginManager.registerEvents(new EntityDamageListener(main), main);
-        pluginManager.registerEvents(new EntityDeathListener(main), main);
+        pluginManager.registerEvents(main.entityDeathListener, main);
         pluginManager.registerEvents(new EntityRegainHealthListener(main), main);
         pluginManager.registerEvents(new EntityTransformListener(main), main);
         pluginManager.registerEvents(new EntityNametagListener(main), main);

@@ -990,7 +990,7 @@ public class LevelManager implements LevelInterface {
         boolean wrapperHasReference = false;
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                 (LivingEntity) entity, main);
-        lmEntity.playerForPermissionsCheck = player;
+        lmEntity.associatedPlayer = player;
         if (doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
             lmEntity.reEvaluateLevel = true;
             lmEntity.isRulesForceAll = true;
