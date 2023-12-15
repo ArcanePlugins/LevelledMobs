@@ -1541,6 +1541,7 @@ public class LevelManager implements LevelInterface {
         if (level <= 0) {
             level = generateLevel(lmEntity);
         }
+        lmEntity.setMobPrelevel(level);
 
         assert
             bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
@@ -1558,6 +1559,7 @@ public class LevelManager implements LevelInterface {
                 (LivingEntity) lmEntity.getLivingEntity().getVehicle(), main);
             if (vehicle.isLevelled()) {
                 level = vehicle.getMobLevel();
+                lmEntity.setMobPrelevel(level);
             }
 
             vehicle.free();
@@ -1583,6 +1585,7 @@ public class LevelManager implements LevelInterface {
             }
 
             level = mobPreLevelEvent.getLevel();
+            lmEntity.setMobPrelevel(level);
             if (!mobPreLevelEvent.getShowLM_Nametag()) {
                 skipLMNametag = true;
                 lmEntity.setShouldShowLM_Nametag(false);

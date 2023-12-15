@@ -473,6 +473,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             this.mobLevel;
     }
 
+    public void setMobPrelevel(int level){
+        this.mobLevel = level;
+    }
+
     public boolean isLevelled() {
         return main.levelInterface.isLevelled(this.livingEntity);
     }
