@@ -174,6 +174,7 @@ public final class LevelledMobs extends JavaPlugin {
         reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);
         reloadStartedMsg.forEach(sender::sendMessage);
 
+        companion.reloadSender = sender;
         companion.loadFiles(true);
 
         List<String> reloadFinishedMsg = messagesCfg.getStringList(

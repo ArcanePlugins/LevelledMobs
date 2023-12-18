@@ -129,6 +129,10 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             case "both" -> main.debugManager.outputType = DebugManager.OutputTypes.BOTH;
             default -> commandSender.sendMessage("Invalid option: " + args[2]);
         }
+
+        if (main.debugManager.outputType != DebugManager.OutputTypes.CONSOLE){
+            commandSender.sendMessage("WARNING: sending debug messages to chat can cause huge chat spam.");
+        }
     }
 
     private void showCustomDrops(){
@@ -136,15 +140,17 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
     }
 
     private void enableOrDisableDebug(final boolean isEnable){
-        final boolean wasEnabled = main.debugManager.isEnabled;
-        main.debugManager.isEnabled = isEnable;
+        final boolean wasEnabled = main.debugManager.isEnabled();
+
         if (isEnable){
+            main.debugManager.enableDebug(commandSender);
             if (wasEnabled)
                 commandSender.sendMessage("Debugging is already enabled");
             else
                 commandSender.sendMessage("Debugging is now enabled");
         }
         else{
+            main.debugManager.disableDebug();
             if (wasEnabled)
                 commandSender.sendMessage("Debugging is now disabled");
             else
@@ -283,7 +289,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
                             }
                         }
                         if (actualRuleName != null){
-                            dm.filterRuleNames.add(actualRuleName);
+                            dm.filterRuleNames.add(actualRuleName.replace(" ", "_"));
                         }
                         else{
                             commandSender.sendMessage("Invalid rule name: " + ruleName);

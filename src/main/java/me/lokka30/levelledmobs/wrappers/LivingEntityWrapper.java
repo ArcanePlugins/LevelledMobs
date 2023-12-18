@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.DebugType;
@@ -279,15 +280,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
                 final StackTraceElement callingFunction = Thread.currentThread().getStackTrace()[1];
                 retryCount++;
                 if (retryCount > lockMaxRetryTimes) {
-                    Utils.debugLog(main, DebugType.THREAD_LOCKS,
-                        String.format("getPDCLock could not lock thread - %s:%s",
+                    DebugManager.log(DebugType.THREAD_LOCKS, () ->
+                            String.format("getPDCLock could not lock thread - %s:%s",
                             callingFunction.getFileName(), callingFunction.getLineNumber()));
                     return false;
                 }
 
-                Utils.debugLog(main, DebugType.THREAD_LOCKS,
-                    String.format("getPDCLock retry %s - %s:%s",
-                        retryCount, callingFunction.getFileName(),
+                final int retryCountFinal = retryCount;
+                DebugManager.log(DebugType.THREAD_LOCKS, () ->
+                        String.format("getPDCLock retry %s - %s:%s",
+                        retryCountFinal, callingFunction.getFileName(),
                         callingFunction.getLineNumber()));
             }
         } catch (final InterruptedException e) {

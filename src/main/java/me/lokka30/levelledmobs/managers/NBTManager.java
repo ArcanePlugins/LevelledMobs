@@ -50,12 +50,12 @@ public class NBTManager {
             nbtent.mergeCompound(new NBTContainer(nbtStuff));
             final String jsonAfter = nbtent.toString();
 
-            if (lmEntity.getMainInstance().companion.debugsEnabled.contains(
+            if (lmEntity.getMainInstance().debugManager.isDebugTypeEnabled(
                 DebugType.NBT_APPLY_SUCCESS)) {
                 showChangedJson(jsonBefore, jsonAfter, result);
             }
 
-            if (lmEntity.getMainInstance().companion.debugsEnabled.contains(DebugType.NBT_APPLY_SUCCESS) && jsonBefore.equals(jsonAfter)) {
+            if (lmEntity.getMainInstance().debugManager.isDebugTypeEnabled(DebugType.NBT_APPLY_SUCCESS) && jsonBefore.equals(jsonAfter)) {
                 result.exceptionMessage = "No NBT data changed.  Make sure you have used proper NBT strings";
             }
         } catch (final Exception e) {

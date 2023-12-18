@@ -39,7 +39,7 @@ public class NametagQueueManager {
 
     public NametagQueueManager(final LevelledMobs main) {
         this.main = main;
-        this.nametagSenderHandler = new NametagSenderHandler(main);
+        this.nametagSenderHandler = new NametagSenderHandler();
         this.queue = new LinkedBlockingQueue<>();
         getNMSUtil();
     }

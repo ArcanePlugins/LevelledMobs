@@ -289,7 +289,7 @@ public class LevelManager implements LevelInterface {
             }
 
             if (result.resultMessage != null) {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, result.resultMessage);
+                DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> result.resultMessage);
             }
 
             origLevelSource = useLocation.distance(player.getLocation());
@@ -319,7 +319,7 @@ public class LevelManager implements LevelInterface {
                 PAPIResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse);
                 if (Utils.isNullOrEmpty(PAPIResult)) {
                     final Location l = player.getLocation();
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                    DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                         "Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
                         variableToUse, player.getName(), l.getBlockX(), l.getBlockY(),
                         l.getBlockZ(), player.getWorld().getName()));
@@ -337,7 +337,7 @@ public class LevelManager implements LevelInterface {
                 final Location l = player.getLocation();
                 if (Utils.isNullOrEmpty(PAPIResult)) {
                     origLevelSource = player.getLevel();
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                    DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                         "Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
                         variableToUse, player.getName(), l.getBlockX(), l.getBlockY(),
                         l.getBlockZ(), player.getWorld().getName()));
@@ -444,7 +444,7 @@ public class LevelManager implements LevelInterface {
             final float additionValue = main.mobDataManager.getAdditionsForLevel(lmEntity,
                 Addition.CUSTOM_ITEM_DROP, 2.0f);
             if (additionValue == Float.MIN_VALUE) {
-                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+                DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity, () -> String.format(
                     "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel()));
                 currentDrops.clear();
@@ -469,14 +469,15 @@ public class LevelManager implements LevelInterface {
         }
         final String nameWithOverride = hasOverride ?
             lmEntity.getNameIfBaby() + " (override)" : lmEntity.getNameIfBaby();
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+        final int additionUsedFinal = additionUsed;
+        DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity, () -> String.format(
             "&7Mob: &b%s&7, mob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
             nameWithOverride, lmEntity.getMobLevel(), vanillaDrops, currentDrops.size(),
-            additionUsed));
+            additionUsedFinal));
     }
 
     public void multiplyDrop(final LivingEntityWrapper lmEntity,
-        @NotNull final ItemStack currentDrop, final double addition, final boolean isCustomDrop) {
+        final @NotNull ItemStack currentDrop, final double addition, final boolean isCustomDrop) {
         final int oldAmount = currentDrop.getAmount();
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(
@@ -486,16 +487,16 @@ public class LevelManager implements LevelInterface {
                 useAmount = currentDrop.getMaxStackSize();
             }
             currentDrop.setAmount(useAmount);
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+            DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity, () -> String.format(
                 "&7Drop: &b%s&7, old amount: &b%s&7, addition value: &b%s&7, new amount: &b%s&7.",
                 currentDrop.getType(), oldAmount, addition, currentDrop.getAmount()));
         } else {
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&7Item was unmanaged.");
+            DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity, () -> "&7Item was unmanaged.");
         }
     }
 
-    @NotNull private List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity,
-        @NotNull final List<ItemStack> drops) {
+    private @NotNull List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity,
+        final @NotNull List<ItemStack> drops) {
         final List<ItemStack> results = new ArrayList<>(drops.size());
         results.addAll(drops);
 
@@ -534,7 +535,7 @@ public class LevelManager implements LevelInterface {
         return results;
     }
 
-    public void removeVanillaDrops(@NotNull final LivingEntityWrapper lmEntity,
+    public void removeVanillaDrops(final @NotNull LivingEntityWrapper lmEntity,
         final List<ItemStack> drops) {
         boolean hadSaddle = false;
         List<ItemStack> chestItems = null;
@@ -564,15 +565,15 @@ public class LevelManager implements LevelInterface {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final double xp) {
+    public int getLevelledExpDrops(final @NotNull LivingEntityWrapper lmEntity, final double xp) {
         if (lmEntity.isLevelled()) {
             final float dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity,
                 Addition.CUSTOM_XP_DROP, 3.0f);
             double newXp = 0;
 
             if (dropAddition == Float.MIN_VALUE){
-                Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS,
-                        String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b0&7",
+                DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity, () -> String.format(
+                        "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b0&7",
                                 lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp));
                 return 0;
             }
@@ -581,20 +582,21 @@ public class LevelManager implements LevelInterface {
                 newXp = Math.round(xp + (xp * dropAddition));
             }
 
-            Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS,
-                String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
-                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, (int)newXp));
+            final int newXpFinal = (int) newXp;
+            DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity, () -> String.format(
+                    "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, newXpFinal));
             return (int)newXp;
         } else {
             return (int)xp;
         }
     }
 
-    @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+    public @NotNull NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
         return getNametag(lmEntity, isDeathNametag, false);
     }
 
-    @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
+    public @NotNull NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         StringReplacer nametag;
         String customDeathMessage = null;
         if (isDeathNametag) {
@@ -644,7 +646,7 @@ public class LevelManager implements LevelInterface {
         return updateNametag(lmEntity, nametag, preserveMobName, customDeathMessage);
     }
 
-    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull StringReplacer nametag,
+    public @NotNull NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull StringReplacer nametag,
                                                 final boolean preserveMobName,
                                                 final String customDeathMessage) {
         if (nametag.isEmpty()) {
@@ -718,7 +720,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public @NotNull String replaceStringPlaceholders(final @NotNull String text,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI,
+        final @NotNull LivingEntityWrapper lmEntity, final boolean usePAPI,
         final @Nullable Player player, final boolean preserveMobName) {
         return replaceStringPlaceholders(
                 new StringReplacer(text),
@@ -730,7 +732,7 @@ public class LevelManager implements LevelInterface {
     }
 
     private @NotNull String replaceStringPlaceholders(final @NotNull StringReplacer text,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI,
+        final @NotNull LivingEntityWrapper lmEntity, final boolean usePAPI,
         final @Nullable Player player, final boolean preserveMobName) {
 
         final double maxHealth = getMobAttributeValue(lmEntity);
@@ -897,15 +899,12 @@ public class LevelManager implements LevelInterface {
                 main.settingsCfg, "lew-cache-clear-period", 180000L);
 
         if (duration >= configDuration){
-            if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
-                if (main.companion.debugsEnabled.contains(DebugType.LEW_CACHE)){
-                    final DecimalFormat formatter = new DecimalFormat("#,###");
+            final DecimalFormat formatter = new DecimalFormat("#,###");
 
-                    Utils.debugLog(main, DebugType.LEW_CACHE,
-                            "Reached %s ms, clearing LEW cache, %s".formatted(
-                                    formatter.format(configDuration), LivingEntityWrapper.getLEWDebug()));
-                }
-            }
+            DebugManager.log(DebugType.LEW_CACHE, () ->
+                    "Reached %s ms, clearing LEW cache, %s".formatted(
+                            formatter.format(configDuration), LivingEntityWrapper.getLEWDebug()));
+
             lastLEWCacheClearing = Instant.now();
             LivingEntityWrapper.clearCache();
         }
@@ -1047,7 +1046,7 @@ public class LevelManager implements LevelInterface {
                         wasBabyMob &&
                         levellableState == LevellableState.ALLOWED) {
                     // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                    Utils.debugLog(main, DebugType.ENTITY_MISC,
+                    DebugManager.log(DebugType.ENTITY_MISC, lmEntity, () ->
                             "&b" + lmEntity.getTypeName()
                                     + " &7was a baby and is now an adult, applying levelling rules");
 
@@ -1123,8 +1122,8 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity,
-        @NotNull final Player player) {
+    private void checkLevelledEntity(final @NotNull LivingEntityWrapper lmEntity,
+        final @NotNull Player player) {
         if (lmEntity.getLivingEntity() == null || !lmEntity.getLivingEntity().isValid()) {
             return;
         }
@@ -1226,8 +1225,8 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    private void applyLevelledAttributes(@NotNull final LivingEntityWrapper lmEntity,
-        @NotNull final Addition addition) {
+    private void applyLevelledAttributes(final @NotNull LivingEntityWrapper lmEntity,
+        final @NotNull Addition addition) {
         assert lmEntity.isLevelled();
 
         // This functionality should be added into the enum.
@@ -1274,8 +1273,8 @@ public class LevelManager implements LevelInterface {
             if (creeper.getExplosionRadius() != 3) {
                 creeper.setExplosionRadius(3);
             }
-            Utils.debugLog(main, DebugType.CREEPER_BLAST_RADIUS,
-                String.format("lvl: %s, mulp: null, result: 3",
+            DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity,
+                    () -> String.format("lvl: %s, mulp: null, result: 3",
                     lmEntity.getMobLevel()));
             return;
         }
@@ -1295,9 +1294,10 @@ public class LevelManager implements LevelInterface {
             blastRadius = 0;
         }
 
-        Utils.debugLog(main, DebugType.CREEPER_BLAST_RADIUS,
-            String.format("lvl: %s, mulp: %s, max: %s, result: %s",
-                lmEntity.getMobLevel(), Utils.round(damage, 3), maxRadius, blastRadius));
+        final int blastRadiusFinal = blastRadius;
+        DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity, () -> String.format(
+                "lvl: %s, mulp: %s, max: %s, result: %s",
+                lmEntity.getMobLevel(), Utils.round(damage, 3), maxRadius, blastRadiusFinal));
 
         if (blastRadius < 0) {
             blastRadius = 0;
@@ -1314,7 +1314,7 @@ public class LevelManager implements LevelInterface {
      * @param lmEntity a levelled mob to apply levelled equipment to
      * @param level    the level of the levelled mob
      */
-    private void applyLevelledEquipment(@NotNull final LivingEntityWrapper lmEntity,
+    private void applyLevelledEquipment(final @NotNull LivingEntityWrapper lmEntity,
         final int level) {
         if (!lmEntity.isLevelled()) {
             // if you summon a mob and it isn't levelled due to a config rule (baby zombies exempt for example)
@@ -1341,7 +1341,7 @@ public class LevelManager implements LevelInterface {
         scheduler.run();
     }
 
-    private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity, final CustomDropsRuleSet customDropsRuleSet) {
+    private void applyLevelledEquipment_NonAsync(final @NotNull LivingEntityWrapper lmEntity, final CustomDropsRuleSet customDropsRuleSet) {
         final MythicMobsMobInfo mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity);
         if (mmInfo != null && mmInfo.preventRandomEquipment) {
             return;
@@ -1387,7 +1387,7 @@ public class LevelManager implements LevelInterface {
                 }
 
                 if (groupLimits.hasReachedCapEquipped(equippedSoFar)){
-                    Utils.debugLog(main, DebugType.GROUP_LIMITS, String.format(
+                    DebugManager.log(DebugType.GROUP_LIMITS, lmEntity, () -> String.format(
                             "Reached equip limit of %s, mob: %s, item: %s, group: %s",
                             groupLimits.capEquipped, lmEntity.getNameIfBaby(), material, item.groupId));
                     continue;
@@ -1439,7 +1439,7 @@ public class LevelManager implements LevelInterface {
             equippedItemsInfo);
     }
 
-    private double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity) {
+    private double getMobAttributeValue(final @NotNull LivingEntityWrapper lmEntity) {
         double result = 0.0;
         synchronized (main.attributeSyncObject) {
             final AttributeInstance attrib = lmEntity.getLivingEntity()
@@ -1452,7 +1452,7 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    private double getMobHealth(@NotNull final LivingEntityWrapper lmEntity) {
+    private double getMobHealth(final @NotNull LivingEntityWrapper lmEntity) {
         final double result;
         synchronized (main.attributeSyncObject) {
             result = lmEntity.getLivingEntity().getHealth();
@@ -1461,7 +1461,7 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    @NotNull public LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface) {
+    public @NotNull LevellableState getLevellableState(final @NotNull LivingEntityInterface lmInterface) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
@@ -1601,8 +1601,8 @@ public class LevelManager implements LevelInterface {
         }
 
         if (hasNoLevelKey) {
-            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL,
-                "Entity &b" + lmEntity.getTypeName() + "&7 had &bnoLevelKey&7 attached");
+            DebugManager.log(DebugType.APPLY_LEVEL_FAIL, lmEntity, () ->
+                    "Entity &b" + lmEntity.getTypeName() + "&7 had &bnoLevelKey&7 attached");
             return;
         }
 
@@ -1665,10 +1665,10 @@ public class LevelManager implements LevelInterface {
             sb.append(" (baby)");
         }
 
-        Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
+        DebugManager.log(DebugType.APPLY_LEVEL_SUCCESS, lmEntity, sb::toString);
     }
 
-    private void applyLevelToMob2(@NotNull final LivingEntityWrapper lmEntity,
+    private void applyLevelToMob2(final @NotNull LivingEntityWrapper lmEntity,
         final @NotNull List<String> nbtDatas, final boolean doSkipLMNametag){
         applyAttribs(lmEntity, nbtDatas);
 
@@ -1744,14 +1744,12 @@ public class LevelManager implements LevelInterface {
                     hadSuccess = true;
                     allResults.add(result);
                 }
+
             }
-
-            if (hadSuccess && lmEntity.getMainInstance().companion.debugsEnabled.contains(
-                    DebugType.NBT_APPLY_SUCCESS)) {
-                final String changes = getNBT_DebugMessage(allResults);
-
-                Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS,
-                        "Applied NBT data to '" + lmEntity.getNameIfBaby() + "'. " + changes);
+            if (hadSuccess) {
+                DebugManager.log(DebugType.NBT_APPLY_SUCCESS, lmEntity, () ->
+                        "Applied NBT data to '" + lmEntity.getNameIfBaby() +
+                                "'. " + getNBT_DebugMessage(allResults));
             }
         }
 
@@ -1760,7 +1758,7 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {
+    private @NotNull String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {
         final StringBuilder sb = new StringBuilder();
 
         for (final NBTApplyResult result : results) {
@@ -1826,7 +1824,7 @@ public class LevelManager implements LevelInterface {
      * @param livingEntity living entity to check
      * @return if the mob is levelled or not
      */
-    public boolean isLevelled(@NotNull final LivingEntity livingEntity) {
+    public boolean isLevelled(final @NotNull LivingEntity livingEntity) {
         boolean hadError = false;
         boolean succeeded = false;
         boolean isLevelled = false;
@@ -1870,7 +1868,7 @@ public class LevelManager implements LevelInterface {
      * @param livingEntity the levelled mob to get the level of
      * @return the mob's level
      */
-    public int getLevelOfMob(@NotNull final LivingEntity livingEntity) {
+    public int getLevelOfMob(final @NotNull LivingEntity livingEntity) {
         synchronized (livingEntity.getPersistentDataContainer()) {
             if (!livingEntity.getPersistentDataContainer()
                 .has(main.namespacedKeys.levelKey, PersistentDataType.INTEGER)) {
@@ -1887,7 +1885,7 @@ public class LevelManager implements LevelInterface {
      *
      * @param lmEntity levelled mob to un-level
      */
-    public void removeLevel(@NotNull final LivingEntityWrapper lmEntity) {
+    public void removeLevel(final @NotNull LivingEntityWrapper lmEntity) {
         assert lmEntity.isLevelled();
 
         // remove PDC value

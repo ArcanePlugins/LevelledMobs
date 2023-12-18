@@ -194,6 +194,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         }
 
         ResetDifficulty difficulty = switch (args[2].toLowerCase()) {
+            case "vanilla" -> ResetDifficulty.VANILLA;
             case "basic" -> ResetDifficulty.BASIC;
             case "average" -> ResetDifficulty.AVERAGE;
             case "advanced" -> ResetDifficulty.ADVANCED;
@@ -225,6 +226,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final String[] replaceWith = new String[]{"    #- average_challenge", ""};
 
         switch (difficulty) {
+            case VANILLA -> {
+                replaceWhat[1] = "#- vanilla_challenge";
+                replaceWith[1] = "- vanilla_challenge";
+            }
             case BASIC -> {
                 replaceWhat[1] = "#- basic_challenge";
                 replaceWith[1] = "- basic_challenge";
@@ -274,7 +279,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
     }
 
     private enum ResetDifficulty {
-        BASIC, AVERAGE, ADVANCED, EXTREME, UNSPECIFIED
+        VANILLA, BASIC, AVERAGE, ADVANCED, EXTREME, UNSPECIFIED
     }
 
     private void showHyperlink(final CommandSender sender, final String message, final String url) {
@@ -603,7 +608,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 "show_effective", "show_rule", "show_temp_disabled");
         } else if (args.length >= 3) {
             if ("reset".equalsIgnoreCase(args[1]) && args.length == 3) {
-                suggestions.addAll(List.of("basic", "average", "advanced", "extreme"));
+                suggestions.addAll(List.of("vanilla", "basic", "average", "advanced", "extreme"));
             } else if ("show_all".equalsIgnoreCase(args[1])) {
                 boolean showOnConsole = false;
                 for (int i = 2; i < args.length; i++) {

@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.DeathCause;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
@@ -161,25 +162,6 @@ public final class Utils {
         }
 
         return newList;
-    }
-
-    /**
-     * Sends a debug message to console if enabled in settings
-     *
-     * @param instance  LevelledMobs class
-     * @param debugType Reference to whereabouts the debug log is called so that it can be traced
-     *                  back easily
-     * @param msg       Message to help de-bugging
-     */
-    public static void debugLog(@NotNull final LevelledMobs instance,
-        @NotNull final DebugType debugType, @NotNull final String msg) {
-        if (instance.settingsCfg == null) {
-            return;
-        }
-
-        if (instance.companion.debugsEnabled.contains(debugType)) {
-            logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
-        }
     }
 
     /**
@@ -456,17 +438,21 @@ public final class Utils {
         final boolean hashChanged = !main.rulesManager.getCurrentRulesHash().equals(mobHash);
         if (hashChanged) {
             if (hadHash){
-                Utils.debugLog(main, DebugType.MOB_HASH, String.format("Invalid hash for %s %s"
+                DebugManager.log(DebugType.MOB_HASH, lmEntity, false, () -> String.format("Invalid hash for %s %s"
                         , lmEntity.getNameIfBaby(), Utils.showLocation(lmEntity.getLocation())));
             }
             else{
-                Utils.debugLog(main, DebugType.MOB_HASH, String.format("Hash missing for %s %s"
+                DebugManager.log(DebugType.MOB_HASH, lmEntity, false, () -> String.format("Hash missing for %s %s"
                         , lmEntity.getNameIfBaby(), Utils.showLocation(lmEntity.getLocation())));
             }
 
             // also setting the PDC key here because if the mob is not eligable for levelling then it will
             // run this same code repeatidly
             lmEntity.getPDC().set(main.namespacedKeys.mobHash, PersistentDataType.STRING, main.rulesManager.getCurrentRulesHash());
+        }
+        else {
+            DebugManager.log(DebugType.MOB_HASH, lmEntity, true, () -> String.format("Hash missing for %s %s"
+                    , lmEntity.getNameIfBaby(), Utils.showLocation(lmEntity.getLocation())));
         }
 
         return hashChanged;

@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.rules.ChunkKillOptions;
@@ -190,8 +191,8 @@ public class EntityDeathListener implements Listener {
                 return true;
             }
 
-            Utils.debugLog(main, DebugType.CHUNK_KILL_COUNT,
-                String.format("%s: player: %s, entity: %s, reached chunk kill limit, max: %s",
+            DebugManager.log(DebugType.CHUNK_KILL_COUNT, lmEntity, () ->
+                    String.format("%s: player: %s, entity: %s, reached chunk kill limit, max: %s",
                     Utils.displayChunkLocation(lmEntity.getLocation()), player.getName(),
                     lmEntity.getTypeName(), maximumDeathInChunkThreshold));
 

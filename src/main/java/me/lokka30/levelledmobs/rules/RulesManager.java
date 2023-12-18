@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.CachedModalList;
@@ -55,9 +56,9 @@ public class RulesManager {
     }
 
     private final LevelledMobs main;
-    @NotNull public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
+    public @NotNull final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
     final Map<String, RuleInfo> ruleNameMappings;
-    @NotNull public final Map<String, List<String>> biomeGroupMappings;
+    public @NotNull final Map<String, List<String>> biomeGroupMappings;
     final Map<String, List<Instant>> rulesCooldown;
     public boolean anyRuleHasChance;
     public boolean hasAnyWGCondition;
@@ -97,7 +98,7 @@ public class RulesManager {
         main.rulesParsingManager.checkCustomRules();
     }
 
-    @NotNull public List<String> getRuleNbtData(final @NotNull LivingEntityWrapper lmEntity) {
+    public @NotNull List<String> getRuleNbtData(final @NotNull LivingEntityWrapper lmEntity) {
         final List<String> nbtData = new LinkedList<>();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -139,7 +140,7 @@ public class RulesManager {
     }
 
     public boolean getRuleCheckIfNoDropMultiplierEntitiy(
-        @NotNull final LivingEntityWrapper lmEntity) {
+            final @NotNull LivingEntityWrapper lmEntity) {
         CachedModalList<String> entitiesList = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -152,8 +153,8 @@ public class RulesManager {
             lmEntity);
     }
 
-    @NotNull public CustomDropsRuleSet getRuleUseCustomDropsForMob(
-        @NotNull final LivingEntityWrapper lmEntity) {
+    public @NotNull CustomDropsRuleSet getRuleUseCustomDropsForMob(
+        final @NotNull LivingEntityWrapper lmEntity) {
         final CustomDropsRuleSet dropRules = new CustomDropsRuleSet();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -185,7 +186,7 @@ public class RulesManager {
         return dropRules;
     }
 
-    public boolean getRuleDoLockEntity(@NotNull final LivingEntityWrapper lmEntity) {
+    public boolean getRuleDoLockEntity(final @NotNull LivingEntityWrapper lmEntity) {
         boolean result = false;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -199,7 +200,7 @@ public class RulesManager {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean getRuleIsMobAllowedInEntityOverride(
-        @NotNull final LivingEntityInterface lmInterface) {
+        final @NotNull LivingEntityInterface lmInterface) {
         // check if it should be denied thru the entity override list
         boolean babyMobsInheritAdultSetting = true; // default
         CachedModalList<String> allowedEntitiesList = null;
@@ -227,8 +228,8 @@ public class RulesManager {
         }
     }
 
-    @Nullable public FineTuningAttributes getFineTuningAttributes(
-        @NotNull final LivingEntityWrapper lmEntity) {
+    public @Nullable FineTuningAttributes getFineTuningAttributes(
+        final @NotNull LivingEntityWrapper lmEntity) {
         FineTuningAttributes allMobAttribs = null;
         FineTuningAttributes thisMobAttribs = null;
 
@@ -253,8 +254,9 @@ public class RulesManager {
 
                     if (tempAttribs.doNotMerge)
                         allMobAttribs = null;
-                    else if (allMobAttribs != null)
+                    else if (allMobAttribs != null) {
                         allMobAttribs.merge(thisMobAttribs);
+                    }
                 } else {
                     thisMobAttribs.merge(tempAttribs);
                 }
@@ -788,12 +790,14 @@ public class RulesManager {
                 applicableRules.allApplicableRules.add(ruleInfo);
                 checkIfRuleShouldBeTempDisabled(ruleInfo, lmInterface);
 
-                if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
-                    Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING,
-                        String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
-                            ruleInfo.getRuleName(), lmInterface.getTypeName(),
-                            applicableRules.allApplicableRules.size()));
-                    break;
+                if (ruleInfo.stopProcessingRules != null) {
+                    final boolean result = ruleInfo.stopProcessingRules;
+                    DebugManager.log(DebugType.RULE_STOP_PROCESSING,
+                            ruleInfo, lmInterface, result,
+                            () -> String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
+                                    ruleInfo.getRuleName(), lmInterface.getTypeName(),
+                                    applicableRules.allApplicableRules.size()));
+                    if (!result) break;
                 }
             }
         }
@@ -835,8 +839,8 @@ public class RulesManager {
                     || ruleInfo.conditions_CooldownTime <= 0) {
                     return;
                 }
-                Utils.debugLog(main, DebugType.RULE_COOLDOWN,
-                    ruleInfo.getRuleName() + ": cooldown reached, disabling rule");
+                DebugManager.log(DebugType.RULE_COOLDOWN, () ->
+                        ruleInfo.getRuleName() + ": cooldown reached, disabling rule");
                 ruleInfo.isTempDisabled = true;
             }
         }
@@ -845,22 +849,25 @@ public class RulesManager {
     @SuppressWarnings("deprecation")
     private boolean isRuleApplicableEntity(final LivingEntityWrapper lmEntity,
                                            @NotNull final RuleInfo ri) {
-        if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled()
-            || lmEntity.getMobLevel() < ri.conditions_MinLevel)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL,
-                String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
+        if (ri.conditions_MinLevel != null) {
+            final boolean result = (!lmEntity.isLevelled()
+                    || lmEntity.getMobLevel() < ri.conditions_MinLevel);
+
+            DebugManager.log(DebugType.RULE_MAXLEVEL, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(),
                     ri.conditions_MinLevel));
-            return false;
+            if (!result) return false;
         }
 
-        if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled()
-            || lmEntity.getMobLevel() > ri.conditions_MaxLevel)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL,
-                String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
+        if (ri.conditions_MaxLevel != null) {
+            final boolean result = (!lmEntity.isLevelled()
+                    || lmEntity.getMobLevel() > ri.conditions_MaxLevel);
+            DebugManager.log(DebugType.RULE_MAXLEVEL, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(),
                     ri.conditions_MaxLevel));
-            return false;
+            if (!result) return false;
         }
 
         if (ri.conditions_WithinCoords != null && !ri.conditions_WithinCoords.isEmpty() &&
@@ -872,20 +879,22 @@ public class RulesManager {
             final String customName = lmEntity.getLivingEntity().getCustomName() != null ?
                 lmEntity.getLivingEntity().getCustomName() : "(none)";
 
-            if (!ri.conditions_CustomNames.isEnabledInList(customName, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME,
-                    String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
-                        ri.getRuleName(), lmEntity.getTypeName(), customName));
-                return false;
-            }
+            final boolean result = ri.conditions_CustomNames.isEnabledInList(customName, lmEntity);
+
+            DebugManager.log(DebugType.RULE_CUSTOM_NAME, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
+                    ri.getRuleName(), lmEntity.getTypeName(), customName));
+
+            if (!result) return false;
         }
 
-        if (ri.conditions_SpawnReasons != null && !ri.conditions_SpawnReasons.isEnabledInList(
-            lmEntity.getSpawnReason(), lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON,
-                String.format("&b%s&7, mob: &b%s&7, spawn reason: &b%s&7",
+        if (ri.conditions_SpawnReasons != null) {
+            final boolean result = ri.conditions_SpawnReasons.isEnabledInList(
+                    lmEntity.getSpawnReason(), lmEntity);
+            DebugManager.log(DebugType.RULE_SPAWN_REASON, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, spawn reason: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getSpawnReason()));
-            return false;
+            if (!result) return false;
         }
 
         if (ri.conditions_ApplyPlugins != null){
@@ -901,72 +910,74 @@ public class RulesManager {
                 }
             }
 
-            if (!madeIt) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
-                        String.format("&b%s&7, mob: &b%s&7, mob plugins: &b%s&7",
-                                ri.getRuleName(), lmEntity.getNameIfBaby(), mobCompats));
-                return false;
-            }
+            DebugManager.log(DebugType.RULE_PLUGIN_COMPAT, ri, lmEntity, madeIt,
+                    () -> String.format("&b%s&7, mob: &b%s&7, mob plugins: &b%s&7",
+                            ri.getRuleName(), lmEntity.getNameIfBaby(), mobCompats));
+                if (!madeIt) return false;
+
         }
 
         if (ri.conditions_MM_Names != null) {
-            String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-            if (mm_Name.isEmpty()) {
-                mm_Name = "(none)";
+            String mmName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+            if (mmName.isEmpty()) {
+                mmName = "(none)";
             }
 
-            if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME,
-                    String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
-                        ri.getRuleName(), lmEntity.getNameIfBaby(), mm_Name));
-                return false;
-            }
+            final boolean result = ri.conditions_MM_Names.isEnabledInList(mmName, lmEntity);
+            final String mmNameFinal = mmName;
+            DebugManager.log(DebugType.RULE_MYTHIC_MOBS_INTERNAL_NAME, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
+                    ri.getRuleName(), lmEntity.getNameIfBaby(), mmNameFinal));
+
+            if (!result) return false;
         }
 
         if (ri.conditions_SpawnerNames != null) {
-            String checkName = lmEntity.getSourceSpawnerName();
-            if (checkName == null) {
-                checkName = "(none)";
-            }
+            final String checkName = lmEntity.getSourceSpawnerName() != null ?
+                    lmEntity.getSourceSpawnerName() : "(none)";
 
-            if (!ri.conditions_SpawnerNames.isEnabledInList(checkName, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWNER_NAME,
-                    String.format("&b%s&7, mob: &b%s&7, spawner: &b%s&7",
-                        ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
-                return false;
-            }
+            final boolean result = ri.conditions_SpawnerNames.isEnabledInList(checkName, lmEntity);
+            DebugManager.log(DebugType.RULE_SPAWNER_NAME, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, spawner: &b%s&7",
+                    ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
+
+            if (!result) return false;
         }
 
         if (ri.conditions_SpawnegEggNames != null) {
-            String checkName = lmEntity.getSourceSpawnEggName();
-            if (checkName == null) {
-                checkName = "(none)";
-            }
+            final String checkName = lmEntity.getSourceSpawnEggName() != null ?
+                    lmEntity.getSourceSpawnEggName() : "(none)";
 
-            if (!ri.conditions_SpawnegEggNames.isEnabledInList(checkName, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWNER_NAME,
-                    String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
-                        ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
-                return false;
-            }
+            final boolean result = ri.conditions_SpawnegEggNames.isEnabledInList(checkName, lmEntity);
+            DebugManager.log(DebugType.RULE_SPAWNER_NAME, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
+                    ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
+
+            if (!result) return false;
         }
 
         if (ri.conditions_Permission != null) {
+
             if (lmEntity.associatedPlayer == null) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION,
-                    String.format("&b%s&7, mob: &b%s&7, no player was provided",
+                DebugManager.log(DebugType.RULE_PERMISSION, ri, lmEntity, false,
+                        () -> String.format("&b%s&7, mob: &b%s&7, no player was provided",
                         ri.getRuleName(), lmEntity.getNameIfBaby()));
                 return false;
             }
 
             if (!doesPlayerPassPermissionChecks(ri.conditions_Permission,
                 lmEntity.associatedPlayer)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION,
-                    String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
+                DebugManager.log(DebugType.RULE_PERMISSION, ri, lmEntity, false,
+                        () -> String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
                         ri.getRuleName(), lmEntity.getNameIfBaby(),
                         lmEntity.associatedPlayer.getName()));
                 return false;
             }
+
+            DebugManager.log(DebugType.RULE_PERMISSION, ri, lmEntity, true,
+                    () -> String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission granted",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(),
+                        lmEntity.associatedPlayer.getName()));
         }
 
         if (ri.conditions_MobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
@@ -975,24 +986,34 @@ public class RulesManager {
 
             if (hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NOT_NAMETAGGED ||
                     !hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NAMETAGGED) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME,
-                        String.format("&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
+                DebugManager.log(DebugType.RULE_CUSTOM_NAME, ri, lmEntity, false,
+                        () -> String.format("&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
                                 ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.getLivingEntity().getCustomName(),
                                 ri.conditions_MobCustomnameStatus));
                 return false;
             }
+
+            DebugManager.log(DebugType.RULE_CUSTOM_NAME, ri, lmEntity, true,
+                    () -> String.format("&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
+                            ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.getLivingEntity().getCustomName(),
+                            ri.conditions_MobCustomnameStatus));
         }
 
         if (ri.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED
             && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER) {
             if (lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.NOT_TAMED ||
                 !lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.TAMED) {
-                Utils.debugLog(main, DebugType.ENTITY_TAME,
-                    String.format("&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
+                DebugManager.log(DebugType.ENTITY_TAME, ri, lmEntity, false,
+                        () -> String.format("&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
                         ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.isMobTamed(),
                         ri.conditions_MobTamedStatus));
                 return false;
             }
+
+            DebugManager.log(DebugType.ENTITY_TAME, ri, lmEntity, true,
+                    () -> String.format("&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.isMobTamed(),
+                        ri.conditions_MobTamedStatus));
         }
 
         if (ri.conditions_ScoreboardTags != null) {
@@ -1007,23 +1028,23 @@ public class RulesManager {
                     madeCriteria = true;
                 }
             }
-            if (!madeCriteria) {
-                Utils.debugLog(main, DebugType.SCOREBOARD_TAGS, String.format("&b%s&7, mob: &b%s&7",
-                    ri.getRuleName(), lmEntity.getNameIfBaby()));
-                return false;
-            }
+
+            DebugManager.log(DebugType.SCOREBOARD_TAGS, ri, lmEntity, madeCriteria,
+                    () -> String.format("&b%s&7, mob: &b%s&7",
+                ri.getRuleName(), lmEntity.getNameIfBaby()));
+
+            if (!madeCriteria) return false;
         }
 
         if (ri.conditions_SkyLightLevel != null) {
             final int lightLevel = lmEntity.getSkylightLevel();
-            if (lightLevel < ri.conditions_SkyLightLevel.min
-                || lightLevel > ri.conditions_SkyLightLevel.max) {
-                Utils.debugLog(main, DebugType.SKYLIGHT_LEVEL, String.format(
-                    "&b%s&7, mob: &b%s&7, skylight: %s, criteria: %s",
-                    ri.getRuleName(), lmEntity.getNameIfBaby(), lightLevel,
-                    ri.conditions_SkyLightLevel));
-                return false;
-            }
+            final boolean result = (lightLevel > ri.conditions_SkyLightLevel.min
+                    || lightLevel < ri.conditions_SkyLightLevel.max);
+            DebugManager.log(DebugType.SKYLIGHT_LEVEL, ri, lmEntity, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, skylight: %s, criteria: %s",
+                ri.getRuleName(), lmEntity.getNameIfBaby(), lightLevel,
+                ri.conditions_SkyLightLevel));
+            return result;
         }
 
         return true;
@@ -1033,67 +1054,76 @@ public class RulesManager {
         final WithinCoordinates mdr = rule.conditions_WithinCoords;
 
         if (mdr.getHasX() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockX(), WithinCoordinates.Axis.X)){
-            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
+            DebugManager.log(DebugType.DENIED_RULE_WITH_COORDINATES, rule, lmEntity, false, () -> String.format(
                     "entity: %s, xCoord: %s, startX: %s, endX: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockX(), mdr.startX, mdr.endX));
             return false;
         }
 
         if (mdr.getHasY() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockY(), WithinCoordinates.Axis.Y)){
-            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
+            DebugManager.log(DebugType.DENIED_RULE_WITH_COORDINATES, rule, lmEntity, false, () -> String.format(
                     "entity: %s, yCoord: %s, startY: %s, endY: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockY(), mdr.startY, mdr.endY));
             return false;
         }
 
         if (mdr.getHasZ() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockZ(), WithinCoordinates.Axis.Z)){
-            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
+            DebugManager.log(DebugType.DENIED_RULE_WITH_COORDINATES, rule, lmEntity, false, () -> String.format(
                     "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockZ(), mdr.startZ, mdr.endZ));
             return false;
         }
+
+        DebugManager.log(DebugType.DENIED_RULE_WITH_COORDINATES, rule, lmEntity, true, () -> String.format(
+                "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
+                lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockZ(), mdr.startZ, mdr.endZ));
 
         return true;
     }
 
     @Contract("_, _ -> new")
     private @NotNull RuleCheckResult isRuleApplicableInterface(
-        final LivingEntityInterface lmInterface, final RuleInfo ri) {
+        final LivingEntityInterface lmInterface, final @NotNull RuleInfo ri) {
 
-        if (lmInterface instanceof final LivingEntityWrapper lmEntity) {
-            if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(
-                ri.conditions_Entities, lmEntity, true)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST,
-                    String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(),
-                        lmEntity.getNameIfBaby()));
-                return new RuleCheckResult(false);
-            }
-        } else {
-            // can't check groups if not a living entity wrapper
-            if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(
-                lmInterface.getTypeName(), null)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST,
-                    String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(),
-                        lmInterface.getTypeName()));
-                return new RuleCheckResult(false);
+        if (ri.conditions_Entities != null){
+            if (lmInterface instanceof final LivingEntityWrapper lmEntity) {
+                final boolean result = Utils.isLivingEntityInModalList(
+                        ri.conditions_Entities, lmEntity, true);
+                DebugManager.log(DebugType.RULE_ENTITIES_LIST, ri, lmInterface, result,
+                        () -> String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(),
+                                lmEntity.getNameIfBaby()));
+
+                if (!result) return new RuleCheckResult(false);
+            } else {
+                // can't check groups if not a living entity wrapper
+                final boolean result = ri.conditions_Entities.isEnabledInList(
+                        lmInterface.getTypeName(), null);
+
+                DebugManager.log(DebugType.RULE_ENTITIES_LIST, ri, lmInterface, result,
+                        () -> String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(),
+                                lmInterface.getTypeName()));
+
+                if (!result) return new RuleCheckResult(false);
             }
         }
 
-        if (!(lmInterface.isWasSummoned()) && ri.conditions_Worlds != null
-            && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST,
-                String.format("&b%s&7, mob: &b%s&7, mob world: &b%s&7",
-                    ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getWorld().getName()));
-            return new RuleCheckResult(false);
+        if (ri.conditions_Worlds != null){
+            final boolean result = (lmInterface.isWasSummoned() ||
+                ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null));
+            DebugManager.log(DebugType.RULE_WORLD_LIST, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, mob world: &b%s&7",
+                            ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getWorld().getName()));
+            if (!result) return new RuleCheckResult(false);
         }
 
-        if (ri.conditions_Biomes != null && !Utils.isBiomeInModalList(ri.conditions_Biomes,
-            lmInterface.getLocation().getBlock().getBiome(), main.rulesManager)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST,
-                String.format("&b%s&7, mob: &b%s&7, mob biome: &b%s&7",
+        if (ri.conditions_Biomes != null) {
+            final boolean result = Utils.isBiomeInModalList(ri.conditions_Biomes,
+                    lmInterface.getLocation().getBlock().getBiome(), main.rulesManager);
+            DebugManager.log(DebugType.RULE_BIOME_LIST, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, mob biome: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(),
                     lmInterface.getLocation().getBlock().getBiome().name()));
-            return new RuleCheckResult(false);
+            if (!result) return new RuleCheckResult(false);
         }
 
         if (ri.conditions_WGRegions != null
@@ -1112,12 +1142,10 @@ public class RulesManager {
                 }
             }
 
-            if (!isInList) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION,
-                    String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
-                return new RuleCheckResult(false);
-            }
+            DebugManager.log(DebugType.RULE_WG_REGION, ri, lmInterface, isInList,
+                    () -> String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
+                    ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
+            if (!isInList) return new RuleCheckResult(false);
         }
 
         if (ri.conditions_WGRegionOwners != null
@@ -1136,63 +1164,61 @@ public class RulesManager {
                 }
             }
 
-            if (!isInList) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION_OWNER,
-                    String.format("&b%s&7, mob: &b%s&7, wg_owners: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(), wgRegionOwners));
-                return new RuleCheckResult(false);
-            }
+            DebugManager.log(DebugType.RULE_WG_REGION_OWNER, ri, lmInterface, isInList,
+                    () -> String.format("&b%s&7, mob: &b%s&7, wg_owners: &b%s&7",
+                    ri.getRuleName(), lmInterface.getTypeName(), wgRegionOwners));
+
+            if (!isInList) return new RuleCheckResult(false);
         }
 
-        if (ri.conditions_ApplyAboveY != null
-            && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL,
-                String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, max-y: &b%s&7",
+        if (ri.conditions_ApplyAboveY != null) {
+            final boolean result = lmInterface.getLocation().getBlockY() > ri.conditions_ApplyAboveY;
+            DebugManager.log(DebugType.RULE_Y_LEVEL, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, max-y: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(),
                     lmInterface.getLocation().getBlockY(), ri.conditions_ApplyAboveY));
-            return new RuleCheckResult(false);
+            if (!result) return new RuleCheckResult(false);
         }
 
-        if (ri.conditions_ApplyBelowY != null
-            && lmInterface.getLocation().getBlockY() > ri.conditions_ApplyBelowY) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL,
-                String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, min-y: &b%s&7",
+        if (ri.conditions_ApplyBelowY != null) {
+            final boolean result = lmInterface.getLocation().getBlockY() < ri.conditions_ApplyBelowY;
+            DebugManager.log(DebugType.RULE_Y_LEVEL, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, min-y: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(),
                     lmInterface.getLocation().getBlockY(), ri.conditions_ApplyBelowY));
-            return new RuleCheckResult(false);
+            if (!result) return new RuleCheckResult(false);
         }
 
         if (ri.conditions_MinDistanceFromSpawn != null) {
-            if (lmInterface.getDistanceFromSpawn() < ri.conditions_MinDistanceFromSpawn) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_MIN_SPAWN_DISTANCE,
-                    String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(),
-                        Utils.round(lmInterface.getDistanceFromSpawn()),
-                        ri.conditions_MinDistanceFromSpawn));
-                return new RuleCheckResult(false);
-            }
+            final boolean result = lmInterface.getDistanceFromSpawn() >= ri.conditions_MinDistanceFromSpawn;
+            DebugManager.log(DebugType.RULE_MIN_SPAWN_DISTANCE, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
+                    ri.getRuleName(), lmInterface.getTypeName(),
+                    Utils.round(lmInterface.getDistanceFromSpawn()),
+                    ri.conditions_MinDistanceFromSpawn));
+
+            if (!result) return new RuleCheckResult(false);
         }
 
         if (ri.conditions_MaxDistanceFromSpawn != null) {
-            if (lmInterface.getDistanceFromSpawn() > ri.conditions_MaxDistanceFromSpawn) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_MAX_SPAWN_DISTANCE,
-                    String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(),
-                        Utils.round(lmInterface.getDistanceFromSpawn()),
-                        ri.conditions_MaxDistanceFromSpawn));
-                return new RuleCheckResult(false);
-            }
+            final boolean result = lmInterface.getDistanceFromSpawn() <= ri.conditions_MaxDistanceFromSpawn;
+            DebugManager.log(DebugType.RULE_MAX_SPAWN_DISTANCE, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
+                    ri.getRuleName(), lmInterface.getTypeName(),
+                    Utils.round(lmInterface.getDistanceFromSpawn()),
+                    ri.conditions_MaxDistanceFromSpawn));
+
+            if (!result) return new RuleCheckResult(false);
         }
 
         if (ri.conditions_WorldTickTime != null) {
             final int currentWorldTickTime = lmInterface.getSpawnedTimeOfDay();
+            final boolean result = Utils.isIntegerInModalList(ri.conditions_WorldTickTime, currentWorldTickTime);
+            DebugManager.log(DebugType.RULE_WORLD_TIME_TICK, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, tick time: &b%s&7",
+                    ri.getRuleName(), lmInterface.getTypeName(), currentWorldTickTime));
 
-            if (!Utils.isIntegerInModalList(ri.conditions_WorldTickTime, currentWorldTickTime)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_TIME_TICK,
-                    String.format("&b%s&7, mob: &b%s&7, tick time: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(), currentWorldTickTime));
-                return new RuleCheckResult(false, false);
-            }
+            if (!result) return new RuleCheckResult(false, false);
         }
 
         Boolean ruleMadeChance = null;
@@ -1209,13 +1235,13 @@ public class RulesManager {
 
             final float chanceRole =
                 (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
-            if (chanceRole < (1.0F - ri.conditions_Chance)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE,
-                    String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance,
-                        Utils.round(chanceRole, 4)));
-                return new RuleCheckResult(false, false);
-            }
+            final boolean result = chanceRole >= (1.0F - ri.conditions_Chance);
+            DebugManager.log(DebugType.RULE_CHANCE, ri, lmInterface, result,
+                    () -> String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
+                    ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance,
+                    Utils.round(chanceRole, 4)));
+
+            if (!result) return new RuleCheckResult(false, false);
 
             ruleMadeChance = true;
         }
@@ -1296,8 +1322,8 @@ public class RulesManager {
                 final int preCount = instants.size();
                 if (instants.removeIf(k -> Duration.between(k, Instant.now()).toMillis()
                     > rule.conditions_CooldownTime)) {
-                    Utils.debugLog(main, DebugType.RULE_COOLDOWN,
-                        String.format("rule: %s, removed cooldown entries, pre: %s, post: %s",
+                    DebugManager.log(DebugType.RULE_COOLDOWN, () ->
+                            String.format("rule: %s, removed cooldown entries, pre: %s, post: %s",
                             rule.getRuleName(), preCount, instants.size()));
                     if (instants.isEmpty()) {
                         rule.isTempDisabled = false;

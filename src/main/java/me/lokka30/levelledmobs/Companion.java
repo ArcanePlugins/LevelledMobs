@@ -63,6 +63,7 @@ import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -91,7 +92,6 @@ public class Companion {
         this.metricsInfo = new MetricsInfo(main);
         this.spawnerCopyIds = new LinkedList<>();
         this.spawnerInfoIds = new LinkedList<>();
-        this.debugsEnabled = new LinkedList<>();
         this.entityDeathInChunkCounter = new HashMap<>();
         this.chunkKillNoticationTracker = new HashMap<>();
         this.externalCompatibilityManager = new ExternalCompatibilityManager();
@@ -104,13 +104,13 @@ public class Companion {
     public List<String> updateResult;
     private boolean hadRulesLoadError;
     public boolean useAdventure;
+    public CommandSender reloadSender;
     final private HashMap<Long, Map<EntityType, ChunkKillInfo>> entityDeathInChunkCounter;
     final private HashMap<Long, Map<UUID, Instant>> chunkKillNoticationTracker;
     final public Map<Player, Location> playerNetherPortals;
     final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawnerCopyIds;
     final public List<UUID> spawnerInfoIds;
-    final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
     final public ExternalCompatibilityManager externalCompatibilityManager;
@@ -200,8 +200,6 @@ public class Companion {
     }
 
     private void parseDebugsEnabled() {
-        this.debugsEnabled.clear();
-
         final List<String> debugsEnabled = main.settingsCfg.getStringList(
             main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));
         if (debugsEnabled.isEmpty()) {
@@ -209,6 +207,7 @@ public class Companion {
         }
 
         boolean useAllDebugs = false;
+        boolean addedDebugs = false;
         for (final String debug : debugsEnabled) {
             if (Utils.isNullOrEmpty(debug)) {
                 continue;
@@ -221,19 +220,22 @@ public class Companion {
 
             try {
                 final DebugType debugType = DebugType.valueOf(debug.toUpperCase());
-                this.debugsEnabled.add(debugType);
+                main.debugManager.filterDebugTypes.add(debugType);
+                addedDebugs = true;
             } catch (final Exception ignored) {
                 Utils.logger.warning("Invalid value for debug-misc: " + debug);
             }
         }
 
         if (useAllDebugs){
-            this.debugsEnabled.clear();
-            this.debugsEnabled.addAll(List.of(DebugType.values()));
+            main.debugManager.filterDebugTypes.clear();
         }
 
-        if (!this.debugsEnabled.isEmpty()) {
-            Utils.logger.info("debug-misc items enabled: &b" + this.debugsEnabled);
+        if (addedDebugs && !main.debugManager.isEnabled()) {
+            final CommandSender useSender = this.reloadSender != null ?
+                    this.reloadSender : Bukkit.getConsoleSender();
+            main.debugManager.enableDebug(useSender);
+            useSender.sendMessage(main.debugManager.getDebugStatus());
         }
     }
 

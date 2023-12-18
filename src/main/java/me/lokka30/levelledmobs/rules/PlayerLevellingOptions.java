@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.rules;
 import java.util.LinkedList;
 import java.util.List;
 
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
 import me.lokka30.levelledmobs.result.PlayerLevelSourceResult;
@@ -166,12 +167,12 @@ public class PlayerLevellingOptions implements Cloneable {
 
             if (!foundMatch) {
                 if (playerLevelSourceResult.isNumericResult) {
-                    Utils.debugLog(lmEntity.main, DebugType.PLAYER_LEVELLING, String.format(
+                    DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                             "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
                             lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource,
                             capDisplay));
                 } else {
-                    Utils.debugLog(lmEntity.main, DebugType.PLAYER_LEVELLING, String.format(
+                    DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                             "mob: %s, player: %s, lvl-src: '%s', %sno tiers matched",
                             lmEntity.getNameIfBaby(), player.getName(),
                             playerLevelSourceResult.stringResult, capDisplay));
@@ -188,7 +189,7 @@ public class PlayerLevellingOptions implements Cloneable {
         }
 
 
-        String varianceDebug = "";
+        String varianceDebug;
         if (playerLevelSourceResult.randomVarianceResult != null){
             results.max += playerLevelSourceResult.randomVarianceResult;
             // ensure the min value is at least 1
@@ -197,6 +198,8 @@ public class PlayerLevellingOptions implements Cloneable {
             results.min = Math.min(results.min, results.max);
 
             varianceDebug = String.format(", var: %s", playerLevelSourceResult.randomVarianceResult);
+        } else {
+            varianceDebug = "";
         }
 
         if (options.levelCap != null) {
@@ -207,21 +210,22 @@ public class PlayerLevellingOptions implements Cloneable {
                 String.format(" (%s)", playerLevelSourceResult.homeNameUsed) : "";
 
         if (tierMatched == null) {
-            Utils.debugLog(lmEntity.main, DebugType.PLAYER_LEVELLING, String.format(
+            DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () ->  String.format(
                     "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
                     varianceDebug, levelSource, capDisplay, results));
         } else {
+            final String tierMatchedFinal = tierMatched;
             if (playerLevelSourceResult.isNumericResult) {
-                Utils.debugLog(lmEntity.main, DebugType.PLAYER_LEVELLING, String.format(
+                DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                         "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, tier: %s, %sresult: %s",
                         lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
-                        varianceDebug, levelSource, tierMatched, capDisplay, results));
+                        varianceDebug, levelSource, tierMatchedFinal, capDisplay, results));
             } else {
-                Utils.debugLog(lmEntity.main, DebugType.PLAYER_LEVELLING, String.format(
+                DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                         "mob: %s, player: %s, lvl-src: '%s'%s, tier: %s, %sresult: %s",
                         lmEntity.getNameIfBaby(), player.getName(),
-                        playerLevelSourceResult.stringResult, varianceDebug, tierMatched,
+                        playerLevelSourceResult.stringResult, varianceDebug, tierMatchedFinal,
                         capDisplay, results));
             }
         }

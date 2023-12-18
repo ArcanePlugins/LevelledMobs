@@ -15,6 +15,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
@@ -93,7 +94,7 @@ public class CustomDropsParser {
             parseCustomDrops(customDropsCfg);
         }
 
-        Utils.debugLog(main, DebugType.CUSTOM_DROPS, "Group Limits: " + handler.groupLimitsMap);
+        DebugManager.log(DebugType.CUSTOM_DROPS, () -> "Group Limits: " + handler.groupLimitsMap);
     }
 
     public @NotNull CustomDropsDefaults getDefaults(){
@@ -1005,28 +1006,26 @@ public class CustomDropsParser {
     public void showCustomDropsDebugInfo(final @NotNull CommandSender sender) {
         final StringBuilder sbMain = new StringBuilder();
 
-        if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
-            int dropsCount = 0;
-            int commandsCount = 0;
-            for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
-                for (final CustomDropBase base : cdi.customItems) {
-                    if (base instanceof CustomDropItem) {
-                        dropsCount++;
-                    } else if (base instanceof CustomCommand) {
-                        commandsCount++;
-                    }
+        int dropsCount = 0;
+        int commandsCount = 0;
+        for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
+            for (final CustomDropBase base : cdi.customItems) {
+                if (base instanceof CustomDropItem) {
+                    dropsCount++;
+                } else if (base instanceof CustomCommand) {
+                    commandsCount++;
                 }
             }
-
-            final int itemsCount =
-                    handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
-            final int customItemGroupCount = handler.customItemGroups != null ?
-                    handler.customItemGroups.size() : 0;
-            sbMain.append(String.format(
-                    "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
-                    handler.getCustomDropsitems().size(), itemsCount, customItemGroupCount,
-                    dropsCount, commandsCount));
         }
+
+        final int itemsCount =
+                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
+        final int customItemGroupCount = handler.customItemGroups != null ?
+                handler.customItemGroups.size() : 0;
+        sbMain.append(String.format(
+                "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
+                handler.getCustomDropsitems().size(), itemsCount, customItemGroupCount,
+                dropsCount, commandsCount));
 
         // build string list to alphabeticalize the drops by entity type including babies
         final SortedMap<String, EntityType> typeNames = new TreeMap<>();
