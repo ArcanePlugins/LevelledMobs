@@ -850,8 +850,8 @@ public class RulesManager {
     private boolean isRuleApplicableEntity(final LivingEntityWrapper lmEntity,
                                            final @NotNull RuleInfo ri) {
         if (ri.conditions_MinLevel != null) {
-            final boolean result = (!lmEntity.isLevelled()
-                    || lmEntity.getMobLevel() < ri.conditions_MinLevel);
+            final boolean result = (lmEntity.isLevelled() &&
+                    lmEntity.getMobLevel() >= ri.conditions_MinLevel);
 
             DebugManager.log(DebugType.RULE_MAXLEVEL, ri, lmEntity, result,
                     () -> String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
@@ -861,8 +861,8 @@ public class RulesManager {
         }
 
         if (ri.conditions_MaxLevel != null) {
-            final boolean result = (!lmEntity.isLevelled()
-                    || lmEntity.getMobLevel() > ri.conditions_MaxLevel);
+            final boolean result = (lmEntity.isLevelled() &&
+                    lmEntity.getMobLevel() <= ri.conditions_MaxLevel);
             DebugManager.log(DebugType.RULE_MAXLEVEL, ri, lmEntity, result,
                     () -> String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(),
@@ -872,6 +872,7 @@ public class RulesManager {
 
         if (ri.conditions_WithinCoords != null && !ri.conditions_WithinCoords.isEmpty() &&
             !meetsMaxDistanceCriteria(lmEntity, ri)){
+            // debug entries are inside the last function
             return false;
         }
 
@@ -1038,8 +1039,8 @@ public class RulesManager {
 
         if (ri.conditions_SkyLightLevel != null) {
             final int lightLevel = lmEntity.getSkylightLevel();
-            final boolean result = (lightLevel > ri.conditions_SkyLightLevel.min
-                    || lightLevel < ri.conditions_SkyLightLevel.max);
+            final boolean result = (lightLevel >= ri.conditions_SkyLightLevel.min
+                    && lightLevel <= ri.conditions_SkyLightLevel.max);
             DebugManager.log(DebugType.SKYLIGHT_LEVEL, ri, lmEntity, result,
                     () -> String.format("&b%s&7, mob: &b%s&7, skylight: %s, criteria: %s",
                 ri.getRuleName(), lmEntity.getNameIfBaby(), lightLevel,
