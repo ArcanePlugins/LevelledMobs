@@ -88,6 +88,7 @@ public class SpigotUtils {
         }
 
         final LivingEntityWrapper lmKiller = LivingEntityWrapper.getInstance(killer, main);
+        lmKiller.associatedPlayer = event.getEntity();
         if (!lmKiller.isLevelled()) {
             return lmKiller;
         }

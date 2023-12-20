@@ -618,14 +618,15 @@ public class LevelManager implements LevelInterface {
             final String deathMessage = main.rulesManager.getDeathMessage(lmEntity);
             if (deathMessage != null && !deathMessage.isEmpty()){
                 nametag = new StringReplacer(deathMessage.replace("%death_nametag%", nametag.text));
-                final Player player = lmEntity.getPlayerForLevelling();
+                final Player player = lmEntity.associatedPlayer;
                 nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
                 nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, preserveMobName);
                 //nametag.replaceIfExists("{DisplayName}", () -> main.rulesManager.getRuleNametagCreatureDeath(lmEntity));
                 preserveMobName = true;
-                if (nametag.contains("{DisplayName}")){
-                    customDeathMessage = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
-                }
+
+                customDeathMessage = nametag.contains("{DisplayName}") ?
+                        main.rulesManager.getRuleNametagCreatureDeath(lmEntity) :
+                        nametag.text;
             }
         }
 
