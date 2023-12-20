@@ -6,7 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author PenalBuffalo (aka stumper66)
+ * Provides methods for manipulating internal text
+ * components
+ *
+ * @author stumper66
+ * @since 3.9.3
  */
 public class ComponentUtils {
 

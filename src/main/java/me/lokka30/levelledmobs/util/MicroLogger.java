@@ -6,6 +6,12 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+/**
+ * Logging utility class.
+ *
+ * @author lokka30, stumper66
+ * @since 1.0.3
+ */
 @SuppressWarnings("deprecation")
 public class MicroLogger {
 

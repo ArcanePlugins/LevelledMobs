@@ -16,7 +16,11 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author PenalBuffalo (aka stumper66)
+ * Provides all NMS classes, fields and methods that are used for
+ * nametags and some Mythic Mobs stuff
+ *
+ * @author stumper66
+ * @since 3.9.2
  */
 public class Definitions {
 

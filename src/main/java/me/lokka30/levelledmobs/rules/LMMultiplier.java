@@ -1,5 +1,12 @@
 package me.lokka30.levelledmobs.rules;
 
+/**
+ * Used in rules to manipulate the various
+ * mob multipliers
+ *
+ * @author stumper66
+ * @since 3.9.0
+ */
 public enum LMMultiplier {
     ATTACK_DAMAGE,
     CREEPER_BLAST_DAMAGE,

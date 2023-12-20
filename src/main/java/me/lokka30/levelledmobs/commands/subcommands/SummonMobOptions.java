@@ -6,6 +6,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Holds information on used for creating a spawner cube, egg
+ * or mob summon
+ *
+ * @author stumper66
+ * @since 3.2.3
+ */
 public class SummonMobOptions {
 
     SummonMobOptions(

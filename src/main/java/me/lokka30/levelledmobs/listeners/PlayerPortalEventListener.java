@@ -14,6 +14,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Provides logic for when a player enters a portal.
+ * Used for various spawn distance placeholders
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 public class PlayerPortalEventListener implements Listener {
 
     public PlayerPortalEventListener(final LevelledMobs main) {

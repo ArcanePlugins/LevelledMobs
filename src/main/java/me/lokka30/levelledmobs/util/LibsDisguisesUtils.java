@@ -8,6 +8,13 @@ import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Various methods for detecting or updating mobs using
+ * Lib's Disguises
+ *
+ * @author stumper66
+ * @since 3.14.0
+ */
 public class LibsDisguisesUtils {
     static {
         hasLibsDisguises = ExternalCompatibilityManager.hasLibsDisguisesInstalled();

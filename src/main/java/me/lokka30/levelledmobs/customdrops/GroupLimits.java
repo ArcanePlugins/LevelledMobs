@@ -1,5 +1,12 @@
 package me.lokka30.levelledmobs.customdrops;
 
+/**
+ * Holds settings used for the group-limits feature
+ * of custom drops
+ *
+ * @author stumper66
+ * @since 3.13.0
+ */
 public class GroupLimits {
     public int capTotal;
     public int capEquipped;

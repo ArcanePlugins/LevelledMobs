@@ -7,7 +7,11 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author PenalBuffalo (aka stumper66)
+ * Holds various parsed data on the server verion
+ * that the server is running
+ *
+ * @author stumper66
+ * @since 3.10.3
  */
 @SuppressWarnings("unused")
 public class ServerVersionInfo {

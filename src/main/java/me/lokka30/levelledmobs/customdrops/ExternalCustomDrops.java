@@ -5,6 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+/**
+ * Provides an interface for 3rd party plugins to
+ * add custom drops
+ *
+ * @author stumper66
+ * @since 3.7.0
+ */
 @SuppressWarnings("unused")
 public interface ExternalCustomDrops {
     void addCustomDrop(final @NotNull CustomDropInstance customDropInstance);

@@ -18,6 +18,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Gives the user a specialized spawn egg that only spawns mobs within certain level criteria
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
 
     public SpawnerEggCommand(final LevelledMobs main) {

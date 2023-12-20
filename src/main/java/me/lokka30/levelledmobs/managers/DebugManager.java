@@ -20,6 +20,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
+/**
+ * Provides the logic for the debug system
+ *
+ * @author stumper66
+ * @since 3.14.0
+ */
 public class DebugManager {
     public DebugManager(){
         instance = this;

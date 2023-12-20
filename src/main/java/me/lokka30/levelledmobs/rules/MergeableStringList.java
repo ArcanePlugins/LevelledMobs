@@ -7,6 +7,13 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 
+/**
+ * Provides a list of strings that can be optionally
+ * merged together
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 @SuppressWarnings("unused")
 public class MergeableStringList {
 

@@ -7,6 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Holds settings relating to the custom
+ * death messages feature
+ *
+ * @author stumper66
+ * @since 3.7.0
+ */
 public class DeathMessages {
     public DeathMessages(){
         this.messages = new LinkedList<>();

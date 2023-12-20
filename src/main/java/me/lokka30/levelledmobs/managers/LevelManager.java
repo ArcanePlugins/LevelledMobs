@@ -621,7 +621,6 @@ public class LevelManager implements LevelInterface {
                 final Player player = lmEntity.associatedPlayer;
                 nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
                 nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, preserveMobName);
-                //nametag.replaceIfExists("{DisplayName}", () -> main.rulesManager.getRuleNametagCreatureDeath(lmEntity));
                 preserveMobName = true;
 
                 customDeathMessage = nametag.contains("{DisplayName}") ?

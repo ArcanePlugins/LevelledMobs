@@ -9,6 +9,13 @@ import java.util.stream.Stream;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Holds lists of entity types that are only present in minecraft 1.19 and newer.  Must be a
+ * separate class to maintain compatibility with older versions
+ *
+ * @author stumper66
+ * @since 3.6.0
+ */
 public class Compat1_19 {
 
     public static HashSet<EntityType> getPassiveMobs() {

@@ -12,6 +12,12 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Used for detecting mobs using Mythic Mobs
+ *
+ * @author stumper66
+ * @since 3.6.0
+ */
 public class MythicMobUtils {
     public @Nullable static MythicMobsMobInfo getMythicMobInfo(final @NotNull LivingEntityWrapper lmEntity) {
         // the below code was written against MythicMobs v5.0.4-f1007ca3

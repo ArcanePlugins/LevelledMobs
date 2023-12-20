@@ -23,6 +23,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Holds Paper server specific logic for processing the
+ * player death event
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 public class PlayerDeathListener {
 
     public PlayerDeathListener(final LevelledMobs main) {
