@@ -34,6 +34,7 @@ import me.lokka30.levelledmobs.listeners.CombustListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageListener;
 import me.lokka30.levelledmobs.listeners.EntityNametagListener;
+import me.lokka30.levelledmobs.listeners.EntityPickupItemListener;
 import me.lokka30.levelledmobs.listeners.EntityRegainHealthListener;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.listeners.EntityTameListener;
@@ -289,6 +290,7 @@ public class Companion {
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         pluginManager.registerEvents(new PlayerPortalEventListener(main), main);
+        pluginManager.registerEvents(new EntityPickupItemListener(), main);
         main.chunkLoadListener = new ChunkLoadListener(main);
         main.playerInteractEventListener = new PlayerInteractEventListener(main);
         pluginManager.registerEvents(main.playerInteractEventListener, main);

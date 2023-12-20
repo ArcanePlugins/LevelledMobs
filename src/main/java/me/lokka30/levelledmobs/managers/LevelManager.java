@@ -46,6 +46,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
 import me.lokka30.levelledmobs.misc.StringReplacer;
+import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.result.NametagResult;
@@ -538,14 +539,15 @@ public class LevelManager implements LevelInterface {
     public void removeVanillaDrops(final @NotNull LivingEntityWrapper lmEntity,
         final List<ItemStack> drops) {
         boolean hadSaddle = false;
-        List<ItemStack> chestItems = null;
+        List<ItemStack> itemsToKeep = new LinkedList<>();
+        final List<ItemStack> pickedUpItems = main.getVerInfo().getIsRunningPaper() ?
+                PaperUtils.getMobPickedUpItems(lmEntity) : null;
 
         if (lmEntity.getLivingEntity() instanceof ChestedHorse
             && ((ChestedHorse) lmEntity.getLivingEntity()).isCarryingChest()) {
             final AbstractHorseInventory inv = ((ChestedHorse) lmEntity.getLivingEntity()).getInventory();
-            chestItems = new LinkedList<>();
-            Collections.addAll(chestItems, inv.getContents());
-            chestItems.add(new ItemStack(Material.CHEST));
+            Collections.addAll(itemsToKeep, inv.getContents());
+            itemsToKeep.add(new ItemStack(Material.CHEST));
         } else if (lmEntity.getLivingEntity() instanceof Vehicle) {
             for (final ItemStack itemStack : drops) {
                 if (itemStack.getType() == Material.SADDLE) {
@@ -555,10 +557,20 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        drops.clear();
-        if (chestItems != null) {
-            drops.addAll(chestItems);
+        if (pickedUpItems != null){
+            for (final ItemStack mobItem : drops){
+                for (final ItemStack foundItem : pickedUpItems){
+                    if (mobItem.isSimilar(foundItem)){
+                        Utils.logger.info("found item to keep: " + mobItem);
+                        itemsToKeep.add(mobItem);
+                        break;
+                    }
+                }
+            }
         }
+
+        drops.clear();
+        drops.addAll(itemsToKeep);
         if (hadSaddle) {
             drops.add(new ItemStack(Material.SADDLE));
         }
