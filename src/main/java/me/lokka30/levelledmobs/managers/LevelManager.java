@@ -561,7 +561,6 @@ public class LevelManager implements LevelInterface {
             for (final ItemStack mobItem : drops){
                 for (final ItemStack foundItem : pickedUpItems){
                     if (mobItem.isSimilar(foundItem)){
-                        Utils.logger.info("found item to keep: " + mobItem);
                         itemsToKeep.add(mobItem);
                         break;
                     }
