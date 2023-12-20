@@ -13,6 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.util.LibsDisguisesUtils;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
@@ -41,6 +43,8 @@ public class NametagQueueManager {
         this.main = main;
         this.nametagSenderHandler = new NametagSenderHandler();
         this.queue = new LinkedBlockingQueue<>();
+        this.hasLibsDisguisesInstalled = ExternalCompatibilityManager.hasLibsDisguisesInstalled();
+
         getNMSUtil();
     }
 
@@ -48,11 +52,11 @@ public class NametagQueueManager {
     private boolean isRunning;
     private boolean doThread;
     private NametagSender nametagSender;
+    private final boolean hasLibsDisguisesInstalled;
     private final LinkedBlockingQueue<QueueItem> queue;
     public final NametagSenderHandler nametagSenderHandler;
 
     private void getNMSUtil() {
-
         this.nametagSender = nametagSenderHandler.getCurrentUtil();
     }
 
@@ -256,6 +260,12 @@ public class NametagQueueManager {
                 for (final Player player : lmEntity.playersNeedingNametagCooldownUpdate) {
                     nametagSender.sendNametag(lmEntity.getLivingEntity(), nametag, player, true);
                 }
+            }
+
+            if (hasLibsDisguisesInstalled && LibsDisguisesUtils.isMobUsingLibsDisguises(lmEntity)){
+                final String useNametag = nametag.getNametag() != null ?
+                        MessageUtils.colorizeAll(nametag.getNametag()) : null;
+                LibsDisguisesUtils.updateLibsDisguiseNametag(lmEntity, useNametag);
             }
         }
     }

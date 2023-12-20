@@ -6,10 +6,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,6 +55,10 @@ public class Definitions {
     Class<?> clazz_EntityPlayer;
     Class<?> clazz_PaperAdventure;
     Class<?> clazz_EntityTypes;
+    // mythic mobs:
+    public Class<?> clazz_MM_MobExecutor;
+    public Class<?> clazz_MM_ActiveMob;
+    public Class<?> clazz_MM_MobType;
 
     // methods:
     Method method_ComponentAppend;
@@ -76,12 +83,20 @@ public class Definitions {
     Method method_SynchedEntityData_Define;
     Method method_DataWatcher_GetItem;
     Method method_DataWatcherItem_Value;
+    // mythic mobs:
+    public Method method_MM_getActiveMob;
 
     // fields
     Field field_OPTIONAL_COMPONENT;
     Field field_BOOLEAN;
     Field field_Connection;
     Field field_Int2ObjectMap;
+    // mythic mobs:
+    public Field field_MM_mobManager;
+    public Field field_MM_type;
+    public Field field_MM_preventOtherDrops;
+    public Field field_MM_preventRandomEquipment;
+    public Field field_MM_internalName;
 
     // Constructors
     Constructor<?> ctor_EntityDataAccessor;
@@ -106,6 +121,7 @@ public class Definitions {
             buildSimpleMethods();
             buildFields();
             buildConstructors();
+            buildMythicMobs();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -488,6 +504,36 @@ public class Definitions {
             this.ctor_Packet = clazz_ClientboundSetEntityDataPacket.getConstructor(
                 int.class, clazz_DataWatcher, boolean.class);
         }
+    }
+
+    private void buildMythicMobs() throws
+            NoSuchMethodException, NoSuchFieldException, ClassNotFoundException {
+        // io.lumine.mythic.bukkit.MythicBukkit
+        final Plugin mmMain = Bukkit.getPluginManager().getPlugin("MythicMobs");
+        if (mmMain == null || !mmMain.isEnabled()) {
+            return;
+        }
+
+        this.clazz_MM_ActiveMob = Class.forName("io.lumine.mythic.core.mobs.ActiveMob");
+        this.clazz_MM_MobExecutor = Class.forName("io.lumine.mythic.core.mobs.MobExecutor");
+        this.clazz_MM_MobType = Class.forName("io.lumine.mythic.core.mobs.MobType");
+
+        this.method_MM_getActiveMob = this.clazz_MM_MobExecutor.getMethod("getActiveMob",
+                UUID.class);
+
+        this.field_MM_mobManager = mmMain.getClass().getDeclaredField("mobManager");
+        this.field_MM_mobManager.setAccessible(true);
+        this.field_MM_type = this.clazz_MM_ActiveMob.getDeclaredField("type");
+        this.field_MM_type.setAccessible(true);
+        this.field_MM_preventOtherDrops = this.clazz_MM_MobType.getDeclaredField(
+                "preventOtherDrops"); // boolean
+        this.field_MM_preventOtherDrops.setAccessible(true);
+        this.field_MM_preventRandomEquipment = this.clazz_MM_MobType.getDeclaredField(
+                "preventRandomEquipment"); // boolean
+        this.field_MM_preventRandomEquipment.setAccessible(true);
+        this.field_MM_internalName = this.clazz_MM_MobType.getDeclaredField(
+                "internalName"); // string
+        this.field_MM_internalName.setAccessible(true);
     }
 
     public boolean hasKiori() {

@@ -125,7 +125,7 @@ public class ExternalCompatibilityManager {
         return checkIfPluginIsInstalledAndEnabled("NBTAPI");
     }
 
-    @NotNull public static String getPapiPlaceholder(final Player player, final String placeholder) {
+    public @NotNull static String getPapiPlaceholder(final Player player, final String placeholder) {
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
     }
 
@@ -137,11 +137,15 @@ public class ExternalCompatibilityManager {
         return checkIfPluginIsInstalledAndEnabled("MythicMobs");
     }
 
+    public static boolean hasLibsDisguisesInstalled() {
+        return checkIfPluginIsInstalledAndEnabled("LibsDisguises");
+    }
+
     public static boolean hasWorldGuardInstalled() {
         return checkIfPluginIsInstalledAndEnabled("WorldGuard");
     }
 
-    private static boolean isMobOfSimplePets(@NotNull final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfSimplePets(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("SimplePets");
         if (plugin == null || !plugin.isEnabled()) {
             return false;
@@ -161,7 +165,7 @@ public class ExternalCompatibilityManager {
         }
     }
 
-    private static boolean isMobOfEliteBosses(@NotNull final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfEliteBosses(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("EliteBosses");
         if (plugin == null || !plugin.isEnabled()) {
             return false;
@@ -176,7 +180,7 @@ public class ExternalCompatibilityManager {
         return false;
     }
 
-    public static boolean isMobOfBloodNight(@NotNull final LivingEntityWrapper lmEntity) {
+    public static boolean isMobOfBloodNight(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("BloodNight");
         if (plugin == null || !plugin.isEnabled()) {
             return false;
@@ -191,7 +195,7 @@ public class ExternalCompatibilityManager {
         return isBloodNightMob;
     }
 
-    public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
+    public static boolean isMythicMob(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null || !p.isEnabled()) {
             return false;
@@ -203,7 +207,7 @@ public class ExternalCompatibilityManager {
         }
     }
 
-    @NotNull public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity) {
+    public @NotNull static String getMythicMobInternalName(final @NotNull LivingEntityWrapper lmEntity) {
         if (!isMythicMob(lmEntity)) {
             return "";
         }
@@ -292,7 +296,7 @@ public class ExternalCompatibilityManager {
         return LevellableState.ALLOWED;
     }
 
-    public static void updateAllExternalCompats(final LivingEntityWrapper lmEntity) {
+    public static void updateAllExternalCompats(final @NotNull LivingEntityWrapper lmEntity) {
         isMobOfDangerousCaves(lmEntity);
         isMobOfEcoBosses(lmEntity);
         isMobOfMythicMobs(lmEntity);
@@ -310,7 +314,7 @@ public class ExternalCompatibilityManager {
      * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
      * @author lokka30, stumper66, imDaniX (author of DC2 - provided part of this method)
      */
-    private static boolean isMobOfDangerousCaves(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfDangerousCaves(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("DangerousCaves");
         if (plugin == null) {
             return false;
@@ -335,7 +339,7 @@ public class ExternalCompatibilityManager {
      * @return if the compat is enabled and if the mob belongs to EcoBosses
      * @author lokka30, Auxilor (author of EcoBosses - provided part of this method)
      */
-    private static boolean isMobOfEcoBosses(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfEcoBosses(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("EcoBosses");
         if (plugin == null) {
             return false;
@@ -359,7 +363,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if MythicMobs compatibility enabled and entity is from MythicMobs
      */
-    private static boolean isMobOfMythicMobs(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfMythicMobs(final @NotNull LivingEntityWrapper lmEntity) {
         if (!ExternalCompatibilityManager.hasMythicMobsInstalled()) {
             return false;
         }
@@ -379,7 +383,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if EliteMobs compatibility enabled and entity is from EliteMobs
      */
-    private static boolean isMobOfEliteMobs(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfEliteMobs(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("EliteMobs");
         if (p != null) {
             // 7.3.12 and newer uses a different namespaced key
@@ -463,7 +467,7 @@ public class ExternalCompatibilityManager {
         return isExternalType;
     }
 
-    @NotNull public static List<String> getWGRegionsAtLocation(
+    public @NotNull static List<String> getWGRegionsAtLocation(
         @NotNull final LivingEntityInterface lmInterface) {
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) {
             return Collections.emptyList();
@@ -472,7 +476,7 @@ public class ExternalCompatibilityManager {
         return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface);
     }
 
-    @NotNull public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player,
+    public @NotNull static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player,
         final boolean allowBed) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("essentials");
         if (plugin == null) {

@@ -99,6 +99,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public boolean lockEntitySettings;
     public boolean hasLockedDropsOverride;
     public Boolean playerLevellingAllowDecrease;
+    public Object libsDisguiseCache;
     public Set<Player> playersNeedingNametagCooldownUpdate;
     public EntityDamageEvent.DamageCause deathCause;
     public List<String> nbtData;
@@ -183,6 +184,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void clearEntityData() {
         this.livingEntity = null;
+        this.libsDisguiseCache = null;
         this.chunkKillcount = 0;
         this.applicableGroups.clear();
         this.applicableRules.clear();

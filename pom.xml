@@ -124,9 +124,21 @@
       <id>First Dark</id> <!-- Mojang Authlib -->
       <url>https://maven.firstdarkdev.xyz/#/releases</url>
     </repository>
+    <repository>
+      <id>md_5-public</id>
+      <url>https://repo.md-5.net/content/groups/public/</url>
+    </repository>
+
   </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>LibsDisguises</groupId>
+      <artifactId>LibsDisguises</artifactId>
+      <version>10.0.40-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Dependencies which are shaded in LM -->
     <dependency>
       <groupId>org.bstats</groupId>
