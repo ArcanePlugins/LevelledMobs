@@ -91,19 +91,19 @@ public class SchedulerWrapper {
         }
     }
 
-    public SchedulerResult runTaskTimerAsynchronously(final long delayMS, final long periodMS){
+    public SchedulerResult runTaskTimerAsynchronously(final long initialDelayMS, final long repeatPeriodMS){
         if (main.getVerInfo().getIsRunningFolia()){
             final Consumer<ScheduledTask> task = scheduledTask -> runnable.run();
             final ScheduledTask scheduledTask = org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(
-                    main, task, delayMS, periodMS, TimeUnit.MILLISECONDS);
+                    main, task, initialDelayMS, repeatPeriodMS, TimeUnit.MILLISECONDS);
 
             return new SchedulerResult(scheduledTask);
         }
         else{
             // convert milliseconds into approximent ticks
             // 1 tick = ~ 50ms
-            long convertedDelay = delayMS / 50L;
-            long convertedPeriod = periodMS / 50L;
+            long convertedDelay = initialDelayMS / 50L;
+            long convertedPeriod = repeatPeriodMS / 50L;
 
             final BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
                     main, runnable, convertedDelay, convertedPeriod);

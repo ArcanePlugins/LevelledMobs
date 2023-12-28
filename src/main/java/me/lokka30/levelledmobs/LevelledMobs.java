@@ -39,6 +39,7 @@ import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.levelledmobs.util.ConfigUtils;
 import me.lokka30.levelledmobs.util.QuickTimer;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -154,9 +155,12 @@ public final class LevelledMobs extends JavaPlugin {
     private void prepareToLoadCustomDrops(){
         if (Bukkit.getPluginManager().getPlugin("LM_Items") != null){
             final LevelledMobs mainInstance = this;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> customDropsHandler.customDropsParser.loadDrops(
-                    FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-            ), 10L);
+            final SchedulerWrapper wrapper = new SchedulerWrapper(() -> {
+                customDropsHandler.customDropsParser.loadDrops(
+                        FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION));
+                companion.hasFinishedLoading = true;
+            });
+            wrapper.runDelayed(10L);
         }
         else{
             customDropsHandler.customDropsParser.loadDrops(
@@ -167,6 +171,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     public void reloadLM(final @NotNull CommandSender sender) {
         migratedFromPre30 = false;
+        customDropsHandler.customDropsParser.invalidExternalItems.clear();
         List<String> reloadStartedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.started");
         reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%",

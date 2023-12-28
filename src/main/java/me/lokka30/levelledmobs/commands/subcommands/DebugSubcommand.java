@@ -52,27 +52,28 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length <= 1) {
-            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation / spawn_distance, lew_count");
+            sender.sendMessage("Please select a debug option");
             return;
         }
 
         switch (args[1].toLowerCase()){
-            case "create" -> createDebugZip(args);
-            case "chunk_kill_count" -> chunkKillCount(sender, args);
-            case "nbt_dump" -> nbtDump(args);
+            case "create-zip" -> createDebugZip(args);
+            case "chunk-kill-count" -> chunkKillCount(sender, args);
+            case "nbt-dump", "nbt_dump" -> nbtDump(args);
             case "mylocation" -> showPlayerLocation(sender);
-            case "spawn_distance" -> showSpawnDistance(sender, args);
-            case "lew_debug" -> showLEWDebug(sender);
-            case "lew_clear" -> clearLEWCache(sender);
-            case "show_customdrops" -> showCustomDrops();
+            case "spawn-distance" -> showSpawnDistance(sender, args);
+            case "lew-debug" -> showLEWDebug(sender);
+            case "lew-clear" -> clearLEWCache(sender);
+            case "show-customdrops" -> showCustomDrops();
             // active debugging options:
-            case "disable" -> enableOrDisableDebug(false);
-            case "disable_after" -> parseDisableAfter(args);
-            case "enable" -> enableOrDisableDebug(true);
-            case "filter" -> parseFilter(args);
-            case "output_to" -> parseOutputTo(args);
-            case "status" -> commandSender.sendMessage(main.debugManager.getDebugStatus());
-            default -> showMessage("other.create-debug");
+            case "enable" -> enableOrDisableDebug(true, false);
+            case "enable-all" -> enableOrDisableDebug(true, true);
+            case "enable-timer" -> parseEnableTimer(args);
+            case "disable", "disable-all" -> enableOrDisableDebug(false, false);
+            case "filter-results" -> parseFilter(args);
+            case "output-debug" -> parseOutputTo(args);
+            case "view-debug-status" -> commandSender.sendMessage(main.debugManager.getDebugStatus());
+            default -> commandSender.sendMessage("Please enter a debug option.");
         }
     }
 
@@ -95,7 +96,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
     }
 
-    private void parseDisableAfter(final String @NotNull [] args){
+    private void parseEnableTimer(final String @NotNull [] args){
         if (args.length <= 2){
             commandSender.sendMessage("No value was specified");
             return;
@@ -105,6 +106,8 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         if ("0".equals(input) || "none".equalsIgnoreCase(input)){
             main.debugManager.disableAfter = null;
             main.debugManager.disableAfterStr = null;
+            main.debugManager.timerWasChanged();
+            commandSender.sendMessage("Debug timer disabled");
             return;
         }
 
@@ -114,23 +117,36 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         if (disableAfter != null){
             main.debugManager.disableAfter = disableAfter;
             main.debugManager.disableAfterStr = input;
+            commandSender.sendMessage("Debug enabled for " + input);
+            if (main.debugManager.isEnabled())
+                main.debugManager.timerWasChanged();
+            else
+                main.debugManager.enableDebug(commandSender, true, false);
         }
     }
 
     private void parseOutputTo(final String @NotNull [] args){
         if (args.length <= 2){
-            commandSender.sendMessage("No value was specified");
+            commandSender.sendMessage("Current value: " + main.debugManager.outputType.name(
+                ).toLowerCase().replace("_", "-"));
             return;
         }
+        boolean wasInvalid = false;
 
         switch (args[2].toLowerCase()){
-            case "console" -> main.debugManager.outputType = DebugManager.OutputTypes.CONSOLE;
-            case "chat" -> main.debugManager.outputType = DebugManager.OutputTypes.CHAT;
-            case "both" -> main.debugManager.outputType = DebugManager.OutputTypes.BOTH;
-            default -> commandSender.sendMessage("Invalid option: " + args[2]);
+            case "to-console" -> main.debugManager.outputType = DebugManager.OutputTypes.TO_CONSOLE;
+            case "to-chat" -> main.debugManager.outputType = DebugManager.OutputTypes.TO_CHAT;
+            case "to-both" -> main.debugManager.outputType = DebugManager.OutputTypes.TO_BOTH;
+            default -> {
+                commandSender.sendMessage("Invalid option: " + args[2]);
+                wasInvalid = true;
+            }
         }
+        if (!wasInvalid)
+            commandSender.sendMessage("Output-debug updated to " + main.debugManager.outputType.name(
+                ).replace("_", "-").toLowerCase());
 
-        if (main.debugManager.outputType != DebugManager.OutputTypes.CONSOLE){
+        if (main.debugManager.outputType != DebugManager.OutputTypes.TO_CONSOLE){
             commandSender.sendMessage("WARNING: sending debug messages to chat can cause huge chat spam.");
         }
     }
@@ -139,15 +155,24 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         main.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(commandSender);
     }
 
-    private void enableOrDisableDebug(final boolean isEnable){
+    private void enableOrDisableDebug(final boolean isEnable, final boolean isEnableAll){
         final boolean wasEnabled = main.debugManager.isEnabled();
 
         if (isEnable){
-            main.debugManager.enableDebug(commandSender);
-            if (wasEnabled)
-                commandSender.sendMessage("Debugging is already enabled");
-            else
-                commandSender.sendMessage("Debugging is now enabled");
+            boolean wasTimerEnabled = main.debugManager.getIsTimerEnabled();
+            main.debugManager.enableDebug(commandSender, false, isEnableAll);
+            if (wasEnabled){
+                if (wasTimerEnabled)
+                    commandSender.sendMessage("Debugging is already enabled, disabled timer");
+                else
+                    commandSender.sendMessage("Debugging is already enabled");
+            }
+            else {
+                if (isEnableAll)
+                    commandSender.sendMessage("All debug options enabled");
+                else
+                    commandSender.sendMessage("Debugging is now enabled");
+            }
         }
         else{
             main.debugManager.disableDebug();
@@ -160,39 +185,79 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
 
     private void parseFilter(final String @NotNull [] args){
         if (args.length == 2){
-            commandSender.sendMessage("Options: entities, rule_names, rule_eval, max_player_dist, players, min_y_level, max_y_level, types");
+            commandSender.sendMessage("Please enter a filter option");
             return;
         }
 
         switch (args[2].toLowerCase()){
-            case "types" -> parseTypeValues(args, ListTypes.DEBUG);
-            case "entities" -> parseTypeValues(args, ListTypes.ENTITY);
-            case "rule_names" -> parseTypeValues(args, ListTypes.RULE_NAMES);
-            case "rule_eval" -> updateEvaluationType(args);
-            case "max_player_dist" -> parseNumberValue(args, NumberSettings.MAX_PLAYERS_DIST);
-            case "players" -> parseTypeValues(args, ListTypes.PLAYERS);
-            case "min_y_level" -> parseNumberValue(args, NumberSettings.MIN_Y_LEVEL);
-            case "max_y_level" -> parseNumberValue(args, NumberSettings.MAX_Y_LEVEL);
+            case "set-debug" -> parseTypeValues(args, ListTypes.DEBUG);
+            case "set-entities" -> parseTypeValues(args, ListTypes.ENTITY);
+            case "set-rules" -> parseTypeValues(args, ListTypes.RULE_NAMES);
+            case "listen-for" -> updateEvaluationType(args);
+            case "set-distance-from-players" -> parseNumberValue(args, NumberSettings.MAX_PLAYERS_DIST);
+            case "set-players" -> parseTypeValues(args, ListTypes.PLAYERS);
+            case "set-y-height" -> parseYHeight(args);
+            case "clear-all-filters" -> resetFilters();
         }
     }
 
+    private void parseYHeight(final String @NotNull [] args){
+        if (args.length <= 3){
+            if (main.debugManager.minYLevel == null && main.debugManager.maxYLevel == null)
+                commandSender.sendMessage("Please set a min and/or max y-height, or clear the filter");
+            else
+                commandSender.sendMessage("min-y-height: " + main.debugManager.minYLevel +
+                        ", max-y-height: " + main.debugManager.maxYLevel);
+            return;
+        }
+
+        switch (args[3].toLowerCase()){
+            case "min-y-height" -> parseNumberValue(args, NumberSettings.MIN_Y_LEVEL);
+            case "max-y-height" -> parseNumberValue(args, NumberSettings.MAX_Y_LEVEL);
+            case "clear" -> {
+                main.debugManager.minYLevel = null;
+                main.debugManager.maxYLevel = null;
+                commandSender.sendMessage("All y-height filters cleared");
+            }
+            default -> commandSender.sendMessage("Invalid option");
+        }
+    }
+
+    private void resetFilters(){
+        main.debugManager.resetFilters();
+        commandSender.sendMessage("All filters have been cleared");
+    }
+
     private void parseNumberValue(final String @NotNull [] args, final @NotNull NumberSettings numberSetting){
-        if (args.length == 3){
+        final int argNumber = numberSetting == NumberSettings.MAX_PLAYERS_DIST ?
+                3 : 4;
+
+        if (args.length == argNumber){
             commandSender.sendMessage("No value was specified");
             return;
         }
-        final boolean useNull = "none".equalsIgnoreCase(args[3]);
+
+        final boolean useNull = "none".equalsIgnoreCase(args[argNumber]);
         try {
             final Integer value = useNull ?
-                   null : Integer.parseInt(args[3]);
+                   null : Integer.parseInt(args[argNumber]);
             switch (numberSetting){
-                case MAX_PLAYERS_DIST -> main.debugManager.maxPlayerDistance = value;
-                case MIN_Y_LEVEL -> main.debugManager.minYLevel = value;
-                case MAX_Y_LEVEL -> main.debugManager.maxYLevel = value;
+                case MAX_PLAYERS_DIST -> {
+                    main.debugManager.maxPlayerDistance = value;
+                    commandSender.sendMessage("Distance from players set to " + value);
+                }
+                case MIN_Y_LEVEL -> {
+                    main.debugManager.minYLevel = value;
+                    commandSender.sendMessage("Min y-height set to " + value);
+                }
+                case MAX_Y_LEVEL -> {
+                    main.debugManager.maxYLevel = value;
+                    commandSender.sendMessage("Max y-height set to " + value);
+                }
             }
         }
         catch (Exception ignored){
-            commandSender.sendMessage("Invalid number: " + args[3]);
+            commandSender.sendMessage("Invalid number: " + args[argNumber]);
         }
     }
 
@@ -205,20 +270,35 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         try {
             main.debugManager.evaluationType =
                     DebugManager.EvaluationTypes.valueOf(args[3].toUpperCase());
+            switch (main.debugManager.evaluationType){
+                case BOTH -> commandSender.sendMessage("Listening for all debug notice events");
+                case FAILURE -> commandSender.sendMessage("Listening for failed debug notice events");
+                case SUCCESS -> commandSender.sendMessage("Listening for successful debug notice events");
+            }
         }
         catch (Exception ignored){
-            commandSender.sendMessage("Invalid rule-eval type: " + args[3] + ", valid options are: FAILURE, PASS, BOTH");
+            commandSender.sendMessage("Invalid listen-for type: " + args[3] + ", valid options are: failure, success, both");
         }
     }
 
     private void parseTypeValues(final String @NotNull [] args, final @NotNull ListTypes listType){
         if (args.length == 3){
-            commandSender.sendMessage("Options: add, remove, clear");
+            viewList(listType);
             return;
         }
 
         switch (args[3].toLowerCase()){
-            case "clear" -> clearList(listType);
+            case "clear" -> {
+                clearList(listType);
+                String listTypeMsg = null;
+                switch (listType){
+                    case PLAYERS -> listTypeMsg = "Players";
+                    case RULE_NAMES -> listTypeMsg = "Rule names";
+                    case ENTITY -> listTypeMsg = "Entity types";
+                    case DEBUG ->  listTypeMsg = "Debug types";
+                }
+                commandSender.sendMessage("All filters cleared for " + listTypeMsg);
+            }
             case "add", "remove" -> {
                 if (args.length == 4){
                     commandSender.sendMessage("No values were specified for " + args[3]);
@@ -230,6 +310,24 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             }
             default -> commandSender.sendMessage("Invalid option: " + args[3]);
         }
+    }
+
+    private void viewList(final @NotNull ListTypes listType){
+        Set<?> useList;
+        switch (listType){
+            case DEBUG -> useList = main.debugManager.filterDebugTypes;
+            case ENTITY -> useList = main.debugManager.filterEntityTypes;
+            case RULE_NAMES -> useList = main.debugManager.filterRuleNames;
+            case PLAYERS -> useList = main.debugManager.filterPlayerNames;
+            default -> {
+                Utils.logger.error("View not defined for listtype: " + listType);
+                return;
+            }
+        }
+
+        final String msg = useList.isEmpty() ?
+                "No values currently defined" : useList.toString();
+        commandSender.sendMessage(msg);
     }
 
     private void clearList(final @NotNull ListTypes listType){
@@ -244,15 +342,20 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
     private void addOrRemoveItemsToList(final boolean isAdd, final @NotNull Set<String> items,
                                         final @NotNull ListTypes listType){
         final DebugManager dm = main.debugManager;
+        final List<String> optionsAddedOrRemoved = new LinkedList<>();
         switch (listType){
             case DEBUG -> {
                 for (final String debugTypeStr : items){
                     try {
                         final DebugType debugType = DebugType.valueOf(debugTypeStr.toUpperCase());
-                        if (isAdd)
+                        if (isAdd) {
                             dm.filterDebugTypes.add(debugType);
-                        else
+                            optionsAddedOrRemoved.add(debugType.name());
+                        }
+                        else {
                             dm.filterDebugTypes.remove(debugType);
+                            optionsAddedOrRemoved.add(debugType.name());
+                        }
                     }
                     catch (Exception ignored){
                         if (isAdd) commandSender.sendMessage("Invalid debug type: " + debugTypeStr);
@@ -263,10 +366,14 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
                 for (final String entityTypeStr : items){
                     try {
                         final EntityType entityType = EntityType.valueOf(entityTypeStr.toUpperCase());
-                        if (isAdd)
+                        if (isAdd) {
                             dm.filterEntityTypes.add(entityType);
-                        else
+                            optionsAddedOrRemoved.add(entityType.name());
+                        }
+                        else {
                             dm.filterEntityTypes.remove(entityType);
+                            optionsAddedOrRemoved.add(entityType.name());
+                        }
                     }
                     catch (Exception ignored){
                         if (isAdd) commandSender.sendMessage("Invalid entity type: " + entityTypeStr);
@@ -290,6 +397,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
                         }
                         if (actualRuleName != null){
                             dm.filterRuleNames.add(actualRuleName.replace(" ", "_"));
+                            optionsAddedOrRemoved.add(actualRuleName);
                         }
                         else{
                             commandSender.sendMessage("Invalid rule name: " + ruleName);
@@ -297,19 +405,31 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
                     }
                     else{
                         dm.filterRuleNames.remove(ruleName);
+                        optionsAddedOrRemoved.add(ruleName);
                     }
                 }
             }
             case PLAYERS ->{
                 // for players we'll allow invalid player names because they might join later
-                if (isAdd)
+                if (isAdd) {
                     dm.filterPlayerNames.addAll(items);
+                    optionsAddedOrRemoved.addAll(items);
+                }
                 else {
                     for (final String playerName : items){
                         dm.filterPlayerNames.remove(playerName);
+                        optionsAddedOrRemoved.add(playerName);
                     }
                 }
             }
+        }
+
+        if (!optionsAddedOrRemoved.isEmpty()){
+            final String useName = listType.name().replace("_", " ").toLowerCase();
+            if (isAdd)
+                commandSender.sendMessage("Added values to " + useName + " : " + optionsAddedOrRemoved);
+            else
+                commandSender.sendMessage("Removed values to " + useName + ": " + optionsAddedOrRemoved);
         }
     }
 
@@ -479,34 +599,41 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
 
         if (args.length <= 2) {
             return List.of(
-                    "create",
-                    "chunk_kill_count",
-                    "disable",
-                    "disable_after",
+                    "enable-all",
+                    "enable-timer",
                     "enable",
-                    "filter",
-                    "lew_clear",
-                    "lew_debug",
+                    "disable",
+                    "filter-results",
+                    "output-debug",
+                    "view-debug-status",
+                    "create-zip",
+                    "show-customdrops",
+                    "chunk-kill-count",
                     "mylocation",
-                    "nbt_dump",
-                    "output_to",
-                    "show_customdrops",
-                    "spawn_distance",
-                    "status");
+                    "spawn-distance",
+                    "lew-debug",
+                    "lew-clear",
+                    "nbt-dump"
+            );
         }
 
         switch (args[1].toLowerCase()){
-            case "chunk_kill_count" -> {
+            case "chunk-kill-count" -> {
                 return List.of("reset");
             }
-            case "filter" -> {
+            case "filter-results" -> {
                 return parseFilterTabCompletion(args);
             }
-            case "nbt_dump" -> {
+            case "nbt-dump" -> {
                 if (args.length == 3) return null;
             }
-            case "output_to" -> {
-                return List.of("console", "chat", "both");
+            case "output-debug" -> {
+                final List<String> values = new LinkedList<>();
+                for (final DebugManager.OutputTypes outputTypes : DebugManager.OutputTypes.values()){
+                    if (main.debugManager.outputType != outputTypes)
+                        values.add(outputTypes.name().replace("_", "-").toLowerCase());
+                }
+                return values;
             }
         }
 
@@ -515,17 +642,26 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
 
     private @NotNull List<String> parseFilterTabCompletion(final String @NotNull [] args){
         if (args.length == 3){
-            return List.of("entities", "min_y_level", "max_y_level", "max_player_dist",
-                    "players", "rule_eval", "rule_names", "types");
+            return List.of("clear-all-filters", "set-entities", "set-y-height", "set-distance-from-players",
+                    "set-players", "listen-for", "set-rules", "set-debug");
+        }
+
+        if (args.length == 4 && "set-y-height".equalsIgnoreCase(args[2])){
+            return List.of("min-y-height", "max-y-height", "clear");
         }
 
         if (args.length == 4) {
             switch (args[2].toLowerCase()) {
-                case "types", "entities", "rule_names", "players" -> {
+                case "set-debug", "set-entities", "set-rules", "set-players" -> {
                     return List.of("add", "remove", "clear");
                 }
-                case "rule_eval" -> {
-                    return List.of("passed", "failed", "both");
+                case "listen-for" -> {
+                    final List<String> values = new LinkedList<>();
+                    for (final DebugManager.EvaluationTypes evaluationType : DebugManager.EvaluationTypes.values()){
+                        if (main.debugManager.evaluationType != evaluationType)
+                            values.add(evaluationType.name().toLowerCase());
+                    }
+                    return values;
                 }
             }
         }
@@ -535,16 +671,16 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
 
         if (args.length >= 5 && (isAdd || isRemove)){
             switch (args[2].toLowerCase()) {
-                case "types" -> {
+                case "set-debug" -> {
                     return getUnusedDebugTypes(isAdd);
                 }
-                case "entities" -> {
+                case "set-entities" -> {
                     return getUnusedEntityTypes(isAdd);
                 }
-                case "rule_names" -> {
+                case "set-rules" -> {
                     return getUnusedRuleNames(isAdd);
                 }
-                case "players" -> {
+                case "set-players" -> {
                     return getUnusedPlayers(isAdd);
                 }
             }
@@ -575,6 +711,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         final List<String> et = new LinkedList<>();
         if (isAdd){
             for (final EntityType entityType : EntityType.values()){
+                if (main.debugManager.excludedEntityTypes.contains(entityType.name())) continue;
                 et.add(entityType.toString().toLowerCase());
             }
         }

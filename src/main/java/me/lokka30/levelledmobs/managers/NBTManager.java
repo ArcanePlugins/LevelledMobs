@@ -51,11 +51,11 @@ public class NBTManager {
             final String jsonAfter = nbtent.toString();
 
             if (lmEntity.getMainInstance().debugManager.isDebugTypeEnabled(
-                DebugType.NBT_APPLY_SUCCESS)) {
+                DebugType.NBT_APPLICATION)) {
                 showChangedJson(jsonBefore, jsonAfter, result);
             }
 
-            if (lmEntity.getMainInstance().debugManager.isDebugTypeEnabled(DebugType.NBT_APPLY_SUCCESS) && jsonBefore.equals(jsonAfter)) {
+            if (lmEntity.getMainInstance().debugManager.isDebugTypeEnabled(DebugType.NBT_APPLICATION) && jsonBefore.equals(jsonAfter)) {
                 result.exceptionMessage = "No NBT data changed.  Make sure you have used proper NBT strings";
             }
         } catch (final Exception e) {

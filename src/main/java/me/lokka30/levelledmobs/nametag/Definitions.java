@@ -131,6 +131,17 @@ public class Definitions {
         }
     }
 
+    private @NotNull String getClassName(final @NotNull String classSuffix){
+        // suffix ------------------------->
+        // "org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity"
+        if (ver.getIsRunningFabric()){
+            return "org.bukkit.craftbukkit." + classSuffix;
+        }
+        else{
+            return "org.bukkit.craftbukkit." + ver.getNMSVersion() + "." + classSuffix;
+        }
+    }
+
     private void buildClasses() throws ClassNotFoundException {
         this.clazz_IChatMutableComponent = Class.forName(
             "net.minecraft.network.chat.IChatMutableComponent");
@@ -139,10 +150,10 @@ public class Definitions {
             "net.minecraft.network.chat.IChatBaseComponent");
 
         this.clazz_CraftEntity = Class.forName(
-            "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftEntity");
+            getClassName("entity.CraftEntity"));
 
         this.clazz_CraftLivingEntity = Class.forName(
-            "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftLivingEntity");
+            getClassName("entity.CraftLivingEntity"));
 
         // net.minecraft.network.syncher.SynchedEntityData
         this.clazz_DataWatcher = Class.forName(
@@ -167,7 +178,7 @@ public class Definitions {
             "net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
 
         this.clazz_CraftPlayer = Class.forName(
-            "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftPlayer");
+            getClassName("entity.CraftPlayer"));
 
         this.clazz_Packet = Class.forName(
             "net.minecraft.network.protocol.Packet");

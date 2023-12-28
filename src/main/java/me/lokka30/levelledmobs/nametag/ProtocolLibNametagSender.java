@@ -39,7 +39,7 @@ public class ProtocolLibNametagSender implements NametagSender {
         try {
             dataWatcher = WrappedDataWatcher.getEntityWatcher(livingEntity).deepClone();
         } catch (final ConcurrentModificationException ex) {
-            DebugManager.log(DebugType.UPDATE_NAMETAG_FAIL, livingEntity, () ->
+            DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, false,  () ->
                 "&bConcurrentModificationException &7caught, skipping nametag update of &b"
                     + livingEntity.getName() + "&7.");
             return;
@@ -48,18 +48,21 @@ public class ProtocolLibNametagSender implements NametagSender {
         try {
             chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         } catch (final ConcurrentModificationException ex) {
-            DebugManager.log(DebugType.UPDATE_NAMETAG_FAIL, livingEntity, () ->
+            DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, false, () ->
                 "&bConcurrentModificationException &7caught, "
                     + "skipping nametag update of &b"
                     + livingEntity.getName() + "&7.");
             return;
         } catch (final IllegalArgumentException ex) {
-            DebugManager.log(DebugType.UPDATE_NAMETAG_FAIL, livingEntity, () ->
+            DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, false, () ->
                 "Registry is empty (&bIllegalArgumentException&7 caught), "
                     + "skipping nametag update of &b"
                     + livingEntity.getName() + "&7.");
             return;
         }
+
+        DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, true, () ->
+                "Nametag sent: " + nametagInfo.getNametag());
 
         final WrappedDataWatcher.WrappedDataWatcherObject watcherObject =
             new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);

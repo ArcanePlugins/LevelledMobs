@@ -237,7 +237,7 @@ public class EntitySpawnListener implements Listener {
         lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER, true);
 
         final String customDropIdFinal = customDropId;
-        DebugManager.log(DebugType.MOB_SPAWNER, lmEntity, () -> String.format(
+        DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity, () -> String.format(
             "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
             event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel,
             (customDropIdFinal == null ? "" : ", dropid: " + customDropIdFinal)));
@@ -294,7 +294,7 @@ public class EntitySpawnListener implements Listener {
                 return;
             }
 
-            DebugManager.log(DebugType.MOB_SPAWNER, lmEntity, () ->
+            DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity, () ->
                     "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
         } else if (event instanceof final CreatureSpawnEvent spawnEvent) {
 
@@ -364,7 +364,7 @@ public class EntitySpawnListener implements Listener {
                 scheduler.run();
             }
         } else {
-            DebugManager.log(DebugType.APPLY_LEVEL_FAIL, lmEntity, () ->
+            DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity,false, () ->
                     "Entity &b" + lmEntity.getNameIfBaby() + "&7 in wo" +
                     "rld&b " + lmEntity.getWorldName()
                     + "&7 was not levelled -> levellable state: &b" + levellableState);

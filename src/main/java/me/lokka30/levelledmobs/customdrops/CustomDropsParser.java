@@ -57,6 +57,7 @@ public class CustomDropsParser {
         this.defaults.groupId = defaultName;
         this.handler = handler;
         this.ymlHelper = new YmlParsingHelper();
+        this.invalidExternalItems = new LinkedList<>();
     }
 
     private final LevelledMobs main;
@@ -65,6 +66,7 @@ public class CustomDropsParser {
     private final CustomDropsHandler handler;
     private boolean hasMentionedNBTAPI_Missing;
     public boolean dropsUtilizeNBTAPI;
+    public final List<String> invalidExternalItems;
     private CustomDropBase dropBase;
     private CustomDropInstance dropInstance;
     private final String defaultName = "default";
@@ -1026,6 +1028,10 @@ public class CustomDropsParser {
                 "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
                 handler.getCustomDropsitems().size(), itemsCount, customItemGroupCount,
                 dropsCount, commandsCount));
+
+        for (final String msg : invalidExternalItems){
+            sbMain.append("\n&4").append(msg).append("&r");
+        }
 
         // build string list to alphabeticalize the drops by entity type including babies
         final SortedMap<String, EntityType> typeNames = new TreeMap<>();

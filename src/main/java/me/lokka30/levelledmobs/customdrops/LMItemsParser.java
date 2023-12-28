@@ -121,15 +121,23 @@ public class LMItemsParser {
                 return false;
             }
 
-            if (item.externalType == null) {
-                DebugManager.log(DebugType.CUSTOM_DROPS, () ->  String.format(
-                        "custom item '%s:%s' returned a null item",
-                    item.externalPluginName, item.externalItemId));
-            } else {
-                DebugManager.log(DebugType.CUSTOM_DROPS, () ->
-                        String.format("custom item '%s:%s' (%s) returned a null item",
-                        item.externalPluginName, item.externalItemId, item.externalType));
+            final String msg = item.externalType == null ?
+                    String.format("&4custom item '%s:%s' returned a null item&r",
+                            item.externalPluginName, item.externalItemId) :
+                    String.format("&4custom item '%s:%s' (%s) returned a null item&r",
+                            item.externalPluginName, item.externalItemId, item.externalType);
+
+            // on server startup show as warning message
+            // after reload show as debug
+
+            if (main.companion.hasFinishedLoading){
+                DebugManager.log(DebugType.CUSTOM_DROPS, () -> msg);
             }
+            else{
+                Utils.logger.warning(msg);
+            }
+
+            main.customDropsHandler.customDropsParser.invalidExternalItems.add(msg);
 
             return false;
         }

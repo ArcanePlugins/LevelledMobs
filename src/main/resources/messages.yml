@@ -348,7 +348,7 @@ other:
     - ''
     - '&7LevelledMobs developers will not redistribute or retain the data beyond the purpose of resolving any issue you may be experiencing. You may also verify the contents prior to sending the file.'
     - '&7To proceed in creating the ZIP file, please run:'
-    - '&b/lm debug create confirm&7'
+    - '&b/lm debug create-zip confirm&7'
 
 
 # +------------------------------------------------------------------------------------------LM3

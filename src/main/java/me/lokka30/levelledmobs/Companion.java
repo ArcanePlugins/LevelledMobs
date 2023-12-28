@@ -106,6 +106,7 @@ public class Companion {
     private boolean hadRulesLoadError;
     public boolean useAdventure;
     public CommandSender reloadSender;
+    public boolean hasFinishedLoading;
     final private HashMap<Long, Map<EntityType, ChunkKillInfo>> entityDeathInChunkCounter;
     final private HashMap<Long, Map<UUID, Instant>> chunkKillNoticationTracker;
     final public Map<Player, Location> playerNetherPortals;
@@ -235,7 +236,7 @@ public class Companion {
         if (addedDebugs && !main.debugManager.isEnabled()) {
             final CommandSender useSender = this.reloadSender != null ?
                     this.reloadSender : Bukkit.getConsoleSender();
-            main.debugManager.enableDebug(useSender);
+            main.debugManager.enableDebug(useSender, false, false);
             useSender.sendMessage(main.debugManager.getDebugStatus());
         }
     }

@@ -4,7 +4,7 @@
 
 package me.lokka30.levelledmobs.managers;
 
-import static me.lokka30.levelledmobs.misc.DebugType.ATTRIBUTE_MULTIPLIERS;
+import static me.lokka30.levelledmobs.misc.DebugType.APPLY_MULTIPLIERS;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -115,14 +115,14 @@ public class MobDataManager {
             }
 
             if (!existingMod.getName().startsWith("GENERIC_")) {
-                DebugManager.log(DebugType.MULTIPLIER_REMOVED, lmEntity, () -> String.format(
+                DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity, () -> String.format(
                         "Removing %s from (lvl %s) %s at %s,%s,%s", existingMod.getName(), lmEntity.getMobLevel(), lmEntity.getNameIfBaby(),
                         lmEntity.getLocation().getBlockX(), lmEntity.getLocation().getBlockY(), lmEntity.getLocation().getBlockZ()));
             }
 
             attrib.removeModifier(existingMod);
         }
-        DebugManager.log(ATTRIBUTE_MULTIPLIERS, lmEntity, () ->
+        DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () ->
                 String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
                 lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
                 Utils.round(attrib.getBaseValue(), 3), Utils.round(additionValue, 3)));
@@ -169,7 +169,7 @@ public class MobDataManager {
         }
 
         if (maxLevel == 0 || multiplier == null || multiplier.value() == 0.0f) {
-            DebugManager.log(ATTRIBUTE_MULTIPLIERS, lmEntity, () -> lmEntity.getNameIfBaby() +
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> lmEntity.getNameIfBaby() +
                     ", maxLevel=0 / multiplier=null; returning 0 for " + addition);
             return 0.0f;
         }
@@ -181,11 +181,11 @@ public class MobDataManager {
         }
 
         if (fineTuning.getUseStacked() || multiplier.useStacked()) {
-            DebugManager.log(ATTRIBUTE_MULTIPLIERS, lmEntity, () -> multiplier +
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> multiplier +
                     ", using stacked formula");
             return (float) lmEntity.getMobLevel() * multiplierValue;
         } else {
-            DebugManager.log(ATTRIBUTE_MULTIPLIERS, lmEntity, () -> multiplier +
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> multiplier +
                     ", using standard formula");
 
             if (attributeMax > 0.0) {

@@ -45,8 +45,8 @@ import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.MinAndMaxHolder;
+import me.lokka30.levelledmobs.misc.PickedUpEquipment;
 import me.lokka30.levelledmobs.misc.StringReplacer;
-import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.result.NametagResult;
@@ -539,9 +539,7 @@ public class LevelManager implements LevelInterface {
     public void removeVanillaDrops(final @NotNull LivingEntityWrapper lmEntity,
         final List<ItemStack> drops) {
         boolean hadSaddle = false;
-        List<ItemStack> itemsToKeep = new LinkedList<>();
-        final List<ItemStack> pickedUpItems = main.getVerInfo().getIsRunningPaper() ?
-                PaperUtils.getMobPickedUpItems(lmEntity) : null;
+        final List<ItemStack> itemsToKeep = new LinkedList<>();
 
         if (lmEntity.getLivingEntity() instanceof ChestedHorse
             && ((ChestedHorse) lmEntity.getLivingEntity()).isCarryingChest()) {
@@ -557,7 +555,9 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        if (pickedUpItems != null){
+        if (main.getVerInfo().getIsRunningPaper()){
+            final List<ItemStack> pickedUpItems = new PickedUpEquipment(lmEntity).getMobPickedUpItems();
+
             for (final ItemStack mobItem : drops){
                 for (final ItemStack foundItem : pickedUpItems){
                     if (mobItem.isSimilar(foundItem)){
@@ -912,7 +912,7 @@ public class LevelManager implements LevelInterface {
         if (duration >= configDuration){
             final DecimalFormat formatter = new DecimalFormat("#,###");
 
-            DebugManager.log(DebugType.LEW_CACHE, () ->
+            DebugManager.log(DebugType.DEVELOPER_LEW_CACHE, () ->
                     "Reached %s ms, clearing LEW cache, %s".formatted(
                             formatter.format(configDuration), LivingEntityWrapper.getLEWDebug()));
 
@@ -1612,7 +1612,7 @@ public class LevelManager implements LevelInterface {
         }
 
         if (hasNoLevelKey) {
-            DebugManager.log(DebugType.APPLY_LEVEL_FAIL, lmEntity, () ->
+            DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false, () ->
                     "Entity &b" + lmEntity.getTypeName() + "&7 had &bnoLevelKey&7 attached");
             return;
         }
@@ -1662,6 +1662,9 @@ public class LevelManager implements LevelInterface {
         final StringBuilder sb = new StringBuilder();
         sb.append("entity: ");
         sb.append(lmEntity.getLivingEntity().getName());
+        if (lmEntity.isBabyMob()) {
+            sb.append(" (baby)");
+        }
         sb.append(", world: ");
         sb.append(lmEntity.getWorldName());
         sb.append(", level: ");
@@ -1672,11 +1675,8 @@ public class LevelManager implements LevelInterface {
         if (bypassLimits) {
             sb.append(" (limit bypass)");
         }
-        if (lmEntity.isBabyMob()) {
-            sb.append(" (baby)");
-        }
 
-        DebugManager.log(DebugType.APPLY_LEVEL_SUCCESS, lmEntity, sb::toString);
+        DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, true, sb::toString);
     }
 
     private void applyLevelToMob2(final @NotNull LivingEntityWrapper lmEntity,
@@ -1758,7 +1758,7 @@ public class LevelManager implements LevelInterface {
 
             }
             if (hadSuccess) {
-                DebugManager.log(DebugType.NBT_APPLY_SUCCESS, lmEntity, () ->
+                DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true, () ->
                         "Applied NBT data to '" + lmEntity.getNameIfBaby() +
                                 "'. " + getNBT_DebugMessage(allResults));
             }
