@@ -4,8 +4,7 @@
 
 package me.lokka30.levelledmobs.managers;
 
-import static me.lokka30.levelledmobs.misc.DebugType.ATTRIBUTE_MULTIPLIERS;
-import static me.lokka30.levelledmobs.util.Utils.debugLog;
+import static me.lokka30.levelledmobs.misc.DebugType.APPLY_MULTIPLIERS;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -116,15 +115,15 @@ public class MobDataManager {
             }
 
             if (!existingMod.getName().startsWith("GENERIC_")) {
-                debugLog(main, DebugType.MULTIPLIER_REMOVED, String.format(
+                DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity, () -> String.format(
                         "Removing %s from (lvl %s) %s at %s,%s,%s", existingMod.getName(), lmEntity.getMobLevel(), lmEntity.getNameIfBaby(),
                         lmEntity.getLocation().getBlockX(), lmEntity.getLocation().getBlockY(), lmEntity.getLocation().getBlockZ()));
             }
 
             attrib.removeModifier(existingMod);
         }
-        debugLog(main, ATTRIBUTE_MULTIPLIERS,
-            String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
+        DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () ->
+                String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
                 lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
                 Utils.round(attrib.getBaseValue(), 3), Utils.round(additionValue, 3)));
         attrib.addModifier(mod);
@@ -152,11 +151,12 @@ public class MobDataManager {
         final float maxLevel = main.rulesManager.getRuleMobMaxLevel(lmEntity);
 
         final FineTuningAttributes fineTuning = lmEntity.getFineTuningAttributes();
-        FineTuningAttributes.Multiplier multiplier = null;
+        FineTuningAttributes.Multiplier multiplier;
         float attributeMax = 0;
 
         if (fineTuning != null) {
             multiplier = fineTuning.getItem(addition);
+
             switch (addition){
                 case ATTRIBUTE_ARMOR_BONUS -> attributeMax = 30.0f;
                 case ATTRIBUTE_ARMOR_TOUGHNESS -> attributeMax = 50.0f;
@@ -164,10 +164,12 @@ public class MobDataManager {
                 case ATTRIBUTE_KNOCKBACK_RESISTANCE,
                      ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> attributeMax = 1.0f;
             }
+        } else {
+            multiplier = null;
         }
 
         if (maxLevel == 0 || multiplier == null || multiplier.value() == 0.0f) {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS, lmEntity.getNameIfBaby() +
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> lmEntity.getNameIfBaby() +
                     ", maxLevel=0 / multiplier=null; returning 0 for " + addition);
             return 0.0f;
         }
@@ -178,12 +180,12 @@ public class MobDataManager {
             return Float.MIN_VALUE;
         }
 
-        if (fineTuning.useStacked != null && fineTuning.useStacked || multiplier.useStacked()) {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS, multiplier +
+        if (fineTuning.getUseStacked() || multiplier.useStacked()) {
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> multiplier +
                     ", using stacked formula");
             return (float) lmEntity.getMobLevel() * multiplierValue;
         } else {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS,  multiplier +
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> multiplier +
                     ", using standard formula");
 
             if (attributeMax > 0.0) {

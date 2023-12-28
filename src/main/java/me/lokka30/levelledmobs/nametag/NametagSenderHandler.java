@@ -1,9 +1,7 @@
 package me.lokka30.levelledmobs.nametag;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.util.Utils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -14,14 +12,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NametagSenderHandler {
 
-    public NametagSenderHandler(
-        final @NotNull LevelledMobs main
-    ) {
-        this.main = main;
+    public NametagSenderHandler() {
         this.versionInfo = new ServerVersionInfo();
     }
 
-    private final LevelledMobs main;
     private NametagSender currentUtil;
     public boolean isUsingProtocolLib;
     public final ServerVersionInfo versionInfo;
@@ -50,7 +44,7 @@ public class NametagSenderHandler {
             Utils.logger.info(
                 "We don't have NMS support for this version of Minecraft, using ProtocolLib");
 
-            this.currentUtil = new ProtocolLibNametagSender(main);
+            this.currentUtil = new ProtocolLibNametagSender();
             this.isUsingProtocolLib = true;
         } else {
             Utils.logger.warning("ProtocolLib is not installed. No nametags will be visible");

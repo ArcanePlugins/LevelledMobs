@@ -48,6 +48,10 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(@NotNull final PlayerJoinEvent event) {
+        if (event.getPlayer().isOp() && main.debugManager.playerThatEnabledDebug == null){
+            main.debugManager.playerThatEnabledDebug = event.getPlayer();
+        }
+
         main.companion.addRecentlyJoinedPlayer(event.getPlayer());
         checkForNetherPortalCoords(event.getPlayer());
         main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), true));

@@ -1,5 +1,12 @@
 package me.lokka30.levelledmobs.customdrops;
 
+/**
+ * Holds all vanilla death causes in addition to
+ * a few custom LevelledMobs ones
+ *
+ * @author stumper66
+ * @since 3.6.3
+ */
 public enum DeathCause {
     BLOCK_EXPLOSION,
     CONTACT,

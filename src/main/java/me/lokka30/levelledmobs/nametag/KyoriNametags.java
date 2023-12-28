@@ -10,7 +10,11 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author PenalBuffalo (aka stumper66)
+ * Holds logic used to send nametags using Kyori
+ * which is usually only found on Paper servers
+ *
+ * @author stumper66
+ * @since 3.9.3
  */
 public class KyoriNametags {
 

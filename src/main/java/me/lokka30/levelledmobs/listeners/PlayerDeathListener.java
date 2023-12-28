@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerDeathListener implements Listener {
 
-    public PlayerDeathListener(final LevelledMobs main) {
+    public PlayerDeathListener(final @NotNull LevelledMobs main) {
         this.main = main;
         if (main.getVerInfo().getIsRunningPaper()) {
             paperListener = new me.lokka30.levelledmobs.listeners.paper.PlayerDeathListener(main);

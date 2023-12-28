@@ -27,6 +27,10 @@ public class FineTuningAttributes implements MergableRule, Cloneable {
     public boolean doNotMerge;
     public Boolean useStacked;
 
+    public boolean getUseStacked(){
+        return useStacked != null && useStacked;
+    }
+
     public boolean isEmpty(){
         return this.multipliers.isEmpty();
     }
@@ -143,7 +147,7 @@ public class FineTuningAttributes implements MergableRule, Cloneable {
 
         final StringBuilder sb = new StringBuilder();
 
-        if (this.useStacked != null && this.useStacked)
+        if (this.getUseStacked())
             sb.append("(all stk)");
 
         for (final Multiplier item : this.multipliers.values()) {

@@ -1,5 +1,11 @@
 package me.lokka30.levelledmobs.rules;
 
+/**
+ * Each available multiplier that can be used in rules.yml
+ *
+ * @author stumper66
+ * @since 3.7.5
+ */
 public enum VanillaBonusEnum {
     ARMOR_MODIFIER,            // NOT NEEDED, BASED ON ITEM IN ARMOR SLOTS
     ARMOR_TOUGHNESS,           // NOT NEEDED, BASED ON ITEM IN ARMOR SLOTS

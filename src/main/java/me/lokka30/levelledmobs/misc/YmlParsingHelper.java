@@ -4,14 +4,11 @@
 
 package me.lokka30.levelledmobs.misc;
 
-import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -23,13 +20,6 @@ import org.jetbrains.annotations.Nullable;
  * @since 3.1.0
  */
 public class YmlParsingHelper {
-
-    public YmlParsingHelper() {
-        this.timeUnitPattern = Pattern.compile("(\\d+\\.?\\d+|\\d+)?(\\w+)");
-    }
-
-    private final Pattern timeUnitPattern;
-
     public boolean getBoolean(final ConfigurationSection cs, @NotNull final String name) {
         return getBoolean(cs, name, false);
     }
@@ -181,7 +171,7 @@ public class YmlParsingHelper {
 
             final String temp = cs.getString(useName);
             final Long useDefaultValue = defaultValue != null ? Long.valueOf(defaultValue) : null;
-            Long result = parseTimeUnit(temp, useDefaultValue, false);
+            Long result = Utils.parseTimeUnit(temp, useDefaultValue, false, null);
             return result != null ?
                 Math.toIntExact(result) :
                 null;
@@ -202,92 +192,10 @@ public class YmlParsingHelper {
                 return cs.getLong(useName);
             }
             final String temp = cs.getString(useName);
-            return parseTimeUnit(temp, defaultValue, true);
+            return Utils.parseTimeUnit(temp, defaultValue, true, null);
         } else {
             return defaultValue;
         }
-    }
-
-    private Long parseTimeUnit(final @Nullable String input, final Long defaultTime,
-        final boolean useMS) {
-        if (input == null) {
-            return defaultTime;
-        }
-        if ("0".equals(input)) {
-            return 0L;
-        }
-
-        final Matcher match = timeUnitPattern.matcher(input);
-
-        if (!match.matches() || match.groupCount() != 2) {
-            Utils.logger.warning("Invalid time: " + input);
-            return defaultTime;
-        }
-
-        long time;
-        double remainder = 0.0;
-        String numberPart = match.group(1) != null ? match.group(1) : match.group(2);
-        final String unit = match.group(1) != null ? match.group(2).toLowerCase() : "";
-
-        if (numberPart.contains(".")) {
-            final String[] split = numberPart.split("\\.");
-            try {
-                remainder = 1.0 - Double.parseDouble("0." + split[1]);
-                numberPart = split[0];
-            } catch (Exception e) {
-                Utils.logger.warning("Invalid time: " + input);
-                return defaultTime;
-            }
-        }
-
-        try {
-            time = Long.parseLong(numberPart);
-        } catch (Exception e) {
-            Utils.logger.warning("Invalid time: " + input);
-            return defaultTime;
-        }
-
-        Duration duration = null;
-        switch (unit) {
-            case "ms", "millisecond", "milliseconds" -> duration = Duration.ofMillis(time);
-            case "s", "second", "seconds" -> {
-                duration = Duration.ofSeconds(time);
-                if (remainder > 0.0) {
-                    duration = duration.plusMillis((long) (1000.0 * remainder));
-                }
-            }
-            case "m", "minute", "minutes" -> {
-                duration = Duration.ofMinutes(time);
-                if (remainder > 0.0) {
-                    duration = duration.plusMillis((long) (60000.0 * remainder));
-                }
-            }
-            case "h", "hour", "hours" -> {
-                duration = Duration.ofHours(time);
-                if (remainder > 0.0) {
-                    duration = duration.plusMillis((long) (3600000.0 * remainder));
-                }
-            }
-            case "d", "day", "days" -> {
-                duration = Duration.ofDays(time);
-                if (remainder > 0.0) {
-                    duration = duration.plusSeconds((long) (86400.0 * remainder));
-                }
-            }
-            case "" -> duration = useMS ? Duration.ofMillis(time) : Duration.ofSeconds(time);
-            default -> {
-                Utils.logger.warning("Invalid time unit specified: " + input + " (" + unit + ")");
-                Utils.logger.info(String.format("%s, %s", match.group(1), match.group(1)));
-            }
-        }
-
-        if (duration != null) {
-            return useMS ?
-                duration.toMillis() :
-                duration.getSeconds();
-        }
-
-        return defaultTime;
     }
 
     @NotNull public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs,

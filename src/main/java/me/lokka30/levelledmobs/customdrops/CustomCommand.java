@@ -30,6 +30,7 @@ public class CustomCommand extends CustomDropBase {
     final @NotNull Map<String, String> rangedEntries;
     public boolean runOnSpawn;
     public boolean runOnDeath;
+    public Double mobScale;
     public int delay;
 
     public CustomCommand cloneItem() {

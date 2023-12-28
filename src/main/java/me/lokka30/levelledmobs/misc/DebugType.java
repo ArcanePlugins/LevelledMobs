@@ -15,8 +15,7 @@ public enum DebugType {
      * Logged when LM is checking if a mob can have a level applied to it, and whether it was
      * successful
      */
-    APPLY_LEVEL_SUCCESS,
-    APPLY_LEVEL_FAIL,
+    APPLY_LEVEL_RESULT,
 
     /**
      * Logged when LM analyses a mob that spawns on the server.
@@ -46,17 +45,7 @@ public enum DebugType {
     /**
      * Logged when LM is adjusting the nametag of a levelled mob, but fails to do so
      */
-    UPDATE_NAMETAG_FAIL,
-
-    /**
-     * Logged when LM is processing a entity tame event but is denied due to conditions
-     */
-    ENTITY_TRANSFORM_FAIL,
-
-    /**
-     * Logged when LM is adjusting the nametag of a levelled mob, and succeeds in doing so
-     */
-    UPDATE_NAMETAG_SUCCESS,
+    PL_UPDATE_NAMETAG,
 
     /**
      * Misc events related to an entity
@@ -71,54 +60,53 @@ public enum DebugType {
     /**
      * When applying NBT to a mob
      */
-    NBT_APPLY_SUCCESS,
+    NBT_APPLICATION,
 
     /**
      * Logged when LM is processing a mob from a creature spawner
      **/
-    MOB_SPAWNER,
+    LM_MOB_SPAWNER,
 
-    DENIED_RULE_ENTITIES_LIST,
+    CONDITION_ENTITIES_LIST,
 
-    DENIED_RULE_MINLEVEL,
+    CONDITION_MINLEVEL,
 
-    DENIED_RULE_MAXLEVEL,
+    CONDITION_MAXLEVEL,
 
-    DENIED_RULE_WORLD_LIST,
+    CONDITION_WORLD_LIST,
 
-    DENIED_RULE_BIOME_LIST,
+    CONDITION_BIOME_LIST,
 
-    DENIED_RULE_PLUGIN_COMPAT,
+    CONDITION_PLUGIN_COMPAT,
 
-    DENIED_RULE_SPAWN_REASON,
+    CONDITION_SPAWN_REASON,
 
-    DENIED_RULE_CUSTOM_NAME,
+    CONDITION_CUSTOM_NAME,
 
-    DENIED_RULE_CHANCE,
+    CONDITION_CHANCE,
 
-    DENIED_RULE_WG_REGION,
+    CONDITION_WG_REGION,
 
-    DENIED_RULE_WG_REGION_OWNER,
+    CONDITION_WG_REGION_OWNER,
 
-    DENIED_RULE_Y_LEVEL,
+    CONDITION_Y_LEVEL,
 
-    DENIED_RULE_MIN_SPAWN_DISTANCE,
+    CONDITION_MIN_SPAWN_DISTANCE,
+    CONDITION_MAX_SPAWN_DISTANCE,
 
-    DENIED_RULE_MAX_SPAWN_DISTANCE,
-
-    DENIED_RULE_STOP_PROCESSING,
+    SETTING_STOP_PROCESSING,
 
     PLAYER_LEVELLING,
 
-    DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME,
+    CONDITION_MYTHICMOBS_INTERNAL_NAME,
 
-    DENIED_RULE_SPAWNER_NAME,
+    CONDITION_SPAWNER_NAME,
 
-    DENIED_RULE_WORLD_TIME_TICK,
+    CONDITION_WORLD_TIME_TICK,
 
-    DENIED_RULE_PERMISSION,
+    CONDITION_PERMISSION,
 
-    ATTRIBUTE_MULTIPLIERS,
+    APPLY_MULTIPLIERS,
 
     CUSTOM_DROPS,
 
@@ -136,13 +124,13 @@ public enum DebugType {
 
     CHUNK_KILL_COUNT,
 
-    RULE_COOLDOWN,
+    SETTING_COOLDOWN,
 
-    MULTIPLIER_REMOVED,
+    REMOVED_MULTIPLIERS,
 
-    DENIED_RULE_WITH_COORDINATES,
+    CONDITION_WITH_COORDINATES,
 
     MOB_HASH,
 
-    LEW_CACHE
+    DEVELOPER_LEW_CACHE
 }

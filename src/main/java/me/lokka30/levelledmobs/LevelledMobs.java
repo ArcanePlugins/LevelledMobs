@@ -19,7 +19,9 @@ import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
+import me.lokka30.levelledmobs.listeners.EntityDeathListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.MobDataManager;
 import me.lokka30.levelledmobs.managers.MobsQueueManager;
@@ -37,6 +39,7 @@ import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.levelledmobs.util.ConfigUtils;
 import me.lokka30.levelledmobs.util.QuickTimer;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -61,6 +64,7 @@ public final class LevelledMobs extends JavaPlugin {
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
     public PlayerInteractEventListener playerInteractEventListener;
+    public EntityDeathListener entityDeathListener;
     public NamespacedKeys namespacedKeys;
     public Companion companion;
     public RulesParsingManager rulesParsingManager;
@@ -76,6 +80,7 @@ public final class LevelledMobs extends JavaPlugin {
     public YmlParsingHelper helperSettings;
     public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
+    public DebugManager debugManager;
     private Definitions definitions;
     private ServerVersionInfo ver;
     private static LevelledMobs instance;
@@ -102,6 +107,7 @@ public final class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.debugManager = new DebugManager();
         this.ver = new ServerVersionInfo();
         this.definitions = new Definitions();
         this.nametagQueueManager = new NametagQueueManager(this);
@@ -117,6 +123,7 @@ public final class LevelledMobs extends JavaPlugin {
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
         this.levelInterface = new LevelManager(this);
+        this.entityDeathListener = new EntityDeathListener(this);
         if (!companion.loadFiles(false)) {
             // had fatal error reading required files
             Bukkit.getPluginManager().disablePlugin(this);
@@ -148,9 +155,12 @@ public final class LevelledMobs extends JavaPlugin {
     private void prepareToLoadCustomDrops(){
         if (Bukkit.getPluginManager().getPlugin("LM_Items") != null){
             final LevelledMobs mainInstance = this;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> customDropsHandler.customDropsParser.loadDrops(
-                    FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-            ), 10L);
+            final SchedulerWrapper wrapper = new SchedulerWrapper(() -> {
+                customDropsHandler.customDropsParser.loadDrops(
+                        FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION));
+                companion.hasFinishedLoading = true;
+            });
+            wrapper.runDelayed(10L);
         }
         else{
             customDropsHandler.customDropsParser.loadDrops(
@@ -161,6 +171,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     public void reloadLM(final @NotNull CommandSender sender) {
         migratedFromPre30 = false;
+        customDropsHandler.customDropsParser.invalidExternalItems.clear();
         List<String> reloadStartedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.started");
         reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%",
@@ -168,6 +179,7 @@ public final class LevelledMobs extends JavaPlugin {
         reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);
         reloadStartedMsg.forEach(sender::sendMessage);
 
+        companion.reloadSender = sender;
         companion.loadFiles(true);
 
         List<String> reloadFinishedMsg = messagesCfg.getStringList(

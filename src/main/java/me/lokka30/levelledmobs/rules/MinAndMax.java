@@ -2,6 +2,13 @@ package me.lokka30.levelledmobs.rules;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Holds two int values that are usually used to
+ * define a min and max value
+ *
+ * @author stumper66
+ * @since 3.2.0
+ */
 public class MinAndMax implements Comparable<MinAndMax> {
 
     public int min;

@@ -1,7 +1,7 @@
 name: 'LevelledMobs'
 version: '${project.version}'
 description: '${project.description}'
-authors: [ 'lokka30', 'PenalBuffalo', 'UltimaOath' ]
+authors: [ 'PenalBuffalo', 'lokka30', 'UltimaOath' ]
 website: 'https://github.com/lokka30/LevelledMobs/'
 folia-supported: true
 

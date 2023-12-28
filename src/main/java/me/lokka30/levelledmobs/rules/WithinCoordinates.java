@@ -7,6 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+/**
+ * Specifies a region based on coordinates that can be
+ * used in a rule condition
+ *
+ * @author stumper66
+ * @since 3.8.0
+ */
 public class WithinCoordinates {
     public Integer startX;
     public Integer startY;

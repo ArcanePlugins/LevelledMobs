@@ -6,6 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Holds various info used for parsing rules.yml
+ *
+ * @author stumper66
+ * @since 3.7.5
+ */
 public class ModalListParsingInfo {
     public ModalListParsingInfo(final @NotNull ModalListParsingTypes type){
         this.type = type;

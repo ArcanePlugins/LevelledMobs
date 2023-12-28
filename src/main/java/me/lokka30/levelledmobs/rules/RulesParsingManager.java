@@ -129,11 +129,15 @@ public class RulesParsingManager {
     }
 
     public @NotNull List<RuleInfo> getAllRules() {
+        return getAllRules(true);
+    }
+
+    public @NotNull List<RuleInfo> getAllRules(final boolean includePresets) {
         final List<RuleInfo> results = new LinkedList<>();
         if (this.defaultRule != null) {
             results.add(this.defaultRule);
         }
-        results.addAll(this.rulePresets.values());
+        if (includePresets) results.addAll(this.rulePresets.values());
         results.addAll(this.customRules);
 
         return results;

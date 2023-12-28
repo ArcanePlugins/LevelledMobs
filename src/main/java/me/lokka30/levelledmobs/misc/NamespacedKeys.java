@@ -54,6 +54,7 @@ public class NamespacedKeys {
         keySpawnerSpawnRange = new NamespacedKey(main, "spawnrange");
         keySpawnerCustomName = new NamespacedKey(main, "customname");
         keySpawnerLore = new NamespacedKey(main, "lore");
+        pickedUpItems = new NamespacedKey(main, "pickedUpItems");
 
         this.overallChanceKey = new NamespacedKey(main, "overallChance");
     }
@@ -78,6 +79,7 @@ public class NamespacedKeys {
     public final NamespacedKey playerLevellingSourceNumber;
     public final NamespacedKey lastDamageTime;
     public final NamespacedKey mobHash;
+    public final NamespacedKey pickedUpItems;
 
     public final NamespacedKey lockSettings;
     public final NamespacedKey lockedNametag;

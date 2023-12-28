@@ -5,6 +5,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
+/**
+ * Holds a string and provides methods to run
+ * various string replacement operations
+ *
+ * @author stumper66
+ * @since 3.13.2
+ */
 public class StringReplacer {
     public StringReplacer(final @NotNull String text){
         this.text = text;

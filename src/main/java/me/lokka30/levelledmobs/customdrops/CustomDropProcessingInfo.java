@@ -11,11 +11,10 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
-import me.lokka30.levelledmobs.util.MessageUtils;
-import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -96,7 +95,7 @@ public class CustomDropProcessingInfo {
     }
 
     void addDebugMessage(final DebugType debugType, final String message) {
-        if (!LevelledMobs.getInstance().companion.debugsEnabled.contains(debugType)){
+        if (!LevelledMobs.getInstance().debugManager.isDebugTypeEnabled(debugType)){
             return;
         }
 
@@ -120,7 +119,7 @@ public class CustomDropProcessingInfo {
             return;
         }
 
-        Utils.logger.info(MessageUtils.colorizeAll(this.debugMessages.toString()));
+        DebugManager.log(DebugType.CUSTOM_DROPS, lmEntity, () -> this.debugMessages.toString());
         this.debugMessages.setLength(0);
     }
 }

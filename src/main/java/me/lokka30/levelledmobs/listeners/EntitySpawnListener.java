@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
@@ -235,10 +236,11 @@ public class EntitySpawnListener implements Listener {
         lmEntity.setSourceSpawnerName(spawnerName);
         lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER, true);
 
-        Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
+        final String customDropIdFinal = customDropId;
+        DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity, () -> String.format(
             "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
             event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel,
-            (customDropId == null ? "" : ", dropid: " + customDropId)));
+            (customDropIdFinal == null ? "" : ", dropid: " + customDropIdFinal)));
 
         main.levelInterface.applyLevelToMob(lmEntity, generatedLevel,
             false, true,
@@ -292,8 +294,8 @@ public class EntitySpawnListener implements Listener {
                 return;
             }
 
-            Utils.debugLog(main, DebugType.MOB_SPAWNER,
-                "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
+            DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity, () ->
+                    "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
         } else if (event instanceof final CreatureSpawnEvent spawnEvent) {
 
             if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER ||
@@ -336,7 +338,7 @@ public class EntitySpawnListener implements Listener {
         if (levellableState == LevellableState.ALLOWED) {
             final int levelAssignment = main.levelInterface.generateLevel(lmEntity);
             if (shouldDenyLevel(lmEntity, levelAssignment)) {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity, () -> String.format(
                     "Entity &b%s (lvl %s)&r denied relevelling to &b%s&r due to decrease-level disabled",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), levelAssignment));
             } else {
@@ -362,8 +364,8 @@ public class EntitySpawnListener implements Listener {
                 scheduler.run();
             }
         } else {
-            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL,
-                "Entity &b" + lmEntity.getNameIfBaby() + "&7 in wo" +
+            DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity,false, () ->
+                    "Entity &b" + lmEntity.getNameIfBaby() + "&7 in wo" +
                     "rld&b " + lmEntity.getWorldName()
                     + "&7 was not levelled -> levellable state: &b" + levellableState);
 
@@ -428,11 +430,11 @@ public class EntitySpawnListener implements Listener {
                 return LevellableState.DENIED_OTHER;
             }
 
-            Utils.debugLog(main, DebugType.ENTITY_SPAWN,
+            DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity, () ->
                 "instanceof CreatureSpawnListener: &b" + creatureSpawnEvent.getEntityType()
                     + "&7, with spawnReason &b" + creatureSpawnEvent.getSpawnReason() + "&7.");
         } else if (event instanceof EntitySpawnEvent) {
-            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: &b"
+            DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity, () -> "not instanceof CreatureSpawnListener: &b"
                 + ((EntitySpawnEvent) event).getEntityType());
         }
 

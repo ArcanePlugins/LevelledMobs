@@ -1,33 +1,34 @@
-#                    _                   _ _          _ __  __       _
-#                   | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
-#                   | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
-#                   | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
-#                   |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
-#                             The Ultimate RPG Levelled Mobs Solution
+#                _                   _ _          _ __  __       _
+#               | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#               | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#               | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#               |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                         The Ultimate RPG Levelled Mobs Solution
 #
-# --------------------------------------------------------------------------------------------LM3
-# +                                      ++                                                  +LM3
-# +  Main Developers                     ++  Documentation (on our Wiki)                     +LM3
-# +    lokka30                           ++    https://github.com/lokka30/LevelledMobs/wiki  +LM3
-# +      Author and developer            ++                                                  +LM3
-# +      https://ko-fi.com/lokka30       ++  Support/Discussion (on our Discord)             +LM3
-# +                                      ++    Join our Discord for free, quality support.   +LM3
-# +    PenalBuffalo (aka. stumper66)     ++    If you are unable to, PM @lokka30 on SpigotMC +LM3
-# +      LevelledMobs 3 maintainer       ++    https://discord.gg/RQ8M4A5                    +LM3
-# +      https://ko-fi.com/penalbuffalo  ++                                                  +LM3
-# +                                      ++  Welcome to LevelledMobs 3! Please read the      +LM3
-# +    UltimaOath (aka. Oathkeeper)      ++  relevant documentation prior to attempting any  +LM3
-# +      Docs and configs since v2       ++  changes to this file.                           +LM3
-# +      https://ko-fi.com/ultimaoath    ++                                                  +LM3
-# +                                      ++                                                  +LM3
-# --------------------------------------------------------------------------------------------LM3
+# -------------------------------------------------------------------------------------------LM3
+# +                                  ++                                                     +LM3
+# +    Developers and Maintainers    ++ Documentation (on our Wiki)                         +LM3
+# +                                  ++ . Wiki: https://tinyurl.com/lm-git-wiki             +LM3
+# + PenalBuffalo (aka. stumper66)    ++ . FAQ: https://tinyurl.com/lm-git-faq               +LM3
+# + . Primary Developer; LM3+        ++ . Sample Rules: https://tinyurl.com/lm-sample-rules +LM3
+# + . https://ko-fi.com/penalbuffalo ++ . Sample Drops: https://tinyurl.com/lm-sample-drops +LM3
+# +                                  ++                                                     +LM3
+# + lokka30                          ++ Support Discord and Forum                           +LM3
+# + . Original Plugin Author; LM0+   ++ . Join our Discord for free, quality support.       +LM3
+# + . https://ko-fi.com/lokka30      ++ . https://discord.gg/RQ8M4A5                        +LM3
+# +                                  ++                                                     +LM3
+# + UltimaOath (aka. Oathkeeper)     ++ Please Review Our Plugin!                           +LM3
+# + . Docs, Configs, Tester; LM2+    ++ . Hangar - https://tinyurl.com/lm-hangar            +LM3
+# + . https://ko-fi.com/ultimaoath   ++ . SpigotMC - https://tinyurl.com/lm-spigotmc        +LM3
+# +                                  ++                                                     +LM3
+# -------------------------------------------------------------------------------------------LM3
 #                               _____     _   _   _ 
 #                              |   __|___| |_| |_|_|___ ___ ___
 #                              |__   | -_|  _|  _| |   | . |_ -|
 #                              |_____|___|_| |_| |_|_|_|_  |___|
 #                                                      |___|
 #
-# --------------------------------------------------------------------------------------------LM3
+# -------------------------------------------------------------------------------------------LM3
 
 # ||  ADVANCED USERS ONLY | DEBUG
 # ||  Do not touch this unless a LM developer tells you to.
@@ -155,8 +156,9 @@ check-mob-hash: true
 # ||  in the console or player that executed the command
 print-lm-summon-results: true
 
-# ||  The amount of time that should elapse before the LEW cache
-# ||  is cleared.
+# ||  ADVANCED USERS ONLY
+# ||  The amount of time that should elapse before
+# ||  the LEW (LivingEntityWrapper) cache is cleared.
 lew-cache-clear-period: 3m
 
 # ||  ADVANCED USERS ONLY

@@ -4,6 +4,13 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Holds info on a scheduled task that was executed
+ *
+ * @see SchedulerWrapper
+ * @author stumper66
+ * @since 3.11.0
+ */
 public class SchedulerResult {
     public SchedulerResult(final @Nullable ScheduledTask foliaTask){
         this.foliaTask = foliaTask;

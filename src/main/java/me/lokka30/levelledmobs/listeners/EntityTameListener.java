@@ -7,12 +7,12 @@ package me.lokka30.levelledmobs.listeners;
 import java.util.Collections;
 import java.util.HashSet;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
-import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -40,23 +40,23 @@ public class EntityTameListener implements Listener {
         final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevellableState.ALLOWED) {
-            Utils.debugLog(main, DebugType.ENTITY_TAME, "Levelable state was " + levellableState);
+            DebugManager.log(DebugType.ENTITY_TAME, lmEntity, () -> "Levelable state was " + levellableState);
             lmEntity.free();
             return;
         }
 
         if (main.rulesManager.getRuleMobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
-            Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = &btrue");
+            DebugManager.log(DebugType.ENTITY_TAME, lmEntity, () -> "no-level-conditions.tamed = &btrue");
 
             // if mob was levelled then remove it
             main.levelInterface.removeLevel(lmEntity);
 
-            Utils.debugLog(main, DebugType.ENTITY_TAME, "Removed level of tamed mob");
+            DebugManager.log(DebugType.ENTITY_TAME, lmEntity, () -> "Removed level of tamed mob");
             lmEntity.free();
             return;
         }
 
-        Utils.debugLog(main, DebugType.ENTITY_TAME, "Applying level to tamed mob");
+        DebugManager.log(DebugType.ENTITY_TAME, lmEntity, () -> "Applying level to tamed mob");
         int level = -1;
         if (lmEntity.isLevelled()) {
             level = lmEntity.getMobLevel();

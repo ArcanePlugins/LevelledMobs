@@ -7,7 +7,11 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author PenalBuffalo (aka stumper66)
+ * Holds various parsed data on the server verion
+ * that the server is running
+ *
+ * @author stumper66
+ * @since 3.10.3
  */
 @SuppressWarnings("unused")
 public class ServerVersionInfo {
@@ -22,6 +26,8 @@ public class ServerVersionInfo {
     private int minorVersion;
     private int revision;
     private double minecraftVersion;
+    // preliminary fabric support. not entirely there yet
+    private Boolean isRunningFabric;
     private Boolean isRunningSpigot;
     private Boolean isRunningPaper;
     private Boolean isRunningFolia;
@@ -46,6 +52,7 @@ public class ServerVersionInfo {
     }
 
     private void parseNMSVersion() {
+        if (getIsRunningFabric()) return;
         // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
         final Matcher nmsRegex = versionPattern.matcher(
             Bukkit.getServer().getClass().getCanonicalName());
@@ -77,6 +84,19 @@ public class ServerVersionInfo {
                     .getClass().getCanonicalName()
             );
         }
+    }
+
+    public boolean getIsRunningFabric(){
+        if (this.isRunningFabric == null){
+            try {
+                Class.forName("net.fabricmc.loader.api.FabricLoader");
+                this.isRunningFabric = true;
+            } catch (ClassNotFoundException ignored) {
+                this.isRunningFabric = false;
+            }
+        }
+
+        return this.isRunningFabric;
     }
 
     public boolean getIsRunningSpigot(){

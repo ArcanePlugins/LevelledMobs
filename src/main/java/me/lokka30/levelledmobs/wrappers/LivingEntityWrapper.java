@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.DebugType;
@@ -98,6 +99,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public boolean lockEntitySettings;
     public boolean hasLockedDropsOverride;
     public Boolean playerLevellingAllowDecrease;
+    public Object libsDisguiseCache;
     public Set<Player> playersNeedingNametagCooldownUpdate;
     public EntityDamageEvent.DamageCause deathCause;
     public List<String> nbtData;
@@ -105,7 +107,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public String pendingPlayerIdToSet;
     public String lockedNametag;
     public String lockedOverrideName;
-    public Player playerForPermissionsCheck;
+    public Player associatedPlayer;
     public CommandSender summonedSender;
 
     public @NotNull static LivingEntityWrapper getInstance(final LivingEntity livingEntity,
@@ -182,6 +184,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void clearEntityData() {
         this.livingEntity = null;
+        this.libsDisguiseCache = null;
         this.chunkKillcount = 0;
         this.applicableGroups.clear();
         this.applicableRules.clear();
@@ -201,7 +204,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.prevChanceRuleResults = null;
         this.sourceSpawnerName = null;
         this.sourceSpawnEggName = null;
-        this.playerForPermissionsCheck = null;
+        this.associatedPlayer = null;
         this.playersNeedingNametagCooldownUpdate = null;
         this.nametagCooldownTime = 0;
         this.nbtData = null;
@@ -279,15 +282,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
                 final StackTraceElement callingFunction = Thread.currentThread().getStackTrace()[1];
                 retryCount++;
                 if (retryCount > lockMaxRetryTimes) {
-                    Utils.debugLog(main, DebugType.THREAD_LOCKS,
-                        String.format("getPDCLock could not lock thread - %s:%s",
+                    DebugManager.log(DebugType.THREAD_LOCKS, () ->
+                            String.format("getPDCLock could not lock thread - %s:%s",
                             callingFunction.getFileName(), callingFunction.getLineNumber()));
                     return false;
                 }
 
-                Utils.debugLog(main, DebugType.THREAD_LOCKS,
-                    String.format("getPDCLock retry %s - %s:%s",
-                        retryCount, callingFunction.getFileName(),
+                final int retryCountFinal = retryCount;
+                DebugManager.log(DebugType.THREAD_LOCKS, () ->
+                        String.format("getPDCLock retry %s - %s:%s",
+                        retryCountFinal, callingFunction.getFileName(),
                         callingFunction.getLineNumber()));
             }
         } catch (final InterruptedException e) {
@@ -444,7 +448,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         synchronized (playerLock) {
             this.playerForLevelling = player;
         }
-        this.playerForPermissionsCheck = player;
+        this.associatedPlayer = player;
     }
 
     public @Nullable FineTuningAttributes getFineTuningAttributes() {
@@ -471,6 +475,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.mobLevel == null ?
             0 :
             this.mobLevel;
+    }
+
+    public void setMobPrelevel(int level){
+        this.mobLevel = level;
     }
 
     public boolean isLevelled() {

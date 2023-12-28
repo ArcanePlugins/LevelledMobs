@@ -7,7 +7,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import java.util.ConcurrentModificationException;
 import java.util.Optional;
-import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.MessageUtils;
@@ -24,14 +24,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ProtocolLibNametagSender implements NametagSender {
 
-    public ProtocolLibNametagSender(
-        final @NotNull LevelledMobs main
-    ) {
-        this.main = main;
-    }
-
-    private final LevelledMobs main;
-
     public void sendNametag(
         final @NotNull LivingEntity livingEntity,
         final @NotNull NametagResult nametagInfo,
@@ -47,7 +39,7 @@ public class ProtocolLibNametagSender implements NametagSender {
         try {
             dataWatcher = WrappedDataWatcher.getEntityWatcher(livingEntity).deepClone();
         } catch (final ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL,
+            DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, false,  () ->
                 "&bConcurrentModificationException &7caught, skipping nametag update of &b"
                     + livingEntity.getName() + "&7.");
             return;
@@ -56,18 +48,21 @@ public class ProtocolLibNametagSender implements NametagSender {
         try {
             chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         } catch (final ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL,
+            DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, false, () ->
                 "&bConcurrentModificationException &7caught, "
                     + "skipping nametag update of &b"
                     + livingEntity.getName() + "&7.");
             return;
         } catch (final IllegalArgumentException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL,
+            DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, false, () ->
                 "Registry is empty (&bIllegalArgumentException&7 caught), "
                     + "skipping nametag update of &b"
                     + livingEntity.getName() + "&7.");
             return;
         }
+
+        DebugManager.log(DebugType.PL_UPDATE_NAMETAG, livingEntity, true, () ->
+                "Nametag sent: " + nametagInfo.getNametag());
 
         final WrappedDataWatcher.WrappedDataWatcherObject watcherObject =
             new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);

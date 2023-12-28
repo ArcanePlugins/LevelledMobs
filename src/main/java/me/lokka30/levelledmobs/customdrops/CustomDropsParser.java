@@ -15,6 +15,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.compatibility.Compat1_17;
+import me.lokka30.levelledmobs.compatibility.Compat1_19;
+import me.lokka30.levelledmobs.compatibility.Compat1_20;
+import me.lokka30.levelledmobs.compatibility.Compat1_21;
+import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
@@ -23,9 +28,11 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
@@ -54,6 +61,9 @@ public class CustomDropsParser {
         this.defaults.groupId = defaultName;
         this.handler = handler;
         this.ymlHelper = new YmlParsingHelper();
+        this.invalidExternalItems = new LinkedList<>();
+        this.invalidEntityTypesToIgnore = new LinkedList<>();
+        buildInvalidEntityTypesToIgnore();
     }
 
     private final LevelledMobs main;
@@ -62,9 +72,18 @@ public class CustomDropsParser {
     private final CustomDropsHandler handler;
     private boolean hasMentionedNBTAPI_Missing;
     public boolean dropsUtilizeNBTAPI;
+    public final List<String> invalidExternalItems;
     private CustomDropBase dropBase;
     private CustomDropInstance dropInstance;
     private final String defaultName = "default";
+    private final List<String> invalidEntityTypesToIgnore;
+
+    private void buildInvalidEntityTypesToIgnore(){
+        invalidEntityTypesToIgnore.addAll(Compat1_17.all17Mobs());
+        invalidEntityTypesToIgnore.addAll(Compat1_19.all19Mobs());
+        invalidEntityTypesToIgnore.addAll(Compat1_20.all20Mobs());
+        invalidEntityTypesToIgnore.addAll(Compat1_21.all21Mobs());
+    }
 
     public void loadDrops(final YamlConfiguration customDropsCfg) {
         this.dropsUtilizeNBTAPI = false;
@@ -91,7 +110,7 @@ public class CustomDropsParser {
             parseCustomDrops(customDropsCfg);
         }
 
-        Utils.debugLog(main, DebugType.CUSTOM_DROPS, "Group Limits: " + handler.groupLimitsMap);
+        DebugManager.log(DebugType.CUSTOM_DROPS, () -> "Group Limits: " + handler.groupLimitsMap);
     }
 
     public @NotNull CustomDropsDefaults getDefaults(){
@@ -188,8 +207,10 @@ public class CustomDropsParser {
                     try {
                         entityType = EntityType.valueOf(mobTypeOrGroup.toUpperCase());
                     } catch (final Exception e) {
-                        Utils.logger.warning(
-                            "invalid mob type in customdrops.yml: " + mobTypeOrGroup);
+                        if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.toUpperCase())){
+                            Utils.logger.warning(
+                                    "invalid mob type in customdrops.yml: " + mobTypeOrGroup);
+                        }
                         continue;
                     }
                     dropInstance = new CustomDropInstance(entityType, isBabyMob);
@@ -261,30 +282,6 @@ public class CustomDropsParser {
                 }
             } // next mob or group
         } // next root item from file
-
-        if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
-            int dropsCount = 0;
-            int commandsCount = 0;
-            for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
-                for (final CustomDropBase base : cdi.customItems) {
-                    if (base instanceof CustomDropItem) {
-                        dropsCount++;
-                    } else if (base instanceof CustomCommand) {
-                        commandsCount++;
-                    }
-                }
-            }
-
-            final StringBuilder sbMain = new StringBuilder();
-            final int itemsCount =
-                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
-            sbMain.append(String.format(
-                "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
-                handler.getCustomDropsitems().size(), itemsCount, handler.customItemGroups.size(),
-                dropsCount, commandsCount));
-
-            showCustomDropsDebugInfo(sbMain);
-        }
     }
 
     private void parseCustomDrops2(final List<?> itemConfigurations) {
@@ -597,6 +594,7 @@ public class CustomDropsParser {
         customCommand.delay = ymlHelper.getInt(cs, "delay", 0);
         customCommand.runOnSpawn = ymlHelper.getBoolean(cs, "run-on-spawn", false);
         customCommand.runOnDeath = ymlHelper.getBoolean(cs, "run-on-death", true);
+        customCommand.mobScale = ymlHelper.getDouble2(cs, "mob-scale", null);
         parseRangedVariables(customCommand, cs);
 
         if (customCommand.commands.isEmpty()) {
@@ -1023,7 +1021,34 @@ public class CustomDropsParser {
         return false;
     }
 
-    private void showCustomDropsDebugInfo(final StringBuilder sbMain) {
+    public void showCustomDropsDebugInfo(final @NotNull CommandSender sender) {
+        final StringBuilder sbMain = new StringBuilder();
+
+        int dropsCount = 0;
+        int commandsCount = 0;
+        for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
+            for (final CustomDropBase base : cdi.customItems) {
+                if (base instanceof CustomDropItem) {
+                    dropsCount++;
+                } else if (base instanceof CustomCommand) {
+                    commandsCount++;
+                }
+            }
+        }
+
+        final int itemsCount =
+                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
+        final int customItemGroupCount = handler.customItemGroups != null ?
+                handler.customItemGroups.size() : 0;
+        sbMain.append(String.format(
+                "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s, ",
+                handler.getCustomDropsitems().size(), itemsCount, customItemGroupCount,
+                dropsCount, commandsCount));
+
+        for (final String msg : invalidExternalItems){
+            sbMain.append("\n&4").append(msg).append("&r");
+        }
+
         // build string list to alphabeticalize the drops by entity type including babies
         final SortedMap<String, EntityType> typeNames = new TreeMap<>();
 
@@ -1090,7 +1115,7 @@ public class CustomDropsParser {
             }
         }
 
-        Utils.logger.info(sbMain.toString());
+        sender.sendMessage(MessageUtils.colorizeAll(sbMain.toString()));
     }
 
     private @NotNull String showCustomDropsDebugInfo2(final CustomDropBase baseItem) {

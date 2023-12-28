@@ -2,6 +2,13 @@ package me.lokka30.levelledmobs.rules;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Holds various options relating to the
+ * chunk kill feature
+ *
+ * @author stumper66
+ * @since 3.12.0
+ */
 public class ChunkKillOptions implements MergableRule, Cloneable{
     public Boolean disableVanillaDrops;
     public Boolean disableItemBoost;

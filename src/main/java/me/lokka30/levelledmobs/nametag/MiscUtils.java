@@ -6,7 +6,10 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author PenalBuffalo (aka stumper66)
+ * Various utilities that use NMS stuff
+ *
+ * @author stumper66
+ * @since 3.11.0
  */
 public class MiscUtils {
 
