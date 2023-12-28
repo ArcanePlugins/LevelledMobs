@@ -27,6 +27,8 @@ import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.Compat1_16;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.compatibility.Compat1_19;
+import me.lokka30.levelledmobs.compatibility.Compat1_20;
+import me.lokka30.levelledmobs.compatibility.Compat1_21;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
@@ -600,6 +602,12 @@ public class Companion {
         }
         if (versionInfo.getMajorVersion() >= 1.19) {
             passiveMobsGroup.addAll(Compat1_19.getPassiveMobs());
+        }
+        if (versionInfo.getMajorVersion() >= 1.20) {
+            passiveMobsGroup.addAll(Compat1_20.getPassiveMobs());
+        }
+        if (versionInfo.getMajorVersion() >= 1.21) {
+            passiveMobsGroup.addAll(Compat1_21.getPassiveMobs());
         }
 
         if (versionInfo.getMajorVersion() >= 1.16) {

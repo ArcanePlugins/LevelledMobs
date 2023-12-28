@@ -15,6 +15,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.compatibility.Compat1_17;
+import me.lokka30.levelledmobs.compatibility.Compat1_19;
+import me.lokka30.levelledmobs.compatibility.Compat1_20;
+import me.lokka30.levelledmobs.compatibility.Compat1_21;
 import me.lokka30.levelledmobs.managers.DebugManager;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.NBTManager;
@@ -58,6 +62,8 @@ public class CustomDropsParser {
         this.handler = handler;
         this.ymlHelper = new YmlParsingHelper();
         this.invalidExternalItems = new LinkedList<>();
+        this.invalidEntityTypesToIgnore = new LinkedList<>();
+        buildInvalidEntityTypesToIgnore();
     }
 
     private final LevelledMobs main;
@@ -70,6 +76,14 @@ public class CustomDropsParser {
     private CustomDropBase dropBase;
     private CustomDropInstance dropInstance;
     private final String defaultName = "default";
+    private final List<String> invalidEntityTypesToIgnore;
+
+    private void buildInvalidEntityTypesToIgnore(){
+        invalidEntityTypesToIgnore.addAll(Compat1_17.all17Mobs());
+        invalidEntityTypesToIgnore.addAll(Compat1_19.all19Mobs());
+        invalidEntityTypesToIgnore.addAll(Compat1_20.all20Mobs());
+        invalidEntityTypesToIgnore.addAll(Compat1_21.all21Mobs());
+    }
 
     public void loadDrops(final YamlConfiguration customDropsCfg) {
         this.dropsUtilizeNBTAPI = false;
@@ -193,8 +207,10 @@ public class CustomDropsParser {
                     try {
                         entityType = EntityType.valueOf(mobTypeOrGroup.toUpperCase());
                     } catch (final Exception e) {
-                        Utils.logger.warning(
-                            "invalid mob type in customdrops.yml: " + mobTypeOrGroup);
+                        if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.toUpperCase())){
+                            Utils.logger.warning(
+                                    "invalid mob type in customdrops.yml: " + mobTypeOrGroup);
+                        }
                         continue;
                     }
                     dropInstance = new CustomDropInstance(entityType, isBabyMob);

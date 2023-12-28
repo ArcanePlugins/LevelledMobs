@@ -7,6 +7,8 @@ package me.lokka30.levelledmobs.compatibility;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bukkit.entity.EntityType;
@@ -34,5 +36,11 @@ public class Compat1_17 {
     @Contract(pure = true)
     public static @NotNull @Unmodifiable Collection<EntityType> getForceBlockedEntityType() {
         return List.of(EntityType.GLOW_ITEM_FRAME, EntityType.MARKER);
+    }
+
+    public static @NotNull Set<String> all17Mobs() {
+        final Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        names.addAll(List.of("AXOLOTL", "GLOW_SQUID", "GOAT"));
+        return names;
     }
 }
