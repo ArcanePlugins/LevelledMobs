@@ -46,7 +46,6 @@ public class DebugManager {
     private final static int defaultPlayerDistance = 16;
     private static DebugManager instance;
     private boolean _isEnabled;
-    //private boolean ignorePlayerDistance;
     private boolean isTimerEnabled;
     private boolean bypassAllFilters;
     private Instant timerEndTime;
@@ -57,7 +56,7 @@ public class DebugManager {
     public final Set<String> filterPlayerNames;
     public List<String> excludedEntityTypes;
     public @Nullable Player playerThatEnabledDebug;
-    public EvaluationTypes evaluationType = EvaluationTypes.FAILURE;
+    public ListenFor listenFor = ListenFor.BOTH;
     public OutputTypes outputType = OutputTypes.TO_CONSOLE;
     public Integer maxPlayerDistance;
     public Integer minYLevel;
@@ -110,6 +109,10 @@ public class DebugManager {
 
     public boolean isEnabled(){
         return _isEnabled;
+    }
+
+    public boolean isBypassAllFilters(){
+        return bypassAllFilters;
     }
 
     public boolean getIsTimerEnabled(){
@@ -215,9 +218,9 @@ public class DebugManager {
                 if (!foundMatch) return;
             }
 
-            if (ruleResult != null && evaluationType != EvaluationTypes.BOTH) {
-                if (ruleResult && evaluationType == EvaluationTypes.FAILURE) return;
-                if (!ruleResult && evaluationType == EvaluationTypes.SUCCESS) return;
+            if (ruleResult != null && listenFor != ListenFor.BOTH) {
+                if (ruleResult && listenFor == ListenFor.FAILURE) return;
+                if (!ruleResult && listenFor == ListenFor.SUCCESS) return;
             }
 
             if (useEntity != null) {
@@ -238,7 +241,7 @@ public class DebugManager {
                 Utils.logger.info("No player to send chat messages to");
             }
             else{
-                playerThatEnabledDebug.sendMessage(MessageUtils.colorizeHexCodes(
+                playerThatEnabledDebug.sendMessage(MessageUtils.colorizeAll(
                         "&8[&bDebug: " + debugType + "&8]&7 " + msg));
             }
         }
@@ -300,9 +303,9 @@ public class DebugManager {
             sb.append(filterPlayerNames);
         }
 
-        if (evaluationType != EvaluationTypes.BOTH){
+        if (listenFor != ListenFor.BOTH){
             sb.append("\n- Listen for: ");
-            sb.append(evaluationType.name().toLowerCase());
+            sb.append(listenFor.name().toLowerCase());
         }
 
         if (maxPlayerDistance != null){
@@ -337,12 +340,11 @@ public class DebugManager {
                 !filterEntityTypes.isEmpty() ||
                 !filterRuleNames.isEmpty() ||
                 !filterPlayerNames.isEmpty() ||
-                evaluationType != EvaluationTypes.FAILURE ||
+                listenFor != ListenFor.BOTH ||
                 outputType != OutputTypes.TO_CONSOLE ||
                 maxPlayerDistance == null || maxPlayerDistance != 0 ||
                 minYLevel != null ||
                 maxYLevel != null
-                //disableAfter != null
         );
     }
 
@@ -351,7 +353,7 @@ public class DebugManager {
         filterEntityTypes.clear();
         filterRuleNames.clear();
         filterPlayerNames.clear();
-        evaluationType = EvaluationTypes.FAILURE;
+        listenFor = ListenFor.BOTH;
         outputType = OutputTypes.TO_CONSOLE;
         maxPlayerDistance = defaultPlayerDistance;
         minYLevel = null;
@@ -360,7 +362,7 @@ public class DebugManager {
         disableAfterStr = null;
     }
 
-    public enum EvaluationTypes{
+    public enum ListenFor {
         FAILURE, SUCCESS, BOTH
     }
 

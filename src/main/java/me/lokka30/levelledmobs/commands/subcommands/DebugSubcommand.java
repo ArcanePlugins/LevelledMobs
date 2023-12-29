@@ -159,9 +159,10 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         final boolean wasEnabled = main.debugManager.isEnabled();
 
         if (isEnable){
-            boolean wasTimerEnabled = main.debugManager.getIsTimerEnabled();
+            final boolean wasTimerEnabled = main.debugManager.getIsTimerEnabled();
+            final boolean enableAllChanged = main.debugManager.isBypassAllFilters() != isEnableAll;
             main.debugManager.enableDebug(commandSender, false, isEnableAll);
-            if (wasEnabled){
+            if (wasEnabled && !enableAllChanged){
                 if (wasTimerEnabled)
                     commandSender.sendMessage("Debugging is already enabled, disabled timer");
                 else
@@ -263,14 +264,14 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
 
     private void updateEvaluationType(final String @NotNull [] args){
         if (args.length == 3){
-            commandSender.sendMessage("No value was specified");
+            commandSender.sendMessage("Current value: " + main.debugManager.listenFor);
             return;
         }
 
         try {
-            main.debugManager.evaluationType =
-                    DebugManager.EvaluationTypes.valueOf(args[3].toUpperCase());
-            switch (main.debugManager.evaluationType){
+            main.debugManager.listenFor =
+                    DebugManager.ListenFor.valueOf(args[3].toUpperCase());
+            switch (main.debugManager.listenFor){
                 case BOTH -> commandSender.sendMessage("Listening for all debug notice events");
                 case FAILURE -> commandSender.sendMessage("Listening for failed debug notice events");
                 case SUCCESS -> commandSender.sendMessage("Listening for successful debug notice events");
@@ -657,8 +658,8 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
                 }
                 case "listen-for" -> {
                     final List<String> values = new LinkedList<>();
-                    for (final DebugManager.EvaluationTypes evaluationType : DebugManager.EvaluationTypes.values()){
-                        if (main.debugManager.evaluationType != evaluationType)
+                    for (final DebugManager.ListenFor evaluationType : DebugManager.ListenFor.values()){
+                        if (main.debugManager.listenFor != evaluationType)
                             values.add(evaluationType.name().toLowerCase());
                     }
                     return values;

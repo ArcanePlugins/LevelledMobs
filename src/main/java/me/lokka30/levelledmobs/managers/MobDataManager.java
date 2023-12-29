@@ -181,12 +181,14 @@ public class MobDataManager {
         }
 
         if (fineTuning.getUseStacked() || multiplier.useStacked()) {
-            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> multiplier +
-                    ", using stacked formula");
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> String.format(
+                "%s (%s): using stacked formula, multiplier: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), multiplier.value()));
             return (float) lmEntity.getMobLevel() * multiplierValue;
         } else {
-            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> multiplier +
-                    ", using standard formula");
+            DebugManager.log(APPLY_MULTIPLIERS, lmEntity, () -> String.format(
+                "%s (%s): using standard formula, multiplier: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), multiplier.value()));
 
             if (attributeMax > 0.0) {
                 // only used for 5 specific attributes
