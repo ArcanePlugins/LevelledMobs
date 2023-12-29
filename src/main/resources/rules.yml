@@ -172,10 +172,18 @@ presets:
       maxLevel: 10
       multipliers:
         max-health: 2.5
+        movement-speed: 0.0
         attack-damage: 1.0
         ranged-attack-damage: 1.0
+        creeper-blast-damage: 0.0
+        follow-range: 0.0
         item-drop: 3.0
         xp-drop: 5.0
+        armor-bonus: 0.0
+        armor-toughness: 0.0
+        attack-knockback: 0.0
+        knockback-resistance: 0.0
+        zombie-spawn-reinforcements: 0.0
 
       tiered-coloring:
         1-2: '&#22E76B' #Green
