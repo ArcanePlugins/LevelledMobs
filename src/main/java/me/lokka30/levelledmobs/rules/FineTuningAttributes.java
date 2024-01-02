@@ -32,7 +32,7 @@ public class FineTuningAttributes implements MergableRule, Cloneable {
     }
 
     public boolean isEmpty(){
-        return this.multipliers.isEmpty();
+        return this.multipliers.isEmpty() && !doNotMerge && useStacked == null;
     }
 
     public void merge(final @Nullable MergableRule mergableRule) {
@@ -151,9 +151,8 @@ public class FineTuningAttributes implements MergableRule, Cloneable {
             sb.append("(all stk)");
 
         for (final Multiplier item : this.multipliers.values()) {
-            if (!sb.isEmpty()) {
-                sb.append(", ");
-            }
+            if (!sb.isEmpty()) sb.append(", ");
+
             sb.append(getShortName(item.addition()));
             sb.append(": ");
             sb.append(item.value());
@@ -161,6 +160,11 @@ public class FineTuningAttributes implements MergableRule, Cloneable {
                 sb.append(" (");
                 sb.append("stk)");
             }
+        }
+
+        if (doNotMerge){
+            if (!sb.isEmpty()) sb.append(", ");
+            sb.append("noMerge");
         }
 
         return sb.toString();

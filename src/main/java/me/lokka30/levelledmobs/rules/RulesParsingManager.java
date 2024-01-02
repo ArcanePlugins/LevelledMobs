@@ -1421,6 +1421,8 @@ public class RulesParsingManager {
                     attribs.useStacked = ymlHelper.getBoolean2(cs, item, attribs.useStacked);
                 case "do-not-merge" ->
                     attribs.doNotMerge = ymlHelper.getBoolean(cs, item, false);
+                case "merge" ->
+                        attribs.doNotMerge = !ymlHelper.getBoolean(cs, item, true);
                 case "vanilla-bonus", "custom-mob-level" -> { }
                 default -> {
                     LMMultiplier lmMultiplier;
