@@ -718,92 +718,96 @@ public class CustomDropsHandler {
 
         processEnchantmentChances(dropItem);
 
-        ItemStack newItem;
-        if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
-            && lmItemsParser.getExternalItem(dropItem, info)) {
-            newItem = dropItem.getItemStack();
-        } else if (info.deathByFire) {
-            newItem = getCookedVariantOfMeat(dropItem.getItemStack().clone());
-        } else {
-            newItem = dropItem.getItemStack().clone();
+        if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()){
+            lmItemsParser.getExternalItem(dropItem, info);
         }
 
-        newItem.setAmount(newDropAmount);
+        for (ItemStack newItem : dropItem.getItemStacks()) {
+            // will only be multiple items for supported LM Items items
 
-        if (!dropItem.noMultiplier && !info.doNotMultiplyDrops) {
-            main.levelManager.multiplyDrop(info.lmEntity, newItem, info.addition, true);
-            newDropAmount = newItem.getAmount();
-        } else if (newDropAmount > newItem.getMaxStackSize()) {
-            newDropAmount = newItem.getMaxStackSize();
-        }
+            newItem = newItem.clone();
 
-        if (newItem.getAmount() != newDropAmount) {
-            newItem.setAmount(newDropAmount);
-        }
-
-        if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
-            info.addDebugMessage(String.format(
-                "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
-                newItem.getType().name(), dropItem.equippedSpawnChance,
-                Utils.round(chanceRole, 4)));
-        } else if (!info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-            final String retryMsg = info.retryNumber > 0 ? ", retry: " + info.retryNumber : "";
-
-            info.addDebugMessage(String.format(
-                "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7%s.",
-                newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount,
-                dropItem.chance, Utils.round(chanceRole, 4), retryMsg));
-        }
-
-        int damage = dropItem.getDamage();
-        if (dropItem.getHasDamageRange()) {
-            damage = ThreadLocalRandom.current()
-                .nextInt(dropItem.getDamageRangeMin(), dropItem.getDamageRangeMax() + 1);
-        }
-
-        if (damage > 0 || dropItem.lore != null || dropItem.customName != null) {
-            final ItemMeta meta = newItem.getItemMeta();
-
-            if (damage > 0 && meta instanceof Damageable) {
-                ((Damageable) meta).setDamage(damage);
+            if (info.deathByFire) {
+                newItem = getCookedVariantOfMeat(dropItem.getItemStack());
             }
 
-            if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()) {
-                final List<String> newLore = new ArrayList<>(dropItem.lore.size());
-                for (String lore : dropItem.lore) {
-                    if (lore.contains("%")) {
-                        lore = lore.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
-                        lore = main.levelManager.replaceStringPlaceholders(lore, info.lmEntity, true, info.mobKiller, false);
-                    }
+            newItem.setAmount(newDropAmount);
 
-                    newLore.add(lore);
+            if (!dropItem.noMultiplier && !info.doNotMultiplyDrops) {
+                main.levelManager.multiplyDrop(info.lmEntity, newItem, info.addition, true);
+                newDropAmount = newItem.getAmount();
+            } else if (newDropAmount > newItem.getMaxStackSize()) {
+                newDropAmount = newItem.getMaxStackSize();
+            }
+
+            if (newItem.getAmount() != newDropAmount) {
+                newItem.setAmount(newDropAmount);
+            }
+
+            if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
+                        newItem.getType().name(), dropItem.equippedSpawnChance,
+                        Utils.round(chanceRole, 4)));
+            } else if (!info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+                final String retryMsg = info.retryNumber > 0 ? ", retry: " + info.retryNumber : "";
+
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7%s.",
+                        newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount,
+                        dropItem.chance, Utils.round(chanceRole, 4), retryMsg));
+            }
+
+            int damage = dropItem.getDamage();
+            if (dropItem.getHasDamageRange()) {
+                damage = ThreadLocalRandom.current()
+                        .nextInt(dropItem.getDamageRangeMin(), dropItem.getDamageRangeMax() + 1);
+            }
+
+            if (damage > 0 || dropItem.lore != null || dropItem.customName != null) {
+                final ItemMeta meta = newItem.getItemMeta();
+
+                if (damage > 0 && meta instanceof Damageable) {
+                    ((Damageable) meta).setDamage(damage);
+                }
+
+                if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()) {
+                    final List<String> newLore = new ArrayList<>(dropItem.lore.size());
+                    for (String lore : dropItem.lore) {
+                        if (lore.contains("%")) {
+                            lore = lore.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
+                            lore = main.levelManager.replaceStringPlaceholders(lore, info.lmEntity, true, info.mobKiller, false);
+                        }
+
+                        newLore.add(lore);
+
+                        if (main.getVerInfo().getIsRunningPaper() && main.companion.useAdventure) {
+                            PaperUtils.updateItemMetaLore(meta, newLore);
+                        } else {
+                            SpigotUtils.updateItemMetaLore(meta, newLore);
+                        }
+                    }
+                }
+
+                if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
+                    String customName = dropItem.customName.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
+                    customName = main.levelManager.replaceStringPlaceholders(customName, info.lmEntity, true, info.mobKiller, false);
 
                     if (main.getVerInfo().getIsRunningPaper() && main.companion.useAdventure) {
-                        PaperUtils.updateItemMetaLore(meta, newLore);
+                        PaperUtils.updateItemDisplayName(meta, customName);
                     } else {
-                        SpigotUtils.updateItemMetaLore(meta, newLore);
+                        SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(customName));
                     }
                 }
+
+                newItem.setItemMeta(meta);
             }
 
-            if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
-                String customName = dropItem.customName.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
-                customName = main.levelManager.replaceStringPlaceholders(customName, info.lmEntity, true, info.mobKiller, false);
+            if (!info.equippedOnly) info.itemGotDropped(dropBase, newDropAmount);
 
-                if (main.getVerInfo().getIsRunningPaper() && main.companion.useAdventure) {
-                    PaperUtils.updateItemDisplayName(meta, customName);
-                } else {
-                    SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(customName));
-                }
-            }
-
-            newItem.setItemMeta(meta);
+            info.newDrops.add(newItem);
+            info.stackToItem.add(Utils.getPair(newItem, dropItem));
         }
-
-        if (!info.equippedOnly) info.itemGotDropped(dropBase, newDropAmount);
-
-        info.newDrops.add(newItem);
-        info.stackToItem.add(Utils.getPair(newItem, dropItem));
     }
 
     private boolean checkOverallChance(@NotNull final CustomDropProcessingInfo info) {

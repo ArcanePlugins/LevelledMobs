@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.compatibility.Compat1_19;
@@ -511,15 +510,10 @@ public class CustomDropsParser {
         item.externalType = ymlHelper.getString(cs, "type", this.defaults.externalType);
         item.externalAmount = ymlHelper.getDouble2(cs, "external-amount",
                 this.defaults.externalAmount);
-        item.mobHeadTexture = ymlHelper.getString(cs, "mobhead-texture");
-        final String mobHeadIdStr = ymlHelper.getString(cs, "mobhead-id");
-        if (mobHeadIdStr != null) {
-            try {
-                item.customPlayerHeadId = UUID.fromString(mobHeadIdStr);
-            } catch (final Exception e) {
-                Utils.logger.warning("Invalid UUID: " + mobHeadIdStr);
-            }
-        }
+        item.minItems = ymlHelper.getInt(cs, "min-items", 1);
+        item.maxItems = ymlHelper.getInt(cs, "max-items", 1);
+        item.allowedList = ymlHelper.getStringOrList(cs, "allowed-list");
+        item.excludedList = ymlHelper.getStringOrList(cs, "excluded-list");
 
         dropInstance.overrideStockDrops = ymlHelper.getBoolean2(cs, "override",
                 this.defaults.override);

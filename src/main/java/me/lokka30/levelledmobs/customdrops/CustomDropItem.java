@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.customdrops;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
@@ -30,18 +29,21 @@ public class CustomDropItem extends CustomDropBase {
     public boolean onlyDropIfEquipped;
     public boolean equipOnHelmet;
     public String customName;
-    public String mobHeadTexture;
     public List<String> lore;
     public @Nullable List<ItemFlag> itemFlags;
     public @Nullable List<String> itemFlagsStrings;
+    public @Nullable List<String> allowedList;
+    public @Nullable List<String> excludedList;
     private boolean hasDamageRange;
     private int damage;
     private int damageRangeMin;
     private int damageRangeMax;
+    public int minItems;
+    public int maxItems;
     public boolean equipOffhand;
-    public UUID customPlayerHeadId;
     private Material material;
     private ItemStack itemStack;
+    private List<ItemStack> itemStacks;
     public boolean isExternalItem;
     public String externalPluginName;
     public String externalType;
@@ -162,9 +164,28 @@ public class CustomDropItem extends CustomDropBase {
         return itemStack;
     }
 
+    public @NotNull List<ItemStack> getItemStacks() {
+        if (this.itemStacks != null && !this.itemStacks.isEmpty())
+            return itemStacks;
+        else
+            return List.of(this.itemStack);
+    }
+
     public void setItemStack(final @NotNull ItemStack itemStack) {
         this.itemStack = itemStack;
         this.material = itemStack.getType();
+    }
+
+    public void setItemStacks(final @Nullable List<ItemStack> itemStacks) {
+        this.itemStacks = itemStacks;
+        if (itemStacks != null && !itemStacks.isEmpty()) {
+            this.itemStack = itemStacks.get(0);
+            this.material = itemStack.getType();
+        }
+    }
+
+    public boolean hasMultipleItems(){
+        return this.itemStacks != null && !this.itemStacks.isEmpty();
     }
 
     public String toString() {

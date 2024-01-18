@@ -878,7 +878,7 @@ public class RulesManager {
 
         if (ri.conditions_CustomNames != null) {
             final String customName = lmEntity.getLivingEntity().getCustomName() != null ?
-                lmEntity.getLivingEntity().getCustomName() : "(none)";
+                lmEntity.getLivingEntity().getCustomName().replace("§", "&") : "(none)";
 
             final boolean result = ri.conditions_CustomNames.isEnabledInList(customName, lmEntity);
 

@@ -38,6 +38,7 @@ public class ExternalCompatibilityManager {
 
     private static Boolean useNewerEliteMobsKey = null;
     private Boolean lmiMeetsVersionRequirement;
+    private Boolean lmiMeetsVersionRequirement2;
 
     public boolean doesLMIMeetVersionRequirement(){
         // must be 1.1.0 or newer
@@ -58,6 +59,27 @@ public class ExternalCompatibilityManager {
         }
 
         return lmiMeetsVersionRequirement;
+    }
+
+    public boolean doesLMIMeetVersionRequirement2(){
+        // must be 1.3.0 or newer
+        if (lmiMeetsVersionRequirement2 != null)
+            return lmiMeetsVersionRequirement2;
+
+        final Plugin lmi = Bukkit.getPluginManager().getPlugin("LM_Items");
+        if (lmi == null) return false;
+
+        try {
+            final VersionInfo requiredVersion = new VersionInfo("1.3.0");
+            final VersionInfo lmiVersion = new VersionInfo(lmi.getDescription().getVersion());
+
+            lmiMeetsVersionRequirement2 = requiredVersion.compareTo(lmiVersion) <= 0;
+        } catch (InvalidObjectException e) {
+            e.printStackTrace();
+            lmiMeetsVersionRequirement2 = false;
+        }
+
+        return lmiMeetsVersionRequirement2;
     }
 
     public enum ExternalCompatibility {
