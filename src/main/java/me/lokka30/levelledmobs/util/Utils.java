@@ -481,7 +481,13 @@ public final class Utils {
         long time;
         double remainder = 0.0;
         String numberPart = match.group(1) != null ? match.group(1) : match.group(2);
-        final String unit = match.group(1) != null ? match.group(2).toLowerCase() : "";
+        String unit = match.group(1) != null ? match.group(2).toLowerCase() : "";
+
+        if (Utils.isInteger(input)){
+            // number only, no time unit was specified
+            numberPart = input;
+            unit = "";
+        }
 
         if (numberPart.contains(".")) {
             final String[] split = numberPart.split("\\.");

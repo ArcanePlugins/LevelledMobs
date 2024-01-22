@@ -115,10 +115,11 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        final Long disableAfter = Utils.parseTimeUnit(
-                input, null, true, commandSender);
+        Long disableAfter = Utils.parseTimeUnit(
+                input, null, false, commandSender);
 
         if (disableAfter != null){
+            disableAfter *= 1000;
             if (args.length >= 4){
                 if (!parseEnableDebugCategory(args[3])) return;
             }
