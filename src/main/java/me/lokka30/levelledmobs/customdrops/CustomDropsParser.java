@@ -26,6 +26,7 @@ import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
+import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
@@ -72,7 +73,7 @@ public class CustomDropsParser {
     private boolean hasMentionedNBTAPI_Missing;
     public boolean dropsUtilizeNBTAPI;
     public final List<String> invalidExternalItems;
-    private CustomDropBase dropBase;
+    //private CustomDropBase dropBase;
     private CustomDropInstance dropInstance;
     private final String defaultName = "default";
     private final List<String> invalidEntityTypesToIgnore;
@@ -335,9 +336,8 @@ public class CustomDropsParser {
                 }
 
                 if ("overall_chance".equalsIgnoreCase(materialName)) {
-                    if (itemEntry.getValue() instanceof Number) {
-                        dropInstance.overallChance = ((Number) itemEntry.getValue()).floatValue();
-                    }
+                    dropInstance.overallChance = parseSlidingChance(itemConfiguration,
+                            "overall_chance", defaults.overallChance);
                     continue;
                 } else if ("overall_permission".equalsIgnoreCase(materialName)) {
                     if (itemEntry.getValue() instanceof String) {
@@ -386,6 +386,7 @@ public class CustomDropsParser {
                     continue;
                 }
 
+                CustomDropBase dropBase;
                 if ("customCommand".equalsIgnoreCase(materialName)) {
                     dropBase = new CustomCommand(defaults);
                 } else {
@@ -433,7 +434,7 @@ public class CustomDropsParser {
 
     private void parseCustomDropsAttributes(final @NotNull CustomDropBase dropBase,
         final @NotNull ConfigurationSection cs) {
-        dropBase.chance = ymlHelper.getFloat(cs, "chance", this.defaults.chance);
+        dropBase.chance = parseSlidingChance(cs, "chance", defaults.chance);
         dropBase.useChunkKillMax = ymlHelper.getBoolean(cs, "use-chunk-kill-max",
             this.defaults.useChunkKillMax);
         dropBase.permissions.addAll(this.defaults.permissions);
@@ -472,10 +473,9 @@ public class CustomDropsParser {
         }
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs, "overall_chance"))) {
-            dropInstance.overallChance = ymlHelper.getFloat(cs, "overall_chance");
-            if (dropInstance.overallChance == 0.0) {
-                dropInstance.overallChance = null;
-            }
+            final SlidingChance overallChance = parseSlidingChance(cs, "overall_chance", null);
+            if (overallChance == null || !overallChance.isDefault())
+                dropInstance.overallChance = overallChance;
         }
 
         if (cs.get(ymlHelper.getKeyNameFromConfig(cs, "overall_permission")) != null) {
@@ -492,6 +492,63 @@ public class CustomDropsParser {
         }
 
         parseCustomItem(cs, (CustomDropItem) dropBase);
+    }
+
+    private @Nullable SlidingChance parseSlidingChance(
+            final @NotNull ConfigurationSection cs,
+            final @NotNull String keyName,
+            final @Nullable SlidingChance defaultValue){
+        final Object chanceOptsMap = cs.get(keyName);
+        ConfigurationSection chanceOpts = null;
+
+        if (chanceOptsMap instanceof LinkedHashMap<?,?> || chanceOptsMap instanceof MemorySection) {
+            chanceOpts = objTo_CS(cs, keyName);
+        }
+
+        if (chanceOpts == null) {
+            final Float parsedValue = ymlHelper.getFloat2(cs, keyName, null);
+
+            if (defaultValue == null && parsedValue == null) return null;
+
+            final SlidingChance result = new SlidingChance();
+            if (parsedValue != null)
+                result.chance = parsedValue;
+            else
+                result.setFromInstance(defaultValue);
+
+            result.defaults = defaultValue;
+            return result;
+        }
+
+        final Map<MinAndMax, MinAndMax> chanceRange = new LinkedHashMap<>();
+        final Map<String, Object> values = chanceOpts.getValues(false);
+        for (String str : values.keySet()){
+            final Object value = values.get(str);
+            if (str == null || value == null) continue;
+
+            final MinAndMax mobLvl = MinAndMax.setAmountRangeFromString(str);
+            final MinAndMax assignment = MinAndMax.setAmountRangeFromString(value.toString());
+
+            if (mobLvl != null && assignment != null) {
+                mobLvl.showAsInt = true;
+                chanceRange.put(mobLvl, assignment);
+            }
+        }
+
+        SlidingChance result;
+        if (chanceRange.isEmpty()){
+            if (defaultValue == null) return null;
+            result = new SlidingChance();
+            result.setFromInstance(defaultValue);
+        }
+        else{
+            result = new SlidingChance();
+            result.setFromInstance(defaultValue);
+            result.changeRange = chanceRange;
+        }
+
+        result.defaults = defaultValue;
+        return result;
     }
 
     private void parseCustomItem(final @NotNull ConfigurationSection cs, final @NotNull CustomDropItem item){
@@ -594,7 +651,7 @@ public class CustomDropsParser {
         if (customCommand.commands.isEmpty()) {
             Utils.logger.warning("no command was specified for custom command");
         } else {
-            dropInstance.customItems.add(dropBase);
+            dropInstance.customItems.add(customCommand);
         }
     }
 
@@ -814,6 +871,8 @@ public class CustomDropsParser {
     }
 
     private void applyMetaAttributes(@NotNull final CustomDropItem item) {
+        if (item.getItemStack() == null) return;
+
         final ItemMeta meta = item.getItemStack().getItemMeta();
         if (meta == null) {
             return;
@@ -890,23 +949,23 @@ public class CustomDropsParser {
         }
     }
 
-    private void checkEquippedChance(final CustomDropItem item,
+    private void checkEquippedChance(final @NotNull CustomDropItem item,
         @NotNull final ConfigurationSection cs) {
+
+        item.equippedChance = parseSlidingChance(cs, "equipped", this.defaults.equippedChance);
+
+        if (this.defaults.equippedChance == null ||
+                item.equippedChance != null && !item.equippedChance.isDefault()) return;
         final String temp = ymlHelper.getString(cs, "equipped");
         if (Utils.isNullOrEmpty(temp)) {
             return;
         }
 
         if ("false".equalsIgnoreCase(temp)) {
-            item.equippedSpawnChance = 0.0F;
-            return;
+            item.equippedChance.chance = 0.0F;
         } else if ("true".equalsIgnoreCase(temp)) {
-            item.equippedSpawnChance = 1.0F;
-            return;
+            item.equippedChance.chance = 1.0F;
         }
-
-        item.equippedSpawnChance = ymlHelper.getFloat(cs, "equipped",
-            this.defaults.equippedSpawnChance);
     }
 
     private @Nullable ConfigurationSection objectToConfigurationSection2(final ConfigurationSection cs,
@@ -1015,7 +1074,7 @@ public class CustomDropsParser {
         return false;
     }
 
-    public void showCustomDropsDebugInfo(final @NotNull CommandSender sender) {
+    public void showCustomDropsDebugInfo(final @Nullable CommandSender sender) {
         final StringBuilder sbMain = new StringBuilder();
 
         int dropsCount = 0;
@@ -1030,8 +1089,9 @@ public class CustomDropsParser {
             }
         }
 
+        final Map<String, CustomDropInstance> allGroups = handler.getCustomDropsitems_groups();
         final int itemsCount =
-                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
+                allGroups.size() + handler.customDropsitems_Babies.size();
         final int customItemGroupCount = handler.customItemGroups != null ?
                 handler.customItemGroups.size() : 0;
         sbMain.append(String.format(
@@ -1088,7 +1148,7 @@ public class CustomDropsParser {
             }
         }
 
-        for (final Map.Entry<String, CustomDropInstance> customDrops : handler.getCustomDropsitems_groups().entrySet()) {
+        for (final Map.Entry<String, CustomDropInstance> customDrops : allGroups.entrySet()) {
             final CustomDropInstance dropInstance = customDrops.getValue();
             final String override = dropInstance.getOverrideStockDrops() ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "
@@ -1109,7 +1169,10 @@ public class CustomDropsParser {
             }
         }
 
-        sender.sendMessage(MessageUtils.colorizeAll(sbMain.toString()));
+        if (sender != null)
+            sender.sendMessage(MessageUtils.colorizeAll(sbMain.toString()));
+        else
+            Utils.logger.info(sbMain.toString());
     }
 
     private @NotNull String showCustomDropsDebugInfo2(final CustomDropBase baseItem) {
@@ -1171,7 +1234,7 @@ public class CustomDropsParser {
             sb.append(baseItem.groupId);
             sb.append("&r");
 
-            if (baseItem.maxDropGroup > 0 && !handler.groupLimitsMap.containsKey(dropBase.groupId)) {
+            if (baseItem.maxDropGroup > 0 && !handler.groupLimitsMap.containsKey(baseItem.groupId)) {
                 sb.append(", maxDropGroup: &b");
                 sb.append(baseItem.maxDropGroup);
                 sb.append("&r");
@@ -1214,9 +1277,9 @@ public class CustomDropsParser {
         if (!item.excludedMobs.isEmpty()) {
             sb.append(", hasExcludes");
         }
-        if (item.equippedSpawnChance > 0.0) {
+        if (item.equippedChance != null && !item.equippedChance.isDefault()) {
             sb.append(", equipChance: &b");
-            sb.append(item.equippedSpawnChance);
+            sb.append(item.equippedChance);
             sb.append("&r");
         }
         if (item.onlyDropIfEquipped) {

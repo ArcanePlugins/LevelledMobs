@@ -154,18 +154,20 @@ public final class LevelledMobs extends JavaPlugin {
 
     private void prepareToLoadCustomDrops(){
         if (Bukkit.getPluginManager().getPlugin("LM_Items") != null){
-            final LevelledMobs mainInstance = this;
             final SchedulerWrapper wrapper = new SchedulerWrapper(() -> {
                 customDropsHandler.customDropsParser.loadDrops(
-                        FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION));
+                        FileLoader.loadFile( "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION));
                 companion.hasFinishedLoading = true;
+                if (companion.showCustomDrops)
+                    customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null);
             });
             wrapper.runDelayed(10L);
         }
         else{
             customDropsHandler.customDropsParser.loadDrops(
-                    FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-            );
+                    FileLoader.loadFile( "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION));
+            if (companion.showCustomDrops)
+                customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null);
         }
     }
 

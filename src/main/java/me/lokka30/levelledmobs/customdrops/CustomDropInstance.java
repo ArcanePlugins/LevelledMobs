@@ -47,7 +47,7 @@ public class CustomDropInstance {
     private final @Nullable EntityType associatedMob;
     private final @Nullable CustomUniversalGroups entityGroup;
     public final @NotNull List<CustomDropBase> customItems;
-    public Float overallChance;
+    public @Nullable SlidingChance overallChance;
     public final @NotNull List<String> overallPermissions;
     public Boolean overrideStockDrops;
     boolean utilizesGroupIds;

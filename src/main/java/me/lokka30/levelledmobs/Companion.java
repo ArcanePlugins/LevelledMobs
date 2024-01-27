@@ -109,6 +109,7 @@ public class Companion {
     public boolean useAdventure;
     public CommandSender reloadSender;
     public boolean hasFinishedLoading;
+    public boolean showCustomDrops;
     final private HashMap<Long, Map<EntityType, ChunkKillInfo>> entityDeathInChunkCounter;
     final private HashMap<Long, Map<UUID, Instant>> chunkKillNoticationTracker;
     final public Map<Player, Location> playerNetherPortals;
@@ -142,7 +143,7 @@ public class Companion {
     boolean loadFiles(final boolean isReload) {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
-        final YamlConfiguration rulesFile = FileLoader.loadFile(main, "rules",
+        final YamlConfiguration rulesFile = FileLoader.loadFile( "rules",
             FileLoader.RULES_FILE_VERSION);
         this.hadRulesLoadError = rulesFile == null;
         main.rulesParsingManager.parseRulesMain(rulesFile);
@@ -155,11 +156,11 @@ public class Companion {
             FileMigrator.migrateSettingsToRules(main);
         }
 
-        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION);
+        main.settingsCfg = FileLoader.loadFile( "settings", FileLoader.SETTINGS_FILE_VERSION);
 
         if (main.settingsCfg != null) // only load if settings were loaded successfully
         {
-            main.messagesCfg = FileLoader.loadFile(main, "messages",
+            main.messagesCfg = FileLoader.loadFile( "messages",
                 FileLoader.MESSAGES_FILE_VERSION);
         } else {
             // had an issue reading the file.  Disable the plugin now
@@ -191,8 +192,10 @@ public class Companion {
             // plugins are already loaded
             parseDebugsEnabled();
             main.customDropsHandler.customDropsParser.loadDrops(
-                FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+                FileLoader.loadFile( "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
             );
+            if (main.companion.showCustomDrops)
+                main.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null);
         }
 
         main.configUtils.load();
@@ -241,6 +244,8 @@ public class Companion {
             main.debugManager.enableDebug(useSender, false, false);
             useSender.sendMessage(main.debugManager.getDebugStatus());
         }
+
+        this.showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS);
     }
 
     @Nullable private YamlConfiguration loadEmbeddedResource(final String filename) {

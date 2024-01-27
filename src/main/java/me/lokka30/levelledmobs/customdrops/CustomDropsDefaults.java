@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds all default values for either all custom drop items
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
  * @since 2.4.0
  */
 public class CustomDropsDefaults {
-
     boolean noMultiplier;
     boolean noSpawner;
     public boolean override;
@@ -32,10 +32,10 @@ public class CustomDropsDefaults {
     int maxDropGroup;
     int minPlayerLevel;
     int maxPlayerLevel;
-    public float chance;
+    public SlidingChance chance;
     public boolean useChunkKillMax;
-    float equippedSpawnChance;
-    Float overallChance;
+    @Nullable SlidingChance equippedChance;
+    @Nullable SlidingChance overallChance;
     String groupId;
     String playerLevelVariable;
     String nbtData;
@@ -51,7 +51,6 @@ public class CustomDropsDefaults {
 
     CustomDropsDefaults() {
         // these are the defaults of the defaults
-        this.chance = 0.2F;
         this.amount = 1;
         this.minLevel = -1;
         this.maxLevel = -1;
@@ -59,7 +58,6 @@ public class CustomDropsDefaults {
         this.maxPlayerLevel = -1;
         this.customModelData = -1;
         this.priority = 0;
-        this.equippedSpawnChance = 0.0F;
         this.maxDropGroup = 0;
         this.noMultiplier = false;
         this.noSpawner = false;
@@ -73,7 +71,10 @@ public class CustomDropsDefaults {
     }
 
     void setDefaultsFromDropItem(@NotNull final CustomDropBase dropBase) {
-        this.chance = dropBase.chance;
+        if (this.chance != null)
+            this.chance.setFromInstance(dropBase.chance);
+        else
+            this.chance = dropBase.chance;
         this.useChunkKillMax = dropBase.useChunkKillMax;
         this.amount = dropBase.getAmount();
         this.minLevel = dropBase.minLevel;
@@ -93,7 +94,10 @@ public class CustomDropsDefaults {
 
         if (dropBase instanceof final CustomDropItem dropItem) {
             this.customModelData = dropItem.customModelDataId;
-            this.equippedSpawnChance = dropItem.equippedSpawnChance;
+            if (this.equippedChance != null)
+                this.equippedChance.setFromInstance(dropItem.equippedChance);
+            else
+                this.equippedChance = dropItem.equippedChance;
             this.noMultiplier = dropItem.noMultiplier;
             this.onlyDropIfEquipped = dropItem.onlyDropIfEquipped;
             this.externalType = dropItem.externalType;
