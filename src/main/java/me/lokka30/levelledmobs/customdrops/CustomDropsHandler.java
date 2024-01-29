@@ -709,6 +709,8 @@ public class CustomDropsHandler {
             lmItemsParser.getExternalItem(dropItem, info);
         }
 
+        if (dropItem.getItemStacks() == null) return;
+
         for (ItemStack newItem : dropItem.getItemStacks()) {
             // will only be multiple items for supported LM Items items
 
