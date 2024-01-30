@@ -10,7 +10,7 @@ import org.bukkit.entity.EntityType
  * @author stumper66
  * @since 3.6.0
  */
-object Compat1_19 {
+object Compat119 {
     fun getPassiveMobs(): MutableSet<EntityType> {
         return mutableSetOf(
             EntityType.ALLAY,

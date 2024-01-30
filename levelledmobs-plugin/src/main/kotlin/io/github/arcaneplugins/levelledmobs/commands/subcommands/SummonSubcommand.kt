@@ -413,7 +413,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         val target: Player? = options.player
         var location = options.lmPlaceholder.location
 
-        if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(
+        if (main.levelManager.ForcedBlockedEntityTypes.contains(
                 options.lmPlaceholder.entityType
             )
         ) {

@@ -44,9 +44,9 @@ class LMItemsParser {
         val colon = materialName.indexOf(":")
         item.externalPluginName = materialName.substring(0, colon)
         item.externalItemId = materialName.substring(colon + 1)
-        val lm_items = LM_Items.plugin
+        val lmitems = LM_Items.plugin
 
-        if (!lm_items.doesSupportPlugin(item.externalPluginName!!)) {
+        if (!lmitems.doesSupportPlugin(item.externalPluginName!!)) {
             Utils.logger.warning(
                 String.format(
                     "customdrops.yml references item from plugin '%s' but LM_Items does not support that plugin",

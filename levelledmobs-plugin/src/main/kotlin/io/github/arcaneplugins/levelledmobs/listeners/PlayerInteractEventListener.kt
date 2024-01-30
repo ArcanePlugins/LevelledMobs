@@ -385,11 +385,11 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
             sb.append("Vanilla Spawner\n")
         }
 
-        addSpawnerAttributeFromPdc_Int(
+        addSpawnerAttributeFromPdcInt(
             "min level", NamespacedKeys.keySpawnerMinLevel, pdc,
             sb
         )
-        addSpawnerAttributeFromPdc_Int(
+        addSpawnerAttributeFromPdcInt(
             "max level", NamespacedKeys.keySpawnerMaxLevel, pdc,
             sb
         )
@@ -402,7 +402,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         addSpawnerAttribute("required player range", cs.requiredPlayerRange, sb)
         addSpawnerAttribute("spawn count", cs.spawnCount, sb)
         sb.append('\n')
-        addSpawnerAttributeFromPdc_Str(NamespacedKeys.keySpawnerCustomDropId, pdc, sb)
+        addSpawnerAttributeFromPdcStr(NamespacedKeys.keySpawnerCustomDropId, pdc, sb)
         // customName
         if (cs.spawnedType != null)
             addSpawnerAttribute("spawn type", cs.spawnedType!!, sb)
@@ -410,7 +410,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         player.sendMessage(colorizeAll(sb.toString()))
     }
 
-    private fun addSpawnerAttributeFromPdc_Int(
+    private fun addSpawnerAttributeFromPdcInt(
         name: String,
         key: NamespacedKey,
         pdc: PersistentDataContainer,
@@ -429,7 +429,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         sb.append("&r")
     }
 
-    private fun addSpawnerAttributeFromPdc_Str(
+    private fun addSpawnerAttributeFromPdcStr(
         key: NamespacedKey,
         pdc: PersistentDataContainer,
         sb: StringBuilder

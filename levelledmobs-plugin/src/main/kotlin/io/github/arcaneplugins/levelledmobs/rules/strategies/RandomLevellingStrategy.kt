@@ -63,13 +63,13 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         val numbers: MutableList<IntArray> = LinkedList()
         val values: MutableList<Int> = LinkedList()
         val numbersUsed: MutableList<Int> = LinkedList()
-        val orig_OverallNumberRange: MutableList<Int> = LinkedList()
+        val origOverallNumberRange: MutableList<Int> = LinkedList()
 
         for (i in minLevel..maxLevel) {
-            orig_OverallNumberRange.add(i)
+            origOverallNumberRange.add(i)
         }
 
-        val overallNumberRange: MutableList<Int> = LinkedList(orig_OverallNumberRange)
+        val overallNumberRange: MutableList<Int> = LinkedList(origOverallNumberRange)
 
         // first loop parses the number range string and counts totals
         // so we know how big to size the array
@@ -90,7 +90,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
             values.add(value)
 
             for (i in start..end) {
-                if (!orig_OverallNumberRange.contains(i)) {
+                if (!origOverallNumberRange.contains(i)) {
                     continue
                 }
                 if (!numbersUsed.contains(i)) {
@@ -110,7 +110,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         // now we actually populate the array
         for ((valuesCount, nums) in numbers.withIndex()) {
             for (i in nums[0]..nums[1]) {
-                if (!orig_OverallNumberRange.contains(i)) {
+                if (!origOverallNumberRange.contains(i)) {
                     continue
                 }
                 overallNumberRange.remove(i)

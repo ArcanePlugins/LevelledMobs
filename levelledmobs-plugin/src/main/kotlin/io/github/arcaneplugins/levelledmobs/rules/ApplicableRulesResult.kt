@@ -8,6 +8,6 @@ package io.github.arcaneplugins.levelledmobs.rules
  */
 class ApplicableRulesResult {
     val allApplicableRules = mutableListOf<RuleInfo>()
-    val allApplicableRules_MadeChance = mutableListOf<RuleInfo>()
-    val allApplicableRules_DidNotMakeChance = mutableListOf<RuleInfo>()
+    val allApplicableRulesMadeChance = mutableListOf<RuleInfo>()
+    val allApplicableRulesDidNotMakeChance = mutableListOf<RuleInfo>()
 }

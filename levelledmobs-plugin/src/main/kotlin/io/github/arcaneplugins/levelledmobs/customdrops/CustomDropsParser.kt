@@ -1,10 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_17.all17Mobs
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_19.all19Mobs
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_20.all20Mobs
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_21.all21Mobs
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat117.all17Mobs
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat119.all19Mobs
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat120.all20Mobs
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat121.all21Mobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.NBTManager
@@ -45,7 +45,7 @@ class CustomDropsParser(
     private val ymlHelper = YmlParsingHelper()
     var defaults = CustomDropsDefaults()
         private set
-    private var hasMentionedNBTAPI_Missing = false
+    private var hasMentionedNBTAPIMissing = false
     var dropsUtilizeNBTAPI: Boolean = false
     val invalidExternalItems = mutableListOf<String>()
     //private var dropBase: CustomDropBase? = null
@@ -75,7 +75,7 @@ class CustomDropsParser(
 
         for (rules in LevelledMobs.instance.rulesManager.rulesInEffect.values) {
             for (ruleInfo in rules) {
-                if (ruleInfo.customDrops_UseForMobs != null && ruleInfo.customDrops_UseForMobs!!) {
+                if (ruleInfo.customDropsUseForMobs != null && ruleInfo.customDropsUseForMobs!!) {
                     isDropsEnabledForAnyRule = true
                     break
                 }
@@ -238,18 +238,18 @@ class CustomDropsParser(
 
                 if (dropInstance!!.customItems.isNotEmpty() || dropInstance!!.getOverrideStockDrops) {
                     if (isUniversalGroup) {
-                        if (handler.getCustomDropsitems_groups().containsKey(
+                        if (handler.getCustomDropsitemsGroups().containsKey(
                                 universalGroup.toString()
                             )
                         ) {
-                            handler.getCustomDropsitems_groups()[universalGroup.toString()]
+                            handler.getCustomDropsitemsGroups()[universalGroup.toString()]
                                 ?.combineDrop(dropInstance)
                         } else {
                             handler.addCustomDropGroup(universalGroup.toString(), dropInstance!!)
                         }
                     } else {
                         val dropMap: MutableMap<EntityType, CustomDropInstance> =
-                            if (dropInstance!!.isBabyMob) handler.customDropsitems_Babies else handler.getCustomDropsitems()
+                            if (dropInstance!!.isBabyMob) handler.customDropsitemsBabies else handler.getCustomDropsitems()
 
                         if (dropMap.containsKey(entityType)) {
                             dropMap[entityType]!!.combineDrop(dropInstance)
@@ -281,7 +281,7 @@ class CustomDropsParser(
                 addMaterialToDrop(itemObject, item)
                 continue
             }
-            val itemConfiguration = objectToConfigurationSection_old(
+            val itemConfiguration = objectToConfigurationSectionOld(
                 itemObject
             )
             if (itemConfiguration == null) {
@@ -363,7 +363,7 @@ class CustomDropsParser(
                     continue
                 }
 
-                val itemInfoConfiguration = objectToConfigurationSection_old(
+                val itemInfoConfiguration = objectToConfigurationSectionOld(
                     itemEntry.value
                 )
                 if (itemInfoConfiguration == null) {
@@ -406,7 +406,7 @@ class CustomDropsParser(
     private fun parseExternalExtras(
         cs: ConfigurationSection
     ): MutableMap<String, Any>? {
-        val cs2: ConfigurationSection = ymlHelper.objTo_CS(cs, "extras") ?: return null
+        val cs2: ConfigurationSection = ymlHelper.objToCS(cs, "extras") ?: return null
 
         val results: MutableMap<String, Any> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
 
@@ -509,7 +509,7 @@ class CustomDropsParser(
         var chanceOpts: ConfigurationSection? = null
 
         if (chanceOptsMap is LinkedHashMap<*, *> || chanceOptsMap is MemorySection) {
-            chanceOpts = objTo_CS(cs, keyName)
+            chanceOpts = objToCS(cs, keyName)
         }
 
         if (chanceOpts == null) {
@@ -616,7 +616,7 @@ class CustomDropsParser(
         item.nbtData = ymlHelper.getString(cs, "nbt-data", defaults.nbtData)
         if (item.material != Material.AIR && !item.nbtData.isNullOrEmpty()) {
             if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
-                val result: NBTApplyResult = NBTManager.applyNBT_Data_Item(item, item.nbtData!!)
+                val result: NBTApplyResult = NBTManager.applyNBTDataItem(item, item.nbtData!!)
                 if (result.hadException) {
                     Utils.logger.warning(
                         java.lang.String.format(
@@ -629,11 +629,11 @@ class CustomDropsParser(
                     item.itemStack = result.itemStack
                     this.dropsUtilizeNBTAPI = true
                 }
-            } else if (!hasMentionedNBTAPI_Missing) {
+            } else if (!hasMentionedNBTAPIMissing) {
                 Utils.logger.warning(
                     "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!"
                 )
-                hasMentionedNBTAPI_Missing = true
+                hasMentionedNBTAPIMissing = true
             }
         }
 
@@ -641,7 +641,7 @@ class CustomDropsParser(
     }
 
     private fun parseGroupLimits(base: CustomDropBase, csParent: ConfigurationSection) {
-        val cs: ConfigurationSection = objTo_CS(csParent, "group-limits") ?: return
+        val cs: ConfigurationSection = objToCS(csParent, "group-limits") ?: return
 
         if (!base.hasGroupId) return
 
@@ -695,7 +695,7 @@ class CustomDropsParser(
         if (useList.isEmpty()) {
             val useKeyName: String = ymlHelper.getKeyNameFromConfig(cs, "cause-of-death")
 
-            cs2 = objTo_CS(cs, useKeyName)
+            cs2 = objToCS(cs, useKeyName)
         }
         if (cs2 == null && useList == null) {
             return defaultValue
@@ -1026,7 +1026,7 @@ class CustomDropsParser(
         }
     }
 
-    private fun objectToConfigurationSection_old(
+    private fun objectToConfigurationSectionOld(
         obj: Any?
     ): ConfigurationSection? {
         if (obj == null) {
@@ -1140,9 +1140,9 @@ class CustomDropsParser(
             }
         }
 
-        val allGroups = handler.getCustomDropsitems_groups()
+        val allGroups = handler.getCustomDropsitemsGroups()
         val itemsCount =
-            allGroups.size + handler.customDropsitems_Babies.size
+            allGroups.size + handler.customDropsitemsBabies.size
         val customItemGroupCount = handler.customItemGroups.size
         sbMain.append(
             "drop instances: ${handler.getCustomDropsitems().size}, " +
@@ -1163,7 +1163,7 @@ class CustomDropsParser(
             typeNames[ent.toString()] = ent
         }
 
-        for (ent in handler.customDropsitems_Babies.keys) {
+        for (ent in handler.customDropsitemsBabies.keys) {
             typeNames[ent.toString() + "_2"] = ent
         }
 
@@ -1172,7 +1172,7 @@ class CustomDropsParser(
             val ent = EntityType.valueOf(
                 if (isBaby) entTypeStr.substring(0, entTypeStr.length - 2) else entTypeStr
             )
-            val dropInstance = if (isBaby) handler.customDropsitems_Babies[ent]!!
+            val dropInstance = if (isBaby) handler.customDropsitemsBabies[ent]!!
             else handler.getCustomDropsitems()[ent]!!
 
             val override = if (dropInstance.getOverrideStockDrops) " (override)" else ""
@@ -1411,7 +1411,7 @@ class CustomDropsParser(
         return sb.toString()
     }
 
-    private fun objTo_CS(
+    private fun objToCS(
         cs: ConfigurationSection?,
         path: String
     ): ConfigurationSection? {

@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import io.github.arcaneplugins.levelledmobs.annotations.MergableRule
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import org.jetbrains.annotations.Contract
 

@@ -1,11 +1,11 @@
 package io.github.arcaneplugins.levelledmobs
 
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_16
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_17
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_19
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_19.getAquaticMobs
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_20
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_21
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat116
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat117
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat119
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat119.getAquaticMobs
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat120
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat121
 import io.github.arcaneplugins.levelledmobs.listeners.BlockPlaceListener
 import io.github.arcaneplugins.levelledmobs.listeners.ChunkLoadListener
 import io.github.arcaneplugins.levelledmobs.listeners.CombustListener
@@ -607,7 +607,7 @@ class Companion{
         ))
 
         if (versionInfo.minecraftVersion >= 1.16) {
-            hostileMobsGroup.addAll(Compat1_16.getHostileMobs())
+            hostileMobsGroup.addAll(Compat116.getHostileMobs())
         }
 
         // include interfaces: Animals, WaterMob
@@ -617,23 +617,23 @@ class Companion{
         ))
 
         if (versionInfo.minecraftVersion >= 1.17) {
-            passiveMobsGroup.addAll(Compat1_17.getPassiveMobs())
+            passiveMobsGroup.addAll(Compat117.getPassiveMobs())
         }
         if (versionInfo.majorVersion >= 1.19) {
-            passiveMobsGroup.addAll(Compat1_19.getPassiveMobs())
+            passiveMobsGroup.addAll(Compat119.getPassiveMobs())
         }
         if (versionInfo.majorVersion >= 1.20) {
-            passiveMobsGroup.addAll(Compat1_20.getPassiveMobs())
+            passiveMobsGroup.addAll(Compat120.getPassiveMobs())
         }
         if (versionInfo.majorVersion >= 1.21) {
-            passiveMobsGroup.addAll(Compat1_21.getPassiveMobs())
+            passiveMobsGroup.addAll(Compat121.getPassiveMobs())
         }
 
         if (versionInfo.majorVersion >= 1.16) {
-            hostileMobsGroup.addAll(Compat1_16.getHostileMobs())
+            hostileMobsGroup.addAll(Compat116.getHostileMobs())
         }
         if (versionInfo.majorVersion >= 1.19) {
-            hostileMobsGroup.addAll(Compat1_19.getHostileMobs())
+            hostileMobsGroup.addAll(Compat119.getHostileMobs())
         }
 
         // include interfaces: WaterMob

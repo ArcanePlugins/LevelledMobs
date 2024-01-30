@@ -23,7 +23,7 @@ class MetricsInfo {
     private fun isCustomDropsEnabed(): Boolean {
         for (rules in LevelledMobs.instance.rulesManager.rulesInEffect.values) {
             for (ruleInfo in rules) {
-                if (ruleInfo.customDrops_UseForMobs != null && ruleInfo.customDrops_UseForMobs!!) {
+                if (ruleInfo.customDropsUseForMobs != null && ruleInfo.customDropsUseForMobs!!) {
                     return true
                 }
             }
@@ -48,8 +48,8 @@ class MetricsInfo {
     fun getMaxLevelRange(): String {
         // 1-10, 11-24, 25-50, 51-100, 101-499, 500+
         val maxLevel =
-            if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.restrictions_MaxLevel == null) 1
-            else LevelledMobs.instance.rulesParsingManager.defaultRule!!.restrictions_MaxLevel!!
+            if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.restrictionsMaxLevel == null) 1
+            else LevelledMobs.instance.rulesParsingManager.defaultRule!!.restrictionsMaxLevel!!
 
         return if (maxLevel >= 500) {
             "500+"
@@ -144,8 +144,8 @@ class MetricsInfo {
         if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides != null) {
             count += LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides!!.size
         }
-        if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides_Level != null) {
-            count += LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides_Level!!.size
+        if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverridesLevel != null) {
+            count += LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverridesLevel!!.size
         }
 
         return if (count > 12) {
@@ -171,7 +171,7 @@ class MetricsInfo {
                 continue
             }
 
-            if (ruleInfo.mobNBT_Data != null && ruleInfo.mobNBT_Data!!.isNotEmpty) {
+            if (ruleInfo.mobNBTData != null && ruleInfo.mobNBTData!!.isNotEmpty) {
                 return "Yes"
             }
         }

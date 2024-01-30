@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
-import java.util.Arrays
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Material

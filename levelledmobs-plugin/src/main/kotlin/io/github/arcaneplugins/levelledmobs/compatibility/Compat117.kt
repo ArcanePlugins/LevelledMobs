@@ -10,7 +10,7 @@ import org.bukkit.entity.EntityType
  * @author stumper66
  * @since 3.0.0
  */
-object Compat1_17 {
+object Compat117 {
     fun getPassiveMobs(): MutableSet<EntityType> {
         return mutableSetOf(
             EntityType.AXOLOTL,

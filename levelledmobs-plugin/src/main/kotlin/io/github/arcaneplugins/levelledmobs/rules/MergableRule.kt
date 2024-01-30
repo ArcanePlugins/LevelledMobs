@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.annotations
+package io.github.arcaneplugins.levelledmobs.rules
 
 /**
  * Provides a common interface for various rules

@@ -46,10 +46,10 @@ class CustomDropsHandler {
     // regular custom drops defined for a mob type
     private val customDropsitems = mutableMapOf<EntityType, CustomDropInstance>()
     // regular custom drops defined for a mob type that is a baby
-    val customDropsitems_Babies = mutableMapOf<EntityType, CustomDropInstance>()
+    val customDropsitemsBabies = mutableMapOf<EntityType, CustomDropInstance>()
 
     // only used for the built-in universal groups
-    private val customDropsitems_groups = mutableMapOf<String, CustomDropInstance>()
+    private val customDropsitemsGroups = mutableMapOf<String, CustomDropInstance>()
 
     // these are drops defined by a drop table
     val customDropIDs: MutableMap<String, CustomDropInstance> = TreeMap(String.CASE_INSENSITIVE_ORDER)
@@ -77,8 +77,8 @@ class CustomDropsHandler {
 
     fun clearDrops(){
         customDropsitems.clear()
-        customDropsitems_Babies.clear()
-        customDropsitems_groups.clear()
+        customDropsitemsBabies.clear()
+        customDropsitemsGroups.clear()
         customDropIDs.clear()
         groupIdToInstance.clear()
         customItemGroups.clear()
@@ -108,10 +108,10 @@ class CustomDropsHandler {
         return drops
     }
 
-    fun getCustomDropsitems_groups(): MutableMap<String, CustomDropInstance> {
+    fun getCustomDropsitemsGroups(): MutableMap<String, CustomDropInstance> {
         val drops = mutableMapOf<String, CustomDropInstance>()
         drops.putAll(this.customItemGroups)
-        drops.putAll(this.customDropsitems_groups)
+        drops.putAll(this.customDropsitemsGroups)
 
         for (groupName in externalCustomDrops.getCustomDropTables().keys) {
             val dropInstance: CustomDropInstance = externalCustomDrops.getCustomDropTables()[groupName]!!
@@ -137,7 +137,7 @@ class CustomDropsHandler {
     }
 
     fun addCustomDropGroup(groupName: String, customDropInstance: CustomDropInstance) {
-        customDropsitems_groups[groupName] = customDropInstance
+        customDropsitemsGroups[groupName] = customDropInstance
     }
 
     fun getCustomItemDrops(
@@ -213,7 +213,7 @@ class CustomDropsHandler {
 
         val groupsList: MutableList<String> = LinkedList()
         for (group in lmEntity.getApplicableGroups()) {
-            if (!getCustomDropsitems_groups().containsKey(group)) {
+            if (!getCustomDropsitemsGroups().containsKey(group)) {
                 continue
             }
 
@@ -323,7 +323,7 @@ class CustomDropsHandler {
 
         if (!overrideNonDropTableDrops) {
             for (group in groups) {
-                val dropInstance = getCustomDropsitems_groups()[group]
+                val dropInstance = getCustomDropsitemsGroups()[group]
                 info.allDropInstances.add(dropInstance!!)
 
                 for (baseItem in dropInstance.customItems) {
@@ -339,7 +339,7 @@ class CustomDropsHandler {
             }
 
             val dropMap: Map<EntityType, CustomDropInstance> =
-                if (info.lmEntity!!.isBabyMob && customDropsitems_Babies.containsKey(entityType)) customDropsitems_Babies else getCustomDropsitems()
+                if (info.lmEntity!!.isBabyMob && customDropsitemsBabies.containsKey(entityType)) customDropsitemsBabies else getCustomDropsitems()
 
             if (dropMap.containsKey(entityType)) {
                 val dropInstance = dropMap[entityType]
@@ -740,7 +740,6 @@ class CustomDropsHandler {
 
         if (!checkEquippedChances(info, dropBase)) return
 
-        val dropItem = dropBase
         var newDropAmount = dropBase.amount
         if (dropBase.hasAmountRange) {
             val change = ThreadLocalRandom.current()
@@ -802,7 +801,7 @@ class CustomDropsHandler {
 
             if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 val equippedChance =
-                    if (dropItem.equippedChance != null) dropItem.equippedChance!!.showMatchedChance() else "0.0"
+                    if (dropBase.equippedChance != null) dropBase.equippedChance!!.showMatchedChance() else "0.0"
                 info.addDebugMessage(
                     java.lang.String.format(
                         "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",

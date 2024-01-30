@@ -33,11 +33,11 @@ class PlayerDeathListener : Listener {
         // returns false if not a translatable component, in which case just use the old method
         // this can happen if another plugin has butchered the event by using the deprecated method (*cough* mythic mobs)
         if (!LevelledMobs.instance.ver.isRunningPaper || !paperListener!!.onPlayerDeathEvent(event)) {
-            nonPaper_PlayerDeath(event)
+            nonPaperPlayerDeath(event)
         }
     }
 
-    private fun nonPaper_PlayerDeath(event: PlayerDeathEvent) {
+    private fun nonPaperPlayerDeath(event: PlayerDeathEvent) {
         val lmEntity = SpigotUtils.getPlayersKiller(event)
 
         if (LevelledMobs.instance.placeholderApiIntegration != null) {

@@ -22,7 +22,7 @@ object ComponentUtils {
         }
 
         try {
-            def.method_ComponentAppend!!.invoke(component, appendingComponent)
+            def.methodComponentAppend!!.invoke(component, appendingComponent)
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
@@ -38,10 +38,10 @@ object ComponentUtils {
         try {
             return if (text == null && ver.minecraftVersion >= 1.19) {
                 // #empty()
-                def.method_EmptyComponent!!.invoke(null)
+                def.methodEmptyComponent!!.invoke(null)
             } else {
                 // #nullToEmpty(text)
-                def.method_TextComponent!!.invoke(null, text)
+                def.methodTextComponent!!.invoke(null, text)
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -62,17 +62,17 @@ object ComponentUtils {
         try {
             if (ver.minecraftVersion >= 1.19) {
                 if (args.isNullOrEmpty() || args[0] == null) {
-                    return def.method_Translatable!!.invoke(null, key)
+                    return def.methodTranslatable!!.invoke(null, key)
                 }
 
-                return def.method_TranslatableWithArgs!!.invoke(null, key, args)
+                return def.methodTranslatableWithArgs!!.invoke(null, key, args)
             } else {
                 return if (args.isNullOrEmpty()) {
-                    def.clazz_TranslatableComponent!!
+                    def.clazzTranslatableComponent!!
                         .getConstructor(String::class.java)
                         .newInstance(key)
                 } else {
-                    def.clazz_TranslatableComponent!!
+                    def.clazzTranslatableComponent!!
                         .getConstructor(String::class.java, Array<Any>::class.java)
                         .newInstance(key, args)
                 }

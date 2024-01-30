@@ -10,7 +10,7 @@ import org.bukkit.entity.EntityType
  * @author stumper66
  * @since 2.4.0
  */
-object Compat1_16 {
+object Compat116 {
     fun getHostileMobs(): MutableSet<EntityType> {
         return if (shouldIncludePiglinBrutes()) {
             mutableSetOf(

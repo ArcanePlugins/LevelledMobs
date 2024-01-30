@@ -2,11 +2,13 @@ package io.github.arcaneplugins.levelledmobs.rules
 
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.annotations.ExcludeFromHash
-import io.github.arcaneplugins.levelledmobs.annotations.MergableRule
+import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldName
+import io.github.arcaneplugins.levelledmobs.annotations.RuleInfoType
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import java.util.SortedMap
 import java.util.TreeMap
@@ -31,7 +33,7 @@ import kotlin.reflect.full.findAnnotation
 class RuleInfo(
     @ExcludeFromHash internal var ruleName: String = "Unnamed"
 ) {
-    @DoNotMerge
+    @DoNotMerge @RuleFieldName("enabled")
     var ruleIsEnabled = true
     @DoNotMerge
     @ExcludeFromHash
@@ -41,7 +43,7 @@ class RuleInfo(
     var babyMobsInheritAdultSetting: Boolean? = null
     var mobLevelInheritance: Boolean? = null
     @ExcludeFromHash
-    var customDrops_UseForMobs: Boolean? = null
+    var customDropsUseForMobs: Boolean? = null
     var stopProcessingRules: Boolean? = null
     @ExcludeFromHash
     var mergeEntityNameOverrides: Boolean? = null
@@ -53,14 +55,22 @@ class RuleInfo(
     var maxRandomVariance: Int? = null
     @ExcludeFromHash
     var creeperMaxDamageRadius: Int? = null
-    var conditions_MinLevel: Int? = null
-    var conditions_MaxLevel: Int? = null
-    var restrictions_MinLevel: Int? = null
-    var restrictions_MaxLevel: Int? = null
-    var conditions_ApplyAboveY: Int? = null
-    var conditions_ApplyBelowY: Int? = null
-    var conditions_MinDistanceFromSpawn: Int? = null
-    var conditions_MaxDistanceFromSpawn: Int? = null
+    @RuleFieldName("minlevel") @RuleInfoType(RuleType.CONDITION)
+    var conditionsMinLevel: Int? = null
+    @RuleFieldName("maxlevel") @RuleInfoType(RuleType.CONDITION)
+    var conditionsMaxLevel: Int? = null
+    @RuleFieldName("minlevel") @RuleInfoType(RuleType.APPLY_SETTING)
+    var restrictionsMinLevel: Int? = null
+    @RuleFieldName("maxlevel") @RuleInfoType(RuleType.APPLY_SETTING)
+    var restrictionsMaxLevel: Int? = null
+    @RuleFieldName("apply above Y") @RuleInfoType(RuleType.CONDITION)
+    var conditionsApplyAboveY: Int? = null
+    @RuleFieldName("apply below Y") @RuleInfoType(RuleType.CONDITION)
+    var conditionsApplyBelowY: Int? = null
+    @RuleFieldName("min distance from spawn") @RuleInfoType(RuleType.CONDITION)
+    var conditionsMinDistanceFromSpawn: Int? = null
+    @RuleFieldName("max distance from spawn") @RuleInfoType(RuleType.CONDITION)
+    var conditionsMaxDistanceFromSpawn: Int? = null
     @ExcludeFromHash
     var nametagVisibleTime: Long? = null
     @ExcludeFromHash
@@ -70,34 +80,34 @@ class RuleInfo(
     @ExcludeFromHash
     var maxAdjacentChunks: Int? = null
     @ExcludeFromHash
-    var conditions_CooldownTime: Long? = null
+    var conditionsCooldownTime: Long? = null
     @ExcludeFromHash
-    var conditions_TimesToCooldownActivation: Int? = null
+    var conditionsTimesToCooldownActivation: Int? = null
     @ExcludeFromHash
-    var conditions_Chance: Float? = null
+    var conditionsChance: Float? = null
     @ExcludeFromHash
     var sunlightBurnAmount: Double? = null
     @ExcludeFromHash
     var nametag: String? = null
     @ExcludeFromHash
-    var nametag_CreatureDeath: String? = null
+    var nametagCreatureDeath: String? = null
     @ExcludeFromHash
-    var nametag_Placeholder_Levelled: String? = null
+    var nametagPlaceholderLevelled: String? = null
     @ExcludeFromHash
-    var nametag_Placeholder_Unlevelled: String? = null
+    var nametagPlaceholderUnlevelled: String? = null
     @DoNotMerge
     @ExcludeFromHash
     var presetName: String? = null
     @ExcludeFromHash
-    val customDrop_DropTableIds = mutableListOf<String>()
+    val customDropDropTableIds = mutableListOf<String>()
     @ExcludeFromHash
     var healthIndicator: HealthIndicator? = null
-    var conditions_MobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED
-    var conditions_MobTamedStatus = MobTamedStatus.NOT_SPECIFIED
+    var conditionsMobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED
+    var conditionsMobTamedStatus = MobTamedStatus.NOT_SPECIFIED
     var levellingStrategy: LevellingStrategy? = null
     var playerLevellingOptions: PlayerLevellingOptions? = null
     @ExcludeFromHash
-    var entityNameOverrides_Level: MutableMap<String, MutableList<LevelTierMatching>>? = null
+    var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
     @ExcludeFromHash
     var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
     @ExcludeFromHash
@@ -112,26 +122,26 @@ class RuleInfo(
     @ExcludeFromHash
     var tieredColoringInfos: MutableList<TieredColoringInfo>? = null
     var enabledExtCompats: MutableMap<ExternalCompatibility, Boolean>? = null
-    var mobNBT_Data: MergeableStringList? = null
+    var mobNBTData: MergeableStringList? = null
     var allowedEntities: CachedModalList<String>? = null
-    var conditions_SkyLightLevel: MinAndMax? = null
-    var conditions_Worlds: CachedModalList<String>? = null
-    var conditions_Entities: CachedModalList<String>? = null
-    var conditions_Biomes: CachedModalList<Biome>? = null
-    var conditions_ApplyPlugins: CachedModalList<String>? = null
-    var conditions_CustomNames: CachedModalList<String>? = null
-    var conditions_NoDropEntities: CachedModalList<String>? = null
-    var conditions_WGRegions: CachedModalList<String>? = null
-    var conditions_WGRegionOwners: CachedModalList<String>? = null
-    var conditions_MM_Names: CachedModalList<String>? = null
-    var conditions_SpawnerNames: CachedModalList<String>? = null
-    var conditions_SpawnegEggNames: CachedModalList<String>? = null
-    var conditions_ScoreboardTags: CachedModalList<String>? = null
-    var conditions_WorldTickTime: CachedModalList<MinAndMax>? = null
+    var conditionsSkyLightLevel: MinAndMax? = null
+    var conditionsWorlds: CachedModalList<String>? = null
+    var conditionsEntities: CachedModalList<String>? = null
+    var conditionsBiomes: CachedModalList<Biome>? = null
+    var conditionsApplyPlugins: CachedModalList<String>? = null
+    var conditionsCustomNames: CachedModalList<String>? = null
+    var conditionsNoDropEntities: CachedModalList<String>? = null
+    var conditionsWGregions: CachedModalList<String>? = null
+    var conditionsWGregionOwners: CachedModalList<String>? = null
+    var conditionsMMnames: CachedModalList<String>? = null
+    var conditionsSpawnerNames: CachedModalList<String>? = null
+    var conditionsSpawnegEggNames: CachedModalList<String>? = null
+    var conditionsScoreboardTags: CachedModalList<String>? = null
+    var conditionsWorldTickTime: CachedModalList<MinAndMax>? = null
     var vanillaBonuses: CachedModalList<VanillaBonusEnum>? = null
-    var conditions_SpawnReasons: CachedModalList<LevelledMobSpawnReason>? = null
-    var conditions_Permission: CachedModalList<String>? = null
-    var conditions_WithinCoords: WithinCoordinates? = null
+    var conditionsSpawnReasons: CachedModalList<LevelledMobSpawnReason>? = null
+    var conditionsPermission: CachedModalList<String>? = null
+    var conditionsWithinCoords: WithinCoordinates? = null
     var allMobMultipliers: FineTuningAttributes? = null
     var specificMobMultipliers: MutableMap<String, FineTuningAttributes>? = null
     @ExcludeFromHash
@@ -161,8 +171,8 @@ class RuleInfo(
                     } else {
                         presetValue = mergableRule.cloneItem()
                     }
-                } else if (p.name == "entityNameOverrides_Level" && this.entityNameOverrides_Level != null) {
-                    entityNameOverrides_Level!!.putAll(
+                } else if (p.name == "entityNameOverrides_Level" && this.entityNameOverridesLevel != null) {
+                    entityNameOverridesLevel!!.putAll(
                         presetValue as MutableMap<String, MutableList<LevelTierMatching>>
                     )
                     skipSettingValue = true
@@ -179,7 +189,7 @@ class RuleInfo(
                     skipSettingValue = true
                 } else if (p.name == "customDrop_DropTableIds") {
                     val mergingPreset = presetValue as MutableList<String>
-                    customDrop_DropTableIds.addAll(mergingPreset)
+                    customDropDropTableIds.addAll(mergingPreset)
 
                     skipSettingValue = true
                 } else if (presetValue is MergeableStringList

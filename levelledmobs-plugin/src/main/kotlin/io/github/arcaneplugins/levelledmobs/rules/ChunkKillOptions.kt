@@ -1,7 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import io.github.arcaneplugins.levelledmobs.annotations.MergableRule
-
 /**
  * Holds various options relating to the
  * chunk kill feature

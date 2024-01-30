@@ -384,7 +384,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         }
 
         if ("create".equals(args[1], ignoreCase = true)) {
-            return tabCompletions_Create(args)
+            return tabCompletionsCreate(args)
         } else if (("info".equals(args[1], ignoreCase = true) || "copy".equals(args[1], ignoreCase = true))
             && args.size == 3
         ) {
@@ -394,7 +394,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         return mutableListOf()
     }
 
-    private fun tabCompletions_Create(
+    private fun tabCompletionsCreate(
         args: Array<String>
     ): MutableList<String> {
         if (args[args.size - 2].isNotEmpty()) {

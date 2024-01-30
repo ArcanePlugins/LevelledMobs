@@ -17,12 +17,12 @@ object MiscUtils {
         val ver: ServerVersionInfo = LevelledMobs.instance.ver
 
         if (ver.minecraftVersion < 1.17) {
-            return getNBTDump_1_16(livingEntity)
+            return getNBTDump116(livingEntity)
         }
 
         try {
             //final Method method_getHandle = def.clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
-            val internalLivingEntity = def.method_getHandle!!.invoke(livingEntity)
+            val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
 
             val compoundTagClazz =
                 Class.forName("net.minecraft.nbt.NBTTagCompound")
@@ -31,7 +31,7 @@ object MiscUtils {
 
             // net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> f
             val saveWithoutId =
-                def.clazz_Entity!!.getDeclaredMethod("f", compoundTagClazz)
+                def.clazzEntity!!.getDeclaredMethod("f", compoundTagClazz)
 
             saveWithoutId.invoke(internalLivingEntity, compoundTag)
 
@@ -43,20 +43,20 @@ object MiscUtils {
         return ""
     }
 
-    private fun getNBTDump_1_16(livingEntity: LivingEntity): String {
+    private fun getNBTDump116(livingEntity: LivingEntity): String {
         try {
-            val clazz_CraftLivingEntity = Class.forName(
+            val clazzCraftLivingEntity = Class.forName(
             "org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity")
-            val method_getHandle = clazz_CraftLivingEntity.getDeclaredMethod("getHandle")
+            val methodGetHandle = clazzCraftLivingEntity.getDeclaredMethod("getHandle")
 
             // net.minecraft.server.v1_16_R3.EntityLiving
-            val internalLivingEntity = method_getHandle.invoke(livingEntity)
+            val internalLivingEntity = methodGetHandle.invoke(livingEntity)
 
             val compoundTagClazz = Class.forName("net.minecraft.server.v1_16_R3.NBTTagCompound")
             val compoundTag = compoundTagClazz.getConstructor().newInstance()
 
-            val clazz_Entity = Class.forName("net.minecraft.server.v1_16_R3.Entity")
-            val saveWithoutId = clazz_Entity.getDeclaredMethod("save", compoundTagClazz)
+            val clazzEntity = Class.forName("net.minecraft.server.v1_16_R3.Entity")
+            val saveWithoutId = clazzEntity.getDeclaredMethod("save", compoundTagClazz)
             saveWithoutId.invoke(internalLivingEntity, compoundTag)
 
             return compoundTag.toString()

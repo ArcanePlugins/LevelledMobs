@@ -62,7 +62,7 @@ class RulesManager {
             if (!ruleInfo.ruleIsEnabled) {
                 continue
             }
-            if (ruleInfo.conditions_Worlds != null && ruleInfo.conditions_Worlds!!.isEnabledInList(
+            if (ruleInfo.conditionsWorlds != null && ruleInfo.conditionsWorlds!!.isEnabledInList(
                     world.name, null
                 )
             ) {
@@ -85,8 +85,8 @@ class RulesManager {
         val nbtData = mutableListOf<String>()
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.mobNBT_Data != null) {
-                val nbt = ruleInfo.mobNBT_Data
+            if (ruleInfo.mobNBTData != null) {
+                val nbt = ruleInfo.mobNBTData
                 if (!nbt!!.doMerge) {
                     nbtData.clear()
                 }
@@ -128,8 +128,8 @@ class RulesManager {
         var entitiesList: CachedModalList<String>? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.conditions_NoDropEntities != null) {
-                entitiesList = ruleInfo.conditions_NoDropEntities
+            if (ruleInfo.conditionsNoDropEntities != null) {
+                entitiesList = ruleInfo.conditionsNoDropEntities
             }
         }
 
@@ -145,8 +145,8 @@ class RulesManager {
         val dropRules = CustomDropsRuleSet()
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.customDrops_UseForMobs != null) {
-                dropRules.useDrops = ruleInfo.customDrops_UseForMobs!!
+            if (ruleInfo.customDropsUseForMobs != null) {
+                dropRules.useDrops = ruleInfo.customDropsUseForMobs!!
             }
             if (ruleInfo.chunkKillOptions != null) {
                 if (dropRules.chunkKillOptions == null) dropRules.chunkKillOptions = ruleInfo.chunkKillOptions
@@ -154,7 +154,7 @@ class RulesManager {
                     dropRules.chunkKillOptions!!.merge(ruleInfo.chunkKillOptions)
                 }
             }
-            dropRules.useDropTableIds.addAll(ruleInfo.customDrop_DropTableIds)
+            dropRules.useDropTableIds.addAll(ruleInfo.customDropDropTableIds)
         }
 
         if (lmEntity.lockedCustomDrops != null && lmEntity.lockedCustomDrops!!.isNotEmpty()) {
@@ -333,8 +333,8 @@ class RulesManager {
         var result = MobCustomNameStatus.NOT_SPECIFIED
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.conditions_MobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED) {
-                result = ruleInfo.conditions_MobCustomnameStatus
+            if (ruleInfo.conditionsMobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED) {
+                result = ruleInfo.conditionsMobCustomnameStatus
             }
         }
 
@@ -345,8 +345,8 @@ class RulesManager {
         var result = MobTamedStatus.NOT_SPECIFIED
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED) {
-                result = ruleInfo.conditions_MobTamedStatus
+            if (ruleInfo.conditionsMobTamedStatus != MobTamedStatus.NOT_SPECIFIED) {
+                result = ruleInfo.conditionsMobTamedStatus
             }
         }
 
@@ -361,8 +361,8 @@ class RulesManager {
         var minLevel = 1
 
         for (ruleInfo in lmInterface.getApplicableRules()) {
-            if (ruleInfo.restrictions_MinLevel != null) {
-                minLevel = ruleInfo.restrictions_MinLevel!!
+            if (ruleInfo.restrictionsMinLevel != null) {
+                minLevel = ruleInfo.restrictionsMinLevel!!
             }
         }
 
@@ -374,8 +374,8 @@ class RulesManager {
         var firstMaxLevel = -1
 
         for (ruleInfo in lmInterface.getApplicableRules()) {
-            if (ruleInfo.restrictions_MaxLevel != null) {
-                maxLevel = ruleInfo.restrictions_MaxLevel!!
+            if (ruleInfo.restrictionsMaxLevel != null) {
+                maxLevel = ruleInfo.restrictionsMaxLevel!!
                 if (firstMaxLevel < 0 && maxLevel > 0) {
                     firstMaxLevel = maxLevel
                 }
@@ -429,7 +429,7 @@ class RulesManager {
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
             val nametagRule =
-                if (isLevelled) ruleInfo.nametag_Placeholder_Levelled else ruleInfo.nametag_Placeholder_Unlevelled
+                if (isLevelled) ruleInfo.nametagPlaceholderLevelled else ruleInfo.nametagPlaceholderUnlevelled
             if (nametagRule != null) {
                 nametag = nametagRule
             }
@@ -441,8 +441,8 @@ class RulesManager {
     fun getRuleNametagCreatureDeath(lmEntity: LivingEntityWrapper): String {
         var nametag = ""
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (!ruleInfo.nametag_CreatureDeath.isNullOrEmpty()) {
-                nametag = ruleInfo.nametag_CreatureDeath!!
+            if (!ruleInfo.nametagCreatureDeath.isNullOrEmpty()) {
+                nametag = ruleInfo.nametagCreatureDeath!!
             }
         }
 
@@ -545,7 +545,7 @@ class RulesManager {
         lmEntity: LivingEntityWrapper,
         forceCustomName: Boolean
     ): String? {
-        var entityNameOverrides_Level: MutableMap<String, MutableList<LevelTierMatching>>? = null
+        var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
         var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
 
         if (lmEntity.hasOverridenEntityName) {
@@ -563,22 +563,22 @@ class RulesManager {
                 }
             }
 
-            if (ruleInfo.entityNameOverrides_Level != null) {
-                if (entityNameOverrides_Level != null && doMerge) {
-                    entityNameOverrides_Level.putAll(ruleInfo.entityNameOverrides_Level!!)
+            if (ruleInfo.entityNameOverridesLevel != null) {
+                if (entityNameOverridesLevel != null && doMerge) {
+                    entityNameOverridesLevel.putAll(ruleInfo.entityNameOverridesLevel!!)
                 } else {
-                    entityNameOverrides_Level = ruleInfo.entityNameOverrides_Level
+                    entityNameOverridesLevel = ruleInfo.entityNameOverridesLevel
                 }
             }
         }
 
-        if (entityNameOverrides == null && entityNameOverrides_Level == null) {
+        if (entityNameOverrides == null && entityNameOverridesLevel == null) {
             return null
         }
 
         var namesInfo: MutableList<String>? = null
         val matchedTiers = getEntityNameOverrideLevel(
-            entityNameOverrides_Level,
+            entityNameOverridesLevel,
             lmEntity
         )
         if (matchedTiers != null) {
@@ -617,17 +617,17 @@ class RulesManager {
     }
 
     private fun getEntityNameOverrideLevel(
-        entityNameOverrides_Level: MutableMap<String, MutableList<LevelTierMatching>>?,
+        entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>?,
         lmEntity: LivingEntityWrapper
     ): LevelTierMatching? {
-        if (entityNameOverrides_Level == null) {
+        if (entityNameOverridesLevel == null) {
             return null
         }
 
         var allEntities: LevelTierMatching? = null
         var thisMob: LevelTierMatching? = null
 
-        for (tiers in entityNameOverrides_Level.values) {
+        for (tiers in entityNameOverridesLevel.values) {
             for (tier in tiers) {
                 if (tier.isApplicableToMobLevel(lmEntity.getMobLevel())) {
                     if ("all_entities".equals(tier.mobName, ignoreCase = true)
@@ -767,11 +767,11 @@ class RulesManager {
                 )
                 if (!checkResult.useResult) {
                     if (checkResult.ruleMadeChance != null && !checkResult.ruleMadeChance!!) {
-                        applicableRules.allApplicableRules_DidNotMakeChance.add(ruleInfo)
+                        applicableRules.allApplicableRulesDidNotMakeChance.add(ruleInfo)
                     }
                     continue
                 } else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance!!) {
-                    applicableRules.allApplicableRules_MadeChance.add(ruleInfo)
+                    applicableRules.allApplicableRulesMadeChance.add(ruleInfo)
                 }
 
                 applicableRules.allApplicableRules.add(ruleInfo)
@@ -796,8 +796,8 @@ class RulesManager {
 
         var hasWorldListSpecified = false
         for (ri in applicableRules.allApplicableRules) {
-            if (ri.conditions_Worlds != null && (!ri.conditions_Worlds!!.isEmpty()
-                        || ri.conditions_Worlds!!.allowAll)
+            if (ri.conditionsWorlds != null && (!ri.conditionsWorlds!!.isEmpty()
+                        || ri.conditionsWorlds!!.allowAll)
             ) {
                 hasWorldListSpecified = true
                 break
@@ -826,11 +826,11 @@ class RulesManager {
             }
             val instants: MutableList<Instant>? = rulesCooldown[ruleInfo.ruleName]
             instants!!.add(Instant.now())
-            if (ruleInfo.conditions_TimesToCooldownActivation == null
-                || instants.size >= ruleInfo.conditions_TimesToCooldownActivation!!
+            if (ruleInfo.conditionsTimesToCooldownActivation == null
+                || instants.size >= ruleInfo.conditionsTimesToCooldownActivation!!
             ) {
-                if (ruleInfo.conditions_CooldownTime == null
-                    || ruleInfo.conditions_CooldownTime!! <= 0
+                if (ruleInfo.conditionsCooldownTime == null
+                    || ruleInfo.conditionsCooldownTime!! <= 0
                 ) {
                     return
                 }
@@ -844,9 +844,9 @@ class RulesManager {
         lmEntity: LivingEntityWrapper,
         ri: RuleInfo
     ): Boolean {
-        if (ri.conditions_MinLevel != null) {
+        if (ri.conditionsMinLevel != null) {
             val result = (lmEntity.isLevelled &&
-                    lmEntity.getMobLevel() >= ri.conditions_MinLevel!!)
+                    lmEntity.getMobLevel() >= ri.conditionsMinLevel!!)
 
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
@@ -854,39 +854,39 @@ class RulesManager {
                 String.format(
                     "&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
                     ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel(),
-                    ri.conditions_MinLevel
+                    ri.conditionsMinLevel
                 )
             }
             if (!result) return false
         }
 
-        if (ri.conditions_MaxLevel != null) {
+        if (ri.conditionsMaxLevel != null) {
             val result = (lmEntity.isLevelled &&
-                    lmEntity.getMobLevel() <= ri.conditions_MaxLevel!!)
+                    lmEntity.getMobLevel() <= ri.conditionsMaxLevel!!)
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
                     ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel(),
-                    ri.conditions_MaxLevel
+                    ri.conditionsMaxLevel
                 )
             }
             if (!result) return false
         }
 
-        if (ri.conditions_WithinCoords != null && !ri.conditions_WithinCoords!!.isEmpty &&
+        if (ri.conditionsWithinCoords != null && !ri.conditionsWithinCoords!!.isEmpty &&
             !meetsMaxDistanceCriteria(lmEntity, ri)
         ) {
             // debug entries are inside the last function
             return false
         }
 
-        if (ri.conditions_CustomNames != null) {
+        if (ri.conditionsCustomNames != null) {
             val customName = if (lmEntity.livingEntity.customName != null) lmEntity.livingEntity.customName!!
                 .replace("§", "&") else "(none)"
 
-            val result = ri.conditions_CustomNames!!.isEnabledInList(customName, lmEntity)
+            val result = ri.conditionsCustomNames!!.isEnabledInList(customName, lmEntity)
 
             DebugManager.log(
                 DebugType.CONDITION_CUSTOM_NAME, ri, lmEntity, result
@@ -900,8 +900,8 @@ class RulesManager {
             if (!result) return false
         }
 
-        if (ri.conditions_SpawnReasons != null) {
-            val result = ri.conditions_SpawnReasons!!.isEnabledInList(
+        if (ri.conditionsSpawnReasons != null) {
+            val result = ri.conditionsSpawnReasons!!.isEnabledInList(
                 lmEntity.getSpawnReason(), lmEntity
             )
             DebugManager.log(
@@ -915,14 +915,14 @@ class RulesManager {
             if (!result) return false
         }
 
-        if (ri.conditions_ApplyPlugins != null) {
+        if (ri.conditionsApplyPlugins != null) {
             ExternalCompatibilityManager.updateAllExternalCompats(lmEntity)
             val mobCompats = lmEntity.mobExternalTypes
             if (!lmEntity.isMobOfExternalType) mobCompats.add(ExternalCompatibility.NOT_APPLICABLE)
 
             var madeIt = false
             for (compat in mobCompats) {
-                if (ri.conditions_ApplyPlugins!!.isEnabledInList(compat.name, lmEntity)) {
+                if (ri.conditionsApplyPlugins!!.isEnabledInList(compat.name, lmEntity)) {
                     madeIt = true
                     break
                 }
@@ -939,13 +939,13 @@ class RulesManager {
             if (!madeIt) return false
         }
 
-        if (ri.conditions_MM_Names != null) {
+        if (ri.conditionsMMnames != null) {
             var mmName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
             if (mmName.isEmpty()) {
                 mmName = "(none)"
             }
 
-            val result = ri.conditions_MM_Names!!.isEnabledInList(mmName, lmEntity)
+            val result = ri.conditionsMMnames!!.isEnabledInList(mmName, lmEntity)
             val mmNameFinal = mmName
             DebugManager.log(
                 DebugType.CONDITION_MYTHICMOBS_INTERNAL_NAME, ri, lmEntity, result
@@ -959,10 +959,10 @@ class RulesManager {
             if (!result) return false
         }
 
-        if (ri.conditions_SpawnerNames != null) {
+        if (ri.conditionsSpawnerNames != null) {
             val checkName = if (lmEntity.getSourceSpawnerName() != null) lmEntity.getSourceSpawnerName() else "(none)"
 
-            val result = ri.conditions_SpawnerNames!!.isEnabledInList(checkName!!, lmEntity)
+            val result = ri.conditionsSpawnerNames!!.isEnabledInList(checkName!!, lmEntity)
             DebugManager.log(
                 DebugType.CONDITION_SPAWNER_NAME, ri, lmEntity, result
             ) {
@@ -975,10 +975,10 @@ class RulesManager {
             if (!result) return false
         }
 
-        if (ri.conditions_SpawnegEggNames != null) {
+        if (ri.conditionsSpawnegEggNames != null) {
             val checkName = if (lmEntity.getSourceSpawnEggName() != null) lmEntity.getSourceSpawnEggName() else "(none)"
 
-            val result = ri.conditions_SpawnegEggNames!!.isEnabledInList(checkName!!, lmEntity)
+            val result = ri.conditionsSpawnegEggNames!!.isEnabledInList(checkName!!, lmEntity)
             DebugManager.log(
                 DebugType.CONDITION_SPAWNER_NAME, ri, lmEntity, result
             ) {
@@ -991,7 +991,7 @@ class RulesManager {
             if (!result) return false
         }
 
-        if (ri.conditions_Permission != null) {
+        if (ri.conditionsPermission != null) {
             if (lmEntity.associatedPlayer == null) {
                 DebugManager.log(
                     DebugType.CONDITION_PERMISSION, ri, lmEntity, false
@@ -1005,7 +1005,7 @@ class RulesManager {
             }
 
             if (!doesPlayerPassPermissionChecks(
-                    ri.conditions_Permission!!,
+                    ri.conditionsPermission!!,
                     lmEntity.associatedPlayer!!
                 )
             ) {
@@ -1032,13 +1032,13 @@ class RulesManager {
             }
         }
 
-        if (ri.conditions_MobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
-            && ri.conditions_MobCustomnameStatus != MobCustomNameStatus.EITHER
+        if (ri.conditionsMobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
+            && ri.conditionsMobCustomnameStatus != MobCustomNameStatus.EITHER
         ) {
             val hasCustomName = lmEntity.livingEntity.customName != null
 
-            if (hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NOT_NAMETAGGED ||
-                !hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NAMETAGGED
+            if (hasCustomName && ri.conditionsMobCustomnameStatus == MobCustomNameStatus.NOT_NAMETAGGED ||
+                !hasCustomName && ri.conditionsMobCustomnameStatus == MobCustomNameStatus.NAMETAGGED
             ) {
                 DebugManager.log(
                     DebugType.CONDITION_CUSTOM_NAME, ri, lmEntity, false
@@ -1046,7 +1046,7 @@ class RulesManager {
                     String.format(
                         "&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
                         ri.ruleName, lmEntity.nameIfBaby, lmEntity.livingEntity.customName,
-                        ri.conditions_MobCustomnameStatus
+                        ri.conditionsMobCustomnameStatus
                     )
                 }
                 return false
@@ -1058,16 +1058,16 @@ class RulesManager {
                 String.format(
                     "&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
                     ri.ruleName, lmEntity.nameIfBaby, lmEntity.livingEntity.customName,
-                    ri.conditions_MobCustomnameStatus
+                    ri.conditionsMobCustomnameStatus
                 )
             }
         }
 
-        if (ri.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED
-            && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER
+        if (ri.conditionsMobTamedStatus != MobTamedStatus.NOT_SPECIFIED
+            && ri.conditionsMobTamedStatus != MobTamedStatus.EITHER
         ) {
-            if (lmEntity.isMobTamed && ri.conditions_MobTamedStatus == MobTamedStatus.NOT_TAMED ||
-                !lmEntity.isMobTamed && ri.conditions_MobTamedStatus == MobTamedStatus.TAMED
+            if (lmEntity.isMobTamed && ri.conditionsMobTamedStatus == MobTamedStatus.NOT_TAMED ||
+                !lmEntity.isMobTamed && ri.conditionsMobTamedStatus == MobTamedStatus.TAMED
             ) {
                 DebugManager.log(
                     DebugType.ENTITY_TAME, ri, lmEntity, false
@@ -1075,7 +1075,7 @@ class RulesManager {
                     String.format(
                         "&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
                         ri.ruleName, lmEntity.nameIfBaby, lmEntity.isMobTamed,
-                        ri.conditions_MobTamedStatus
+                        ri.conditionsMobTamedStatus
                     )
                 }
                 return false
@@ -1087,12 +1087,12 @@ class RulesManager {
                 String.format(
                     "&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
                     ri.ruleName, lmEntity.nameIfBaby, lmEntity.isMobTamed,
-                    ri.conditions_MobTamedStatus
+                    ri.conditionsMobTamedStatus
                 )
             }
         }
 
-        if (ri.conditions_ScoreboardTags != null) {
+        if (ri.conditionsScoreboardTags != null) {
             val tags = lmEntity.livingEntity.scoreboardTags
             if (tags.isEmpty()) {
                 tags.add("(none)")
@@ -1100,7 +1100,7 @@ class RulesManager {
 
             var madeCriteria = false
             for (tag in tags) {
-                if (ri.conditions_ScoreboardTags!!.isEnabledInList(tag, lmEntity)) {
+                if (ri.conditionsScoreboardTags!!.isEnabledInList(tag, lmEntity)) {
                     madeCriteria = true
                 }
             }
@@ -1117,17 +1117,17 @@ class RulesManager {
             if (!madeCriteria) return false
         }
 
-        if (ri.conditions_SkyLightLevel != null) {
+        if (ri.conditionsSkyLightLevel != null) {
             val lightLevel = lmEntity.getSkylightLevel()
-            val result = (lightLevel >= ri.conditions_SkyLightLevel!!.min
-                    && lightLevel <= ri.conditions_SkyLightLevel!!.max)
+            val result = (lightLevel >= ri.conditionsSkyLightLevel!!.min
+                    && lightLevel <= ri.conditionsSkyLightLevel!!.max)
             DebugManager.log(
                 DebugType.SKYLIGHT_LEVEL, ri, lmEntity, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, skylight: %s, criteria: %s",
                     ri.ruleName, lmEntity.nameIfBaby, lightLevel,
-                    ri.conditions_SkyLightLevel
+                    ri.conditionsSkyLightLevel
                 )
             }
             return result
@@ -1140,7 +1140,7 @@ class RulesManager {
                 (lmEntity: LivingEntityWrapper,
                  rule: RuleInfo
     ): Boolean {
-        val mdr = rule.conditions_WithinCoords!!
+        val mdr = rule.conditionsWithinCoords!!
 
         if (mdr.getHasX && !mdr.isLocationWithinRange(lmEntity.location.blockX, WithinCoordinates.Axis.X)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
@@ -1185,10 +1185,10 @@ class RulesManager {
     private fun isRuleApplicableInterface(
         lmInterface: LivingEntityInterface, ri: RuleInfo
     ): RuleCheckResult {
-        if (ri.conditions_Entities != null) {
+        if (ri.conditionsEntities != null) {
             if (lmInterface is LivingEntityWrapper) {
                 val result = isLivingEntityInModalList(
-                    ri.conditions_Entities!!, lmInterface, true
+                    ri.conditionsEntities!!, lmInterface, true
                 )
                 DebugManager.log(
                     DebugType.CONDITION_ENTITIES_LIST, ri, lmInterface, result
@@ -1202,7 +1202,7 @@ class RulesManager {
                 if (!result) return RuleCheckResult(false)
             } else {
                 // can't check groups if not a living entity wrapper
-                val result = ri.conditions_Entities!!.isEnabledInList(
+                val result = ri.conditionsEntities!!.isEnabledInList(
                     lmInterface.typeName, null
                 )
 
@@ -1219,9 +1219,9 @@ class RulesManager {
             }
         }
 
-        if (ri.conditions_Worlds != null) {
+        if (ri.conditionsWorlds != null) {
             val result = (lmInterface.wasSummoned ||
-                    ri.conditions_Worlds!!.isEnabledInList(lmInterface.world!!.name, null))
+                    ri.conditionsWorlds!!.isEnabledInList(lmInterface.world!!.name, null))
             DebugManager.log(
                 DebugType.CONDITION_WORLD_LIST, ri, lmInterface, result
             ) {
@@ -1233,9 +1233,9 @@ class RulesManager {
             if (!result) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_Biomes != null) {
+        if (ri.conditionsBiomes != null) {
             val result = isBiomeInModalList(
-                ri.conditions_Biomes!!,
+                ri.conditionsBiomes!!,
                 lmInterface.location!!.block.biome, LevelledMobs.instance.rulesManager
             )
             DebugManager.log(
@@ -1250,7 +1250,7 @@ class RulesManager {
             if (!result) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_WGRegions != null
+        if (ri.conditionsWGregions != null
             && ExternalCompatibilityManager.hasWorldGuardInstalled()
         ) {
             var isInList = false
@@ -1262,7 +1262,7 @@ class RulesManager {
             }
 
             for (regionName in wgRegions) {
-                if (ri.conditions_WGRegions!!.isEnabledInList(regionName, null)) {
+                if (ri.conditionsWGregions!!.isEnabledInList(regionName, null)) {
                     isInList = true
                     break
                 }
@@ -1279,7 +1279,7 @@ class RulesManager {
             if (!isInList) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_WGRegionOwners != null
+        if (ri.conditionsWGregionOwners != null
             && ExternalCompatibilityManager.hasWorldGuardInstalled()
         ) {
             var isInList = false
@@ -1291,7 +1291,7 @@ class RulesManager {
             }
 
             for (ownerName in wgRegionOwners) {
-                if (ri.conditions_WGRegionOwners!!.isEnabledInList(ownerName, null)) {
+                if (ri.conditionsWGregionOwners!!.isEnabledInList(ownerName, null)) {
                     isInList = true
                     break
                 }
@@ -1309,36 +1309,36 @@ class RulesManager {
             if (!isInList) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_ApplyAboveY != null) {
-            val result = lmInterface.location!!.blockY > ri.conditions_ApplyAboveY!!
+        if (ri.conditionsApplyAboveY != null) {
+            val result = lmInterface.location!!.blockY > ri.conditionsApplyAboveY!!
             DebugManager.log(
                 DebugType.CONDITION_Y_LEVEL, ri, lmInterface, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, y-level: &b%s&7, max-y: &b%s&7",
                     ri.ruleName, lmInterface.typeName,
-                    lmInterface.location!!.blockY, ri.conditions_ApplyAboveY
+                    lmInterface.location!!.blockY, ri.conditionsApplyAboveY
                 )
             }
             if (!result) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_ApplyBelowY != null) {
-            val result = lmInterface.location!!.blockY < ri.conditions_ApplyBelowY!!
+        if (ri.conditionsApplyBelowY != null) {
+            val result = lmInterface.location!!.blockY < ri.conditionsApplyBelowY!!
             DebugManager.log(
                 DebugType.CONDITION_Y_LEVEL, ri, lmInterface, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, y-level: &b%s&7, min-y: &b%s&7",
                     ri.ruleName, lmInterface.typeName,
-                    lmInterface.location!!.blockY, ri.conditions_ApplyBelowY
+                    lmInterface.location!!.blockY, ri.conditionsApplyBelowY
                 )
             }
             if (!result) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_MinDistanceFromSpawn != null) {
-            val result = lmInterface.distanceFromSpawn >= ri.conditions_MinDistanceFromSpawn!!
+        if (ri.conditionsMinDistanceFromSpawn != null) {
+            val result = lmInterface.distanceFromSpawn >= ri.conditionsMinDistanceFromSpawn!!
             DebugManager.log(
                 DebugType.CONDITION_MIN_SPAWN_DISTANCE, ri, lmInterface, result
             ) {
@@ -1346,15 +1346,15 @@ class RulesManager {
                     "&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
                     ri.ruleName, lmInterface.typeName,
                     round(lmInterface.distanceFromSpawn),
-                    ri.conditions_MinDistanceFromSpawn
+                    ri.conditionsMinDistanceFromSpawn
                 )
             }
 
             if (!result) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_MaxDistanceFromSpawn != null) {
-            val result = lmInterface.distanceFromSpawn <= ri.conditions_MaxDistanceFromSpawn!!
+        if (ri.conditionsMaxDistanceFromSpawn != null) {
+            val result = lmInterface.distanceFromSpawn <= ri.conditionsMaxDistanceFromSpawn!!
             DebugManager.log(
                 DebugType.CONDITION_MAX_SPAWN_DISTANCE, ri, lmInterface, result
             ) {
@@ -1362,16 +1362,16 @@ class RulesManager {
                     "&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
                     ri.ruleName, lmInterface.typeName,
                     round(lmInterface.distanceFromSpawn),
-                    ri.conditions_MaxDistanceFromSpawn
+                    ri.conditionsMaxDistanceFromSpawn
                 )
             }
 
             if (!result) return RuleCheckResult(false)
         }
 
-        if (ri.conditions_WorldTickTime != null) {
+        if (ri.conditionsWorldTickTime != null) {
             val currentWorldTickTime = lmInterface.spawnedTimeOfDay!!
-            val result = isIntegerInModalList(ri.conditions_WorldTickTime!!, currentWorldTickTime)
+            val result = isIntegerInModalList(ri.conditionsWorldTickTime!!, currentWorldTickTime)
             DebugManager.log(
                 DebugType.CONDITION_WORLD_TIME_TICK, ri, lmInterface, result
             ) {
@@ -1386,7 +1386,7 @@ class RulesManager {
 
         var ruleMadeChance: Boolean? = null
 
-        if (ri.conditions_Chance != null && ri.conditions_Chance!! < 1.0) {
+        if (ri.conditionsChance != null && ri.conditionsChance!! < 1.0) {
             if (lmInterface is LivingEntityWrapper) {
                 // find out if this entity previously lost or won the chance previously and use that result if present
                 val prevChanceResults = lmInterface.prevChanceRuleResults
@@ -1398,13 +1398,13 @@ class RulesManager {
 
             val chanceRole =
                 ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
-            val result = chanceRole >= (1.0f - ri.conditions_Chance!!)
+            val result = chanceRole >= (1.0f - ri.conditionsChance!!)
             DebugManager.log(
                 DebugType.CONDITION_CHANCE, ri, lmInterface, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
-                    ri.ruleName, lmInterface.typeName, ri.conditions_Chance,
+                    ri.ruleName, lmInterface.typeName, ri.conditionsChance,
                     round(chanceRole.toDouble(), 4)
                 )
             }
@@ -1478,7 +1478,7 @@ class RulesManager {
             while (iterator.hasNext()) {
                 val ruleName = iterator.next()
                 val rule = ruleNameMappings[ruleName]
-                if (rule?.conditions_CooldownTime == null || rule.conditions_CooldownTime!! <= 0
+                if (rule?.conditionsCooldownTime == null || rule.conditionsCooldownTime!! <= 0
                 ) {
                     if (rule != null) {
                         rule.isTempDisabled = false
@@ -1491,7 +1491,7 @@ class RulesManager {
                 val preCount = instants!!.size
                 if (instants.removeIf { k: Instant? ->
                         (Duration.between(k, Instant.now()).toMillis()
-                                > rule.conditions_CooldownTime!!)
+                                > rule.conditionsCooldownTime!!)
                     }) {
                     DebugManager.log(DebugType.SETTING_COOLDOWN) {
                         String.format(
@@ -1530,7 +1530,7 @@ class RulesManager {
 
             for (ruleName in rulesCooldown.keys) {
                 val rule = ruleNameMappings[ruleName]
-                if (rule?.conditions_CooldownTime == null) {
+                if (rule?.conditionsCooldownTime == null) {
                     continue
                 }
                 sb.append(System.lineSeparator())
@@ -1540,7 +1540,7 @@ class RulesManager {
                 val instant = rulesCooldown[ruleName]!![0]
                 val millisecondsSince = Duration.between(instant, Instant.now()).toMillis()
                 val duration = Duration.ofMillis(
-                    rule.conditions_CooldownTime!! - millisecondsSince
+                    rule.conditionsCooldownTime!! - millisecondsSince
                 )
                 sb.append(duration.toSeconds())
             }

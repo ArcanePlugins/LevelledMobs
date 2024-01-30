@@ -38,19 +38,19 @@ object MythicMobUtils {
 
         val def: Definitions = LevelledMobs.instance.definitions
 
-        if (def.field_MM_mobManager == null) {
+        if (def.fieldMMmobManager == null) {
             Utils.logger.warning("Mythic Mobs is installed but field_MM_mobManager is null")
             return null
         }
 
         try {
-            val mobExecutorObj = def.field_MM_mobManager!![mmMain]
+            val mobExecutorObj = def.fieldMMmobManager!![mmMain]
 
             //     public Optional<ActiveMob> getActiveMob(UUID uuid) {
             //       return ((MobRegistry)this.mobRegistry.get()).getActiveMob(uuid); }
 
             // Optional<io.lumine.mythic.core.mobs.ActiveMob>
-            val activeMobObj = def.method_MM_getActiveMob!!.invoke(
+            val activeMobObj = def.methodMMgetActiveMob!!.invoke(
                 mobExecutorObj, lmEntity.livingEntity.uniqueId
             ) as Optional<*>
 
@@ -58,11 +58,11 @@ object MythicMobUtils {
                 return null
             }
 
-            val mobTypeObj = def.field_MM_type!![activeMobObj.get()]
+            val mobTypeObj = def.fieldMMtype!![activeMobObj.get()]
             val result = MythicMobsMobInfo()
-            result.preventOtherDrops = def.field_MM_preventOtherDrops!![mobTypeObj] as Boolean
-            result.preventRandomEquipment = def.field_MM_preventRandomEquipment!![mobTypeObj] as Boolean
-            result.internalName = def.field_MM_internalName!![mobTypeObj] as String
+            result.preventOtherDrops = def.fieldMMpreventOtherDrops!![mobTypeObj] as Boolean
+            result.preventRandomEquipment = def.fieldMMpreventRandomEquipment!![mobTypeObj] as Boolean
+            result.internalName = def.fieldMMinternalName!![mobTypeObj] as String
 
             return result
         } catch (e: InvocationTargetException) {

@@ -4,22 +4,23 @@ import java.util.TreeSet
 import org.bukkit.entity.EntityType
 
 /**
- * Holds lists of entity types that are only present in minecraft 1.21 and newer.  Must be a
+ * Holds lists of entity types that are only present in minecraft 1.20 and newer.  Must be a
  * separate class to maintain compatibility with older versions
  *
  * @author stumper66
  * @since 3.14.0
  */
-object Compat1_21 {
+object Compat120 {
     fun getPassiveMobs(): MutableSet<EntityType> {
         return mutableSetOf(
-            EntityType.valueOf("ARMADILLO")
+            EntityType.CAMEL,
+            EntityType.SNIFFER
         )
     }
 
-    fun all21Mobs(): MutableSet<String> {
+    fun all20Mobs(): MutableSet<String> {
         val names: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
-        names.add("ARMADILLO")
+        names.addAll(listOf("CAMEL", "SNIFFER"))
         return names
     }
 }

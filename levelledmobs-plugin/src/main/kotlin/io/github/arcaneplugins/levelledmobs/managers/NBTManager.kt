@@ -16,7 +16,7 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
  * @since 3.1.0
  */
 object NBTManager {
-    fun applyNBT_Data_Item(
+    fun applyNBTDataItem(
         item: CustomDropItem,
         nbtStuff: String
     ): NBTApplyResult {
@@ -33,7 +33,7 @@ object NBTManager {
         return result
     }
 
-    fun applyNBT_Data_Mob(
+    fun applyNBTDataMob(
         lmEntity: LivingEntityWrapper,
         nbtStuff: String
     ): NBTApplyResult {

@@ -53,50 +53,50 @@ class NmsNametagSender : NametagSender {
     ) {
         try {
             // livingEntity.getHandle()
-            val internalLivingEntity = def.method_getHandle!!.invoke(livingEntity)
+            val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
             // internalLivingEntity.getEntityData()
-            val entityDataPreClone = def.method_getEntityData!!.invoke(internalLivingEntity)
+            val entityDataPreClone = def.methodGetEntityData!!.invoke(internalLivingEntity)
             val entityData: Any = cloneEntityData(entityDataPreClone, internalLivingEntity) ?: return
 
             //final Object entityData = entityDataPreClone;
             val optionalComponent =
-                def.field_OPTIONAL_COMPONENT!![def.clazz_DataWatcherRegistry]
+                def.fieldOPTIONALCOMPONENT!![def.clazzDataWatcherRegistry]
 
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
             //     //new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
             val customNameAccessor =
-                def.ctor_EntityDataAccessor!!.newInstance(2, optionalComponent)
+                def.ctorEntityDataAccessor!!.newInstance(2, optionalComponent)
             val customName: Optional<Any> = buildNametagComponent(livingEntity, nametag)
 
             //final Optional<Object> customName = entityData.set(customNameAccessor, customName);
-            def.method_set!!.invoke(entityData, customNameAccessor, customName)
+            def.methodSet!!.invoke(entityData, customNameAccessor, customName)
 
-            val BOOLEAN = def.field_BOOLEAN!![def.clazz_DataWatcherRegistry]
+            val objBoolean = def.fieldBOOLEAN!![def.clazzDataWatcherRegistry]
             val customNameVisibleAccessor =
-                def.ctor_EntityDataAccessor!!.newInstance(3, BOOLEAN)
+                def.ctorEntityDataAccessor!!.newInstance(3, objBoolean)
 
             // entityData.set(customNameVisibleAccessor, !nametag.isNullOrEmpty() && doAlwaysVisible);
-            def.method_set!!.invoke(entityData, customNameVisibleAccessor, doAlwaysVisible)
+            def.methodSet!!.invoke(entityData, customNameVisibleAccessor, doAlwaysVisible)
 
-            val livingEntityId = def.method_getId!!.invoke(internalLivingEntity) as Int
+            val livingEntityId = def.methodGetId!!.invoke(internalLivingEntity) as Int
 
             val packet: Any
             if (def.isOneNinteenThreeOrNewer) {
                 // List<DataWatcher.b<?>>
                 // java.util.List getAllNonDefaultValues() -> c
                 val getAllNonDefaultValues: List<*> = getNametagFields(entityData)
-                packet = def.ctor_Packet!!
+                packet = def.ctorPacket!!
                     .newInstance(livingEntityId, getAllNonDefaultValues)
             } else {
-                packet = def.ctor_Packet!!
+                packet = def.ctorPacket!!
                     .newInstance(livingEntityId, entityData, true)
             }
 
-            val serverPlayer = def.method_PlayergetHandle!!.invoke(player)
-            val connection = def.field_Connection!![serverPlayer]
+            val serverPlayer = def.methodPlayergetHandle!!.invoke(player)
+            val connection = def.fieldConnection!![serverPlayer]
 
             // serverPlayer.connection.send(packet);
-            def.method_Send!!.invoke(connection, packet)
+            def.methodSend!!.invoke(connection, packet)
         } catch (e: IllegalAccessException) {
             e.printStackTrace()
         } catch (e: InvocationTargetException) {
@@ -121,7 +121,7 @@ class NmsNametagSender : NametagSender {
 
         // constructor:
         // public net.minecraft.network.syncher.DataWatcher(net.minecraft.world.entity.Entity)
-        val entityData = def.ctor_SynchedEntityData!!.newInstance(internalLivingEntity)
+        val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
 
         try {
             val itemsById = def.field_Int2ObjectMap!![entityDataPreClone] as Map<Int, Any>
@@ -130,9 +130,9 @@ class NmsNametagSender : NametagSender {
             }
 
             for (objDataItem in itemsById.values) {
-                val accessor = def.method_getAccessor!!.invoke(objDataItem)
-                val value = def.method_getValue!!.invoke(objDataItem)
-                def.method_define!!.invoke(entityData, accessor, value)
+                val accessor = def.methodGetAccessor!!.invoke(objDataItem)
+                val value = def.methodGetValue!!.invoke(objDataItem)
+                def.methodDefine!!.invoke(entityData, accessor, value)
             }
             return entityData
         } catch (e: Exception) {
@@ -147,18 +147,18 @@ class NmsNametagSender : NametagSender {
         entityDataPreClone: Any,
         internalLivingEntity: Any
     ): Any {
-        val entityData = def.ctor_SynchedEntityData!!.newInstance(internalLivingEntity)
-        if (def.method_getAll!!.invoke(entityDataPreClone) == null) {
+        val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
+        if (def.methodGetAll!!.invoke(entityDataPreClone) == null) {
             return entityData
         }
 
         // SynchedEntityData.DataItem
         // List<DataItem<?>> getAll()
-        for (dataItem in def.method_getAll!!.invoke(entityDataPreClone) as List<*>) {
+        for (dataItem in def.methodGetAll!!.invoke(entityDataPreClone) as List<*>) {
             // entityData.define(dataItem.getAccessor(), dataItem.getValue());
-            val accessor = def.method_getAccessor!!.invoke(dataItem)
-            val value = def.method_getValue!!.invoke(dataItem)
-            def.method_define!!.invoke(entityData, accessor, value)
+            val accessor = def.methodGetAccessor!!.invoke(dataItem)
+            val value = def.methodGetValue!!.invoke(dataItem)
+            def.methodDefine!!.invoke(entityData, accessor, value)
         }
 
         return entityData
@@ -179,13 +179,13 @@ class NmsNametagSender : NametagSender {
                 if (objDataId < 2 || objDataId > 3) continue
 
                 val objDataItem = itemsById[objDataId]
-                val accessor = def.method_getAccessor!!.invoke(objDataItem)
+                val accessor = def.methodGetAccessor!!.invoke(objDataItem)
 
                 // DataWatcher.Item
-                val dataWatcherItem = def.method_DataWatcher_GetItem!!
+                val dataWatcherItem = def.methodDataWatcher_GetItem!!
                     .invoke(entityData, accessor)
 
-                results.add(def.method_DataWatcherItem_Value!!.invoke(dataWatcherItem))
+                results.add(def.methodDataWatcherItem_Value!!.invoke(dataWatcherItem))
                 //results.add(objDataItem);
             }
         } catch (ex: java.lang.Exception) {

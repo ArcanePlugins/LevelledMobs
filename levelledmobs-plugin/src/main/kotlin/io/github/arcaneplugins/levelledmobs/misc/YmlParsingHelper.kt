@@ -297,7 +297,7 @@ class YmlParsingHelper {
         for (thisKey in periodSplit) {
             var foundKey = false
             val checkKeyName = if (sb.isEmpty()) thisKey else sb.toString()
-            val useCS = if (keysFound == 0) cs else objTo_CS(cs, checkKeyName)
+            val useCS = if (keysFound == 0) cs else objToCS(cs, checkKeyName)
 
             if (useCS == null) {
                 break
@@ -330,7 +330,7 @@ class YmlParsingHelper {
         return sb.toString()
     }
 
-    fun objTo_CS(cs: ConfigurationSection?, path: String): ConfigurationSection? {
+    fun objToCS(cs: ConfigurationSection?, path: String): ConfigurationSection? {
         if (cs == null) {
             return null
         }

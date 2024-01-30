@@ -300,14 +300,14 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private fun checkChanceRules(
         result: ApplicableRulesResult
     ) {
-        if (result.allApplicableRules_MadeChance.isEmpty()
-            && result.allApplicableRules_DidNotMakeChance.isEmpty()
+        if (result.allApplicableRulesMadeChance.isEmpty()
+            && result.allApplicableRulesDidNotMakeChance.isEmpty()
         ) {
             return
         }
 
         val sbAllowed = StringBuilder()
-        for (ruleInfo in result.allApplicableRules_MadeChance) {
+        for (ruleInfo in result.allApplicableRulesMadeChance) {
             if (sbAllowed.isNotEmpty()) {
                 sbAllowed.append(";")
             }
@@ -315,7 +315,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
 
         val sbDenied = StringBuilder()
-        for (ruleInfo in result.allApplicableRules_DidNotMakeChance) {
+        for (ruleInfo in result.allApplicableRulesDidNotMakeChance) {
             if (sbDenied.isNotEmpty()) {
                 sbDenied.append(";")
             }
@@ -800,7 +800,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
     }
 
-    fun setShouldShowLM_Nametag(doShow: Boolean) {
+    fun setShouldShowLMNametag(doShow: Boolean) {
         if (!getPDCLock()) {
             return
         }
@@ -824,7 +824,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
     }
 
-    fun getShouldShowLM_Nametag(): Boolean {
+    fun getShouldShowLMNametag(): Boolean {
         if (!getPDCLock()) {
             return true
         }

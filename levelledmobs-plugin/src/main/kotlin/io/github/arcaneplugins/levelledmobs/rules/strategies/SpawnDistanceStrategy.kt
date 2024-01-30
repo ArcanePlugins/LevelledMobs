@@ -20,10 +20,10 @@ import kotlin.math.min
 class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
     var startDistance: Int? = null
     var increaseLevelDistance: Int? = null
-    var spawnLocation_X: Int? = null
-    var spawnLocation_Z: Int? = null
+    var spawnLocationX: Int? = null
+    var spawnLocationZ: Int? = null
     var blendedLevellingEnabled: Boolean? = null
-    var transition_Y_Height: Int? = null
+    var transitionYheight: Int? = null
     var multiplierPeriod: Int? = null
     var lvlMultiplier: Double? = null
     var scaleDownward: Boolean? = null
@@ -65,7 +65,7 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
                     "sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
                     if (startDistance == null) 0 else startDistance,
                     if (increaseLevelDistance == null) 0 else increaseLevelDistance,
-                    if (transition_Y_Height == null) 0 else transition_Y_Height,
+                    if (transitionYheight == null) 0 else transitionYheight,
                     if (multiplierPeriod == null) 0 else multiplierPeriod,
                     if (lvlMultiplier == null) 0.0 else lvlMultiplier,
                     scaleDownward == null || scaleDownward!!
@@ -81,14 +81,14 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             )
         }
 
-        if (this.spawnLocation_X != null) {
+        if (this.spawnLocationX != null) {
             sb.append(" x: ")
-            sb.append(this.spawnLocation_X)
+            sb.append(this.spawnLocationX)
         }
 
-        if (this.spawnLocation_Z != null) {
+        if (this.spawnLocationZ != null) {
             sb.append(" z: ")
-            sb.append(this.spawnLocation_Z)
+            sb.append(this.spawnLocationZ)
         }
 
         return sb.toString()
@@ -102,11 +102,11 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
 
         var spawnLocation = lmEntity.world.spawnLocation
 
-        if (this.spawnLocation_Z != null || this.spawnLocation_X != null) {
+        if (this.spawnLocationZ != null || this.spawnLocationX != null) {
             val useX =
-                if (this.spawnLocation_X == null) spawnLocation.x else spawnLocation_X!!.toDouble()
+                if (this.spawnLocationX == null) spawnLocation.x else spawnLocationX!!.toDouble()
             val useZ =
-                if (this.spawnLocation_Z == null) spawnLocation.x else spawnLocation_Z!!.toDouble()
+                if (this.spawnLocationZ == null) spawnLocation.x else spawnLocationZ!!.toDouble()
 
             spawnLocation = Location(
                 lmEntity.livingEntity.world,
@@ -152,17 +152,17 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
 
         var result: Double
 
-        val transition_Y_Height =
-            if (this.transition_Y_Height == null) 0.0 else transition_Y_Height!!.toDouble()
+        val transitionYHeight =
+            if (this.transitionYheight == null) 0.0 else transitionYheight!!.toDouble()
         val multiplierPeriod = if (this.multiplierPeriod == null) 0.0 else multiplierPeriod!!.toDouble()
         val lvlMultiplier = if (this.lvlMultiplier == null) 0.0 else lvlMultiplier!!
 
         result = if (this.scaleDownward == null || scaleDownward!!) {
-            ((((transition_Y_Height - currentYPos.toDouble()) /
+            ((((transitionYHeight - currentYPos.toDouble()) /
                     multiplierPeriod) * lvlMultiplier)
                     * spawnDistanceLevelAssignment.toDouble())
         } else {
-            ((((transition_Y_Height - currentYPos.toDouble()) /
+            ((((transitionYHeight - currentYPos.toDouble()) /
                     multiplierPeriod) * (lvlMultiplier * -1.0))
                     * spawnDistanceLevelAssignment.toDouble())
         }

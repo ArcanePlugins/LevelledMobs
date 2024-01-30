@@ -16,7 +16,7 @@ import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.LevelInterface
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_17.getForceBlockedEntityType
+import io.github.arcaneplugins.levelledmobs.compatibility.Compat117.getForceBlockedEntityType
 import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.events.MobPostLevelEvent
@@ -83,7 +83,7 @@ class LevelManager : LevelInterface {
         val summonedOrSpawnEggs_Lock: Any = Any()
     }
 
-    private var hasMentionedNBTAPI_Missing = false
+    private var hasMentionedNBTAPIMissing = false
     var doCheckMobHash: Boolean = false
     private val randomLevellingCache = mutableMapOf<String, RandomLevellingStrategy>()
     private var lastLEWCacheClearing: Instant? = null
@@ -93,7 +93,7 @@ class LevelManager : LevelInterface {
     /**
      * The following entity types *MUST NOT* be levellable.
      */
-    var FORCED_BLOCKED_ENTITY_TYPES = mutableSetOf<EntityType>()
+    var ForcedBlockedEntityTypes = mutableSetOf<EntityType>()
 
     fun load(){
         this.vehicleNoMultiplierItems.addAll(mutableListOf(
@@ -104,7 +104,7 @@ class LevelManager : LevelInterface {
             Material.DIAMOND_HORSE_ARMOR
         ))
 
-        this.FORCED_BLOCKED_ENTITY_TYPES.addAll(
+        this.ForcedBlockedEntityTypes.addAll(
             mutableListOf(
                 EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW, EntityType.BOAT,
                 EntityType.DRAGON_FIREBALL, EntityType.DROPPED_ITEM, EntityType.EGG,
@@ -127,7 +127,7 @@ class LevelManager : LevelInterface {
         )
 
         if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) {
-            FORCED_BLOCKED_ENTITY_TYPES.addAll(getForceBlockedEntityType())
+            ForcedBlockedEntityTypes.addAll(getForceBlockedEntityType())
         }
     }
 
@@ -305,11 +305,11 @@ class LevelManager : LevelInterface {
             origLevelSource = useLocation!!.distance(player.location)
         } else {
             var usePlayerLevel = false
-            var PAPIResult: String? = null
+            var papiResult: String? = null
 
             if (ExternalCompatibilityManager.hasPapiInstalled()) {
-                PAPIResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse)
-                if (PAPIResult.isEmpty()) {
+                papiResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse)
+                if (papiResult.isEmpty()) {
                     val l = player.location
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
@@ -331,7 +331,7 @@ class LevelManager : LevelInterface {
                 origLevelSource = player.level.toDouble()
             } else {
                 val l = player.location
-                if (PAPIResult.isNullOrEmpty()) {
+                if (papiResult.isNullOrEmpty()) {
                     origLevelSource = player.level.toDouble()
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
@@ -341,14 +341,14 @@ class LevelManager : LevelInterface {
                         )
                     }
                 } else {
-                    if (Utils.isDouble(PAPIResult)) {
+                    if (Utils.isDouble(papiResult)) {
                         origLevelSource = try {
-                            PAPIResult.toDouble()
+                            papiResult.toDouble()
                         } catch (ignored: Exception) {
                             player.level.toDouble()
                         }
                     } else {
-                        val result = PlayerLevelSourceResult(PAPIResult)
+                        val result = PlayerLevelSourceResult(papiResult)
                         result.homeNameUsed = homeNameUsed
                         return result
                     }
@@ -933,7 +933,7 @@ class LevelManager : LevelInterface {
                             checkLEWCache()
                             val entitiesPerPlayer = enumerateNearbyEntities()
                             if (entitiesPerPlayer != null) {
-                                runNametagCheck_aSync(entitiesPerPlayer)
+                                runNametagCheckaSync(entitiesPerPlayer)
                             }
                         }
                     firstPlayer.scheduler.run(main, task, null)
@@ -947,7 +947,7 @@ class LevelManager : LevelInterface {
                 if (entitiesPerPlayer != null) {
                     val runnable2 = Runnable {
                         checkLEWCache()
-                        runNametagCheck_aSync(entitiesPerPlayer)
+                        runNametagCheckaSync(entitiesPerPlayer)
                     }
                     Bukkit.getScheduler().runTaskAsynchronously(main, runnable2)
                 }
@@ -1003,7 +1003,7 @@ class LevelManager : LevelInterface {
         scheduler.runTaskTimerAsynchronously(0, 1000)
     }
 
-    private fun runNametagCheck_aSync(
+    private fun runNametagCheckaSync(
         entitiesPerPlayer: MutableMap<Player, MutableList<Entity>>
     ) {
         val entityToPlayer = mutableMapOf<LivingEntityWrapper, MutableList<Player>>()
@@ -1439,7 +1439,7 @@ class LevelManager : LevelInterface {
         }
 
         val scheduler = SchedulerWrapper {
-            applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet)
+            applyLevelledEquipmentNonAsync(lmEntity, customDropsRuleSet)
             lmEntity.free()
         }
 
@@ -1448,7 +1448,7 @@ class LevelManager : LevelInterface {
         scheduler.run()
     }
 
-    private fun applyLevelledEquipment_NonAsync(lmEntity: LivingEntityWrapper, customDropsRuleSet: CustomDropsRuleSet) {
+    private fun applyLevelledEquipmentNonAsync(lmEntity: LivingEntityWrapper, customDropsRuleSet: CustomDropsRuleSet) {
         val mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity)
         if (mmInfo != null && mmInfo.preventRandomEquipment) {
             return
@@ -1579,7 +1579,7 @@ class LevelManager : LevelInterface {
         before all other checks are made.
          */
         val main = LevelledMobs.instance
-        if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmInterface.entityType)) {
+        if (ForcedBlockedEntityTypes.contains(lmInterface.entityType)) {
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE
         }
 
@@ -1708,9 +1708,9 @@ class LevelManager : LevelInterface {
 
             level = mobPreLevelEvent.level
             lmEntity.setMobPrelevel(level)
-            if (!mobPreLevelEvent.showLM_Nametag) {
+            if (!mobPreLevelEvent.showLMNametag) {
                 skipLMNametag = true
-                lmEntity.setShouldShowLM_Nametag(false)
+                lmEntity.setShouldShowLMNametag(false)
             }
         }
 
@@ -1747,11 +1747,11 @@ class LevelManager : LevelInterface {
             )
 
         if (nbtDatas!!.isNotEmpty() && !ExternalCompatibilityManager.hasNbtApiInstalled()) {
-            if (!hasMentionedNBTAPI_Missing) {
+            if (!hasMentionedNBTAPIMissing) {
                 Utils.logger.warning(
                     "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!"
                 )
-                hasMentionedNBTAPI_Missing = true
+                hasMentionedNBTAPIMissing = true
             }
             nbtDatas.clear()
         }
@@ -1890,7 +1890,7 @@ class LevelManager : LevelInterface {
             val allResults: MutableList<NBTApplyResult> = LinkedList()
 
             for (nbtData: String in nbtDatas) {
-                val result: NBTApplyResult = NBTManager.applyNBT_Data_Mob(
+                val result: NBTApplyResult = NBTManager.applyNBTDataMob(
                     lmEntity,
                     nbtData
                 )
@@ -1916,7 +1916,7 @@ class LevelManager : LevelInterface {
             if (hadSuccess) {
                 DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
                     ("Applied NBT data to '" + lmEntity.nameIfBaby +
-                            "'. " + getNBT_DebugMessage(allResults))
+                            "'. " + getNBTDebugMessage(allResults))
                 }
             }
         }
@@ -1926,7 +1926,7 @@ class LevelManager : LevelInterface {
         }
     }
 
-    private fun getNBT_DebugMessage(results: List<NBTApplyResult>): String {
+    private fun getNBTDebugMessage(results: List<NBTApplyResult>): String {
         val sb = java.lang.StringBuilder()
 
         for (result in results) {

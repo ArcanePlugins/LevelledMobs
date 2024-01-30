@@ -518,19 +518,19 @@ class ExternalCompatibilityManager {
 
         private fun isSimplePets(lmEntity: LivingEntityWrapper): Boolean {
             try {
-                val clazz_PetCore = Class.forName(
+                val clazzPetCore = Class.forName(
                     "simplepets.brainsynder.api.plugin.SimplePets"
                 )
-                val clazz_IPetsPlugin = Class.forName(
+                val clazzIPetsPlugin = Class.forName(
                     "simplepets.brainsynder.api.plugin.IPetsPlugin"
                 )
 
-                val method_getPlugin = clazz_PetCore.getDeclaredMethod("getPlugin")
+                val methodGetPlugin = clazzPetCore.getDeclaredMethod("getPlugin")
                 // returns public class PetCore extends JavaPlugin implements IPetsPlugin
-                val objIPetsPlugin = method_getPlugin.invoke(null)
+                val objIPetsPlugin = methodGetPlugin.invoke(null)
 
-                val method_isPetEntity = clazz_IPetsPlugin.getDeclaredMethod("isPetEntity", Entity::class.java)
-                return method_isPetEntity.invoke(objIPetsPlugin, lmEntity.livingEntity) as Boolean
+                val methodIsPetEntity = clazzIPetsPlugin.getDeclaredMethod("isPetEntity", Entity::class.java)
+                return methodIsPetEntity.invoke(objIPetsPlugin, lmEntity.livingEntity) as Boolean
             } catch (e: NoSuchMethodException) {
                 Utils.logger.error("Error checking if " + lmEntity.nameIfBaby + " is a SimplePet")
                 e.printStackTrace()

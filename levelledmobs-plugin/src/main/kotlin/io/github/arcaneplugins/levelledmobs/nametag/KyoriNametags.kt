@@ -62,7 +62,7 @@ object KyoriNametags {
 
         // PaperAdventure.asVanilla(kyoriComponent)
         try {
-            return def.method_AsVanilla!!.invoke(def.clazz_PaperAdventure, result)
+            return def.methodAsVanilla!!.invoke(def.clazzPaperAdventure, result)
         } catch (ex: Exception) {
             ex.printStackTrace()
         }

@@ -29,133 +29,133 @@ class Definitions {
     var mm: MiniMessage? = null
 
     // classes:
-    var clazz_IChatMutableComponent: Class<*>? = null
+    var clazzIChatMutableComponent: Class<*>? = null
     private set
-    var clazz_IChatBaseComponent: Class<*>? = null
+    var clazzIChatBaseComponent: Class<*>? = null
         private set
-    var clazz_TranslatableComponent: Class<*>? = null
+    var clazzTranslatableComponent: Class<*>? = null
         private set
-    var clazz_CraftLivingEntity: Class<*>? = null
+    var clazzCraftLivingEntity: Class<*>? = null
         private set
-    var clazz_CraftEntity: Class<*>? = null
+    var clazzCraftEntity: Class<*>? = null
         private set
-    var clazz_Entity: Class<*>? = null
+    var clazzEntity: Class<*>? = null
         private set
-    var clazz_DataWatcher: Class<*>? = null
+    var clazzDataWatcher: Class<*>? = null
         private set
-    var clazz_DataWatcher_Item: Class<*>? = null
+    var clazzDataWatcher_Item: Class<*>? = null
         private set
-    var clazz_DataWatcherRegistry: Class<*>? = null
+    var clazzDataWatcherRegistry: Class<*>? = null
         private set
-    var clazz_DataWatcherObject: Class<*>? = null
+    var clazzDataWatcherObject: Class<*>? = null
         private set
-    var clazz_DataWatcherSerializer: Class<*>? = null
+    var clazzDataWatcherSerializer: Class<*>? = null
         private set
-    var clazz_ClientboundSetEntityDataPacket: Class<*>? = null
+    var clazzClientboundSetEntityDataPacket: Class<*>? = null
         private set
-    var clazz_CraftPlayer: Class<*>? = null
+    var clazzCraftPlayer: Class<*>? = null
         private set
-    var clazz_Packet: Class<*>? = null
+    var clazzPacket: Class<*>? = null
         private set
-    var clazz_PlayerConnection: Class<*>? = null
+    var clazzPlayerConnection: Class<*>? = null
         private set
-    var clazz_ServerPlayerConnection: Class<*>? = null
+    var clazzServerPlayerConnection: Class<*>? = null
         private set
-    var clazz_NetworkManager: Class<*>? = null
+    var clazzNetworkManager: Class<*>? = null
         private set
-    var clazz_EntityPlayer: Class<*>? = null
+    var clazzEntityPlayer: Class<*>? = null
         private set
-    var clazz_PaperAdventure: Class<*>? = null
+    var clazzPaperAdventure: Class<*>? = null
         private set
-    var clazz_EntityTypes: Class<*>? = null
+    var clazzEntityTypes: Class<*>? = null
         private set
 
     // mythic mobs:
-    var clazz_MM_MobExecutor: Class<*>? = null
+    var clazzMMmobExecutor: Class<*>? = null
         private set
-    var clazz_MM_ActiveMob: Class<*>? = null
+    var clazzMMactiveMob: Class<*>? = null
         private set
-    var clazz_MM_MobType: Class<*>? = null
+    var clazzMMmobType: Class<*>? = null
         private set
 
     // methods:
-    var method_ComponentAppend: Method? = null
+    var methodComponentAppend: Method? = null
         private set
-    var method_EmptyComponent: Method? = null
+    var methodEmptyComponent: Method? = null
         private set
-    var method_TextComponent: Method? = null
+    var methodTextComponent: Method? = null
         private set
-    var method_Translatable: Method? = null
+    var methodTranslatable: Method? = null
         private set
-    var method_TranslatableWithArgs: Method? = null
+    var methodTranslatableWithArgs: Method? = null
         private set
-    var method_getHandle: Method? = null
+    var methodGetHandle: Method? = null
         private set
-    var method_getEntityData: Method? = null
+    var methodGetEntityData: Method? = null
         private set
-    var method_set: Method? = null
+    var methodSet: Method? = null
         private set
-    var method_getId: Method? = null
+    var methodGetId: Method? = null
         private set
-    var method_PlayergetHandle: Method? = null
+    var methodPlayergetHandle: Method? = null
         private set
-    var method_Send: Method? = null
+    var methodSend: Method? = null
         private set
-    var method_getAll: Method? = null
+    var methodGetAll: Method? = null
         private set
-    var method_define: Method? = null
+    var methodDefine: Method? = null
         private set
-    var method_getAccessor: Method? = null
+    var methodGetAccessor: Method? = null
         private set
-    var method_getValue: Method? = null
+    var methodGetValue: Method? = null
         private set
-    var method_AsVanilla: Method? = null
+    var methodAsVanilla: Method? = null
         private set
-    var method_EntityTypeByString: Method? = null
+    var methodEntityTypeByString: Method? = null
         private set
-    var method_GetDescriptionId: Method? = null
+    var methodGetDescriptionId: Method? = null
         private set
-    var method_getNonDefaultValues: Method? = null
+    var methodGetNonDefaultValues: Method? = null
         private set
-    var method_SynchedEntityData_Define: Method? = null
+    var methodSynchedEntityData_Define: Method? = null
         private set
-    var method_DataWatcher_GetItem: Method? = null
+    var methodDataWatcher_GetItem: Method? = null
         private set
-    var method_DataWatcherItem_Value: Method? = null
+    var methodDataWatcherItem_Value: Method? = null
         private set
 
     // mythic mobs:
-    var method_MM_getActiveMob: Method? = null
+    var methodMMgetActiveMob: Method? = null
         private set
 
     // fields
-    var field_OPTIONAL_COMPONENT: Field? = null
+    var fieldOPTIONALCOMPONENT: Field? = null
         private set
-    var field_BOOLEAN: Field? = null
+    var fieldBOOLEAN: Field? = null
         private set
-    var field_Connection: Field? = null
+    var fieldConnection: Field? = null
         private set
     var field_Int2ObjectMap: Field? = null
         private set
 
     // mythic mobs:
-    var field_MM_mobManager: Field? = null
+    var fieldMMmobManager: Field? = null
         private set
-    var field_MM_type: Field? = null
+    var fieldMMtype: Field? = null
         private set
-    var field_MM_preventOtherDrops: Field? = null
+    var fieldMMpreventOtherDrops: Field? = null
         private set
-    var field_MM_preventRandomEquipment: Field? = null
+    var fieldMMpreventRandomEquipment: Field? = null
         private set
-    var field_MM_internalName: Field? = null
+    var fieldMMinternalName: Field? = null
         private set
 
     // Constructors
-    var ctor_EntityDataAccessor: Constructor<*>? = null
+    var ctorEntityDataAccessor: Constructor<*>? = null
         private set
-    var ctor_SynchedEntityData: Constructor<*>? = null
+    var ctorSynchedEntityData: Constructor<*>? = null
         private set
-    var ctor_Packet: Constructor<*>? = null
+    var ctorPacket: Constructor<*>? = null
         private set
 
     fun load(){
@@ -199,94 +199,94 @@ class Definitions {
     }
 
     private fun buildClasses() {
-        this.clazz_IChatMutableComponent = Class.forName(
+        this.clazzIChatMutableComponent = Class.forName(
             "net.minecraft.network.chat.IChatMutableComponent"
         )
 
-        this.clazz_IChatBaseComponent = Class.forName(
+        this.clazzIChatBaseComponent = Class.forName(
             "net.minecraft.network.chat.IChatBaseComponent"
         )
 
-        this.clazz_CraftEntity = Class.forName(
+        this.clazzCraftEntity = Class.forName(
             getClassName("entity.CraftEntity")
         )
 
-        this.clazz_CraftLivingEntity = Class.forName(
+        this.clazzCraftLivingEntity = Class.forName(
             getClassName("entity.CraftLivingEntity")
         )
 
         // net.minecraft.network.syncher.SynchedEntityData
-        this.clazz_DataWatcher = Class.forName(
+        this.clazzDataWatcher = Class.forName(
             "net.minecraft.network.syncher.DataWatcher"
         )
 
-        this.clazz_DataWatcher_Item = Class.forName(
+        this.clazzDataWatcher_Item = Class.forName(
             "net.minecraft.network.syncher.DataWatcher\$Item"
         )
 
-        this.clazz_DataWatcherRegistry = Class.forName(
+        this.clazzDataWatcherRegistry = Class.forName(
             "net.minecraft.network.syncher.DataWatcherRegistry"
         )
 
-        this.clazz_Entity = Class.forName(
+        this.clazzEntity = Class.forName(
             "net.minecraft.world.entity.Entity"
         )
 
-        this.clazz_DataWatcherObject = Class.forName(
+        this.clazzDataWatcherObject = Class.forName(
             "net.minecraft.network.syncher.DataWatcherObject"
         )
 
-        this.clazz_DataWatcherSerializer = Class.forName(
+        this.clazzDataWatcherSerializer = Class.forName(
             "net.minecraft.network.syncher.DataWatcherSerializer"
         )
 
-        this.clazz_ClientboundSetEntityDataPacket = Class.forName(
+        this.clazzClientboundSetEntityDataPacket = Class.forName(
             "net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata"
         )
 
-        this.clazz_CraftPlayer = Class.forName(
+        this.clazzCraftPlayer = Class.forName(
             getClassName("entity.CraftPlayer")
         )
 
-        this.clazz_Packet = Class.forName(
+        this.clazzPacket = Class.forName(
             "net.minecraft.network.protocol.Packet"
         )
 
-        this.clazz_NetworkManager = Class.forName(
+        this.clazzNetworkManager = Class.forName(
             "net.minecraft.network.NetworkManager"
         )
 
         //net.minecraft.server.network.ServerPlayerConnection ->
         // void send(net.minecraft.network.protocol.Packet) ->
-        this.clazz_PlayerConnection = Class.forName(
+        this.clazzPlayerConnection = Class.forName(
             "net.minecraft.server.network.PlayerConnection"
         )
 
-        this.clazz_ServerPlayerConnection = Class.forName(
+        this.clazzServerPlayerConnection = Class.forName(
             "net.minecraft.server.network.ServerPlayerConnection"
         )
 
         // net.minecraft.server.level.ServerPlayer ->
-        this.clazz_EntityPlayer = Class.forName(
+        this.clazzEntityPlayer = Class.forName(
             "net.minecraft.server.level.EntityPlayer"
         )
 
         if (LevelledMobs.instance.ver.minecraftVersion < 1.19) {
             // this is basically TranslatableComponent
-            this.clazz_TranslatableComponent = Class.forName(
+            this.clazzTranslatableComponent = Class.forName(
                 "net.minecraft.network.chat.ChatMessage"
             )
         }
 
         try {
-            this.clazz_PaperAdventure = Class.forName(
+            this.clazzPaperAdventure = Class.forName(
                 "io.papermc.paper.adventure.PaperAdventure"
             )
             this.hasKiori = true
         } catch (ignored: ClassNotFoundException) {
         }
 
-        this.clazz_EntityTypes = Class.forName(
+        this.clazzEntityTypes = Class.forName(
             "net.minecraft.world.entity.EntityTypes"
         )
 
@@ -313,8 +313,8 @@ class Definitions {
             methodName = "addSibling"
         }
 
-        this.method_ComponentAppend = clazz_IChatMutableComponent!!.getDeclaredMethod(
-            methodName, this.clazz_IChatBaseComponent
+        this.methodComponentAppend = clazzIChatMutableComponent!!.getDeclaredMethod(
+            methodName, this.clazzIChatBaseComponent
         )
     }
 
@@ -336,13 +336,13 @@ class Definitions {
 
             // net.minecraft.network.chat.Component ->
             //     net.minecraft.network.chat.MutableComponent empty()
-            this.method_EmptyComponent = clazz_IChatBaseComponent!!.getDeclaredMethod(methodName)
+            this.methodEmptyComponent = clazzIChatBaseComponent!!.getDeclaredMethod(methodName)
         }
 
         // 1.18 doesn't have #empty(), instead use #nullToEmpty()
         // net.minecraft.network.chat.Component -> qk:
         //    net.minecraft.network.chat.Component nullToEmpty(java.lang.String) -> a
-        this.method_TextComponent = clazz_IChatBaseComponent!!.getDeclaredMethod("a", String::class.java)
+        this.methodTextComponent = clazzIChatBaseComponent!!.getDeclaredMethod("a", String::class.java)
     }
 
     @Throws(NoSuchMethodException::class)
@@ -355,14 +355,14 @@ class Definitions {
         // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String) ->
-        this.method_Translatable = clazz_IChatBaseComponent!!.getDeclaredMethod(
+        this.methodTranslatable = clazzIChatBaseComponent!!.getDeclaredMethod(
             "c",
             String::class.java
         )
 
         // net.minecraft.network.chat.Component ->
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[])
-        this.method_TranslatableWithArgs = clazz_IChatBaseComponent!!.getDeclaredMethod(
+        this.methodTranslatableWithArgs = clazzIChatBaseComponent!!.getDeclaredMethod(
             "a",
             String::class.java, Array<Any>::class.java
         )
@@ -377,7 +377,7 @@ class Definitions {
 
         val optionalResult: Optional<*>
         try {
-            optionalResult = method_EntityTypeByString!!.invoke(
+            optionalResult = methodEntityTypeByString!!.invoke(
                 null,
                 livingEntity.type.getName()
             ) as Optional<*>
@@ -387,7 +387,7 @@ class Definitions {
             }
 
             // net.minecraft.world.entity.EntityTypes<T extends Entity>
-            return method_GetDescriptionId!!.invoke(optionalResult.get()) as String
+            return methodGetDescriptionId!!.invoke(optionalResult.get()) as String
         } catch (e: IllegalAccessException) {
             e.printStackTrace()
         } catch (e: InvocationTargetException) {
@@ -400,7 +400,7 @@ class Definitions {
     @Throws(NoSuchMethodException::class)
     private fun buildSimpleMethods() {
         val ver = LevelledMobs.instance.ver
-        this.method_getHandle = clazz_CraftLivingEntity!!.getDeclaredMethod("getHandle")
+        this.methodGetHandle = clazzCraftLivingEntity!!.getDeclaredMethod("getHandle")
 
         // # {"fileName":"Entity.java","id":"sourceFile"}
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
@@ -435,13 +435,13 @@ class Definitions {
             else -> throw RuntimeException("Unable to determine NMS method name for your Minecraft server version. Is your server version compatible?")
         }
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
-        this.method_getEntityData = clazz_Entity!!.getMethod(methodName)
+        this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
 
         methodName = if (ver.minecraftVersion >= 1.18) "b" else "set"
 
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-        this.method_set = clazz_DataWatcher!!.getMethod(
-            methodName, clazz_DataWatcherObject,
+        this.methodSet = clazzDataWatcher!!.getMethod(
+            methodName, clazzDataWatcherObject,
             Any::class.java
         )
 
@@ -469,9 +469,9 @@ class Definitions {
             methodName = "getId"
         }
 
-        this.method_getId = clazz_Entity!!.getDeclaredMethod(methodName)
+        this.methodGetId = clazzEntity!!.getDeclaredMethod(methodName)
 
-        this.method_PlayergetHandle = clazz_CraftPlayer!!.getDeclaredMethod("getHandle")
+        this.methodPlayergetHandle = clazzCraftPlayer!!.getDeclaredMethod("getHandle")
 
         // starting with 1.20.2 it is:
         // # {"fileName":"ServerCommonPacketListenerImpl.java","id":"sourceFile"}
@@ -491,12 +491,12 @@ class Definitions {
             "sendPacket"
         }
 
-        this.method_Send = clazz_ServerPlayerConnection!!.getDeclaredMethod(methodName, clazz_Packet)
+        this.methodSend = clazzServerPlayerConnection!!.getDeclaredMethod(methodName, clazzPacket)
 
         if (ver.minecraftVersion <= 1.18) {
             methodName = if (ver.majorVersionEnum == MinecraftMajorVersion.V1_18) "c" else "getAll"
             // java.util.List getAll() ->
-            this.method_getAll = clazz_DataWatcher!!.getDeclaredMethod(methodName)
+            this.methodGetAll = clazzDataWatcher!!.getDeclaredMethod(methodName)
         }
 
         // # {"fileName":"SynchedEntityData.java","id":"sourceFile"}
@@ -504,72 +504,72 @@ class Definitions {
         //    define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         methodName = if (ver.minecraftVersion >= 1.18) "a" else "register"
 
-        this.method_define = clazz_DataWatcher!!.getDeclaredMethod(
+        this.methodDefine = clazzDataWatcher!!.getDeclaredMethod(
             methodName,
-            clazz_DataWatcherObject, Any::class.java
+            clazzDataWatcherObject, Any::class.java
         )
 
         // net.minecraft.network.syncher.EntityDataAccessor getAccessor() ->
-        this.method_getAccessor = clazz_DataWatcher_Item!!.getDeclaredMethod("a")
+        this.methodGetAccessor = clazzDataWatcher_Item!!.getDeclaredMethod("a")
         // java.lang.Object getValue() ->
-        this.method_getValue = clazz_DataWatcher_Item!!.getDeclaredMethod("b")
+        this.methodGetValue = clazzDataWatcher_Item!!.getDeclaredMethod("b")
 
         // net.minecraft.network.Connection getConnection() ->
         //this.method_getConnection = clazz_CraftPlayer.getDeclaredMethod("networkManager");
         if (this.hasKiori) {
-            this.method_AsVanilla = clazz_PaperAdventure!!.getDeclaredMethod(
+            this.methodAsVanilla = clazzPaperAdventure!!.getDeclaredMethod(
                 "asVanilla",
                 Component::class.java
             )
         }
 
         // java.util.Optional byString(java.lang.String) ->
-        this.method_EntityTypeByString = clazz_EntityTypes!!.getDeclaredMethod("a", String::class.java)
+        this.methodEntityTypeByString = clazzEntityTypes!!.getDeclaredMethod("a", String::class.java)
 
         // java.lang.String getDescriptionId() ->
-        this.method_GetDescriptionId = clazz_EntityTypes!!.getDeclaredMethod("g")
+        this.methodGetDescriptionId = clazzEntityTypes!!.getDeclaredMethod("g")
 
         if (this.isOneNinteenThreeOrNewer) {
             // the methods here were added in 1.19.3
 
             // java.util.List getNonDefaultValues() ->
 
-            this.method_getNonDefaultValues = clazz_DataWatcher!!.getDeclaredMethod("c")
+            this.methodGetNonDefaultValues = clazzDataWatcher!!.getDeclaredMethod("c")
 
             // define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-            this.method_SynchedEntityData_Define = clazz_DataWatcher!!.getMethod(
+            this.methodSynchedEntityData_Define = clazzDataWatcher!!.getMethod(
                 "a",
-                clazz_DataWatcherObject, Any::class.java
+                clazzDataWatcherObject, Any::class.java
             )
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
             methodName = if (ver.minecraftVersion >= 1.20) "c" else "b"
-            this.method_DataWatcher_GetItem = clazz_DataWatcher!!.getDeclaredMethod(
+            this.methodDataWatcher_GetItem = clazzDataWatcher!!.getDeclaredMethod(
                 methodName,
-                clazz_DataWatcherObject
+                clazzDataWatcherObject
             )
-            method_DataWatcher_GetItem!!.setAccessible(true)
+            methodDataWatcher_GetItem!!.setAccessible(true)
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
             //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
-            this.method_DataWatcherItem_Value = clazz_DataWatcher_Item!!.getDeclaredMethod("e")
+            this.methodDataWatcherItem_Value = clazzDataWatcher_Item!!.getDeclaredMethod("e")
         }
     }
 
     @Throws(NoSuchFieldException::class)
     private fun buildFields() {
         // net.minecraft.network.syncher.EntityDataSerializer OPTIONAL_COMPONENT
-        this.field_OPTIONAL_COMPONENT = clazz_DataWatcherRegistry!!.getDeclaredField("f")
+        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField("f")
 
         // net.minecraft.network.syncher.EntityDataSerializer BOOLEAN
-        this.field_BOOLEAN = clazz_DataWatcherRegistry!!.getDeclaredField("i")
+        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField("i")
 
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
         val fieldName = if (LevelledMobs.instance.ver.minecraftVersion >= 1.20) "c" else "b"
-        this.field_Connection = clazz_EntityPlayer!!.getDeclaredField(fieldName)
+        this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
         if (LevelledMobs.instance.ver.minorVersion >= 19) {
             // net.minecraft.network.syncher.SynchedEntityData ->
@@ -578,30 +578,30 @@ class Definitions {
 
             val methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"
 
-            this.field_Int2ObjectMap = clazz_DataWatcher!!.getDeclaredField(methodName)
+            this.field_Int2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             field_Int2ObjectMap!!.setAccessible(true)
         }
     }
 
     @Throws(NoSuchMethodException::class)
     private fun buildConstructors() {
-        this.ctor_EntityDataAccessor = clazz_DataWatcherObject!!.getConstructor(
-            Int::class.javaPrimitiveType, clazz_DataWatcherSerializer
+        this.ctorEntityDataAccessor = clazzDataWatcherObject!!.getConstructor(
+            Int::class.javaPrimitiveType, clazzDataWatcherSerializer
         )
 
-        this.ctor_SynchedEntityData = clazz_DataWatcher!!.getConstructor(clazz_Entity)
+        this.ctorSynchedEntityData = clazzDataWatcher!!.getConstructor(clazzEntity)
 
         if (this.isOneNinteenThreeOrNewer) {
             // starting with 1.19.3 use this one:
             // public net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata(int,java.util.List<DataWatcher.b<?>>)
 
-            this.ctor_Packet = clazz_ClientboundSetEntityDataPacket!!.getConstructor(
+            this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
                 Int::class.javaPrimitiveType, MutableList::class.java
             )
         } else {
             // up to 1.19.2 use this one:
-            this.ctor_Packet = clazz_ClientboundSetEntityDataPacket!!.getConstructor(
-                Int::class.javaPrimitiveType, clazz_DataWatcher, Boolean::class.javaPrimitiveType
+            this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
+                Int::class.javaPrimitiveType, clazzDataWatcher, Boolean::class.javaPrimitiveType
             )
         }
     }
@@ -614,31 +614,31 @@ class Definitions {
             return
         }
 
-        this.clazz_MM_ActiveMob = Class.forName("io.lumine.mythic.core.mobs.ActiveMob")
-        this.clazz_MM_MobExecutor = Class.forName("io.lumine.mythic.core.mobs.MobExecutor")
-        this.clazz_MM_MobType = Class.forName("io.lumine.mythic.core.mobs.MobType")
+        this.clazzMMactiveMob = Class.forName("io.lumine.mythic.core.mobs.ActiveMob")
+        this.clazzMMmobExecutor = Class.forName("io.lumine.mythic.core.mobs.MobExecutor")
+        this.clazzMMmobType = Class.forName("io.lumine.mythic.core.mobs.MobType")
 
-        this.method_MM_getActiveMob = clazz_MM_MobExecutor!!.getMethod(
+        this.methodMMgetActiveMob = clazzMMmobExecutor!!.getMethod(
             "getActiveMob",
             UUID::class.java
         )
 
-        this.field_MM_mobManager = mmMain.javaClass.getDeclaredField("mobManager")
-        field_MM_mobManager!!.setAccessible(true)
-        this.field_MM_type = clazz_MM_ActiveMob!!.getDeclaredField("type")
-        field_MM_type!!.setAccessible(true)
-        this.field_MM_preventOtherDrops = clazz_MM_MobType!!.getDeclaredField(
+        this.fieldMMmobManager = mmMain.javaClass.getDeclaredField("mobManager")
+        fieldMMmobManager!!.setAccessible(true)
+        this.fieldMMtype = clazzMMactiveMob!!.getDeclaredField("type")
+        fieldMMtype!!.setAccessible(true)
+        this.fieldMMpreventOtherDrops = clazzMMmobType!!.getDeclaredField(
             "preventOtherDrops"
         ) // boolean
-        field_MM_preventOtherDrops!!.setAccessible(true)
-        this.field_MM_preventRandomEquipment = clazz_MM_MobType!!.getDeclaredField(
+        fieldMMpreventOtherDrops!!.setAccessible(true)
+        this.fieldMMpreventRandomEquipment = clazzMMmobType!!.getDeclaredField(
             "preventRandomEquipment"
         ) // boolean
-        field_MM_preventRandomEquipment!!.setAccessible(true)
-        this.field_MM_internalName = clazz_MM_MobType!!.getDeclaredField(
+        fieldMMpreventRandomEquipment!!.setAccessible(true)
+        this.fieldMMinternalName = clazzMMmobType!!.getDeclaredField(
             "internalName"
         ) // string
-        field_MM_internalName!!.setAccessible(true)
+        fieldMMinternalName!!.setAccessible(true)
     }
 
     fun setUseLegacySerializer(useLegacySerializer: Boolean) {
