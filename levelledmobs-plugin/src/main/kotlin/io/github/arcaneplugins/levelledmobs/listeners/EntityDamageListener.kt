@@ -2,12 +2,12 @@ package io.github.arcaneplugins.levelledmobs.listeners
 
 import java.time.Instant
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
-import io.github.arcaneplugins.levelledmobs.misc.Addition
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
-import io.github.arcaneplugins.levelledmobs.rules.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.EnderDragon

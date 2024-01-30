@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.customdrops
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * Used for internal logic flow relating to

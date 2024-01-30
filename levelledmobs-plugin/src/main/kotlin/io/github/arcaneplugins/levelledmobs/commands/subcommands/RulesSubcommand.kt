@@ -16,7 +16,7 @@ import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
-import io.github.arcaneplugins.levelledmobs.rules.DoNotMerge
+import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.rules.PlayerLevellingOptions
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll

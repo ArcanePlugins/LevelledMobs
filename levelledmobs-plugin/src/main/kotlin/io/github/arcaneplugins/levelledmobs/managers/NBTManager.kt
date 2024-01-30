@@ -7,7 +7,7 @@ import de.tr7zw.nbtapi.NBTItem
 import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropItem
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 

@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
+import io.github.arcaneplugins.levelledmobs.annotations.MergableRule
 import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import kotlin.math.ceil

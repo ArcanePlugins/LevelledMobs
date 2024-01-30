@@ -8,7 +8,13 @@ import java.util.TreeSet
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
-import io.github.arcaneplugins.levelledmobs.misc.Addition
+import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
+import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
+import io.github.arcaneplugins.levelledmobs.enums.ModalListParsingTypes
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
@@ -89,11 +95,6 @@ class RulesParsingManager {
         val main = LevelledMobs.instance
 
         for (ruleInfo in customRules) {
-            if (!main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority)) {
-                main.rulesManager.rulesInEffect[ruleInfo.rulePriority] = LinkedList()
-            }
-
-            main.rulesManager.rulesInEffect[ruleInfo.rulePriority]!!.add(ruleInfo)
             ruleMappings[ruleInfo.ruleName] = ruleInfo
             if (ruleInfo.conditions_Chance != null) {
                 main.rulesManager.anyRuleHasChance = true
@@ -534,7 +535,6 @@ class RulesParsingManager {
             cs, "allowed-entities",
             parsingInfo.allowedEntities
         )
-        parsingInfo.rulePriority = ymlHelper.getInt(cs, "priority")
     }
 
     private fun mergePreset(cs: ConfigurationSection?) {

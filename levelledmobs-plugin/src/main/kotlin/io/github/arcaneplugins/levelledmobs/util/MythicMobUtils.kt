@@ -3,7 +3,7 @@ package io.github.arcaneplugins.levelledmobs.util
 import java.lang.reflect.InvocationTargetException
 import java.util.Optional
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.misc.MythicMobsMobInfo
+import io.github.arcaneplugins.levelledmobs.result.MythicMobsMobInfo
 import io.github.arcaneplugins.levelledmobs.nametag.Definitions
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit

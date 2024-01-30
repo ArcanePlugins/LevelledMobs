@@ -11,7 +11,7 @@ import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.nametag.NametagSender
 import io.github.arcaneplugins.levelledmobs.nametag.NametagSenderHandler
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
-import io.github.arcaneplugins.levelledmobs.rules.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.util.LibsDisguisesUtils
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils

@@ -5,10 +5,10 @@ import java.util.Locale
 import java.util.TreeSet
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.misc.DebugCreator
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugCreator
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.nametag.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper

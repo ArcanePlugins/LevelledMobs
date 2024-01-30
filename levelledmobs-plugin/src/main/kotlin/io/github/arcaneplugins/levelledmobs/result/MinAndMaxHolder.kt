@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.misc
+package io.github.arcaneplugins.levelledmobs.result
 
 import kotlin.math.max
 import kotlin.math.min

@@ -6,8 +6,8 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject
 import java.util.Optional
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils

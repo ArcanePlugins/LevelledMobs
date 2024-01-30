@@ -1,14 +1,16 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.misc.Addition
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.DeathCause
+import io.github.arcaneplugins.levelledmobs.enums.DropInstanceBuildResult
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
-import io.github.arcaneplugins.levelledmobs.rules.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils

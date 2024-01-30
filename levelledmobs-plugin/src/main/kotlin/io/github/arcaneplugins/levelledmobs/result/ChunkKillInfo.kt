@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.misc
+package io.github.arcaneplugins.levelledmobs.result
 
 import java.time.Instant
 

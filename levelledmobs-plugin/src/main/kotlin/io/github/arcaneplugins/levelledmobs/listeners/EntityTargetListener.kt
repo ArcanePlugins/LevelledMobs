@@ -3,7 +3,7 @@ package io.github.arcaneplugins.levelledmobs.listeners
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
-import io.github.arcaneplugins.levelledmobs.rules.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player

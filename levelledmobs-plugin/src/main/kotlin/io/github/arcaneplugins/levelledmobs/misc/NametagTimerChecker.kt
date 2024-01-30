@@ -6,7 +6,7 @@ import java.util.LinkedList
 import java.util.Queue
 import java.util.WeakHashMap
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.rules.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.entity.LivingEntity

@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.misc
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * This provides information on if a mob is levellable or not, and if not, a reason is supplied. A

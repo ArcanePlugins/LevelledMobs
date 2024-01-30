@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.managers
+package io.github.arcaneplugins.levelledmobs.debug
 
 import java.time.Duration
 import java.time.Instant
@@ -6,7 +6,6 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.function.Supplier
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils

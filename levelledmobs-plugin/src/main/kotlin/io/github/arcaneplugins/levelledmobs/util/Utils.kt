@@ -6,13 +6,13 @@ import java.util.AbstractMap
 import java.util.Locale
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.customdrops.DeathCause
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
+import io.github.arcaneplugins.levelledmobs.enums.DeathCause
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
-import io.github.arcaneplugins.levelledmobs.rules.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper

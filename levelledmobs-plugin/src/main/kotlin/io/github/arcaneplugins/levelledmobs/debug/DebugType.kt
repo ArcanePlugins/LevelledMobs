@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.misc
+package io.github.arcaneplugins.levelledmobs.debug
 
 /**
  * Holds the enums used for showing debug data

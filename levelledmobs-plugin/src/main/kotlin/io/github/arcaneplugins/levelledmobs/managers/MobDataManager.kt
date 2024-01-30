@@ -2,11 +2,12 @@ package io.github.arcaneplugins.levelledmobs.managers
 
 import java.util.Collections
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.misc.Addition
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
-import io.github.arcaneplugins.levelledmobs.rules.VanillaBonusEnum
+import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Material

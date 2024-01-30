@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
+import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import java.util.TreeSet
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList

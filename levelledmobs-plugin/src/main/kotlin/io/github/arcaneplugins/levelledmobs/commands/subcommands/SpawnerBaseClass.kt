@@ -6,7 +6,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
-import io.github.arcaneplugins.levelledmobs.rules.DoNotMerge
+import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
@@ -198,11 +198,13 @@ abstract class SpawnerBaseClass : MessagesBase() {
     class CustomSpawnerInfo(
         @DoNotMerge val label: String?
     ) {
-        @DoNotMerge var player: Player? = null
+        @DoNotMerge
+        var player: Player? = null
         var minLevel = -1
         var maxLevel = -1
 
-        @DoNotMerge var noLore = false
+        @DoNotMerge
+        var noLore = false
         var delay: Int? = null
         var maxNearbyEntities: Int? = null
         var minSpawnDelay: Int? = null
@@ -212,10 +214,12 @@ abstract class SpawnerBaseClass : MessagesBase() {
         var spawnRange: Int? = null
         var customDropId: String? = null
 
-        @DoNotMerge var customName: String? = null
+        @DoNotMerge
+        var customName: String? = null
         var spawnType: EntityType = EntityType.UNKNOWN
 
-        @DoNotMerge var customLore: String? = null
+        @DoNotMerge
+        var customLore: String? = null
         var lore: String? = null
     }
 

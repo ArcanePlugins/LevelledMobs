@@ -7,7 +7,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerBaseClass.CustomSpawnerInfo
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
-import io.github.arcaneplugins.levelledmobs.misc.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.misc.Cooldown
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.Point

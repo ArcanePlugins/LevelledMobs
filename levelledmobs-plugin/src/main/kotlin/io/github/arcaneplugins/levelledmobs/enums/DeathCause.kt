@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.customdrops
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * Holds all vanilla death causes in addition to

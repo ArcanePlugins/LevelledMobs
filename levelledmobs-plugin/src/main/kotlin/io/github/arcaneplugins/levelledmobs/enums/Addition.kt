@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.misc
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * Holds the attributes that can have multipliers applied

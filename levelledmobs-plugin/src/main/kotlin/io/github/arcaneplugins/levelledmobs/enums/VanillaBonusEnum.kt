@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.rules
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * Each available multiplier that can be used in rules.yml

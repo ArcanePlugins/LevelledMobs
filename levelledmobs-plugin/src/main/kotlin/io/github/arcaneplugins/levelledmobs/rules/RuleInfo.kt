@@ -1,5 +1,13 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
+import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
+import io.github.arcaneplugins.levelledmobs.annotations.ExcludeFromHash
+import io.github.arcaneplugins.levelledmobs.annotations.MergableRule
+import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
+import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import java.util.SortedMap
 import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
@@ -23,20 +31,28 @@ import kotlin.reflect.full.findAnnotation
 class RuleInfo(
     @ExcludeFromHash internal var ruleName: String = "Unnamed"
 ) {
-    @DoNotMerge var ruleIsEnabled = true
-    @DoNotMerge @ExcludeFromHash var isTempDisabled = false
-    @ExcludeFromHash var useNoSpawnerParticles = false
+    @DoNotMerge
+    var ruleIsEnabled = true
+    @DoNotMerge
+    @ExcludeFromHash
+    var isTempDisabled = false
+    @ExcludeFromHash
+    var useNoSpawnerParticles = false
     var babyMobsInheritAdultSetting: Boolean? = null
     var mobLevelInheritance: Boolean? = null
-    @ExcludeFromHash var customDrops_UseForMobs: Boolean? = null
+    @ExcludeFromHash
+    var customDrops_UseForMobs: Boolean? = null
     var stopProcessingRules: Boolean? = null
-    @ExcludeFromHash var mergeEntityNameOverrides: Boolean? = null
+    @ExcludeFromHash
+    var mergeEntityNameOverrides: Boolean? = null
     var passengerMatchLevel: Boolean? = null
-    @ExcludeFromHash var lockEntity: Boolean? = null
-    @DoNotMerge @ExcludeFromHash var rulePriority = 0
-    @ExcludeFromHash var spawnerParticlesCount: Int? = null
+    @ExcludeFromHash
+    var lockEntity: Boolean? = null
+    @ExcludeFromHash
+    var spawnerParticlesCount: Int? = null
     var maxRandomVariance: Int? = null
-    @ExcludeFromHash var creeperMaxDamageRadius: Int? = null
+    @ExcludeFromHash
+    var creeperMaxDamageRadius: Int? = null
     var conditions_MinLevel: Int? = null
     var conditions_MaxLevel: Int? = null
     var restrictions_MinLevel: Int? = null
@@ -45,32 +61,56 @@ class RuleInfo(
     var conditions_ApplyBelowY: Int? = null
     var conditions_MinDistanceFromSpawn: Int? = null
     var conditions_MaxDistanceFromSpawn: Int? = null
-    @ExcludeFromHash var nametagVisibleTime: Long? = null
-    @ExcludeFromHash var maximumDeathInChunkThreshold: Int? = null
-    @ExcludeFromHash var chunkMaxCoolDownTime: Int? = null
-    @ExcludeFromHash var maxAdjacentChunks: Int? = null
-    @ExcludeFromHash var conditions_CooldownTime: Long? = null
-    @ExcludeFromHash var conditions_TimesToCooldownActivation: Int? = null
-    @ExcludeFromHash var conditions_Chance: Float? = null
-    @ExcludeFromHash var sunlightBurnAmount: Double? = null
-    @ExcludeFromHash var nametag: String? = null
-    @ExcludeFromHash var nametag_CreatureDeath: String? = null
-    @ExcludeFromHash var nametag_Placeholder_Levelled: String? = null
-    @ExcludeFromHash var nametag_Placeholder_Unlevelled: String? = null
-    @DoNotMerge @ExcludeFromHash var presetName: String? = null
-    @ExcludeFromHash val customDrop_DropTableIds = mutableListOf<String>()
-    @ExcludeFromHash var healthIndicator: HealthIndicator? = null
+    @ExcludeFromHash
+    var nametagVisibleTime: Long? = null
+    @ExcludeFromHash
+    var maximumDeathInChunkThreshold: Int? = null
+    @ExcludeFromHash
+    var chunkMaxCoolDownTime: Int? = null
+    @ExcludeFromHash
+    var maxAdjacentChunks: Int? = null
+    @ExcludeFromHash
+    var conditions_CooldownTime: Long? = null
+    @ExcludeFromHash
+    var conditions_TimesToCooldownActivation: Int? = null
+    @ExcludeFromHash
+    var conditions_Chance: Float? = null
+    @ExcludeFromHash
+    var sunlightBurnAmount: Double? = null
+    @ExcludeFromHash
+    var nametag: String? = null
+    @ExcludeFromHash
+    var nametag_CreatureDeath: String? = null
+    @ExcludeFromHash
+    var nametag_Placeholder_Levelled: String? = null
+    @ExcludeFromHash
+    var nametag_Placeholder_Unlevelled: String? = null
+    @DoNotMerge
+    @ExcludeFromHash
+    var presetName: String? = null
+    @ExcludeFromHash
+    val customDrop_DropTableIds = mutableListOf<String>()
+    @ExcludeFromHash
+    var healthIndicator: HealthIndicator? = null
     var conditions_MobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED
     var conditions_MobTamedStatus = MobTamedStatus.NOT_SPECIFIED
     var levellingStrategy: LevellingStrategy? = null
     var playerLevellingOptions: PlayerLevellingOptions? = null
-    @ExcludeFromHash var entityNameOverrides_Level: MutableMap<String, MutableList<LevelTierMatching>>? = null
-    @ExcludeFromHash var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
-    @ExcludeFromHash var deathMessages: DeathMessages? = null
-    @ExcludeFromHash var nametagVisibilityEnum: MutableList<NametagVisibilityEnum>? = null
-    @DoNotMerge @ExcludeFromHash val ruleSourceNames = mutableMapOf<String, String>()
-    @ExcludeFromHash var spawnerParticle: Particle? = null
-    @ExcludeFromHash var tieredColoringInfos: MutableList<TieredColoringInfo>? = null
+    @ExcludeFromHash
+    var entityNameOverrides_Level: MutableMap<String, MutableList<LevelTierMatching>>? = null
+    @ExcludeFromHash
+    var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
+    @ExcludeFromHash
+    var deathMessages: DeathMessages? = null
+    @ExcludeFromHash
+    var nametagVisibilityEnum: MutableList<NametagVisibilityEnum>? = null
+    @DoNotMerge
+    @ExcludeFromHash
+    val ruleSourceNames = mutableMapOf<String, String>()
+    @ExcludeFromHash
+    var spawnerParticle: Particle? = null
+    @ExcludeFromHash
+    var tieredColoringInfos: MutableList<TieredColoringInfo>? = null
     var enabledExtCompats: MutableMap<ExternalCompatibility, Boolean>? = null
     var mobNBT_Data: MergeableStringList? = null
     var allowedEntities: CachedModalList<String>? = null
@@ -94,7 +134,8 @@ class RuleInfo(
     var conditions_WithinCoords: WithinCoordinates? = null
     var allMobMultipliers: FineTuningAttributes? = null
     var specificMobMultipliers: MutableMap<String, FineTuningAttributes>? = null
-    @ExcludeFromHash var chunkKillOptions: ChunkKillOptions? = null
+    @ExcludeFromHash
+    var chunkKillOptions: ChunkKillOptions? = null
 
     fun mergePresetRules(preset: RuleInfo?) {
         if (preset == null) {

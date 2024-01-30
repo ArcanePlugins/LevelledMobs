@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.rules
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * Holds values parsed from rules.yml

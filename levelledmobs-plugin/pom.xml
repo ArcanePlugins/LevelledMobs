@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>me.lokka30</groupId>
+        <groupId>io.github.arcaneplugins</groupId>
         <artifactId>LevelledMobs-Parent</artifactId>
         <version>4.0.0-rebuild2</version>
     </parent>
@@ -97,13 +97,6 @@
                             </sourceDirs>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
                 </executions>
                 <configuration>
                     <jvmTarget>${maven.compiler.target}</jvmTarget>
@@ -170,6 +163,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.arcaneplugins</groupId>
+            <artifactId>levelledmobs-api</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>

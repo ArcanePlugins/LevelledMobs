@@ -4,9 +4,9 @@ import io.github.stumper66.lm_items.ExternalItemRequest
 import io.github.stumper66.lm_items.LM_Items
 import java.util.Hashtable
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.inventory.ItemStack
 

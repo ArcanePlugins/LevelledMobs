@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.events
 
-import io.github.arcaneplugins.levelledmobs.misc.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity

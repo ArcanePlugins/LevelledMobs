@@ -7,7 +7,7 @@ import io.github.arcaneplugins.levelledmobs.listeners.ChunkLoadListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDamageDebugListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerInteractEventListener
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
@@ -66,9 +66,9 @@ class LevelledMobs : JavaPlugin() {
         internal set
     var migratedFromPre30: Boolean = false
     val helperSettings = YmlParsingHelper()
-    var playerLevellingMinRelevelTime: Long = 0
+    var playerLevellingMinRelevelTime = 0L
         internal set
-    var maxPlayersRecorded: Int = 0
+    var maxPlayersRecorded = 0
     val debugManager = DebugManager()
     val definitions = Definitions()
     val ver = ServerVersionInfo()
@@ -85,11 +85,12 @@ class LevelledMobs : JavaPlugin() {
     // Misc
     val customMobGroups = mutableMapOf<String, MutableSet<String>>()
     var entityDamageDebugListener = EntityDamageDebugListener()
-    private var loadTime: Long = 0
+    private var loadTime = 0L
     val playerLevellingEntities = WeakHashMap<LivingEntity, Instant>()
     var cacheCheck: Stack<LivingEntityWrapper>? = null
 
     companion object {
+        @JvmStatic
         lateinit var instance: LevelledMobs
             private set
     }

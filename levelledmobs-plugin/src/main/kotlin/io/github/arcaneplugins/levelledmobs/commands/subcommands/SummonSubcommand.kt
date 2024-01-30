@@ -8,10 +8,10 @@ import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
-import io.github.arcaneplugins.levelledmobs.misc.AdditionalLevelInformation
-import io.github.arcaneplugins.levelledmobs.misc.LevellableState
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.misc.LivingEntityPlaceholder
-import io.github.arcaneplugins.levelledmobs.misc.MinAndMaxHolder
+import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils

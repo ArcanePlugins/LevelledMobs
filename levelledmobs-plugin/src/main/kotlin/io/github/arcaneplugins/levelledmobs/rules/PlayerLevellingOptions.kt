@@ -1,8 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
-import io.github.arcaneplugins.levelledmobs.misc.MinAndMaxHolder
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper

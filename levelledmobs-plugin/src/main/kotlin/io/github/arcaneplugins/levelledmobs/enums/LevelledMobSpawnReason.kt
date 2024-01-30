@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.rules
+package io.github.arcaneplugins.levelledmobs.enums
 
 /**
  * A duplicate of the built-in SpawnReason from spigot

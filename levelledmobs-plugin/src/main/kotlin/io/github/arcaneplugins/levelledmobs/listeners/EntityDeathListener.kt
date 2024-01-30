@@ -4,9 +4,9 @@ import java.time.Instant
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropResult
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
-import io.github.arcaneplugins.levelledmobs.misc.ChunkKillInfo
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.result.AdjacentChunksResult

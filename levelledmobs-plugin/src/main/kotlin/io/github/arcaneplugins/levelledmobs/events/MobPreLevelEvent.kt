@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.events
 
-import io.github.arcaneplugins.levelledmobs.misc.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Cancellable

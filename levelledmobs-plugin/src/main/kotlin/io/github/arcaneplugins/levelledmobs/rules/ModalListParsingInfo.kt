@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
+import io.github.arcaneplugins.levelledmobs.enums.ModalListParsingTypes
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 
 /**

@@ -23,8 +23,8 @@ import io.github.arcaneplugins.levelledmobs.listeners.PlayerJoinListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerPortalEventListener
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
-import io.github.arcaneplugins.levelledmobs.misc.ChunkKillInfo
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
+import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
 import io.github.arcaneplugins.levelledmobs.misc.FileMigrator.migrateSettingsToRules

@@ -1,11 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.managers.DebugManager
-import io.github.arcaneplugins.levelledmobs.misc.AdditionalLevelInformation
-import io.github.arcaneplugins.levelledmobs.misc.DebugType
-import io.github.arcaneplugins.levelledmobs.misc.LevellableState
-import io.github.arcaneplugins.levelledmobs.rules.MobTamedStatus
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.LevellableState
+import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

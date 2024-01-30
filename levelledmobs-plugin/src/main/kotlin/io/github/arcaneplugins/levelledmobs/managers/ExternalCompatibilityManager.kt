@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException
 import me.clip.placeholderapi.PlaceholderAPI
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
-import io.github.arcaneplugins.levelledmobs.misc.LevellableState
+import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.result.PlayerHomeCheckResult
 import io.github.arcaneplugins.levelledmobs.util.Utils
