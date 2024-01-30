@@ -23,6 +23,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.9.22</kotlin.version>
     </properties>
 
     <build>
@@ -81,7 +82,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>1.9.22</version>
+                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -89,8 +90,24 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/main/kotlin</source>
+                                <source>target/generated-sources/annotations</source>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <jvmTarget>${maven.compiler.target}</jvmTarget>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -240,6 +257,22 @@
             <artifactId>LM_Items</artifactId>
             <version>1.3.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
         </dependency>
     </dependencies>
 

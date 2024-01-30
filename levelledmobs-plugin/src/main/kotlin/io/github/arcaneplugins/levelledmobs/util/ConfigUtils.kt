@@ -6,6 +6,12 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
 import org.bukkit.command.CommandSender
 
+/**
+ * Used for managing configuration data
+ *
+ * @author lokka30, stumper66
+ * @since 2.5.0
+ */
 class ConfigUtils{
     companion object{
         private var SETTINGS_CREEPER_MAX_RADIUS = 0

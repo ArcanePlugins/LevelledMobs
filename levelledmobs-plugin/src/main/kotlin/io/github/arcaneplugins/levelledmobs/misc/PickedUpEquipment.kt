@@ -8,6 +8,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.annotations.Contract
 
+/**
+ * Holds various functions for interacting with items that
+ * an entity has picked up previously and was record in
+ * the entity's PDC
+ *
+ * @author stumper66
+ * @since 3.14.0
+ */
 class PickedUpEquipment(
     val lmEntity: LivingEntityWrapper
 ) {

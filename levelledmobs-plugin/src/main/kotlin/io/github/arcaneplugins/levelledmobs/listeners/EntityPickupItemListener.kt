@@ -10,6 +10,14 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 
+/**
+ * Listens for when an entity picks up items and tracks the items only if
+ * the entity equipped the items so that later we can be sure not to
+ * destroy these items
+ *
+ * @author stumper66
+ * @since 3.14.0
+ */
 class EntityPickupItemListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onEntityPickupItemEvent(event: EntityPickupItemEvent) {

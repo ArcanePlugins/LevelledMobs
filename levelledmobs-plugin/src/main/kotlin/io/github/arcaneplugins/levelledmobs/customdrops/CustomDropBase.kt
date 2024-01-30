@@ -26,7 +26,7 @@ abstract class CustomDropBase(
     var minPlayerLevel = 0
     var maxPlayerLevel = 0
     var useChunkKillMax = false
-    var chance = 0f
+    var chance: SlidingChance? = null
     var playerCausedOnly = false
     var noSpawner = false
     var isDefaultDrop = false

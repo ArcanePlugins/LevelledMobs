@@ -16,6 +16,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
+/**
+ * Gives the user a specialized spawn egg that only spawns mobs within certain level criteria
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
     init {
         startingArgNum = 1

@@ -31,6 +31,13 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Summons a levelled mob with a specific level and criteria
+ *
+ * @author stumper66
+ * @author lokka30
+ * @since v2.0.0
+ */
 class SummonSubcommand : MessagesBase(), Subcommand {
     override fun parseSubcommand(
         sender: CommandSender,

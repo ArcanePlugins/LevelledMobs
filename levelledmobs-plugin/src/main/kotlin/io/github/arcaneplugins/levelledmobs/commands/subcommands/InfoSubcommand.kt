@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender
  * @since v2.0.0
  */
 class InfoSubcommand : MessagesBase(), Subcommand {
+    @Suppress("DEPRECATION")
     override fun parseSubcommand(
         sender: CommandSender,
         label: String,

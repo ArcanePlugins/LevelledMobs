@@ -47,6 +47,7 @@ class EntityDamageDebugListener : Listener {
         lmEntity.free()
     }
 
+    @Suppress("DEPRECATION")
     private fun checkEntity(player: Player, lmEntity: LivingEntityWrapper) {
         // Make sure the mob is levelled
         if (!lmEntity.isLevelled) {
@@ -102,7 +103,7 @@ class EntityDamageDebugListener : Listener {
             if (attributeInstance == null) {
                 continue
             }
-            if (Utils.round(attributeInstance.value) === 0.0) {
+            if (Utils.round(attributeInstance.value) == 0.0) {
                 continue
             }
 

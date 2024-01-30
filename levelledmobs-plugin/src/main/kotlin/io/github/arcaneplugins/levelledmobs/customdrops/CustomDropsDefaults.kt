@@ -24,10 +24,10 @@ class CustomDropsDefaults {
     var maxDropGroup = 0
     var minPlayerLevel = -1
     var maxPlayerLevel = -1
-    var chance = 0.2f
+    var chance: SlidingChance? = null
     var useChunkKillMax = false
-    var equippedSpawnChance = 0f
-    var overallChance: Float? = null
+    var equippedChance: SlidingChance? = null
+    var overallChance: SlidingChance? = null
     var groupId: String? = null
     var playerLevelVariable: String? = null
     var nbtData: String? = null
@@ -44,7 +44,11 @@ class CustomDropsDefaults {
     fun setDefaultsFromDropItem(
     dropBase: CustomDropBase
     ) {
-        this.chance = dropBase.chance
+        if (this.chance != null)
+            this.chance!!.setFromInstance(dropBase.chance)
+        else
+            this.chance = dropBase.chance
+
         this.useChunkKillMax = dropBase.useChunkKillMax
         this.amount = dropBase.amount
         this.minLevel = dropBase.minLevel
@@ -64,7 +68,10 @@ class CustomDropsDefaults {
 
         if (dropBase is CustomDropItem) {
             this.customModelData = dropBase.customModelDataId
-            this.equippedSpawnChance = dropBase.equippedSpawnChance
+            if (this.equippedChance != null)
+                this.equippedChance!!.setFromInstance(dropBase.equippedChance)
+            else
+                this.equippedChance = dropBase.equippedChance
             this.noMultiplier = dropBase.noMultiplier
             this.onlyDropIfEquipped = dropBase.onlyDropIfEquipped
             this.externalType = dropBase.externalType

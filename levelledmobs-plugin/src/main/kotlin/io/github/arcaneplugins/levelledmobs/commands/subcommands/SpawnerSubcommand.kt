@@ -17,6 +17,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
+/**
+ * Gives the user a specialized spawner that only spawns mobs within certain level criteria
+ *
+ * @author stumper66
+ * @since 3.0.0
+ */
 class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
     init {
         startingArgNum = 2

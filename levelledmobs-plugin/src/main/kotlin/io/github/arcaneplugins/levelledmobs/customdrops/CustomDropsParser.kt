@@ -1,9 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
-import java.util.LinkedList
-import java.util.Locale
-import java.util.SortedMap
-import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_17.all17Mobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_19.all19Mobs
@@ -17,8 +13,14 @@ import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.misc.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
+import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils
+import java.util.LinkedList
+import java.util.Locale
+import java.util.SortedMap
+import java.util.TreeMap
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
@@ -46,7 +48,7 @@ class CustomDropsParser(
     private var hasMentionedNBTAPI_Missing = false
     var dropsUtilizeNBTAPI: Boolean = false
     val invalidExternalItems = mutableListOf<String>()
-    private var dropBase: CustomDropBase? = null
+    //private var dropBase: CustomDropBase? = null
     private var dropInstance: CustomDropInstance? = null
     private val defaultName = "default"
     private val invalidEntityTypesToIgnore = mutableListOf<String>()
@@ -314,9 +316,10 @@ class CustomDropsParser(
                 }
 
                 if ("overall_chance".equals(materialName, ignoreCase = true)) {
-                    if (itemEntry.value is Number) {
-                        dropInstance!!.overallChance = (itemEntry.value as Number?)!!.toFloat()
-                    }
+                    dropInstance!!.overallChance = parseSlidingChance(
+                        itemConfiguration,
+                        "overall_chance", defaults.overallChance
+                    )
                     continue
                 } else if ("overall_permission".equals(materialName, ignoreCase = true)) {
                     if (itemEntry.value is String) {
@@ -367,6 +370,7 @@ class CustomDropsParser(
                     continue
                 }
 
+                var dropBase: CustomDropBase
                 if ("customCommand".equals(materialName, ignoreCase = true)) {
                     dropBase = CustomCommand(defaults)
                 } else {
@@ -394,7 +398,7 @@ class CustomDropsParser(
                     dropBase = item
                 }
 
-                parseCustomDropsAttributes(dropBase!!, itemInfoConfiguration)
+                parseCustomDropsAttributes(dropBase, itemInfoConfiguration)
             }
         } // next item
     }
@@ -419,7 +423,7 @@ class CustomDropsParser(
         dropBase: CustomDropBase,
         cs: ConfigurationSection
     ) {
-        dropBase.chance = ymlHelper.getFloat(cs, "chance", defaults.chance)
+        dropBase.chance = parseSlidingChance(cs, "chance", defaults.chance)
         dropBase.useChunkKillMax = ymlHelper.getBoolean(
             cs, "use-chunk-kill-max",
             defaults.useChunkKillMax
@@ -470,9 +474,9 @@ class CustomDropsParser(
             }
         }
 
+        val overallChance = parseSlidingChance(cs, "overall_chance", null)
         if (!ymlHelper.getString(cs, "overall_chance").isNullOrEmpty()) {
-            dropInstance!!.overallChance = ymlHelper.getFloat(cs, "overall_chance")
-            if (dropInstance!!.overallChance!!.toDouble() == 0.0) {
+            if (overallChance == null || !overallChance.isDefault) {
                 dropInstance!!.overallChance = null
             }
         }
@@ -494,6 +498,63 @@ class CustomDropsParser(
         }
 
         parseCustomItem(cs, dropBase as CustomDropItem)
+    }
+
+    private fun parseSlidingChance(
+        cs: ConfigurationSection,
+        keyName: String,
+        defaultValue: SlidingChance?
+    ): SlidingChance? {
+        val chanceOptsMap = cs[keyName]
+        var chanceOpts: ConfigurationSection? = null
+
+        if (chanceOptsMap is LinkedHashMap<*, *> || chanceOptsMap is MemorySection) {
+            chanceOpts = objTo_CS(cs, keyName)
+        }
+
+        if (chanceOpts == null) {
+            val parsedValue = ymlHelper.getFloat2(cs, keyName, null)
+
+            if (defaultValue == null && parsedValue == null) return null
+
+            val result = SlidingChance()
+            if (parsedValue != null)
+                result.chance = parsedValue
+            else
+                result.setFromInstance(defaultValue)
+
+            result.defaults = defaultValue
+            return result
+        }
+
+        val chanceRange = mutableMapOf<MinAndMax, MinAndMax>()
+        val values = chanceOpts.getValues(false)
+        for (str in values.keys) {
+            val value = values[str]
+            if (str == null || value == null) continue
+
+            val mobLvl = MinAndMax.setAmountRangeFromString(str)
+            val assignment = MinAndMax.setAmountRangeFromString(value.toString())
+
+            if (mobLvl != null && assignment != null) {
+                mobLvl.showAsInt = true
+                chanceRange[mobLvl] = assignment
+            }
+        }
+
+        val result: SlidingChance
+        if (chanceRange.isEmpty()) {
+            if (defaultValue == null) return null
+            result = SlidingChance()
+            result.setFromInstance(defaultValue)
+        } else {
+            result = SlidingChance()
+            result.setFromInstance(defaultValue)
+            result.changeRange = chanceRange
+        }
+
+        result.defaults = defaultValue
+        return result
     }
 
     private fun parseCustomItem(cs: ConfigurationSection, item: CustomDropItem) {
@@ -608,7 +669,7 @@ class CustomDropsParser(
         if (customCommand.commands.isEmpty()) {
             Utils.logger.warning("no command was specified for custom command")
         } else {
-            dropInstance!!.customItems.add(dropBase!!)
+            dropInstance!!.customItems.add(customCommand)
         }
     }
 
@@ -914,23 +975,21 @@ class CustomDropsParser(
         item: CustomDropItem,
         cs: ConfigurationSection
     ) {
+        item.equippedChance = parseSlidingChance(cs, "equipped", defaults.equippedChance)
+
+        if (defaults.equippedChance == null ||
+            item.equippedChance != null && !item.equippedChance!!.isDefault
+        ) return
         val temp = ymlHelper.getString(cs, "equipped")
         if (temp.isNullOrEmpty()) {
             return
         }
 
         if ("false".equals(temp, ignoreCase = true)) {
-            item.equippedSpawnChance = 0.0f
-            return
+            item.equippedChance!!.chance = 0.0f
         } else if ("true".equals(temp, ignoreCase = true)) {
-            item.equippedSpawnChance = 1.0f
-            return
+            item.equippedChance!!.chance = 1.0f
         }
-
-        item.equippedSpawnChance = ymlHelper.getFloat(
-            cs, "equipped",
-            defaults.equippedSpawnChance
-        )
     }
 
     private fun objectToConfigurationSection2(
@@ -1065,7 +1124,9 @@ class CustomDropsParser(
         return false
     }
 
-    fun showCustomDropsDebugInfo(sender: CommandSender) {
+    fun showCustomDropsDebugInfo(
+        sender: CommandSender?
+    ) {
         val sbMain = StringBuilder()
         var dropsCount = 0
         var commandsCount = 0
@@ -1156,10 +1217,15 @@ class CustomDropsParser(
             }
         }
 
-        sender.sendMessage(colorizeAll(sbMain.toString()))
+        if (sender != null)
+            sender.sendMessage(colorizeAll(sbMain.toString()))
+        else
+            Utils.logger.info(sbMain.toString())
     }
 
-    private fun showCustomDropsDebugInfo2(baseItem: CustomDropBase): String {
+    private fun showCustomDropsDebugInfo2(
+        baseItem: CustomDropBase
+    ): String {
         val command = if (baseItem is CustomCommand) baseItem else null
         val item = if (baseItem is CustomDropItem) baseItem else null
 
@@ -1216,7 +1282,7 @@ class CustomDropsParser(
             sb.append(", gId: &b")
             sb.append(baseItem.groupId).append("&r")
 
-            if (baseItem.maxDropGroup > 0 && !handler.groupLimitsMap.containsKey(dropBase!!.groupId)) {
+            if (baseItem.maxDropGroup > 0 && !handler.groupLimitsMap.containsKey(baseItem.groupId)) {
                 sb.append(", maxDropGroup: &b")
                 sb.append(baseItem.maxDropGroup).append("&r")
             }
@@ -1255,9 +1321,9 @@ class CustomDropsParser(
         if (item.excludedMobs.isNotEmpty()) {
             sb.append(", hasExcludes")
         }
-        if (item.equippedSpawnChance > 0.0) {
+        if (item.equippedChance != null && !item.equippedChance!!.isDefault) {
             sb.append(", equipChance: &b")
-            sb.append(item.equippedSpawnChance).append("&r")
+            sb.append(item.equippedChance).append("&r")
         }
         if (item.onlyDropIfEquipped) {
             sb.append(", &bonlyDropIfEquipped&r")

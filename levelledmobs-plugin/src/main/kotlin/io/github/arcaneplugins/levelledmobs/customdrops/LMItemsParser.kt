@@ -10,6 +10,13 @@ import io.github.arcaneplugins.levelledmobs.misc.DebugType
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.inventory.ItemStack
 
+/**
+ * Interfaces with the plugin LM_Items so can custom items from 3rd party plugins can be used
+ * directly in custom drops
+ *
+ * @author stumper66
+ * @since 3.5.0
+ */
 class LMItemsParser {
     fun parseExternalItemAttributes(
         materialName: String,

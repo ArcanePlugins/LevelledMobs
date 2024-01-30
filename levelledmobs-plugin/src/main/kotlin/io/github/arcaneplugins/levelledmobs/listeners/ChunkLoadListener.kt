@@ -11,6 +11,13 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 
+/**
+ * Listens for when chunks are loaded and processes any mobs accordingly Needed for server startup
+ * and for mostly passive mobs when players are moving around
+ *
+ * @author stumper66
+ * @since 2.4.0
+ */
 class ChunkLoadListener : Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onChunkLoad(event: ChunkLoadEvent) {

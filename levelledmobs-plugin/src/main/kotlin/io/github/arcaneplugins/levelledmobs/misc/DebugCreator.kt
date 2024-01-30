@@ -19,6 +19,7 @@ import org.bukkit.command.CommandSender
  * @author stumper66
  * @since 3.2.0
  */
+@Suppress("DEPRECATION")
 object DebugCreator {
     fun createDebug(
         sender: CommandSender

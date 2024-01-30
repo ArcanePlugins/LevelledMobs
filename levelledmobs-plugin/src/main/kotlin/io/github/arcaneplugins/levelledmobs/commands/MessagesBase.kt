@@ -6,6 +6,12 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
 import org.bukkit.command.CommandSender
 
+/**
+ * Provides common functions for showing messages stored in messages.yml to the user
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 open class MessagesBase{
     protected var messageLabel: String? = null
     protected var commandSender: CommandSender? = null

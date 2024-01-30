@@ -7,6 +7,12 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
+/**
+ * This event is fired *after* a mob is levelled. Other plugins can cancel this event.
+ *
+ * @author lokka30
+ * @since 2.5.0
+ */
 class MobPostLevelEvent(
     val lmEntity: LivingEntityWrapper,
     val levelCause: LevelCause,

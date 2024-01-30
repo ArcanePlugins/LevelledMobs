@@ -32,6 +32,7 @@ class CustomDropProcessingInfo {
     var hasCustomDropId = false
     var hasEquippedItems = false
     var retryNumber = 0
+    var equippedChanceRole = 0f
     var groupLimits: GroupLimits? = null
     var customDropId: String? = null
     var newDrops: MutableList<ItemStack>? = null

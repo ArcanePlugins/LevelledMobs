@@ -1,13 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
-import java.math.BigDecimal
-import java.math.RoundingMode
-import java.util.LinkedList
-import java.util.Locale
-import java.util.TreeMap
-import java.util.UUID
-import java.util.WeakHashMap
-import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
@@ -22,6 +14,14 @@ import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.LinkedList
+import java.util.Locale
+import java.util.TreeMap
+import java.util.UUID
+import java.util.WeakHashMap
+import java.util.concurrent.ThreadLocalRandom
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -426,7 +426,7 @@ class CustomDropsHandler {
         }
 
         if (baseItem is CustomDropItem
-            && baseItem.equippedSpawnChance > 0.0f
+            && baseItem.equippedChance != null && !baseItem.equippedChance!!.isDefault
         ) {
             processingInfo.hasEquippedItems = true
         }
@@ -513,9 +513,6 @@ class CustomDropsHandler {
         if (info.equippedOnly && dropBase is CustomCommand
             && !dropBase.runOnSpawn
         ) {
-            return
-        }
-        if ((info.equippedOnly && dropBase is CustomDropItem) && dropBase.equippedSpawnChance <= 0.0f) {
             return
         }
         if (!info.equippedOnly && dropBase.playerCausedOnly && (dropBase.causeOfDeathReqs == null
@@ -626,9 +623,12 @@ class CustomDropsHandler {
             return
         }
 
-        if ((!info.equippedOnly || runOnSpawn) && dropBase.chance < 1.0) {
-            chanceRole = ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
-            if (1.0f - chanceRole >= dropBase.chance) {
+        val dropChance =
+            if (dropBase.chance != null) dropBase.chance!!.getSlidingChance(info.lmEntity!!.getMobLevel()) else 0.0f
+        if ((!info.equippedOnly || runOnSpawn) && dropChance < 1.0f) {
+            chanceRole =
+                if (dropChance > 0.0f) ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f else 0.0f
+            if (1.0f - chanceRole >= dropChance) {
                 didNotMakeChance = true
             }
         }
@@ -642,7 +642,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, java.lang.String.format(
                         "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
-                        itemStack.type.name, dropBase.amountAsString, dropBase.chance,
+                        itemStack.type.name, dropBase.amountAsString, dropBase.chance?.showMatchedChance(),
                         Utils.round(chanceRole.toDouble(), 4)
                     )
                 )
@@ -650,7 +650,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, java.lang.String.format(
                         "&8 - &7Custom command&7, chance: &b%s&7, chanceRole: &b%s&7, executed: &bfalse&7.",
-                        dropBase.chance, Utils.round(chanceRole.toDouble(), 4)
+                        dropBase.chance?.showMatchedChance(), Utils.round(chanceRole.toDouble(), 4)
                     )
                 )
             }
@@ -736,23 +736,9 @@ class CustomDropsHandler {
             return
         }
 
-        if (info.equippedOnly && dropBase.equippedSpawnChance < 1.0f) {
-            chanceRole = ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
-            if (1.0f - chanceRole >= dropBase.equippedSpawnChance) {
-                if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-                    info.addDebugMessage(
-                        java.lang.String.format(
-                            "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, spawnchance: &b%s&7, chancerole: &b%s&7, did not make spawn chance",
-                            info.lmEntity!!.typeName, info.lmEntity!!.getMobLevel(),
-                            dropBase.material.name, dropBase.equippedSpawnChance,
-                            Utils.round(chanceRole.toDouble(), 4)
-                        )
-                    )
-                }
-                return
-            }
-        }
+        if (!checkEquippedChances(info, dropBase)) return
 
+        val dropItem = dropBase
         var newDropAmount = dropBase.amount
         if (dropBase.hasAmountRange) {
             val change = ThreadLocalRandom.current()
@@ -788,6 +774,8 @@ class CustomDropsHandler {
             lmItemsParser!!.getExternalItem(dropBase, info)
         }
 
+        if (dropBase.itemStacks == null) return
+
         for (newItem in dropBase.itemStacks!!) {
             // will only be multiple items for supported LM Items items
 
@@ -811,11 +799,13 @@ class CustomDropsHandler {
             }
 
             if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
+                val equippedChance =
+                    if (dropItem.equippedChance != null) dropItem.equippedChance!!.showMatchedChance() else "0.0"
                 info.addDebugMessage(
                     java.lang.String.format(
                         "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
-                        newItem.type.name, dropBase.equippedSpawnChance,
-                        Utils.round(chanceRole.toDouble(), 4)
+                        newItem.type.name, equippedChance,
+                        Utils.round(info.equippedChanceRole.toDouble(), 4)
                     )
                 )
             } else if (!info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
@@ -825,7 +815,7 @@ class CustomDropsHandler {
                     java.lang.String.format(
                         "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7%s.",
                         newItem.type.name, dropBase.amountAsString, newDropAmount,
-                        dropBase.chance, Utils.round(chanceRole.toDouble(), 4), retryMsg
+                        dropBase.chance?.showMatchedChance(), Utils.round(chanceRole.toDouble(), 4), retryMsg
                     )
                 )
             }
@@ -901,9 +891,41 @@ class CustomDropsHandler {
         }
     }
 
+    private fun checkEquippedChances(
+        info: CustomDropProcessingInfo,
+        dropItem: CustomDropItem
+    ): Boolean {
+        if (!info.equippedOnly) return true
+        val equippedChance = if (dropItem.equippedChance != null) dropItem.equippedChance!!.getSlidingChance(
+            info.lmEntity!!.getMobLevel()
+        ) else 0.0f
+        if (equippedChance >= 1.0f) return true
+
+        info.equippedChanceRole =
+            if (equippedChance > 0.0f) ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f else 0.0f
+
+        if (equippedChance <= 0.0f || 1.0f - info.equippedChanceRole >= equippedChance) {
+            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+                info.addDebugMessage(
+                    java.lang.String.format(
+                        "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
+                        info.lmEntity!!.typeName, info.lmEntity!!.getMobLevel(),
+                        dropItem.material.name, dropItem.equippedChance!!.showMatchedChance(),
+                        Utils.round(info.equippedChanceRole.toDouble(), 4)
+                    )
+                )
+            }
+            return false
+        }
+
+        return true
+    }
+
     private fun checkOverallChance(info: CustomDropProcessingInfo): Boolean {
         for (dropInstance in info.allDropInstances) {
-            if (dropInstance.overallChance == null || dropInstance.overallChance!! >= 1.0 || dropInstance.overallChance!! <= 0.0) {
+            if (dropInstance.overallChance == null || dropInstance.overallChance!!.isDefault ||
+                dropInstance.overallChance!!.isAssuredChance
+            ) {
                 continue
             }
 
@@ -921,7 +943,8 @@ class CustomDropsHandler {
             // we'll roll the dice to see if we get any drops at all and store it in the PDC
             val chanceRole =
                 ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
-            val madeChance = 1.0f - chanceRole < dropInstance.overallChance!!
+            val madeChance =
+                1.0f - chanceRole < dropInstance.overallChance!!.getSlidingChance(info.lmEntity!!.getMobLevel())
             if (info.equippedOnly) {
                 synchronized(info.lmEntity!!.livingEntity.persistentDataContainer) {
                     info.lmEntity!!.pdc
@@ -1097,11 +1120,10 @@ class CustomDropsHandler {
         info: CustomDropProcessingInfo,
         item: CustomDropItem
     ): Boolean {
-        if (item.equippedSpawnChance >= 1.0f || !item.onlyDropIfEquipped) {
+        if (item.equippedChance != null && item.equippedChance!!.isAssuredChance
+            || !item.onlyDropIfEquipped
+        ) {
             return true
-        }
-        if (item.equippedSpawnChance <= 0.0f) {
-            return false
         }
 
         return isMobWearingItem(item.itemStack!!, info.lmEntity!!.livingEntity, item)

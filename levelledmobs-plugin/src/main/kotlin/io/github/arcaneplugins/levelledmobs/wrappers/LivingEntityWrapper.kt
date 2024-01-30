@@ -35,6 +35,13 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
+/**
+ * A wrapper for the LivingEntity class that provides various common function and settings used for
+ * processing rules
+ *
+ * @author stumper66
+ * @since 3.0.0
+ */
 class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), LivingEntityInterface {
     // privates:
     private var applicableGroups: MutableSet<String> = TreeSet<String>(String.CASE_INSENSITIVE_ORDER)

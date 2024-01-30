@@ -1,16 +1,5 @@
 package io.github.arcaneplugins.levelledmobs
 
-import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.InvalidObjectException
-import java.time.Duration
-import java.time.Instant
-import java.util.LinkedList
-import java.util.Locale
-import java.util.UUID
-import java.util.WeakHashMap
-import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_16
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_17
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat1_19
@@ -48,6 +37,17 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.InvalidObjectException
+import java.time.Duration
+import java.time.Instant
+import java.util.LinkedList
+import java.util.Locale
+import java.util.UUID
+import java.util.WeakHashMap
+import java.util.function.Consumer
 import org.bstats.bukkit.Metrics
 import org.bstats.charts.SimpleBarChart
 import org.bstats.charts.SimplePie
@@ -75,6 +75,7 @@ class Companion{
     var useAdventure = false
     var reloadSender: CommandSender? = null
     var hasFinishedLoading = false
+    var showCustomDrops = false
     private val entityDeathInChunkCounter = mutableMapOf<Long, MutableMap<EntityType, ChunkKillInfo>>()
     private val chunkKillNoticationTracker = mutableMapOf<Long, MutableMap<UUID, Instant>>()
     val playerNetherPortals = mutableMapOf<Player, Location>()
@@ -216,6 +217,8 @@ class Companion{
             main.debugManager.enableDebug(useSender!!, usetimer = false, bypassFilters = false)
             useSender.sendMessage(main.debugManager.getDebugStatus())
         }
+
+        this.showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
     }
 
     private fun loadEmbeddedResource(filename: String): YamlConfiguration? {

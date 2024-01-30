@@ -21,6 +21,12 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.command.TabCompleter
 
+/**
+ * This class handles the command execution of '/levelledmobs'.
+ *
+ * @author lokka30
+ * @since 2.4.0
+ */
 class LevelledMobsCommand : CommandExecutor, TabCompleter {
     // Retain alphabetical order please.
     private val debugSubcommand = DebugSubcommand()

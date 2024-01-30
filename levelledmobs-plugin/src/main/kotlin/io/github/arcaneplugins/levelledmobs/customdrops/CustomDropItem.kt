@@ -6,11 +6,17 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
+/**
+ * This holds all the attributes set for a custom drop item
+ *
+ * @author stumper66
+ * @since 2.5.0
+ */
 class CustomDropItem() : CustomDropBase(
         LevelledMobs.instance.customDropsHandler.customDropsParser.defaults),
         Cloneable {
     var customModelDataId = 0
-    var equippedSpawnChance = 0f
+    var equippedChance: SlidingChance? = null
     var noMultiplier = false
     var onlyDropIfEquipped = false
     var equipOnHelmet = false
@@ -43,12 +49,18 @@ class CustomDropItem() : CustomDropBase(
 
     private fun setDefaults(defaults: CustomDropsDefaults) {
         this.customModelDataId = defaults.customModelData
-        this.chance = defaults.chance
+        if (this.chance != null)
+            this.chance!!.setFromInstance(defaults.chance)
+        else
+            this.chance = defaults.chance
         this.maxLevel = defaults.maxLevel
         this.minLevel = defaults.minLevel
         this.groupId = defaults.groupId
         this.maxDropGroup = defaults.maxDropGroup
-        this.equippedSpawnChance = defaults.equippedSpawnChance
+        if (this.equippedChance != null)
+            this.equippedChance!!.setFromInstance(defaults.equippedChance)
+        else
+            this.equippedChance = defaults.equippedChance
         this.noMultiplier = defaults.noMultiplier
         this.onlyDropIfEquipped = defaults.onlyDropIfEquipped
         this.equipOffhand = defaults.equipOffhand
@@ -131,7 +143,10 @@ class CustomDropItem() : CustomDropBase(
             }
         }
         get() {
-            return if (field != null && field!!.isNotEmpty()) field
+            if (this.itemStack == null || field == null)
+                return null
+
+            return if (field!!.isNotEmpty()) field
             else mutableListOf(this.itemStack!!)
         }
 
@@ -142,6 +157,6 @@ class CustomDropItem() : CustomDropBase(
         }
 
     override fun toString(): String {
-        return "${material.name}, amount: $amountAsString, chance: $chance, equipped: $equippedSpawnChance"
+        return "${material.name}, amount: $amountAsString, chance: $chance, equipped: $equippedChance"
     }
 }

@@ -15,7 +15,7 @@ class CustomDropInstance {
         private set
     private var entityGroup: CustomUniversalGroups? = null
     var customItems = mutableListOf<CustomDropBase>()
-    var overallChance: Float? = null
+    var overallChance: SlidingChance? = null
     var overallPermissions = mutableListOf<String>()
     var overrideStockDrops: Boolean? = null
     var utilizesGroupIds: Boolean = false

@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
-import java.lang.String
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.util.Utils
@@ -28,10 +27,7 @@ class NametagSenderHandler {
             this.currentUtil = NmsNametagSender()
 
             Utils.logger.info(
-                String.format(
-                    "Using NMS version %s for nametag support",
-                    LevelledMobs.instance.ver.nmsVersion
-                )
+                "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
             )
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
             // we don't directly support this version, use ProtocolLib

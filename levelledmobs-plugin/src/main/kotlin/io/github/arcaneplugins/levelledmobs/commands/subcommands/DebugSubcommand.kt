@@ -19,6 +19,12 @@ import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 
+/**
+ * Parses commands for various debug stuff
+ *
+ * @author stumper66
+ * @since 3.2.0
+ */
 class DebugSubcommand: MessagesBase(), Subcommand {
     override fun parseSubcommand(
         sender: CommandSender,

@@ -8,6 +8,13 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.EntityType
 
+/**
+ * A wrapper for the LivingEntity class that provides various common function and settings used for
+ * processing rules Used only with the summon command
+ *
+ * @author stumper66
+ * @since 3.0.0
+ */
 class LivingEntityPlaceholder : LivingEntityWrapperBase(), LivingEntityInterface {
     companion object{
         private val cache = Stack<LivingEntityPlaceholder>()

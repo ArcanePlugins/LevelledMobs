@@ -25,6 +25,7 @@ import org.bukkit.persistence.PersistentDataType
  * @author lokka30, stumper66
  * @since 2.4.0
  */
+@Suppress("DEPRECATION")
 class ExternalCompatibilityManager {
     private var lmiMeetsVersionRequirement: Boolean? = null
     private var lmiMeetsVersionRequirement2: Boolean? = null

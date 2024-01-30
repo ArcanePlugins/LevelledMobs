@@ -1308,12 +1308,12 @@ class RulesParsingManager {
                 val parsedNum = split[i].toInt()
 
                 if (i == 0) {
-                    minAndMax.min = parsedNum
+                    minAndMax.min = parsedNum.toFloat()
                     if (split.size == 1) {
-                        minAndMax.max = parsedNum
+                        minAndMax.max = parsedNum.toFloat()
                     }
                 } else {
-                    minAndMax.max = parsedNum
+                    minAndMax.max = parsedNum.toFloat()
                 }
             }
 

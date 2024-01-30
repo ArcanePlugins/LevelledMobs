@@ -17,6 +17,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 
+/**
+ * Provides common function between SpawnerSubCommand and SpawnerEggCommand
+ *
+ * @author stumper66
+ * @since 3.3.0
+ */
 abstract class SpawnerBaseClass : MessagesBase() {
     var hadInvalidArg = false
     var startingArgNum = 0

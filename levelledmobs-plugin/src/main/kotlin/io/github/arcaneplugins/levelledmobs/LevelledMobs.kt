@@ -1,10 +1,5 @@
 package io.github.arcaneplugins.levelledmobs
 
-import java.time.Instant
-import java.util.Random
-import java.util.Stack
-import java.util.WeakHashMap
-import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.commands.LevelledMobsCommand
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsHandler
 import io.github.arcaneplugins.levelledmobs.listeners.BlockPlaceListener
@@ -30,6 +25,11 @@ import io.github.arcaneplugins.levelledmobs.util.QuickTimer
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import java.time.Instant
+import java.util.Random
+import java.util.Stack
+import java.util.WeakHashMap
+import java.util.function.Consumer
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
@@ -37,6 +37,13 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 
+/**
+ * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and
+ * onDisable on shutdown.
+ *
+ * @author lokka30, stumper66
+ * @since 1.0
+ */
 class LevelledMobs : JavaPlugin() {
     val levelInterface: LevelInterface = LevelManager()
     var levelManager = LevelManager()
@@ -151,12 +158,14 @@ class LevelledMobs : JavaPlugin() {
                     FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
                 )
                 companion.hasFinishedLoading = true
+                if (companion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
             }
             wrapper.runDelayed(10L)
         } else {
             customDropsHandler.customDropsParser.loadDrops(
                 FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
             )
+            if (companion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
         }
     }
 

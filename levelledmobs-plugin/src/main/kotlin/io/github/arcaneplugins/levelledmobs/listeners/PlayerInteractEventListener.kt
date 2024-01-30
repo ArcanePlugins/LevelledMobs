@@ -30,6 +30,13 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
+/**
+ * Listens for when a player interacts with the environment. Currently only used to check for LM
+ * spawners and LM spawn eggs
+ *
+ * @author stumper66
+ * @since 3.1.2
+ */
 class PlayerInteractEventListener : MessagesBase(), Listener {
     private val cooldownMap = mutableMapOf<UUID, Cooldown>()
 
