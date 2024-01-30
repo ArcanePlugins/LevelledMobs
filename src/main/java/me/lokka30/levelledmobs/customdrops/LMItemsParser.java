@@ -116,7 +116,7 @@ public class LMItemsParser {
         }
 
         final ItemStack itemStack = result.itemStack;
-        if (itemStack == null) {
+        if (itemStack == null && (result.itemStacks == null || result.itemStacks.isEmpty())) {
             if (result.typeIsNotSupported) {
                 if (item.externalType == null) {
                     Utils.logger.warning(
@@ -153,9 +153,12 @@ public class LMItemsParser {
         }
 
         if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()){
-            item.setItemStacks((List<ItemStack>) result.itemStacks);
+            if (result.itemStacks != null && !result.itemStacks.isEmpty())
+                item.setItemStacks((List<ItemStack>) result.itemStacks);
+            else if (itemStack != null)
+                item.setItemStack(itemStack);
         }
-        else{
+        else if (itemStack != null){
             item.setItemStack(itemStack);
         }
 

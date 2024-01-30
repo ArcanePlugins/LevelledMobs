@@ -811,7 +811,7 @@ public class CustomDropsHandler {
                 (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F : 0.0f;
 
         if (equippedChance <= 0.0f || 1.0F - info.equippedChanceRole >= equippedChance) {
-            if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+            if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 info.addDebugMessage(String.format(
                         "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
                         info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(),
