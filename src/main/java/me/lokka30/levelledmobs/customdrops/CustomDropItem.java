@@ -170,12 +170,12 @@ public class CustomDropItem extends CustomDropBase {
     }
 
     public @Nullable List<ItemStack> getItemStacks() {
-        if (this.itemStacks == null) return null;
-
-        if (!this.itemStacks.isEmpty())
+        if (this.itemStacks != null && !this.itemStacks.isEmpty())
             return itemStacks;
-        else
-            return List.of(this.itemStack);
+        else {
+            if (this.itemStack == null) return null;
+            else return List.of(this.itemStack);
+        }
     }
 
     public void setItemStack(final @NotNull ItemStack itemStack) {
