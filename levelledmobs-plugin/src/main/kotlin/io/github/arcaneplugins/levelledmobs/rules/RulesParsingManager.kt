@@ -530,11 +530,6 @@ class RulesParsingManager {
         parseStrategies(objToCS(cs, "strategies"))
         parseConditions(objToCS(cs, "conditions"))
         parseApplySettings(objToCS(cs, "apply-settings"))
-
-        parsingInfo.allowedEntities = buildCachedModalListOfString(
-            cs, "allowed-entities",
-            parsingInfo.allowedEntities
-        )
     }
 
     private fun mergePreset(cs: ConfigurationSection?) {

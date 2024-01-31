@@ -7,7 +7,7 @@
     <artifactId>levelledmobs-plugin</artifactId>
     <name>LevelledMobs</name>
     <description>The Ultimate RPG Mob Levelling Solution</description>
-    <version>4.0.0-rebuild2</version>
+    <version>4.0.0 prelease</version>
     <packaging>jar</packaging>
 
     <parent>

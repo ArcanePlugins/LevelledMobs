@@ -7,5 +7,5 @@ package io.github.arcaneplugins.levelledmobs.annotations
  * @author stumper66
  * @since 3.2.0
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.PROPERTY)
 annotation class DoNotMerge

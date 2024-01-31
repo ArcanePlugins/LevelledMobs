@@ -1200,7 +1200,6 @@ class CustomDropsParser(
         }
 
         for ((key, value) in allGroups) {
-            Utils.logger.info("looping allGroups, $key, CI: ${value.customItems}")
             val override = if (value.getOverrideStockDrops) " (override)" else ""
             val overallChance = if (value.overallChance != null) (" (overall_chance: "
                     + value.overallChance + ")") else ""

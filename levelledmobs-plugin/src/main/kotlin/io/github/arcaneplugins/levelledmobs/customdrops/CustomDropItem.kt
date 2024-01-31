@@ -143,11 +143,11 @@ class CustomDropItem() : CustomDropBase(
             }
         }
         get() {
-            if (this.itemStack == null || field == null)
-                return null
+            if (field != null && field!!.isNotEmpty())
+                return field
 
-            return if (field!!.isNotEmpty()) field
-            else mutableListOf(this.itemStack!!)
+            if (itemStack == null) return null
+            return mutableListOf(itemStack!!)
         }
 
     var itemStack: ItemStack? = null

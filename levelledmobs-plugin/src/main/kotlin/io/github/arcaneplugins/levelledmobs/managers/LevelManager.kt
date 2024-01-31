@@ -1448,7 +1448,10 @@ class LevelManager : LevelInterface {
         scheduler.run()
     }
 
-    private fun applyLevelledEquipmentNonAsync(lmEntity: LivingEntityWrapper, customDropsRuleSet: CustomDropsRuleSet) {
+    private fun applyLevelledEquipmentNonAsync(
+        lmEntity: LivingEntityWrapper,
+        customDropsRuleSet: CustomDropsRuleSet
+    ) {
         val mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity)
         if (mmInfo != null && mmInfo.preventRandomEquipment) {
             return
@@ -1572,7 +1575,9 @@ class LevelManager : LevelInterface {
         return result
     }
 
-    override fun getLevellableState(lmInterface: LivingEntityInterface): LevellableState {
+    override fun getLevellableState(
+        lmInterface: LivingEntityInterface
+    ): LevellableState {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
@@ -1653,8 +1658,10 @@ class LevelManager : LevelInterface {
      * @param additionalLevelInformation used to determine the source event
      */
     override fun applyLevelToMob(
-        lmEntity: LivingEntityWrapper, level: Int,
-        isSummoned: Boolean, bypassLimits: Boolean,
+        lmEntity: LivingEntityWrapper,
+        level: Int,
+        isSummoned: Boolean,
+        bypassLimits: Boolean,
         additionalLevelInformation: MutableSet<AdditionalLevelInformation?>
     ) {
         // this thread runs in async.  if adding any functions make sure they can be run in this fashion

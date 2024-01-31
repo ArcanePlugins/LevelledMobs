@@ -62,7 +62,7 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         if (blendedLevellingEnabled != null && blendedLevellingEnabled!!) {
             sb.append(
                 String.format(
-                    "sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
+                    "blended, sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
                     if (startDistance == null) 0 else startDistance,
                     if (increaseLevelDistance == null) 0 else increaseLevelDistance,
                     if (transitionYheight == null) 0 else transitionYheight,
@@ -74,7 +74,7 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         } else {
             sb.append(
                 String.format(
-                    "sd: %s, ild: %s",
+                    "spawn distance, sd: %s, ild: %s",
                     if (startDistance == null) 0 else startDistance,
                     if (increaseLevelDistance == null) 0 else increaseLevelDistance
                 )

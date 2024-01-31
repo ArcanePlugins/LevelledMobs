@@ -450,7 +450,6 @@ class EntitySpawnListener : Listener{
         event: Event
     ): LevellableState {
         val levellableState = LevelledMobs.instance.levelInterface.getLevellableState(lmEntity)
-        Utils.logger.info("getLevellableState: $levellableState")
 
         if (levellableState != LevellableState.ALLOWED) {
             return levellableState

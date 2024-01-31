@@ -190,7 +190,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
 
     override fun toString(): String {
         if (weightedRandom.isEmpty()) {
-            return if (this.autoGenerate) "RandomLevellingStrategy (auto generate)"
+            return if (this.autoGenerate) "Random Levelling (auto generate)"
             else "RandomLevellingStrategy"
         }
 

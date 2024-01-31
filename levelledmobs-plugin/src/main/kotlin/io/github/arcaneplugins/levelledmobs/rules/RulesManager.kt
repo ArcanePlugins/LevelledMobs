@@ -189,8 +189,8 @@ class RulesManager {
         var babyMobsInheritAdultSetting = true // default
         var allowedEntitiesList: CachedModalList<String>? = null
         for (ruleInfo in lmInterface.getApplicableRules()) {
-            if (ruleInfo.allowedEntities != null) {
-                allowedEntitiesList = ruleInfo.allowedEntities
+            if (ruleInfo.conditionsEntities != null) {
+                allowedEntitiesList = ruleInfo.conditionsEntities
             }
             if (ruleInfo.babyMobsInheritAdultSetting != null) {
                 babyMobsInheritAdultSetting = ruleInfo.babyMobsInheritAdultSetting!!

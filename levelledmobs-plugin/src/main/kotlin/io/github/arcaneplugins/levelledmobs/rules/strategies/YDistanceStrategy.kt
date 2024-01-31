@@ -44,7 +44,7 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
 
     override fun toString(): String {
         return String.format(
-            "ycoord: start: %s, end: %s, yPeriod: %s",
+            "y coord, start: %s, end: %s, yPeriod: %s",
             if (startingYLevel == null) 0 else startingYLevel,
             if (endingYLevel == null) 0 else endingYLevel,
             if (yPeriod == null) 0 else yPeriod

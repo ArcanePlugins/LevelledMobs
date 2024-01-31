@@ -906,9 +906,9 @@ class CustomDropsHandler {
             if (equippedChance > 0.0f) ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f else 0.0f
 
         if (equippedChance <= 0.0f || 1.0f - info.equippedChanceRole >= equippedChance) {
-            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 info.addDebugMessage(
-                    java.lang.String.format(
+                    String.format(
                         "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
                         info.lmEntity!!.typeName, info.lmEntity!!.getMobLevel(),
                         dropItem.material.name, dropItem.equippedChance!!.showMatchedChance(),

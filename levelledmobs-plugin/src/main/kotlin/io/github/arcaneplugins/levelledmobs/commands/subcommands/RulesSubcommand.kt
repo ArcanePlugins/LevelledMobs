@@ -19,6 +19,7 @@ import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.rules.PlayerLevellingOptions
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
@@ -85,30 +86,30 @@ class RulesSubcommand : MessagesBase(), Subcommand {
 
             for (rpi in main.rulesParsingManager.rulePresets.values) {
                 sb.append(
-                    "\n--------------------------------- Preset rule ----------------------------------\n"
+                    "\n&r--------------------------------- Preset rule ----------------------------------"
                 )
                 sb.append(rpi.formatRulesVisually(false, mutableListOf("ruleIsEnabled")))
             }
 
             sb.append(
-                "\n--------------------------------- Default values -------------------------------\n"
+                "\n&r--------------------------------- Default values -------------------------------"
             )
             sb.append(main.rulesParsingManager.defaultRule!!.formatRulesVisually())
 
             for (rpi in main.rulesParsingManager.customRules) {
                 sb.append(
-                    "\n--------------------------------- Custom rule ----------------------------------\n"
+                    "\n&r--------------------------------- Custom rule ----------------------------------"
                 )
                 sb.append(rpi.formatRulesVisually())
             }
             sb.append(
-                "\n--------------------------------------------------------------------------------------"
+                "\n&r--------------------------------------------------------------------------------------"
             )
 
             if (showOnConsole) {
-                Utils.logger.info(sb.toString())
+                Utils.logger.info(colorizeAll(sb.toString()))
             } else {
-                sender.sendMessage(sb.toString())
+                sender.sendMessage(colorizeAll(sb.toString()))
             }
         } else if ("show_effective".equals(args[1], ignoreCase = true)) {
             if (sender !is Player) {
@@ -365,7 +366,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
                 rule!!.ruleName
             )
         )
-        sb.append("\n")
+        //sb.append("\n")
 
         sb.append(rule.formatRulesVisually(false, mutableListOf("id")))
         if (showOnConsole) {

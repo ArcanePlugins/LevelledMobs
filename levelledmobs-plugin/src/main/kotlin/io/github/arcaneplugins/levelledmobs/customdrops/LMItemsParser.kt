@@ -136,13 +136,10 @@ class LMItemsParser {
                 return false
             }
 
-            val msg = if (item.externalType == null) String.format(
-                "&4custom item '%s:%s' returned a null item&r",
-                item.externalPluginName, item.externalItemId
-            ) else String.format(
-                "&4custom item '%s:%s' (%s) returned a null item&r",
-                item.externalPluginName, item.externalItemId, item.externalType
-            )
+            val msg = if (item.externalType == null && (result.itemStacks == null || result.itemStacks!!.isEmpty()))
+                "&4custom item '${item.externalPluginName}:${item.externalItemId}' returned a null item&r"
+            else
+                "&4custom item '${item.externalPluginName}:${item.externalItemId}' (${item.externalType}) returned a null item&r"
 
             // on server startup show as warning message
             // after reload show as debug
@@ -158,7 +155,10 @@ class LMItemsParser {
         }
 
         if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
-            item.itemStacks = result.itemStacks as MutableList<ItemStack>
+            if (result.itemStacks != null && result.itemStacks!!.isNotEmpty())
+                item.itemStacks = result.itemStacks as MutableList<ItemStack>
+            else
+                item.itemStack = result.itemStack
         } else {
             item.itemStack = itemStack
         }
