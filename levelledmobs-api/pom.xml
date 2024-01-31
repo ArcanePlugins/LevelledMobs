@@ -29,6 +29,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.github.arcaneplugins</groupId>
+            <artifactId>levelledmobs-plugin</artifactId>
+            <version>4.0.0 prelease</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.20.4-R0.1-SNAPSHOT</version>

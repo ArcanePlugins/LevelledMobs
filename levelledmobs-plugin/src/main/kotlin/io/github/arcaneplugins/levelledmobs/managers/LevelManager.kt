@@ -13,7 +13,7 @@ import java.util.WeakHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
-import io.github.arcaneplugins.levelledmobs.LevelInterface
+import io.github.arcaneplugins.levelledmobs.LevelInterface2
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat117.getForceBlockedEntityType
@@ -76,7 +76,7 @@ import kotlin.math.pow
  * @author lokka30, stumper66, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  * @since 2.4.0
  */
-class LevelManager : LevelInterface {
+class LevelManager : LevelInterface2 {
     private var vehicleNoMultiplierItems = mutableListOf<Material>()
     val summonedOrSpawnEggs = WeakHashMap<LivingEntity, Any>()
     companion object{
@@ -93,7 +93,7 @@ class LevelManager : LevelInterface {
     /**
      * The following entity types *MUST NOT* be levellable.
      */
-    var ForcedBlockedEntityTypes = mutableSetOf<EntityType>()
+    var forcedBlockedEntityTypes = mutableSetOf<EntityType>()
 
     fun load(){
         this.vehicleNoMultiplierItems.addAll(mutableListOf(
@@ -104,7 +104,7 @@ class LevelManager : LevelInterface {
             Material.DIAMOND_HORSE_ARMOR
         ))
 
-        this.ForcedBlockedEntityTypes.addAll(
+        this.forcedBlockedEntityTypes.addAll(
             mutableListOf(
                 EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW, EntityType.BOAT,
                 EntityType.DRAGON_FIREBALL, EntityType.DROPPED_ITEM, EntityType.EGG,
@@ -127,7 +127,7 @@ class LevelManager : LevelInterface {
         )
 
         if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) {
-            ForcedBlockedEntityTypes.addAll(getForceBlockedEntityType())
+            forcedBlockedEntityTypes.addAll(getForceBlockedEntityType())
         }
     }
 
@@ -1584,7 +1584,7 @@ class LevelManager : LevelInterface {
         before all other checks are made.
          */
         val main = LevelledMobs.instance
-        if (ForcedBlockedEntityTypes.contains(lmInterface.entityType)) {
+        if (forcedBlockedEntityTypes.contains(lmInterface.entityType)) {
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE
         }
 
@@ -1632,6 +1632,16 @@ class LevelManager : LevelInterface {
         }
 
         return LevellableState.ALLOWED
+    }
+
+    override fun getLevellableState(livingEntity: LivingEntity): LevellableState {
+        val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
+        try {
+            return getLevellableState(lmEntity)
+        }
+        finally {
+            lmEntity.free()
+        }
     }
 
     /**
@@ -2107,5 +2117,21 @@ class LevelManager : LevelInterface {
 
         // update nametag
         main.levelManager.updateNametag(lmEntity)
+    }
+
+    override fun removeLevel(livingEntity: LivingEntity) {
+        val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
+        removeLevel(lmEntity)
+        lmEntity.free()
+    }
+
+    override fun getMobNametag(livingEntity: LivingEntity): String? {
+        val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
+        try {
+            return getNametag(lmEntity, false).nametag
+        }
+        finally {
+            lmEntity.free()
+        }
     }
 }

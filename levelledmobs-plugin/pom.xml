@@ -164,12 +164,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.arcaneplugins</groupId>
-            <artifactId>levelledmobs-api</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
             <version>1.9.22</version>
@@ -256,12 +250,6 @@
             <artifactId>LM_Items</artifactId>
             <version>1.3.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

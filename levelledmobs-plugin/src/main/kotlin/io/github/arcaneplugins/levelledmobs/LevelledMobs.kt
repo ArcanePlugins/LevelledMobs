@@ -45,7 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin
  * @since 1.0
  */
 class LevelledMobs : JavaPlugin() {
-    val levelInterface: LevelInterface = LevelManager()
+    val levelInterface: LevelInterface2 = LevelManager()
     var levelManager = LevelManager()
     val mobDataManager = MobDataManager()
     var customDropsHandler = CustomDropsHandler()
