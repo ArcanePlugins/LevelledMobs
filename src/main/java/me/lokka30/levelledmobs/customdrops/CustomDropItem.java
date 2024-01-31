@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.customdrops;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
@@ -23,25 +22,27 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.5.0
  */
 public class CustomDropItem extends CustomDropBase {
-
     public int customModelDataId;
-    public float equippedSpawnChance;
+    public @Nullable SlidingChance equippedChance;
     public boolean noMultiplier;
     public boolean onlyDropIfEquipped;
     public boolean equipOnHelmet;
     public String customName;
-    public String mobHeadTexture;
     public List<String> lore;
     public @Nullable List<ItemFlag> itemFlags;
     public @Nullable List<String> itemFlagsStrings;
+    public @Nullable List<String> allowedList;
+    public @Nullable List<String> excludedList;
     private boolean hasDamageRange;
     private int damage;
     private int damageRangeMin;
     private int damageRangeMax;
+    public int minItems;
+    public int maxItems;
     public boolean equipOffhand;
-    public UUID customPlayerHeadId;
     private Material material;
     private ItemStack itemStack;
+    private List<ItemStack> itemStacks;
     public boolean isExternalItem;
     public String externalPluginName;
     public String externalType;
@@ -64,12 +65,18 @@ public class CustomDropItem extends CustomDropBase {
 
     private void setDefaults(@NotNull final CustomDropsDefaults defaults){
         this.customModelDataId = defaults.customModelData;
-        this.chance = defaults.chance;
+        if (this.chance != null)
+            this.chance.setFromInstance(defaults.chance);
+        else
+            this.chance = defaults.chance;
         this.maxLevel = defaults.maxLevel;
         this.minLevel = defaults.minLevel;
         this.groupId = defaults.groupId;
         this.maxDropGroup = defaults.maxDropGroup;
-        this.equippedSpawnChance = defaults.equippedSpawnChance;
+        if (this.equippedChance != null)
+            this.equippedChance.setFromInstance(defaults.equippedChance);
+        else
+            this.equippedChance = defaults.equippedChance;
         this.noMultiplier = defaults.noMultiplier;
         this.onlyDropIfEquipped = defaults.onlyDropIfEquipped;
         this.equipOffhand = defaults.equipOffhand;
@@ -162,13 +169,30 @@ public class CustomDropItem extends CustomDropBase {
         return itemStack;
     }
 
+    public @Nullable List<ItemStack> getItemStacks() {
+        if (this.itemStacks != null && !this.itemStacks.isEmpty())
+            return itemStacks;
+        else {
+            if (this.itemStack == null) return null;
+            else return List.of(this.itemStack);
+        }
+    }
+
     public void setItemStack(final @NotNull ItemStack itemStack) {
         this.itemStack = itemStack;
         this.material = itemStack.getType();
     }
 
+    public void setItemStacks(final @Nullable List<ItemStack> itemStacks) {
+        this.itemStacks = itemStacks;
+        if (itemStacks != null && !itemStacks.isEmpty()) {
+            this.itemStack = itemStacks.get(0);
+            this.material = itemStack.getType();
+        }
+    }
+
     public String toString() {
         return String.format("%s, amount: %s, chance: %s, equipped: %s",
-            this.material.name(), this.getAmountAsString(), this.chance, this.equippedSpawnChance);
+            this.material.name(), this.getAmountAsString(), this.chance, this.equippedChance);
     }
 }

@@ -143,20 +143,13 @@ presets:
       minLevel: 1
       maxLevel: 1
       multipliers:
+        merge: false
         max-health: 0.0
-        movement-speed: 0.0
         attack-damage: 0.0
         ranged-attack-damage: 0.0
-        creeper-blast-damage: 0.0
-        follow-range: 0.0
         item-drop: 0.0
         xp-drop: 0.0
-        armor-bonus: 0.0
-        armor-toughness: 0.0
-        attack-knockback: 0.0
-        knockback-resistance: 0.0
-        zombie-spawn-reinforcements: 0.0
-        
+
       tiered-coloring:
         1-1: '&#22E76B' #Green
         default: '&#FFFFFF' #White
@@ -171,19 +164,12 @@ presets:
       minLevel: 1
       maxLevel: 10
       multipliers:
+        merge: false
         max-health: 2.5
-        movement-speed: 0.0
         attack-damage: 1.0
         ranged-attack-damage: 1.0
-        creeper-blast-damage: 0.0
-        follow-range: 0.0
         item-drop: 3.0
         xp-drop: 5.0
-        armor-bonus: 0.0
-        armor-toughness: 0.0
-        attack-knockback: 0.0
-        knockback-resistance: 0.0
-        zombie-spawn-reinforcements: 0.0
 
       tiered-coloring:
         1-2: '&#22E76B' #Green
@@ -203,6 +189,7 @@ presets:
       minLevel: 1
       maxLevel: 25
       multipliers:
+        merge: false
         max-health: 5.0
         movement-speed: 0.15
         attack-damage: 2.25
@@ -240,6 +227,7 @@ presets:
       minLevel: 1
       maxLevel: 50
       multipliers:
+        merge: false
         max-health: 8.0
         movement-speed: 0.35
         attack-damage: 3.5
@@ -272,6 +260,7 @@ presets:
       minLevel: 1
       maxLevel: 100
       multipliers:
+        merge: false
         max-health: 15.0
         movement-speed: 1.0
         attack-damage: 5.0

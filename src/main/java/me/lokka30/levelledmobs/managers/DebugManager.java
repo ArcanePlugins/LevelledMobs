@@ -391,8 +391,8 @@ public class DebugManager {
         }
     }
 
-    public void timerWasChanged(){
-        checkTimerSettings(isTimerEnabled);
+    public void timerWasChanged(final boolean useTimer){
+        checkTimerSettings(isTimerEnabled || useTimer);
     }
 
     private @Nullable String getTimeRemaining(){

@@ -35,11 +35,16 @@ public class MythicMobUtils {
 
         // io.lumine.mythic.bukkit.MythicBukkit
         final Plugin mmMain = Bukkit.getPluginManager().getPlugin("MythicMobs");
-        if (mmMain == null) {
+        if (mmMain == null || !mmMain.isEnabled()) {
             return null;
         }
 
         final Definitions def = LevelledMobs.getInstance().getDefinitions();
+
+        if (def.field_MM_mobManager == null){
+            Utils.logger.warning("Mythic Mobs is installed but field_MM_mobManager is null");
+            return null;
+        }
 
         try {
             final Object mobExecutorObj = def.field_MM_mobManager.get(mmMain);

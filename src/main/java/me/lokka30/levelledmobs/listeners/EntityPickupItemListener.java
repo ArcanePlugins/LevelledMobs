@@ -12,6 +12,14 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Listens for when an entity picks up items and tracks the items only if
+ * the entity equipped the items so that later we can be sure not to
+ * destroy these items
+ *
+ * @author stumper66
+ * @since 3.14.0
+ */
 public class EntityPickupItemListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityPickupItemEvent(final @NotNull EntityPickupItemEvent event){

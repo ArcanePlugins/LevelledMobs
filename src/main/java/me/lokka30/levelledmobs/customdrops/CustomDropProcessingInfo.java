@@ -51,6 +51,7 @@ public class CustomDropProcessingInfo {
     boolean hasCustomDropId;
     boolean hasEquippedItems;
     int retryNumber;
+    float equippedChanceRole;
     public @Nullable GroupLimits groupLimits;
     public String customDropId;
     List<ItemStack> newDrops;

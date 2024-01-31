@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.misc;
 import java.io.File;
 import java.io.FileInputStream;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,10 +34,11 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    @Nullable public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
+    @Nullable public static YamlConfiguration loadFile(String cfgName,
         final int compatibleVersion) {
         cfgName += ".yml";
 
+        final Plugin plugin = LevelledMobs.getInstance();
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
 
         final File file = new File(plugin.getDataFolder(), cfgName);

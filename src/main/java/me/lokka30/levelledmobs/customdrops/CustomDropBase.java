@@ -43,7 +43,7 @@ public abstract class CustomDropBase implements Cloneable {
     int minPlayerLevel;
     int maxPlayerLevel;
     public boolean useChunkKillMax;
-    public float chance;
+    public @Nullable SlidingChance chance;
     boolean playerCausedOnly;
     boolean noSpawner;
     public boolean isDefaultDrop;

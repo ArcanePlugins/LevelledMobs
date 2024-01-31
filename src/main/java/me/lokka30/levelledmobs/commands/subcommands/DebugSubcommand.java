@@ -26,6 +26,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Parses commands for various debug stuff
@@ -56,6 +57,9 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
+        final String debugArg = args.length >= 3 ?
+                args[2] : null;
+
         switch (args[1].toLowerCase()){
             case "create-zip" -> createDebugZip(args);
             case "chunk-kill-count" -> chunkKillCount(sender, args);
@@ -66,10 +70,10 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             case "lew-clear" -> clearLEWCache(sender);
             case "show-customdrops" -> showCustomDrops();
             // active debugging options:
-            case "enable" -> enableOrDisableDebug(true, false);
-            case "enable-all" -> enableOrDisableDebug(true, true);
+            case "enable" -> enableOrDisableDebug(true, false, debugArg);
+            case "enable-all" -> enableOrDisableDebug(true, true, null);
             case "enable-timer" -> parseEnableTimer(args);
-            case "disable", "disable-all" -> enableOrDisableDebug(false, false);
+            case "disable", "disable-all" -> enableOrDisableDebug(false, false, null);
             case "filter-results" -> parseFilter(args);
             case "output-debug" -> parseOutputTo(args);
             case "view-debug-status" -> commandSender.sendMessage(main.debugManager.getDebugStatus());
@@ -106,20 +110,24 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         if ("0".equals(input) || "none".equalsIgnoreCase(input)){
             main.debugManager.disableAfter = null;
             main.debugManager.disableAfterStr = null;
-            main.debugManager.timerWasChanged();
+            main.debugManager.timerWasChanged(false);
             commandSender.sendMessage("Debug timer disabled");
             return;
         }
 
-        final Long disableAfter = Utils.parseTimeUnit(
-                input, null, true, commandSender);
+        Long disableAfter = Utils.parseTimeUnit(
+                input, null, false, commandSender);
 
         if (disableAfter != null){
+            disableAfter *= 1000;
+            if (args.length >= 4){
+                if (!parseEnableDebugCategory(args[3])) return;
+            }
             main.debugManager.disableAfter = disableAfter;
             main.debugManager.disableAfterStr = input;
             commandSender.sendMessage("Debug enabled for " + input);
             if (main.debugManager.isEnabled())
-                main.debugManager.timerWasChanged();
+                main.debugManager.timerWasChanged(true);
             else
                 main.debugManager.enableDebug(commandSender, true, false);
         }
@@ -155,12 +163,15 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         main.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(commandSender);
     }
 
-    private void enableOrDisableDebug(final boolean isEnable, final boolean isEnableAll){
+    private void enableOrDisableDebug(final boolean isEnable, final boolean isEnableAll, final @Nullable String debugCategory){
         final boolean wasEnabled = main.debugManager.isEnabled();
 
         if (isEnable){
             final boolean wasTimerEnabled = main.debugManager.getIsTimerEnabled();
             final boolean enableAllChanged = main.debugManager.isBypassAllFilters() != isEnableAll;
+            if (debugCategory != null) {
+                if (!parseEnableDebugCategory(debugCategory)) return;
+            }
             main.debugManager.enableDebug(commandSender, false, isEnableAll);
             if (wasEnabled && !enableAllChanged){
                 if (wasTimerEnabled)
@@ -182,6 +193,22 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             else
                 commandSender.sendMessage("Debugging is already disabled");
         }
+    }
+
+    private boolean parseEnableDebugCategory(final @NotNull String debugCategory){
+        DebugType debugType;
+        try{
+            debugType = DebugType.valueOf(debugCategory.toUpperCase());
+        }
+        catch (Exception ignored){
+            commandSender.sendMessage("Invalid debug type: " + debugCategory);
+            return false;
+        }
+
+        main.debugManager.filterDebugTypes.clear();
+        main.debugManager.filterDebugTypes.add(debugType);
+        commandSender.sendMessage("Debug type set to " + debugCategory);
+        return true;
     }
 
     private void parseFilter(final String @NotNull [] args){
@@ -619,6 +646,12 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         switch (args[1].toLowerCase()){
+            case "enable" -> {
+                if (args.length == 3) return getDebugTypes();
+            }
+            case "enable-timer" -> {
+                if (args.length == 4) return getDebugTypes();
+            }
             case "chunk-kill-count" -> {
                 return List.of("reset");
             }
@@ -639,6 +672,14 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         return Collections.emptyList();
+    }
+
+    private @NotNull List<String> getDebugTypes(){
+        final List<String> list = new LinkedList<>();
+        for (final DebugType debugType : DebugType.values()){
+            list.add(debugType.toString().toLowerCase());
+        }
+        return list;
     }
 
     private @NotNull List<String> parseFilterTabCompletion(final String @NotNull [] args){

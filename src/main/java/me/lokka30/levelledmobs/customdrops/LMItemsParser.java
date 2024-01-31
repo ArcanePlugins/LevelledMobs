@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Interfaces with the plugin LM_Items so can custom items from 3rd party plugins can be used
@@ -78,6 +79,15 @@ public class LMItemsParser {
         itemRequest.itemType = item.externalType;
         itemRequest.amount = item.externalAmount;
 
+        if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()){
+            itemRequest.getMultipleItems = "-".equals(itemRequest.itemId);
+            itemRequest.minItems = item.minItems;
+            itemRequest.maxItems = item.maxItems;
+            itemRequest.allowedList = item.allowedList;
+            itemRequest.excludedList = item.excludedList;
+            itemRequest.isDebugEnabled = main.debugManager.isEnabled();
+        }
+
         if (item.externalExtras != null){
             itemRequest.extras = new Hashtable<>(item.externalExtras.size());
 
@@ -106,7 +116,7 @@ public class LMItemsParser {
         }
 
         final ItemStack itemStack = result.itemStack;
-        if (itemStack == null) {
+        if (itemStack == null && (result.itemStacks == null || result.itemStacks.isEmpty())) {
             if (result.typeIsNotSupported) {
                 if (item.externalType == null) {
                     Utils.logger.warning(
@@ -142,7 +152,15 @@ public class LMItemsParser {
             return false;
         }
 
-        item.setItemStack(itemStack);
+        if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()){
+            if (result.itemStacks != null && !result.itemStacks.isEmpty())
+                item.setItemStacks((List<ItemStack>) result.itemStacks);
+            else if (itemStack != null)
+                item.setItemStack(itemStack);
+        }
+        else if (itemStack != null){
+            item.setItemStack(itemStack);
+        }
 
         return true;
     }

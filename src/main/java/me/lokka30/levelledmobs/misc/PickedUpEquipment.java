@@ -17,6 +17,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Holds various functions for interacting with items that
+ * an entity has picked up previously and was record in
+ * the entity's PDC
+ *
+ * @author stumper66
+ * @since 3.14.0
+ */
 public class PickedUpEquipment {
     public PickedUpEquipment(final @NotNull LivingEntityWrapper lmEntity){
         this.lmEntity = lmEntity;
