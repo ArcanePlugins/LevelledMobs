@@ -16,7 +16,6 @@ import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.LevelInterface2
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat117.getForceBlockedEntityType
 import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.events.MobPostLevelEvent
@@ -125,10 +124,6 @@ class LevelManager : LevelInterface2 {
                 EntityType.WITHER_SKULL, EntityType.SHULKER_BULLET, EntityType.PLAYER
             )
         )
-
-        if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) {
-            forcedBlockedEntityTypes.addAll(getForceBlockedEntityType())
-        }
     }
 
     fun clearRandomLevellingCache() {

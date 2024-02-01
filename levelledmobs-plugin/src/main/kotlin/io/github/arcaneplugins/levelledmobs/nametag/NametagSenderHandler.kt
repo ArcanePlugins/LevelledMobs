@@ -12,34 +12,17 @@ import io.github.arcaneplugins.levelledmobs.util.Utils
  */
 class NametagSenderHandler {
     private var currentUtil: NametagSender? = null
-    var isUsingProtocolLib: Boolean = false
 
     fun getCurrentUtil(): NametagSender? {
         if (this.currentUtil != null) {
             return this.currentUtil
         }
 
-        // supported is spigot >= 1.17
-        // otherwise protocollib is used
-        if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) {
-            // 1.18 and newer we support with direct nms (Paper)
-            // or 1.19 spigot and newer
-            this.currentUtil = NmsNametagSender()
+        this.currentUtil = NmsNametagSender()
 
-            Utils.logger.info(
-                "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
-            )
-        } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
-            // we don't directly support this version, use ProtocolLib
-            Utils.logger.info(
-                "We don't have NMS support for this version of Minecraft, using ProtocolLib"
-            )
-
-            this.currentUtil = ProtocolLibNametagSender()
-            this.isUsingProtocolLib = true
-        } else {
-            Utils.logger.warning("ProtocolLib is not installed. No nametags will be visible")
-        }
+        Utils.logger.info(
+            "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
+        )
 
         return this.currentUtil
     }

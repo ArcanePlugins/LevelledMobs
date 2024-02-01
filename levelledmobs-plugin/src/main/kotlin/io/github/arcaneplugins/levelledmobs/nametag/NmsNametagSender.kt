@@ -124,7 +124,7 @@ class NmsNametagSender : NametagSender {
         val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
 
         try {
-            val itemsById = def.field_Int2ObjectMap!![entityDataPreClone] as Map<Int, Any>
+            val itemsById = def.fieldInt2ObjectMap!![entityDataPreClone] as Map<Int, Any>
             if (itemsById.isEmpty()) {
                 return null
             }
@@ -171,7 +171,7 @@ class NmsNametagSender : NametagSender {
 
         try {
             val itemsById =
-                def.field_Int2ObjectMap!![entityData] as Map<Int, Any>
+                def.fieldInt2ObjectMap!![entityData] as Map<Int, Any>
 
             if (itemsById.isEmpty()) return results
 
@@ -182,10 +182,10 @@ class NmsNametagSender : NametagSender {
                 val accessor = def.methodGetAccessor!!.invoke(objDataItem)
 
                 // DataWatcher.Item
-                val dataWatcherItem = def.methodDataWatcher_GetItem!!
+                val dataWatcherItem = def.methodDataWatcherGetItem!!
                     .invoke(entityData, accessor)
 
-                results.add(def.methodDataWatcherItem_Value!!.invoke(dataWatcherItem))
+                results.add(def.methodDataWatcherItemValue!!.invoke(dataWatcherItem))
                 //results.add(objDataItem);
             }
         } catch (ex: java.lang.Exception) {

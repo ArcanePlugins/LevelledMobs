@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat117.all17Mobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat119.all19Mobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat120.all20Mobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat121.all21Mobs
@@ -59,7 +58,6 @@ class CustomDropsParser(
     }
 
     private fun buildInvalidEntityTypesToIgnore() {
-        invalidEntityTypesToIgnore.addAll(all17Mobs())
         invalidEntityTypesToIgnore.addAll(all19Mobs())
         invalidEntityTypesToIgnore.addAll(all20Mobs())
         invalidEntityTypesToIgnore.addAll(all21Mobs())

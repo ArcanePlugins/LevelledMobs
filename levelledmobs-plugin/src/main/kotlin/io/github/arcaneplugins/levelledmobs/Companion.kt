@@ -1,7 +1,5 @@
 package io.github.arcaneplugins.levelledmobs
 
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat116
-import io.github.arcaneplugins.levelledmobs.compatibility.Compat117
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat119
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat119.getAquaticMobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat120
@@ -585,9 +583,7 @@ class Companion{
         val main = LevelledMobs.instance
         main.mobsQueueManager.stop()
         main.nametagQueueManager.stop()
-        if (hashMapCleanUp != null) {
-            hashMapCleanUp!!.cancelTask()
-        }
+        hashMapCleanUp?.cancelTask()
         if (!main.ver.isRunningFolia) {
             Bukkit.getScheduler().cancelTasks(main)
         }
@@ -606,19 +602,12 @@ class Companion{
             EntityType.SLIME
         ))
 
-        if (versionInfo.minecraftVersion >= 1.16) {
-            hostileMobsGroup.addAll(Compat116.getHostileMobs())
-        }
-
         // include interfaces: Animals, WaterMob
         passiveMobsGroup.addAll(mutableListOf(
             EntityType.IRON_GOLEM,
             EntityType.SNOWMAN
         ))
 
-        if (versionInfo.minecraftVersion >= 1.17) {
-            passiveMobsGroup.addAll(Compat117.getPassiveMobs())
-        }
         if (versionInfo.majorVersion >= 1.19) {
             passiveMobsGroup.addAll(Compat119.getPassiveMobs())
         }
@@ -629,9 +618,6 @@ class Companion{
             passiveMobsGroup.addAll(Compat121.getPassiveMobs())
         }
 
-        if (versionInfo.majorVersion >= 1.16) {
-            hostileMobsGroup.addAll(Compat116.getHostileMobs())
-        }
         if (versionInfo.majorVersion >= 1.19) {
             hostileMobsGroup.addAll(Compat119.getHostileMobs())
         }
