@@ -41,8 +41,8 @@ class DebugManager {
     val filterPlayerNames = mutableSetOf<String>()
     var excludedEntityTypes = mutableListOf<String>()
     var playerThatEnabledDebug: Player? = null
-    var listenFor: ListenFor = ListenFor.BOTH
-    var outputType: OutputTypes = OutputTypes.TO_CONSOLE
+    var listenFor = ListenFor.BOTH
+    var outputType = OutputTypes.TO_CONSOLE
     var maxPlayerDistance: Int? = null
     var minYLevel: Int? = null
     var maxYLevel: Int? = null
@@ -54,7 +54,11 @@ class DebugManager {
         buildExcludedEntityTypes()
     }
 
-    fun enableDebug(sender: CommandSender, usetimer: Boolean, bypassFilters: Boolean) {
+    fun enableDebug(
+        sender: CommandSender,
+        usetimer: Boolean,
+        bypassFilters: Boolean
+    ) {
         if (sender is Player) this.playerThatEnabledDebug = sender
         this.bypassAllFilters = bypassFilters
         this.isEnabled = true
@@ -245,12 +249,12 @@ class DebugManager {
         }
     }
 
-    private fun getPlayers(): List<Player>? {
+    private fun getPlayers(): MutableList<Player>? {
         if (filterPlayerNames.isEmpty()) {
             return LinkedList(Bukkit.getOnlinePlayers())
         }
 
-        val players: MutableList<Player> = LinkedList()
+        val players = mutableListOf<Player>()
         for (playerName in filterPlayerNames) {
             val player = Bukkit.getPlayer(playerName)
             if (player != null) players.add(player)

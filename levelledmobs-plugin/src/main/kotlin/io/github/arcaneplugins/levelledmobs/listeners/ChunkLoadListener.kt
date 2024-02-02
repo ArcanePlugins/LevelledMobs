@@ -22,7 +22,6 @@ class ChunkLoadListener : Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onChunkLoad(event: ChunkLoadEvent) {
         if (!LevelledMobs.instance.helperSettings.getBoolean(
-                LevelledMobs.instance.settingsCfg,
                 "ensure-mobs-are-levelled-on-chunk-load", true
             )
         ) {

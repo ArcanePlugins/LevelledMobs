@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import kotlin.math.ceil
 
@@ -117,9 +116,7 @@ class HealthIndicator : MergableRule, Cloneable {
         get() = this.merge != null && merge!!
 
     override fun merge(mergableRule: MergableRule?) {
-        if (mergableRule !is HealthIndicator) {
-            return
-        }
+        if (mergableRule !is HealthIndicator) return
 
         if (mergableRule.indicator != null) {
             this.indicator = mergableRule.indicator
@@ -139,13 +136,13 @@ class HealthIndicator : MergableRule, Cloneable {
         }
 
         if (this.tiers == null) {
-            this.tiers = TreeMap()
+            this.tiers = mutableMapOf()
         }
         tiers!!.putAll(mergableRule.tiers!!)
     }
 
     override fun toString(): String {
-        val sb = java.lang.StringBuilder()
+        val sb = StringBuilder()
         if (indicator != null) {
             sb.append("ind: ")
             sb.append(indicator)

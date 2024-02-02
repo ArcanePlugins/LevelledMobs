@@ -25,8 +25,8 @@ class NametagTimerChecker {
     val entityTargetMap = WeakHashMap<LivingEntity, Player>()
     private val playersQueue: Queue<PlayerQueueItem> = LinkedList()
     companion object{
-        val nametagTimer_Lock: Any = Any()
-        val entityTarget_Lock: Any = Any()
+        val nametagTimer_Lock = Any()
+        val entityTarget_Lock = Any()
         private val playerQueue_Lock = Any()
     }
 
@@ -76,7 +76,7 @@ class NametagTimerChecker {
         player: Player,
         coolDown: Map.Entry<Player, WeakHashMap<LivingEntity, Instant>>
     ) {
-        val entitiesToRemove: MutableList<LivingEntity> = LinkedList()
+        val entitiesToRemove = mutableListOf<LivingEntity>()
 
         for (livingEntity in coolDown.value.keys) {
             if (!livingEntity.isValid) {

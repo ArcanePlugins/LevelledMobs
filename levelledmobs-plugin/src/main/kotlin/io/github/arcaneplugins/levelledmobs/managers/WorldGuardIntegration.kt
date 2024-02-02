@@ -41,7 +41,7 @@ object WorldGuardIntegration {
             return wgOwners
         }
 
-        val regions: Set<ProtectedRegion> = getRegionSet(lmInterface)
+        val regions = getRegionSet(lmInterface)
             ?: return wgOwners
 
         for (region in regions)  {
@@ -61,7 +61,7 @@ object WorldGuardIntegration {
 
     private fun getRegionSet(
         lmInterface: LivingEntityInterface
-    ): Set<ProtectedRegion>? {
+    ): MutableSet<ProtectedRegion>? {
         val world = BukkitAdapter.adapt(lmInterface.world)
 
         val position = BlockVector3.at(

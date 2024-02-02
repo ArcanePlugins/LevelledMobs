@@ -58,9 +58,8 @@ object FileLoader {
 
         var cfg = YamlConfiguration.loadConfiguration(file)
         cfg.options().copyDefaults(true)
-        val ymlHelper = YmlParsingHelper()
-
-        val fileVersion: Int = ymlHelper.getInt(cfg, "file-version")
+        val ymlHelper = YmlParsingHelper(cfg)
+        val fileVersion: Int = ymlHelper.getInt( "file-version")
         val isCustomDrops = cfgName == "customdrops.yml"
         val isRules = cfgName == "rules.yml"
 
@@ -99,7 +98,7 @@ object FileLoader {
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file)
         } else if (!isRules) {
-            checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg, "file-version"))
+            checkFileVersion(file, compatibleVersion, ymlHelper.getInt( "file-version"))
         }
 
         return cfg
@@ -111,7 +110,7 @@ object FileLoader {
         )
     }
 
-    fun saveResourceIfNotExists(instance: Plugin, file: File) {
+    private fun saveResourceIfNotExists(instance: Plugin, file: File) {
         if (!file.exists()) {
             Utils.logger.info(
                 "&fFile Loader: &7File '&b" + file.name

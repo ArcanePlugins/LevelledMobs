@@ -8,7 +8,6 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.enums.DropInstanceBuildResult
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
-import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
@@ -55,7 +54,7 @@ class CustomDropsHandler {
     val customDropIDs: MutableMap<String, CustomDropInstance> = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
     // mappings of groupIds to drop instance
-    val groupIdToInstance: MutableMap<String, CustomDropInstance> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    private val groupIdToInstance: MutableMap<String, CustomDropInstance> = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
     // get a drop instance from it's groupid
     var customItemGroups = mutableMapOf<String, CustomDropInstance>()
@@ -66,7 +65,6 @@ class CustomDropsHandler {
     val externalCustomDrops: ExternalCustomDrops = ExternalCustomDropsImpl()
     var lmItemsParser: LMItemsParser? = null
         private set
-    private val ymlHelper = YmlParsingHelper()
     private val customEquippedItems = WeakHashMap<LivingEntity, EquippedItemsInfo>()
 
     fun load(){
@@ -194,7 +192,9 @@ class CustomDropsHandler {
             val damageCause = lmEntity.livingEntity
                 .lastDamageCause!!.cause
             processingInfo.deathByFire =
-                (damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.LAVA)
+                (damageCause == EntityDamageEvent.DamageCause.FIRE ||
+                        damageCause == EntityDamageEvent.DamageCause.FIRE_TICK ||
+                        damageCause == EntityDamageEvent.DamageCause.LAVA)
         }
 
         if (!equippedOnly) {
@@ -211,7 +211,7 @@ class CustomDropsHandler {
             )
         }
 
-        val groupsList: MutableList<String> = LinkedList()
+        val groupsList = mutableListOf<String>()
         for (group in lmEntity.getApplicableGroups()) {
             if (!getCustomDropsitemsGroups().containsKey(group)) {
                 continue
@@ -221,8 +221,7 @@ class CustomDropsHandler {
         }
 
         val buildResult: DropInstanceBuildResult = buildDropsListFromGroupsAndEntity(
-            groupsList,
-            lmEntity.entityType, processingInfo
+            groupsList, lmEntity.entityType, processingInfo
         )
         if (buildResult != DropInstanceBuildResult.SUCCESSFUL) {
             // didn't make overall chance
@@ -252,8 +251,8 @@ class CustomDropsHandler {
         getCustomItemsFromDropInstance(processingInfo) // payload
 
         val postCount = drops.size
-        val showCustomEquips: Boolean = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)
-        val showCustomDrops: Boolean = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
+        val showCustomEquips = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)
+        val showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
 
         if (showCustomDrops || showCustomEquips) {
             if (equippedOnly && drops.isNotEmpty() && showCustomEquips) {
@@ -290,10 +289,11 @@ class CustomDropsHandler {
     }
 
     private fun buildDropsListFromGroupsAndEntity(
-        groups: List<String>,
-        entityType: EntityType, info: CustomDropProcessingInfo
+        groups: MutableList<String>,
+        entityType: EntityType,
+        info: CustomDropProcessingInfo
     ): DropInstanceBuildResult {
-        info.prioritizedDrops = HashMap()
+        info.prioritizedDrops = mutableMapOf()
         info.hasOverride = false
         var usesGroupIds = false
 
@@ -437,8 +437,8 @@ class CustomDropsHandler {
     private fun getCustomItemsFromDropInstance(
         info: CustomDropProcessingInfo
     ) {
-        val dropLimitsReached: MutableList<UUID> = LinkedList()
-        val defaultLimits: GroupLimits = groupLimitsMap.getOrDefault("default", null)!!
+        val dropLimitsReached = mutableListOf<UUID>()
+        val defaultLimits = groupLimitsMap.getOrDefault("default", null)!!
 
         for (items in info.prioritizedDrops!!.values) {
             // loop thru each drop list associated with any groupids
@@ -584,10 +584,7 @@ class CustomDropsHandler {
             if (!checkIfMadeEquippedDropChance(info, dropBase)) {
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                     info.addDebugMessage(
-                        String.format(
-                            "&8 - &7item: &b%s&7, was not equipped on mob, dropped: &bfalse&7.",
-                            dropBase.itemStack!!.type.name
-                        )
+                        "&8 - &7item: &b${dropBase.itemStack!!.type.name}&7, was not equipped on mob, dropped: &bfalse&7.",
                     )
                 }
                 return
@@ -714,7 +711,7 @@ class CustomDropsHandler {
                         info.lmEntity!!.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count
                     )
                     if (info.retryNumber > 0) {
-                        msg += ", retry: " + info.retryNumber
+                        msg += ", retry: ${info.retryNumber}"
                     }
                     info.addDebugMessage(msg)
                 }
@@ -725,7 +722,7 @@ class CustomDropsHandler {
                 )
 
                 if (info.retryNumber > 0) {
-                    msg += ", retry: " + info.retryNumber
+                    msg += ", retry: ${info.retryNumber}"
                 }
                 info.addDebugMessage(msg)
             }
@@ -777,10 +774,10 @@ class CustomDropsHandler {
 
         if (dropBase.itemStacks == null) return
 
-        for (newItem in dropBase.itemStacks!!) {
+        for (newItemPre in dropBase.itemStacks!!) {
             // will only be multiple items for supported LM Items items
 
-            var newItem = newItem.clone()
+            var newItem = newItemPre.clone()
 
             if (info.deathByFire) {
                 newItem = getCookedVariantOfMeat(dropBase.itemStack!!)
@@ -839,8 +836,8 @@ class CustomDropsHandler {
                         dropBase.lore!!.size
                     )
 
-                    for (lore in dropBase.lore!!) {
-                        var lore = lore
+                    for (lorePre in dropBase.lore!!) {
+                        var lore = lorePre
                         if (lore.contains("%")) {
                             lore = lore.replace("%player%", if (info.mobKiller == null) "" else info.mobKiller!!.name)
                             lore = main.levelManager.replaceStringPlaceholders(
@@ -1056,7 +1053,7 @@ class CustomDropsHandler {
             if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 val itemName = if (dropBase is CustomDropItem) dropBase.material.name else "(command)"
                 info.addDebugMessage(
-                    java.lang.String.format(
+                    String.format(
                         "&8 - &7item: &b%s&7, death-cause: &b%s&7, death-cause-req: &b%s&7, dropped: &bfalse&7.",
                         itemName, info.deathCause, dropBase.causeOfDeathReqs
                     )
@@ -1131,11 +1128,11 @@ class CustomDropsHandler {
     }
 
     private fun isMobWearingItem(
-        item: ItemStack, mob: LivingEntity,
+        item: ItemStack,
+        mob: LivingEntity,
         customDropItem: CustomDropItem
     ): Boolean {
         val equipment = mob.equipment ?: return false
-
         val equippedItemsInfo = customEquippedItems[mob] ?: return false
 
         if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet)) {
@@ -1322,8 +1319,8 @@ class CustomDropsHandler {
         }
 
         val main = LevelledMobs.instance
-        for (command in customCommand.commands) {
-            var command = processRangedCommand(command, customCommand)
+        for (commandPre in customCommand.commands) {
+            var command = processRangedCommand(commandPre, customCommand)
             command = main.levelManager.replaceStringPlaceholders(
                 command, info.lmEntity!!, false,
                 info.lmEntity!!.associatedPlayer, false
@@ -1342,8 +1339,7 @@ class CustomDropsHandler {
                 command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command)
             }
 
-            val maxAllowedTimesToRun: Int = ymlHelper.getInt(
-                main.settingsCfg,
+            val maxAllowedTimesToRun: Int = LevelledMobs.instance.helperSettings.getInt(
                 "customcommand-amount-limit", 10
             )
             var timesToRun = customCommand.amount

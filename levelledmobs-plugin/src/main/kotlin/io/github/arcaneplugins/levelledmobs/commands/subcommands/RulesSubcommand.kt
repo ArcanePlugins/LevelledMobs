@@ -19,7 +19,6 @@ import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.rules.PlayerLevellingOptions
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
-import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils

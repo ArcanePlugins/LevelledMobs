@@ -198,13 +198,12 @@ class NametagQueueManager {
             return
         }
 
-        if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")) {
+        if (main.helperSettings.getBoolean( "use-customname-for-mob-nametags")) {
             updateNametagCustomName(item.lmEntity, item.nametag!!.nametagNonNull)
             return
         }
 
         if (main.helperSettings.getBoolean(
-                main.settingsCfg,
                 "assert-entity-validity-with-nametag-packets"
             ) && !item.lmEntity.livingEntity
                 .isValid

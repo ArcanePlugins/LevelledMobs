@@ -79,15 +79,15 @@ class LevelManager : LevelInterface2 {
     private var vehicleNoMultiplierItems = mutableListOf<Material>()
     val summonedOrSpawnEggs = WeakHashMap<LivingEntity, Any>()
     companion object{
-        val summonedOrSpawnEggs_Lock: Any = Any()
+        val summonedOrSpawnEggs_Lock = Any()
     }
 
     private var hasMentionedNBTAPIMissing = false
-    var doCheckMobHash: Boolean = false
+    var doCheckMobHash = false
     private val randomLevellingCache = mutableMapOf<String, RandomLevellingStrategy>()
     private var lastLEWCacheClearing: Instant? = null
     val entitySpawnListener = EntitySpawnListener()
-    var nametagAutoUpdateTask: SchedulerResult? = null
+    private var nametagAutoUpdateTask: SchedulerResult? = null
     private var nametagTimerTask: SchedulerResult? = null
     /**
      * The following entity types *MUST NOT* be levellable.
@@ -161,16 +161,16 @@ class LevelManager : LevelInterface2 {
         minLevel: Int,
         maxLevel: Int
     ): Int {
-        var minLevel = minLevel
-        var maxLevel = maxLevel
+        var useMinLevel = minLevel
+        var useMaxLevel = maxLevel
 
-        if (minLevel == -1 || maxLevel == -1) {
+        if (useMinLevel == -1 || useMaxLevel == -1) {
             val levels: MinAndMaxHolder = getMinAndMaxLevels(lmEntity)
-            if (minLevel == -1) {
-                minLevel = levels.min
+            if (useMinLevel == -1) {
+                useMinLevel = levels.min
             }
-            if (maxLevel == -1) {
-                maxLevel = levels.max
+            if (useMaxLevel == -1) {
+                useMaxLevel = levels.max
             }
         }
 
@@ -181,26 +181,27 @@ class LevelManager : LevelInterface2 {
         if (levellingStrategy is YDistanceStrategy
             || levellingStrategy is SpawnDistanceStrategy
         ) {
-            return levellingStrategy.generateLevel(lmEntity, minLevel, maxLevel)
+            return levellingStrategy.generateLevel(lmEntity, useMinLevel, useMaxLevel)
         }
 
         // if no levelling strategy was selected then we just use a random number between min and max
-        if (minLevel == maxLevel) {
-            return minLevel
+        if (useMinLevel == useMaxLevel) {
+            return useMinLevel
         }
 
         val randomLevelling =
-            if ((levellingStrategy is RandomLevellingStrategy)) levellingStrategy else null
+            if ((levellingStrategy is RandomLevellingStrategy)) levellingStrategy
+            else null
 
-        return generateRandomLevel(randomLevelling, minLevel, maxLevel)
+        return generateRandomLevel(randomLevelling, useMinLevel, useMaxLevel)
     }
 
     private fun generateRandomLevel(
-        randomLevelling: RandomLevellingStrategy?,
+        randomLevellingPre: RandomLevellingStrategy?,
         minLevel: Int,
         maxLevel: Int
     ): Int {
-        var randomLevelling = randomLevelling
+        var randomLevelling = randomLevellingPre
         if (randomLevelling == null) {
             // used the caches defaults if it exists, otherwise add it to the cache
             if (randomLevellingCache.containsKey("default")) {
@@ -211,10 +212,7 @@ class LevelManager : LevelInterface2 {
             }
         } else {
             // used the caches one if it exists, otherwise add it to the cache
-            val checkName = String.format(
-                "%s-%s: %s", minLevel, maxLevel,
-                randomLevelling
-            )
+            val checkName = "$minLevel-$maxLevel: $randomLevelling"
 
             if (randomLevellingCache.containsKey(checkName)) {
                 randomLevelling = randomLevellingCache[checkName]
@@ -262,7 +260,7 @@ class LevelManager : LevelInterface2 {
             }
 
             var useLocation = result.location
-            if (useLocation == null || useLocation.world !== player.world) {
+            if (useLocation == null || useLocation.world != player.world) {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(player)
                 useLocation = netherOrWorldSpawnResult.location
                 homeNameUsed = if (netherOrWorldSpawnResult.isWorldPortalLocation) {
@@ -483,7 +481,9 @@ class LevelManager : LevelInterface2 {
 
     fun multiplyDrop(
         lmEntity: LivingEntityWrapper,
-        currentDrop: ItemStack, addition: Double, isCustomDrop: Boolean
+        currentDrop: ItemStack,
+        addition: Double,
+        isCustomDrop: Boolean
     ) {
         val oldAmount = currentDrop.amount
 
@@ -592,7 +592,10 @@ class LevelManager : LevelInterface2 {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    fun getLevelledExpDrops(lmEntity: LivingEntityWrapper, xp: Double): Int {
+    fun getLevelledExpDrops(
+        lmEntity: LivingEntityWrapper,
+        xp: Double
+    ): Int {
         if (lmEntity.isLevelled) {
             val dropAddition: Float = LevelledMobs.instance.mobDataManager.getAdditionsForLevel(
                 lmEntity,
@@ -627,7 +630,10 @@ class LevelManager : LevelInterface2 {
         }
     }
 
-    fun getNametag(lmEntity: LivingEntityWrapper, isDeathNametag: Boolean): NametagResult {
+    fun getNametag(
+        lmEntity: LivingEntityWrapper,
+        isDeathNametag: Boolean
+    ): NametagResult {
         return getNametag(lmEntity, isDeathNametag, false)
     }
 
@@ -636,7 +642,7 @@ class LevelManager : LevelInterface2 {
         isDeathNametag: Boolean,
         preserveMobName: Boolean
     ): NametagResult {
-        var preserveMobName = preserveMobName
+        var usePreserveMobName = preserveMobName
         var nametag: StringReplacer
         var customDeathMessage: String? = null
         val main = LevelledMobs.instance
@@ -662,8 +668,8 @@ class LevelManager : LevelInterface2 {
                 nametag = StringReplacer(deathMessage.replace("%death_nametag%", nametag.text))
                 val player = lmEntity.associatedPlayer
                 nametag.replace("%player%", if (player != null) player.name + "&r" else "")
-                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, preserveMobName)
-                preserveMobName = true
+                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, usePreserveMobName)
+                usePreserveMobName = true
 
                 customDeathMessage =
                     if (nametag.contains("{DisplayName}")) main.rulesManager.getRuleNametagCreatureDeath(lmEntity) else nametag.text
@@ -673,7 +679,6 @@ class LevelManager : LevelInterface2 {
         // ignore if 'disabled'
         if (nametag.isEmpty) {
             val useCustomNameForNametags: Boolean = main.helperSettings.getBoolean(
-                main.settingsCfg,
                 "use-customname-for-mob-nametags"
             )
             return if (useCustomNameForNametags) {
@@ -687,11 +692,12 @@ class LevelManager : LevelInterface2 {
             nametag.text = ""
         }
 
-        return updateNametag(lmEntity, nametag, preserveMobName, customDeathMessage)
+        return updateNametag(lmEntity, nametag, usePreserveMobName, customDeathMessage)
     }
 
     fun updateNametag(
-        lmEntity: LivingEntityWrapper, nametag: StringReplacer,
+        lmEntity: LivingEntityWrapper,
+        nametag: StringReplacer,
         preserveMobName: Boolean,
         customDeathMessage: String?
     ): NametagResult {
@@ -772,8 +778,10 @@ class LevelManager : LevelInterface2 {
 
     fun replaceStringPlaceholders(
         text: String,
-        lmEntity: LivingEntityWrapper, usePAPI: Boolean,
-        player: Player?, preserveMobName: Boolean
+        lmEntity: LivingEntityWrapper,
+        usePAPI: Boolean,
+        player: Player?,
+        preserveMobName: Boolean
     ): String {
         return replaceStringPlaceholders(
             StringReplacer(text),
@@ -787,8 +795,10 @@ class LevelManager : LevelInterface2 {
     @Suppress("DEPRECATION")
     private fun replaceStringPlaceholders(
         text: StringReplacer,
-        lmEntity: LivingEntityWrapper, usePAPI: Boolean,
-        player: Player?, preserveMobName: Boolean
+        lmEntity: LivingEntityWrapper,
+        usePAPI: Boolean,
+        player: Player?,
+        preserveMobName: Boolean
     ): String {
         val maxHealth: Double = getMobAttributeValue(lmEntity)
         val entityHealth: Double = getMobHealth(lmEntity)
@@ -832,7 +842,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%player%", playerName)
         text.replaceIfExists("%displayname%") {
             val useCustomNameForNametags = LevelledMobs.instance.helperSettings.getBoolean(
-                LevelledMobs.instance.settingsCfg, "use-customname-for-mob-nametags"
+        "use-customname-for-mob-nametags"
             )
             val overridenName =
                 if (lmEntity.lockedOverrideName == null) LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(
@@ -871,8 +881,7 @@ class LevelManager : LevelInterface2 {
     }
 
     fun updateNametag(lmEntity: LivingEntityWrapper) {
-        val preserveMobName: Boolean = !LevelledMobs.instance.nametagQueueManager.nametagSenderHandler.isUsingProtocolLib
-        val nametag = getNametag(lmEntity, false, preserveMobName)
+        val nametag = getNametag(lmEntity, isDeathNametag = false, preserveMobName = true)
 
         val queueItem = QueueItem(
             lmEntity,
@@ -907,10 +916,9 @@ class LevelManager : LevelInterface2 {
 
         val main = LevelledMobs.instance
         val period = main.helperSettings.getInt(
-            main.settingsCfg, "async-task-update-period",
-            6
+            "async-task-update-period",6
         ).toLong() // run every ? seconds.
-        this.doCheckMobHash = main.helperSettings.getBoolean(main.settingsCfg, "check-mob-hash", true)
+        this.doCheckMobHash = main.helperSettings.getBoolean("check-mob-hash", true)
 
         if (main.ver.isRunningFolia) {
             val bgThread =
@@ -959,7 +967,7 @@ class LevelManager : LevelInterface2 {
 
         val duration = lastLEWCacheClearing!!.until(Instant.now(), ChronoUnit.MILLIS)
         val configDuration = LevelledMobs.instance.helperSettings.getIntTimeUnitMS(
-            LevelledMobs.instance.settingsCfg, "lew-cache-clear-period", 180000L
+             "lew-cache-clear-period", 180000L
         )!!
 
         if (duration >= configDuration) {
@@ -975,7 +983,6 @@ class LevelManager : LevelInterface2 {
     private fun enumerateNearbyEntities(): MutableMap<Player, MutableList<Entity>>? {
         val entitiesPerPlayer = mutableMapOf<Player, MutableList<Entity>>()
         val checkDistance = LevelledMobs.instance.helperSettings.getInt(
-            LevelledMobs.instance.settingsCfg,
             "async-task-max-blocks-from-player", 100
         )
 
@@ -1136,8 +1143,7 @@ class LevelManager : LevelInterface2 {
     }
 
     private fun checkIfReadyForRelevelling(lmEntity: LivingEntityWrapper): Boolean {
-        val main = LevelledMobs.instance
-        val opts = main.rulesManager.getRulePlayerLevellingOptions(lmEntity)
+        val opts = LevelledMobs.instance.rulesManager.getRulePlayerLevellingOptions(lmEntity)
         if (opts?.preserveEntityTime == null) {
             return true
         }
@@ -1226,15 +1232,13 @@ class LevelManager : LevelInterface2 {
             main.levelInterface.removeLevel(lmEntity)
         } else if (lmEntity.livingEntity.isValid &&
             !main.helperSettings.getBoolean(
-                main.settingsCfg, "use-customname-for-mob-nametags",
-                false
+                "use-customname-for-mob-nametags",false
             ) && location.world != null && location.world == lmEntity.world && lmEntity.location.distanceSquared(
                 location
             ) <= maxDistance
         ) {
             //if within distance, update nametag.
-            val preserveMobName: Boolean = !main.nametagQueueManager.nametagSenderHandler.isUsingProtocolLib
-            val nametag = main.levelManager.getNametag(lmEntity, false, preserveMobName)
+            val nametag = main.levelManager.getNametag(lmEntity, isDeathNametag = false, preserveMobName = true)
             main.nametagQueueManager.addToQueue(
                 QueueItem(lmEntity, nametag, mutableListOf(player))
             )
@@ -1349,7 +1353,7 @@ class LevelManager : LevelInterface2 {
             )
         }
         // Attr instance for the mob
-        val attrInst = lmEntity.livingEntity.getAttribute(attribute) ?: return
+        if (lmEntity.livingEntity.getAttribute(attribute) == null) return
 
         // Don't try to apply an addition to their attribute if they don't have it
 
@@ -1621,7 +1625,7 @@ class LevelManager : LevelInterface2 {
         @Suppress("DEPRECATION")
         if (lmInterface.livingEntity.customName != null &&
             main.rulesManager.getRuleMobCustomNameStatus(lmInterface)
-            === MobCustomNameStatus.NOT_NAMETAGGED
+            == MobCustomNameStatus.NOT_NAMETAGGED
         ) {
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED
         }
@@ -1667,16 +1671,16 @@ class LevelManager : LevelInterface2 {
         level: Int,
         isSummoned: Boolean,
         bypassLimits: Boolean,
-        additionalLevelInformation: MutableSet<AdditionalLevelInformation?>
+        additionalLevelInformation: MutableSet<AdditionalLevelInformation>?
     ) {
         // this thread runs in async.  if adding any functions make sure they can be run in this fashion
 
         val main = LevelledMobs.instance
-        var level = level
-        if (level <= 0) {
-            level = generateLevel(lmEntity)
+        var useLevel = level
+        if (useLevel <= 0) {
+            useLevel = generateLevel(lmEntity)
         }
-        lmEntity.setMobPrelevel(level)
+        lmEntity.setMobPrelevel(useLevel)
 
         assert(bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED)
         var skipLMNametag = false
@@ -1690,8 +1694,8 @@ class LevelManager : LevelInterface2 {
                 lmEntity.livingEntity.vehicle as LivingEntity
             )
             if (vehicle.isLevelled) {
-                level = vehicle.getMobLevel()
-                lmEntity.setMobPrelevel(level)
+                useLevel = vehicle.getMobLevel()
+                lmEntity.setMobPrelevel(useLevel)
             }
 
             vehicle.free()
@@ -1700,7 +1704,7 @@ class LevelManager : LevelInterface2 {
         if (isSummoned) {
             lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SUMMON, true)
             val summonedMobPreLevelEvent = SummonedMobPreLevelEvent(
-                lmEntity.livingEntity, level
+                lmEntity.livingEntity, useLevel
             )
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent)
 
@@ -1709,7 +1713,7 @@ class LevelManager : LevelInterface2 {
             }
         } else {
             val mobPreLevelEvent = MobPreLevelEvent(
-                lmEntity.livingEntity, level, MobPreLevelEvent.LevelCause.NORMAL,
+                lmEntity.livingEntity, useLevel, MobPreLevelEvent.LevelCause.NORMAL,
                 additionalLevelInformation
             )
 
@@ -1718,8 +1722,8 @@ class LevelManager : LevelInterface2 {
                 return
             }
 
-            level = mobPreLevelEvent.level
-            lmEntity.setMobPrelevel(level)
+            useLevel = mobPreLevelEvent.level
+            lmEntity.setMobPrelevel(useLevel)
             if (!mobPreLevelEvent.showLMNametag) {
                 skipLMNametag = true
                 lmEntity.setShouldShowLMNametag(false)
@@ -1744,7 +1748,7 @@ class LevelManager : LevelInterface2 {
         }
 
         synchronized(lmEntity.livingEntity.persistentDataContainer) {
-            lmEntity.pdc.set(NamespacedKeys.levelKey, PersistentDataType.INTEGER, level)
+            lmEntity.pdc.set(NamespacedKeys.levelKey, PersistentDataType.INTEGER, useLevel)
             lmEntity.pdc.set(
                 NamespacedKeys.mobHash,
                 PersistentDataType.STRING,
@@ -1803,7 +1807,7 @@ class LevelManager : LevelInterface2 {
         sb.append(", world: ")
         sb.append(lmEntity.worldName)
         sb.append(", level: ")
-        sb.append(level)
+        sb.append(useLevel)
         if (isSummoned) {
             sb.append(" (summoned)")
         }
@@ -1816,7 +1820,8 @@ class LevelManager : LevelInterface2 {
 
     private fun applyLevelToMob2(
         lmEntity: LivingEntityWrapper,
-        nbtDatas: List<String>, doSkipLMNametag: Boolean
+        nbtDatas: MutableList<String>,
+        doSkipLMNametag: Boolean
     ) {
         applyAttribs(lmEntity, nbtDatas)
 
@@ -1826,7 +1831,10 @@ class LevelManager : LevelInterface2 {
         LevelledMobs.instance.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel())
     }
 
-    private fun applyAttribs(lmEntity: LivingEntityWrapper, nbtDatas: List<String>) {
+    private fun applyAttribs(
+        lmEntity: LivingEntityWrapper,
+        nbtDatas: MutableList<String>
+    ) {
         val main = LevelledMobs.instance
         synchronized(main.attributeSyncObject) {
             main.levelManager.applyLevelledAttributes(
@@ -1899,7 +1907,7 @@ class LevelManager : LevelInterface2 {
 
         if (nbtDatas.isNotEmpty()) {
             var hadSuccess = false
-            val allResults: MutableList<NBTApplyResult> = LinkedList()
+            val allResults = mutableListOf<NBTApplyResult>()
 
             for (nbtData: String in nbtDatas) {
                 val result: NBTApplyResult = NBTManager.applyNBTDataMob(
@@ -1938,8 +1946,10 @@ class LevelManager : LevelInterface2 {
         }
     }
 
-    private fun getNBTDebugMessage(results: List<NBTApplyResult>): String {
-        val sb = java.lang.StringBuilder()
+    private fun getNBTDebugMessage(
+        results: MutableList<NBTApplyResult>
+    ): String {
+        val sb = StringBuilder()
 
         for (result in results) {
             if (result.objectsAdded == null) {

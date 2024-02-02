@@ -4,7 +4,6 @@ import com.google.gson.JsonParser
 import de.tr7zw.nbtapi.NBTContainer
 import de.tr7zw.nbtapi.NBTEntity
 import de.tr7zw.nbtapi.NBTItem
-import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropItem
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
@@ -63,11 +62,12 @@ object NBTManager {
     }
 
     private fun showChangedJson(
-        jsonBefore: String, jsonAfter: String,
+        jsonBefore: String,
+        jsonAfter: String,
         applyResult: NBTApplyResult
     ) {
-        val objectsBefore: MutableMap<String, String> = TreeMap()
-        val objectsAfter: MutableMap<String, String> = TreeMap()
+        val objectsBefore = mutableMapOf<String, String>()
+        val objectsAfter = mutableMapOf<String, String>()
         val jsonObjectBefore = JsonParser.parseString(jsonBefore).asJsonObject
         val jsonObjectAfter = JsonParser.parseString(jsonAfter).asJsonObject
 
@@ -78,7 +78,7 @@ object NBTManager {
             for (key in jsonObjectAfter.keySet()) {
                 objectsAfter[key] = jsonObjectAfter[key].toString()
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             return
         }

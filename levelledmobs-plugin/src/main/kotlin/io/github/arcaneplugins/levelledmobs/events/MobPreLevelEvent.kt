@@ -18,7 +18,7 @@ class MobPreLevelEvent(
     val entity: LivingEntity,
     var level: Int,
     val levelCause: LevelCause,
-    val additionalInformation: MutableSet<AdditionalLevelInformation?>
+    val additionalInformation: MutableSet<AdditionalLevelInformation>?
 ) : Event(!Bukkit.isPrimaryThread()), Cancellable {
     var showLMNametag = true
     private var cancelled = false

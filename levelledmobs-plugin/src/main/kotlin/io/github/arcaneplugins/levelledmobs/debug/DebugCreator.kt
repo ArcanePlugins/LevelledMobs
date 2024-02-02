@@ -180,7 +180,7 @@ object DebugCreator {
         }
 
         val bytes = digest.digest()
-        val sb = java.lang.StringBuilder()
+        val sb = StringBuilder()
 
         for (aByte in bytes) {
             sb.append(((aByte.toInt() and 0xff) + 0x100).toString(16).substring(1))

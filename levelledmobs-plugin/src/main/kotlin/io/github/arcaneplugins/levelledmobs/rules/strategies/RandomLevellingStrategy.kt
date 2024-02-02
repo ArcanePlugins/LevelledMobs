@@ -160,11 +160,11 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     }
 
     private fun getRandomLevel(minLevel: Int, maxLevel: Int): Int {
-        var minLevel = minLevel
-        var maxLevel = maxLevel
-        minLevel = max(minLevel.toDouble(), 0.0).toInt()
-        maxLevel = max(minLevel.toDouble(), maxLevel.toDouble()).toInt()
-        return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1)
+        var useMinLevel = minLevel
+        var useMaxLevel = maxLevel
+        useMinLevel = max(useMinLevel.toDouble(), 0.0).toInt()
+        useMaxLevel = max(useMinLevel.toDouble(), useMaxLevel.toDouble()).toInt()
+        return ThreadLocalRandom.current().nextInt(useMinLevel, useMaxLevel + 1)
     }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy) {
@@ -191,13 +191,13 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     override fun toString(): String {
         if (weightedRandom.isEmpty()) {
             return if (this.autoGenerate) "Random Levelling (auto generate)"
-            else "RandomLevellingStrategy"
+            else "Random Levelling"
         }
 
         if (minLevel == 0) {
             return weightedRandom.toString()
         }
 
-        return String.format("%s-%s: %s", this.minLevel, this.maxLevel, this.weightedRandom)
+        return "$minLevel-$maxLevel: $weightedRandom"
     }
 }

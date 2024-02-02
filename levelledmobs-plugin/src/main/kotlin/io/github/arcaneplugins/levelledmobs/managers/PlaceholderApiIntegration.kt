@@ -37,7 +37,7 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
         if (isPlayerDeath) putPlayerKillerInfo(player, lmEntity)
     }
 
-    fun putPlayerKillerInfo(
+    private fun putPlayerKillerInfo(
         player: Player,
         lmEntity: LivingEntityWrapper?
     ) {
@@ -131,8 +131,8 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
         val lmEntity = LivingEntityWrapper.getInstance(targetMob)
         var nametag = lmEntity.main.rulesManager.getRuleNametagPlaceholder(lmEntity)
         if (!nametag.isNullOrEmpty()) {
-            val useCustomNameForNametags: Boolean = lmEntity.main.helperSettings.getBoolean(
-                lmEntity.main.settingsCfg, "use-customname-for-mob-nametags"
+            val useCustomNameForNametags = lmEntity.main.helperSettings.getBoolean(
+                 "use-customname-for-mob-nametags"
             )
             nametag = lmEntity.main.levelManager.updateNametag(
                 lmEntity, StringReplacer(nametag),
@@ -163,8 +163,7 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
     private fun getMobBeingLookedAt(player: Player): LivingEntity? {
         var livingEntity: LivingEntity? = null
         val eye = player.eyeLocation
-        val maxBlocks: Int = LevelledMobs.instance.helperSettings.getInt(
-            LevelledMobs.instance.settingsCfg,
+        val maxBlocks = LevelledMobs.instance.helperSettings.getInt(
             "nametag-placeholder-maxblocks", 30
         )
 

@@ -339,7 +339,6 @@ class KillSubcommand : MessagesBase(), Subcommand {
         val main = LevelledMobs.instance
         @Suppress("DEPRECATION")
         if (livingEntity.customName != null && main.helperSettings.getBoolean(
-                main.settingsCfg,
                 "kill-skip-conditions.nametagged"
             )
         ) {
@@ -355,14 +354,13 @@ class KillSubcommand : MessagesBase(), Subcommand {
 
         // Tamed
         if (livingEntity is Tameable && livingEntity.isTamed
-            && main.helperSettings.getBoolean(main.settingsCfg, "kill-skip-conditions.tamed")
+            && main.helperSettings.getBoolean( "kill-skip-conditions.tamed")
         ) {
             return true
         }
 
         // Leashed
         if (livingEntity.isLeashed && main.helperSettings.getBoolean(
-                main.settingsCfg,
                 "kill-skip-conditions.leashed"
             )
         ) {
@@ -373,7 +371,6 @@ class KillSubcommand : MessagesBase(), Subcommand {
         return livingEntity.type == EntityType.ZOMBIE_VILLAGER &&
                 (livingEntity as ZombieVillager).isConverting &&
                 main.helperSettings.getBoolean(
-                    main.settingsCfg,
                     "kill-skip-conditions.convertingZombieVillager"
                 )
     }

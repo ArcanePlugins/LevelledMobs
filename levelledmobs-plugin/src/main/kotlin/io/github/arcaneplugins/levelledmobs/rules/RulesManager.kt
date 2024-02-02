@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException
 import java.time.Duration
 import java.time.Instant
 import java.util.LinkedList
-import java.util.SortedMap
 import java.util.TreeMap
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -42,7 +41,7 @@ import org.bukkit.entity.Player
  */
 @Suppress("DEPRECATION")
 class RulesManager {
-    val rulesInEffect: SortedMap<Int, MutableList<RuleInfo>> = TreeMap()
+    val rulesInEffect = mutableListOf<RuleInfo>()
     val ruleNameMappings: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     val biomeGroupMappings: MutableMap<String, MutableList<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     val rulesCooldown = mutableMapOf<String, MutableList<Instant>>()
@@ -53,15 +52,13 @@ class RulesManager {
         private set
 
     fun getRuleIsWorldAllowedInAnyRule(world: World?): Boolean {
-        if (world == null) {
-            return false
-        }
+        if (world == null) return false
+
         var result = false
 
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
-            if (!ruleInfo.ruleIsEnabled) {
-                continue
-            }
+            if (!ruleInfo.ruleIsEnabled) continue
+
             if (ruleInfo.conditionsWorlds != null && ruleInfo.conditionsWorlds!!.isEnabledInList(
                     world.name, null
                 )
@@ -270,15 +267,9 @@ class RulesManager {
     }
 
     fun isPlayerLevellingEnabled(): Boolean {
-        for (rules in rulesInEffect.values) {
-            if (rules == null) {
-                continue
-            }
-
-            for (ruleInfo in rules) {
-                if (ruleInfo.ruleIsEnabled && ruleInfo.playerLevellingOptions != null) {
-                    return true
-                }
+        for (ruleInfo in rulesInEffect) {
+            if (ruleInfo.ruleIsEnabled && ruleInfo.playerLevellingOptions != null) {
+                return true
             }
         }
 
@@ -468,7 +459,7 @@ class RulesManager {
     fun getRuleCreatureNametagVisbility(
         lmEntity: LivingEntityWrapper
     ): List<NametagVisibilityEnum?> {
-        var result: List<NametagVisibilityEnum>? = null
+        var result: MutableList<NametagVisibilityEnum>? = null
 
         try {
             for (ruleInfo in lmEntity.getApplicableRules()) {
@@ -598,7 +589,7 @@ class RulesManager {
         }
 
         val useCustomNameForNametags = LevelledMobs.instance.helperSettings.getBoolean(
-            LevelledMobs.instance.settingsCfg, "use-customname-for-mob-nametags"
+            "use-customname-for-mob-nametags"
         )
         val entityName = capitalize(lmEntity.nameIfBaby.replace("_".toRegex(), " "))
         var result = namesInfo[0]
@@ -748,49 +739,48 @@ class RulesManager {
             this.lastRulesCheck = Instant.now()
         }
 
-        for (rules in rulesInEffect.values) {
-            for (ruleInfo in rules) {
-                if (!ruleInfo.ruleIsEnabled || ruleInfo.isTempDisabled) {
-                    continue
-                }
+        for (ruleInfo in rulesInEffect) {
+            if (!ruleInfo.ruleIsEnabled || ruleInfo.isTempDisabled) {
+                continue
+            }
 
-                if (lmInterface is LivingEntityWrapper && !isRuleApplicableEntity(
-                        lmInterface, ruleInfo
-                    )
-                ) {
-                    continue
-                }
-
-                val checkResult: RuleCheckResult = isRuleApplicableInterface(
-                    lmInterface,
-                    ruleInfo
+            if (lmInterface is LivingEntityWrapper && !isRuleApplicableEntity(
+                    lmInterface, ruleInfo
                 )
-                if (!checkResult.useResult) {
-                    if (checkResult.ruleMadeChance != null && !checkResult.ruleMadeChance!!) {
-                        applicableRules.allApplicableRulesDidNotMakeChance.add(ruleInfo)
-                    }
-                    continue
-                } else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance!!) {
-                    applicableRules.allApplicableRulesMadeChance.add(ruleInfo)
-                }
+            ) {
+                continue
+            }
 
-                applicableRules.allApplicableRules.add(ruleInfo)
-                checkIfRuleShouldBeTempDisabled(ruleInfo, lmInterface)
+            val checkResult = isRuleApplicableInterface(
+                lmInterface,
+                ruleInfo
+            )
 
-                if (ruleInfo.stopProcessingRules != null) {
-                    val result = ruleInfo.stopProcessingRules!!
-                    DebugManager.log(
-                        DebugType.SETTING_STOP_PROCESSING,
-                        ruleInfo, lmInterface, result
-                    ) {
-                        String.format(
-                            "&b%s&7, mob: &b%s&7, rule count: &b%s",
-                            ruleInfo.ruleName, lmInterface.typeName,
-                            applicableRules.allApplicableRules.size
-                        )
-                    }
-                    if (!result) break
+            if (!checkResult.useResult) {
+                if (checkResult.ruleMadeChance != null && !checkResult.ruleMadeChance!!) {
+                    applicableRules.allApplicableRulesDidNotMakeChance.add(ruleInfo)
                 }
+                continue
+            } else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance!!) {
+                applicableRules.allApplicableRulesMadeChance.add(ruleInfo)
+            }
+
+            applicableRules.allApplicableRules.add(ruleInfo)
+            checkIfRuleShouldBeTempDisabled(ruleInfo, lmInterface)
+
+            if (ruleInfo.stopProcessingRules != null) {
+                val result = ruleInfo.stopProcessingRules!!
+                DebugManager.log(
+                    DebugType.SETTING_STOP_PROCESSING,
+                    ruleInfo, lmInterface, result
+                ) {
+                    String.format(
+                        "&b%s&7, mob: &b%s&7, rule count: &b%s",
+                        ruleInfo.ruleName, lmInterface.typeName,
+                        applicableRules.allApplicableRules.size
+                    )
+                }
+                if (!result) break
             }
         }
 
@@ -1136,9 +1126,9 @@ class RulesManager {
         return true
     }
 
-    private fun meetsMaxDistanceCriteria
-                (lmEntity: LivingEntityWrapper,
-                 rule: RuleInfo
+    private fun meetsMaxDistanceCriteria(
+        lmEntity: LivingEntityWrapper,
+        rule: RuleInfo
     ): Boolean {
         val mdr = rule.conditionsWithinCoords!!
 
@@ -1183,7 +1173,8 @@ class RulesManager {
     }
 
     private fun isRuleApplicableInterface(
-        lmInterface: LivingEntityInterface, ri: RuleInfo
+        lmInterface: LivingEntityInterface,
+        ri: RuleInfo
     ): RuleCheckResult {
         if (ri.conditionsEntities != null) {
             if (lmInterface is LivingEntityWrapper) {
@@ -1192,12 +1183,7 @@ class RulesManager {
                 )
                 DebugManager.log(
                     DebugType.CONDITION_ENTITIES_LIST, ri, lmInterface, result
-                ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7", ri.ruleName,
-                        lmInterface.nameIfBaby
-                    )
-                }
+                ) { "&b${ri.ruleName}&7, mob: &b${lmInterface.nameIfBaby}&7" }
 
                 if (!result) return RuleCheckResult(false)
             } else {
@@ -1208,12 +1194,7 @@ class RulesManager {
 
                 DebugManager.log(
                     DebugType.CONDITION_ENTITIES_LIST, ri, lmInterface, result
-                ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7", ri.ruleName,
-                        lmInterface.typeName
-                    )
-                }
+                ) { "&b${ri.ruleName}&7, mob: &b${lmInterface.typeName}&7" }
 
                 if (!result) return RuleCheckResult(false)
             }
@@ -1448,7 +1429,9 @@ class RulesManager {
         return perms.isBlacklist
     }
 
-    fun buildBiomeGroupMappings(customBiomeGroups: MutableMap<String, MutableSet<String>>?) {
+    fun buildBiomeGroupMappings(
+        customBiomeGroups: MutableMap<String, MutableSet<String>>?
+    ) {
         biomeGroupMappings.clear()
 
         if (customBiomeGroups == null) {
@@ -1523,9 +1506,7 @@ class RulesManager {
             val sb = StringBuilder()
             if (isFromConsole) {
                 sb.append(LevelledMobs.instance.configUtils.getPrefix())
-                sb.append(
-                    String.format(" %s rule(s) currently disabled:", rulesCooldown.size)
-                )
+                sb.append(" ${rulesCooldown.size} rule(s) currently disabled:")
             }
 
             for (ruleName in rulesCooldown.keys) {
@@ -1549,18 +1530,15 @@ class RulesManager {
     }
 
     fun updateRulesHash() {
-        val sb = java.lang.StringBuilder()
+        val sb = StringBuilder()
 
         synchronized(ruleLocker) {
-            for (rulePri in rulesInEffect.keys) {
-                val rules = rulesInEffect[rulePri]!!
-                for (rule in rules) {
-                    if (!rule.ruleIsEnabled) {
-                        continue
-                    }
-                    if (sb.isNotEmpty()) sb.append("\n")
-                    sb.append(rule.formatRulesVisually(true, mutableListOf("id")))
+            for (rule in rulesInEffect) {
+                if (!rule.ruleIsEnabled) {
+                    continue
                 }
+                if (sb.isNotEmpty()) sb.append("\n")
+                sb.append(rule.formatRulesVisually(true, mutableListOf("id")))
             }
         }
 
@@ -1577,7 +1555,7 @@ class RulesManager {
     }
 
     companion object{
-        val ruleLocker: Any = Any()
+        val ruleLocker = Any()
 
         // taken from https://www.baeldung.com/sha-256-hashing-java
         private fun bytesToHex(hash: ByteArray): String {

@@ -14,7 +14,6 @@ import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Particle
 import org.bukkit.block.Biome
 import kotlin.reflect.KMutableProperty
@@ -51,10 +50,11 @@ class RuleInfo(
     @ExcludeFromHash @DoNotShow
     var mergeEntityNameOverrides: Boolean? = null
     var passengerMatchLevel: Boolean? = null
-    @ExcludeFromHash
+    @ExcludeFromHash @RuleFieldInfo("lock entity", RuleType.APPLY_SETTING)
     var lockEntity: Boolean? = null
     @ExcludeFromHash @RuleFieldInfo("spawner particles count", RuleType.APPLY_SETTING)
     var spawnerParticlesCount: Int? = null
+    @RuleFieldInfo("max random variance", RuleType.STRATEGY)
     var maxRandomVariance: Int? = null
     @ExcludeFromHash @RuleFieldInfo("creeper max damage radius", RuleType.APPLY_SETTING)
     var creeperMaxDamageRadius: Int? = null

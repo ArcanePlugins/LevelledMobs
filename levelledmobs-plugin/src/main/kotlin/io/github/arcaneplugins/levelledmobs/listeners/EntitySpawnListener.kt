@@ -29,7 +29,6 @@ import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.SpawnerSpawnEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 
 /**
  * This class handles mob spawning on the server, forming the starting point of the 'levelling'
@@ -84,10 +83,7 @@ class EntitySpawnListener : Listener{
             updateMobForPlayerLevelling(lmEntity)
         }
 
-        val mobProcessDelay: Int = main.helperSettings.getInt(
-            main.settingsCfg,
-            "mob-process-delay", 0
-        )
+        val mobProcessDelay = main.helperSettings.getInt("mob-process-delay", 0)
 
         if (mobProcessDelay > 0) {
             delayedAddToQueue(lmEntity, event, mobProcessDelay)
@@ -101,11 +97,10 @@ class EntitySpawnListener : Listener{
     private fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
         val main = LevelledMobs.instance
         val onlinePlayerCount = lmEntity.world.players.size
-        val checkDistance: Int = main.helperSettings.getInt(
-            main.settingsCfg,
+        val checkDistance = main.helperSettings.getInt(
             "async-task-max-blocks-from-player", 100
         )
-        val playerList: List<Player> = if (onlinePlayerCount <= 10) getPlayersOnServerNearMob(
+        val playerList: MutableList<Player> = if (onlinePlayerCount <= 10) getPlayersOnServerNearMob(
             lmEntity.livingEntity,
             checkDistance
         ) else getPlayersNearMob(lmEntity.livingEntity, checkDistance)
@@ -167,7 +162,7 @@ class EntitySpawnListener : Listener{
             .toMutableList()
     }
 
-    fun getPlayersNearMob(
+    private fun getPlayersNearMob(
         mob: LivingEntity,
         checkDistance: Int
     ): MutableList<Player> {
@@ -266,23 +261,20 @@ class EntitySpawnListener : Listener{
     ) {
         val world = location.world ?: return
 
-        val runnable: BukkitRunnable = object : BukkitRunnable() {
-            override fun run() {
-                try {
-                    for (i in 0 until count) {
-                        world.spawnParticle(particle, location, 20, 0.0, 0.0, 0.0, 0.1)
-                        Thread.sleep(50)
-                    }
-                } catch (ignored: InterruptedException) {}
-            }
+        val scheduler = SchedulerWrapper {
+            try {
+                for (i in 0 until count) {
+                    world.spawnParticle(particle, location, 20, 0.0, 0.0, 0.0, 0.1)
+                    Thread.sleep(50)
+                }
+            } catch (ignored: InterruptedException) {}
         }
-
-        runnable.runTaskAsynchronously(LevelledMobs.instance)
+        scheduler.run()
     }
 
     fun preprocessMob(
         lmEntity: LivingEntityWrapper,
-        event: Event
+        event: Event?
     ) {
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled) {
             return
@@ -292,7 +284,7 @@ class EntitySpawnListener : Listener{
         }
 
         val main = LevelledMobs.instance
-        var additionalInfo: AdditionalLevelInformation = AdditionalLevelInformation.NOT_APPLICABLE
+        var additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE
 
         lmEntity.spawnedTimeOfDay = lmEntity.world.time.toInt()
 
@@ -353,10 +345,8 @@ class EntitySpawnListener : Listener{
             lmEntity.playerForLevelling = null
         }
 
-        val additionalLevelInfo = HashSet(
-            listOf(additionalInfo)
-        )
-        val levellableState: LevellableState = getLevellableState(lmEntity, event)
+        val additionalLevelInfo = mutableSetOf(additionalInfo)
+        val levellableState = getLevellableState(lmEntity, event)
         if (levellableState == LevellableState.ALLOWED) {
             val levelAssignment = main.levelInterface.generateLevel(lmEntity)
             if (shouldDenyLevel(lmEntity, levelAssignment)) {
@@ -368,14 +358,13 @@ class EntitySpawnListener : Listener{
                 }
             } else {
                 if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
-                    val runnable: BukkitRunnable = object : BukkitRunnable() {
-                        override fun run() {
-                            updateMobForPlayerLevelling(lmEntity)
-                            lmEntity.free()
-                        }
+                    val scheduler = SchedulerWrapper(lmEntity.livingEntity){
+                        updateMobForPlayerLevelling(lmEntity)
+                        lmEntity.free()
                     }
+                    scheduler.runDirectlyInBukkit = true
                     lmEntity.inUseCount.getAndIncrement()
-                    runnable.runTask(main)
+                    scheduler.run()
                 }
 
                 val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
@@ -447,7 +436,7 @@ class EntitySpawnListener : Listener{
 
     private fun getLevellableState(
         lmEntity: LivingEntityWrapper,
-        event: Event
+        event: Event?
     ): LevellableState {
         val levellableState = LevelledMobs.instance.levelInterface.getLevellableState(lmEntity)
 

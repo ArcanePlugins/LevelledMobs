@@ -51,7 +51,7 @@ class CombustListener: Listener {
         }
 
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
-        val multiplier: Double = LevelledMobs.instance.rulesManager.getRuleSunlightBurnIntensity(lmEntity)
+        val multiplier = LevelledMobs.instance.rulesManager.getRuleSunlightBurnIntensity(lmEntity)
         if (multiplier == 0.0) {
             lmEntity.free()
             return

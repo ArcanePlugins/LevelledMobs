@@ -76,8 +76,8 @@ class Companion{
     var showCustomDrops = false
     private val entityDeathInChunkCounter = mutableMapOf<Long, MutableMap<EntityType, ChunkKillInfo>>()
     private val chunkKillNoticationTracker = mutableMapOf<Long, MutableMap<UUID, Instant>>()
-    val playerNetherPortals = mutableMapOf<Player, Location>()
-    val playerWorldPortals = mutableMapOf<Player, Location>()
+    private val playerNetherPortals = mutableMapOf<Player, Location>()
+    private val playerWorldPortals = mutableMapOf<Player, Location>()
     val spawnerCopyIds = mutableListOf<UUID>()
     val spawnerInfoIds = mutableListOf<UUID>()
     private val pluginManager = Bukkit.getPluginManager()
@@ -100,8 +100,8 @@ class Companion{
             return 0
         }
 
-        val cfg = YamlConfiguration.loadConfiguration(file)
-        return main.helperSettings.getInt(cfg, "file-version")
+        main.helperSettings.cs = YamlConfiguration.loadConfiguration(file)
+        return main.helperSettings.getInt("file-version")
     }
 
     // Note: also called by the reload subcommand.
@@ -128,7 +128,7 @@ class Companion{
 
         if (configLoad != null) // only load if settings were loaded successfully
         {
-            main.settingsCfg = configLoad
+            main.helperSettings.cs = configLoad
             main.messagesCfg = loadFile(
                 main, "messages",
                 FileLoader.MESSAGES_FILE_VERSION
@@ -168,19 +168,17 @@ class Companion{
 
         main.configUtils.load()
         main.playerLevellingMinRelevelTime = main.helperSettings.getIntTimeUnitMS(
-            main.settingsCfg,
             "player-levelling-relevel-min-time", 5000L
         )!!
-        this.useAdventure = main.helperSettings.getBoolean(main.settingsCfg, "use-adventure", true)
+        this.useAdventure = main.helperSettings.getBoolean( "use-adventure", true)
 
         return true
     }
 
     private fun parseDebugsEnabled() {
         val main = LevelledMobs.instance
-        val debugsEnabled = main.settingsCfg.getStringList(
-            main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc")
-        )
+        val debugsEnabled = main.helperSettings.cs.getStringList("debug-misc")
+
         if (debugsEnabled.isEmpty()) {
             return
         }
@@ -243,12 +241,12 @@ class Companion{
         main.mobsQueueManager.start()
         main.nametagQueueManager.start()
         main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(
-            main.settingsCfg, "level-mobs-upon-spawn", true
+            "level-mobs-upon-spawn", true
         )
         main.entityDamageDebugListener = EntityDamageDebugListener()
         main.blockPlaceListener = BlockPlaceListener()
 
-        if (main.helperSettings.getBoolean(main.settingsCfg, "debug-entity-damage")) {
+        if (main.helperSettings.getBoolean( "debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
             main.configUtils.debugEntityDamageWasEnabled = true
             pluginManager.registerEvents(main.entityDamageDebugListener, main)
@@ -278,7 +276,6 @@ class Companion{
         }
 
         if (main.helperSettings.getBoolean(
-                main.settingsCfg,
                 "ensure-mobs-are-levelled-on-chunk-load", true
             )
         ) {
@@ -479,7 +476,7 @@ class Companion{
     //Check for updates on the Spigot page.
     fun checkUpdates() {
         val main = LevelledMobs.instance
-        if (main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true)) {
+        if (main.helperSettings.getBoolean("use-update-checker", true)) {
             val updateChecker = UpdateChecker(main, 74304)
             try {
                 updateChecker.getLatestVersion { latestVersion: String ->
@@ -549,10 +546,8 @@ class Companion{
                                 true
                             )
                         ) {
-                            updateResult.forEach(Consumer { message: String? ->
-                                Utils.logger.warning(
-                                    message!!
-                                )
+                            updateResult.forEach(Consumer { message: String ->
+                                Utils.logger.warning(message)
                             })
                         }
 

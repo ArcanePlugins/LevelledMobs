@@ -31,7 +31,7 @@ class EntityDamageDebugListener : Listener {
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         // Make sure debug entity damage is enabled
         val main = LevelledMobs.instance
-        if (!main.helperSettings.getBoolean(main.settingsCfg, "debug-entity-damage")) {
+        if (!main.helperSettings.getBoolean( "debug-entity-damage")) {
             return
         }
 
@@ -48,7 +48,10 @@ class EntityDamageDebugListener : Listener {
     }
 
     @Suppress("DEPRECATION")
-    private fun checkEntity(player: Player, lmEntity: LivingEntityWrapper) {
+    private fun checkEntity(
+        player: Player,
+        lmEntity: LivingEntityWrapper
+    ) {
         // Make sure the mob is levelled
         if (!lmEntity.isLevelled) {
             return
@@ -151,11 +154,18 @@ class EntityDamageDebugListener : Listener {
         cooldownMap[player.uniqueId] = Cooldown(System.currentTimeMillis(), entityId)
     }
 
-    private fun send(player: Player, message: String) {
+    private fun send(
+        player: Player,
+        message: String
+    ) {
         send(player, message, true)
     }
 
-    private fun send(player: Player, message: String, usePrefix: Boolean) {
+    private fun send(
+        player: Player,
+        message: String,
+        usePrefix: Boolean
+    ) {
         if (usePrefix) {
             player.sendMessage(
                 colorizeAll(LevelledMobs.instance.configUtils.getPrefix() + "&7 " + message)

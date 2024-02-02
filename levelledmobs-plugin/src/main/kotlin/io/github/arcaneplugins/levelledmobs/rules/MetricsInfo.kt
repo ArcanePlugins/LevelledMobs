@@ -21,11 +21,9 @@ class MetricsInfo {
     }
 
     private fun isCustomDropsEnabed(): Boolean {
-        for (rules in LevelledMobs.instance.rulesManager.rulesInEffect.values) {
-            for (ruleInfo in rules) {
-                if (ruleInfo.customDropsUseForMobs != null && ruleInfo.customDropsUseForMobs!!) {
-                    return true
-                }
+        for (ruleInfo in LevelledMobs.instance.rulesManager.rulesInEffect) {
+            if (ruleInfo.customDropsUseForMobs != null && ruleInfo.customDropsUseForMobs!!) {
+                return true
             }
         }
 
@@ -117,22 +115,19 @@ class MetricsInfo {
 
     fun usesAutoUpdateChecker(): String {
         return convertBooleanToString(
-            LevelledMobs.instance.helperSettings.getBoolean(
-                LevelledMobs.instance.settingsCfg, "use-update-checker", true)
-        )
+            LevelledMobs.instance.helperSettings.getBoolean("use-update-checker", true))
     }
 
     fun levelMobsUponSpawn(): String {
         return convertBooleanToString(
             LevelledMobs.instance.helperSettings.getBoolean(
-                LevelledMobs.instance.settingsCfg, "level-mobs-upon-spawn", true)
+                "level-mobs-upon-spawn", true)
         )
     }
 
     fun checkMobsOnChunkLoad(): String {
         return convertBooleanToString(
             LevelledMobs.instance.helperSettings.getBoolean(
-                LevelledMobs.instance.settingsCfg,
                 "ensure-mobs-are-levelled-on-chunk-load", true
             )
         )

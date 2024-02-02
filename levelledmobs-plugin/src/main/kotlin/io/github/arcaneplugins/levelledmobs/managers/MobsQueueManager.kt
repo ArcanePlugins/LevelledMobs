@@ -83,6 +83,6 @@ class MobsQueueManager {
         if (!item.lmEntity.getShouldShowLMNametag()) {
             return
         }
-        LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event!!)
+        LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)
     }
 }

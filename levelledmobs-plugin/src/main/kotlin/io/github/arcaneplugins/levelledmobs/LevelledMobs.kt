@@ -59,13 +59,13 @@ class LevelledMobs : JavaPlugin() {
     val mobsQueueManager = MobsQueueManager()
     val nametagQueueManager = NametagQueueManager()
     val nametagTimerChecker = NametagTimerChecker()
-    val attributeSyncObject: Any = Any()
+    val attributeSyncObject = Any()
     val levelledMobsCommand = LevelledMobsCommand()
     val random = Random()
     var placeholderApiIntegration: PlaceholderApiIntegration? = null
         internal set
-    var migratedFromPre30: Boolean = false
-    val helperSettings = YmlParsingHelper()
+    var migratedFromPre30 = false
+    val helperSettings = YmlParsingHelper(YamlConfiguration())
     var playerLevellingMinRelevelTime = 0L
         internal set
     var maxPlayersRecorded = 0
@@ -74,8 +74,8 @@ class LevelledMobs : JavaPlugin() {
     val ver = ServerVersionInfo()
 
     // Configuration
-    var settingsCfg = YamlConfiguration()
-        internal set
+    //var settingsCfg = YamlConfiguration()
+    //    internal set
     var messagesCfg = YamlConfiguration()
         internal set
     var dropsCfg = YamlConfiguration()
@@ -113,14 +113,10 @@ class LevelledMobs : JavaPlugin() {
             return
         }
         definitions.useTranslationComponents = helperSettings.getBoolean(
-            settingsCfg,
             "use-translation-components", true
         )
         definitions.setUseLegacySerializer(
-            helperSettings.getBoolean(
-                settingsCfg,
-                "use-legacy-serializer", true
-            )
+            helperSettings.getBoolean("use-legacy-serializer", true)
         )
         nametagQueueManager.nametagSenderHandler.refresh()
         companion.registerListeners()
@@ -199,24 +195,24 @@ class LevelledMobs : JavaPlugin() {
         )
         reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg)
 
-        if (helperSettings.getBoolean(settingsCfg, "debug-entity-damage")
+        if (helperSettings.getBoolean( "debug-entity-damage")
             && !configUtils.debugEntityDamageWasEnabled
         ) {
             configUtils.debugEntityDamageWasEnabled = true
             Bukkit.getPluginManager().registerEvents(entityDamageDebugListener, this)
-        } else if (!helperSettings.getBoolean(settingsCfg, "debug-entity-damage")
+        } else if (!helperSettings.getBoolean( "debug-entity-damage")
             && configUtils.debugEntityDamageWasEnabled
         ) {
             configUtils.debugEntityDamageWasEnabled = false
             HandlerList.unregisterAll(entityDamageDebugListener)
         }
 
-        if (helperSettings.getBoolean(settingsCfg, "ensure-mobs-are-levelled-on-chunk-load")
+        if (helperSettings.getBoolean("ensure-mobs-are-levelled-on-chunk-load")
             && !configUtils.chunkLoadListenerWasEnabled
         ) {
             configUtils.chunkLoadListenerWasEnabled = true
             Bukkit.getPluginManager().registerEvents(chunkLoadListener, this)
-        } else if (!helperSettings.getBoolean(settingsCfg, "ensure-mobs-are-levelled-on-chunk-load")
+        } else if (!helperSettings.getBoolean( "ensure-mobs-are-levelled-on-chunk-load")
             && configUtils.chunkLoadListenerWasEnabled
         ) {
             configUtils.chunkLoadListenerWasEnabled = false
@@ -224,7 +220,6 @@ class LevelledMobs : JavaPlugin() {
         }
 
         levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(
-            settingsCfg,
             "level-mobs-upon-spawn", true
         )
 
@@ -232,12 +227,10 @@ class LevelledMobs : JavaPlugin() {
         configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled()
         rulesManager.clearTempDisabledRulesCounts()
         definitions.useTranslationComponents = helperSettings.getBoolean(
-            settingsCfg,
             "use-translation-components", true
         )
         definitions.setUseLegacySerializer(
             helperSettings.getBoolean(
-                settingsCfg,
                 "use-legacy-serializer", true
             )
         )

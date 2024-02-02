@@ -17,7 +17,7 @@ class LevelTierMatching {
     var maxLevel: Int? = null
     var mobName: String? = null
 
-    val hasLevelRestriction: Boolean
+    private val hasLevelRestriction: Boolean
         get () = minLevel != null || maxLevel != null
 
     fun isApplicableToMobLevel(mobLevel: Int): Boolean {

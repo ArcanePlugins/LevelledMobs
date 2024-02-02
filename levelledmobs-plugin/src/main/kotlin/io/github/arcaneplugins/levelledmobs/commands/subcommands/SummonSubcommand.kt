@@ -457,7 +457,6 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         }
 
         val maxAmount: Int = main.helperSettings.getInt(
-            main.settingsCfg,
             "customize-summon-command-limit", 100
         )
         if (options.amount > maxAmount) {
@@ -509,10 +508,10 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         }
 
         if (options.summonType === SummonType.HERE || options.summonType === SummonType.AT_PLAYER) {
-            val distFromPlayer = main.settingsCfg.getInt(
+            val distFromPlayer = main.helperSettings.getInt(
                 "summon-command-spawn-distance-from-player", 5
             )
-            val minDistFromPlayer = main.settingsCfg.getInt(
+            val minDistFromPlayer = main.helperSettings.getInt(
                 "summon-command-spawn-min-distance-from-player", 0
             )
             if (distFromPlayer > 0 && target != null) {
@@ -564,7 +563,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             }
         }
 
-        val printResults: Boolean = main.helperSettings.getBoolean(main.settingsCfg, "print-lm-summon-results", true)
+        val printResults: Boolean = main.helperSettings.getBoolean("print-lm-summon-results", true)
 
         when (options.summonType) {
             SummonType.HERE -> {
@@ -635,14 +634,12 @@ class SummonSubcommand : MessagesBase(), Subcommand {
 
         val main = LevelledMobs.instance
         var maxDistFromPlayer: Int? = main.helperSettings.getInt2(
-            main.settingsCfg,
             "summon-command-spawn-max-distance-from-player", null
         )
 
         if (maxDistFromPlayer == null) {
             // legacy name
             maxDistFromPlayer = main.helperSettings.getInt2(
-                main.settingsCfg,
                 "summon-command-spawn-distance-from-player", null
             )
         }
@@ -650,7 +647,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         if (maxDistFromPlayer == null) maxDistFromPlayer = 5
 
         val minDistFromPlayer = min(
-            main.settingsCfg.getInt(
+            main.helperSettings.getInt(
                 "summon-command-spawn-min-distance-from-player", 3
             ).toDouble(), maxDistFromPlayer.toDouble()
         ).toInt()

@@ -41,7 +41,7 @@ class EntityNametagListener: Listener {
         val lmEntity = LivingEntityWrapper.getInstance(event.rightClicked as LivingEntity)
 
         if (main.rulesManager.getRuleMobCustomNameStatus(lmEntity)
-            === MobCustomNameStatus.NOT_NAMETAGGED
+            == MobCustomNameStatus.NOT_NAMETAGGED
         ) {
             main.levelInterface.removeLevel(lmEntity)
             lmEntity.free()

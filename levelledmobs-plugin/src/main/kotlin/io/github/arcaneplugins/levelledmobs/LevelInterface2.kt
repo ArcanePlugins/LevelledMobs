@@ -77,7 +77,7 @@ interface LevelInterface2 : LevelInterface {
         level: Int,
         isSummoned: Boolean,
         bypassLimits: Boolean,
-        additionalLevelInformation: MutableSet<AdditionalLevelInformation?>
+        additionalLevelInformation: MutableSet<AdditionalLevelInformation>?
     )
 
     /**

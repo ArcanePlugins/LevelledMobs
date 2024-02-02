@@ -160,8 +160,7 @@ class PlayerJoinListener : Listener {
 
             val lmEntity = LivingEntityWrapper.getInstance(entity)
 
-            val preserveMobName: Boolean = !main.nametagQueueManager.nametagSenderHandler.isUsingProtocolLib
-            val nametag = main.levelManager.getNametag(lmEntity, false, preserveMobName)
+            val nametag = main.levelManager.getNametag(lmEntity, isDeathNametag = false, preserveMobName = false)
             main.levelManager.updateNametag(lmEntity, nametag, mutableListOf(player))
             lmEntity.free()
         }

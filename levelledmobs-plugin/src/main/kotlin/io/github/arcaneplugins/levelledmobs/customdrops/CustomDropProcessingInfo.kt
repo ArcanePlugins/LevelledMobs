@@ -38,8 +38,8 @@ class CustomDropProcessingInfo {
     var customDropId: String? = null
     var newDrops: MutableList<ItemStack>? = null
     var dropInstance: CustomDropInstance? = null
-    val groupIDsDroppedAlready: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-    val itemsDroppedById = mutableMapOf<UUID, Int>()
+    private val groupIDsDroppedAlready: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    private val itemsDroppedById = mutableMapOf<UUID, Int>()
     var prioritizedDrops: MutableMap<Int, MutableList<CustomDropBase>>? = null
     var dropRules: CustomDropsRuleSet? = null
     val allDropInstances=  mutableListOf<CustomDropInstance>()

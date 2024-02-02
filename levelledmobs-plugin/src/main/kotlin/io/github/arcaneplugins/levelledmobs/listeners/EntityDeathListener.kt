@@ -171,10 +171,7 @@ class EntityDeathListener : Listener {
             return false
         }
 
-        if (main.helperSettings.getBoolean(
-                main.settingsCfg, "exceed-kill-in-chunk-message",
-                true
-            )
+        if (main.helperSettings.getBoolean("exceed-kill-in-chunk-message",true)
         ) {
             val chunkKeys =
                 adjacentChunksResult?.chunkKeys ?: mutableListOf(chunkKey)

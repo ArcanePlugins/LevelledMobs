@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Contract
  */
 class FineTuningAttributes : MergableRule, Cloneable {
     private var multipliers = mutableMapOf<Addition, Multiplier>()
-    var doNotMerge: Boolean = false
+    var doNotMerge = false
     var useStacked: Boolean? = null
 
     fun getUseStacked(): Boolean {
@@ -21,7 +21,6 @@ class FineTuningAttributes : MergableRule, Cloneable {
     val isEmpty: Boolean
         get() = multipliers.isEmpty() && !doNotMerge && (useStacked == null)
 
-
     override fun merge(mergableRule: MergableRule?) {
         if (mergableRule !is FineTuningAttributes) {
             return
@@ -30,8 +29,8 @@ class FineTuningAttributes : MergableRule, Cloneable {
         multipliers.putAll(mergableRule.copyMultipliers())
     }
 
-    fun addItem(addition: Addition?, multiplier: Multiplier?) {
-        multipliers[addition!!] = multiplier!!
+    fun addItem(addition: Addition, multiplier: Multiplier) {
+        multipliers[addition] = multiplier
     }
 
     override val doMerge: Boolean
@@ -110,12 +109,12 @@ class FineTuningAttributes : MergableRule, Cloneable {
     }
 
     private fun cloneMultipliers() {
-        val copy: Map<Addition, Multiplier> = copyMultipliers()
+        val copy = copyMultipliers()
         this.multipliers = LinkedHashMap(copy.size)
         multipliers.putAll(copy)
     }
 
-    private fun copyMultipliers(): Map<Addition, Multiplier> {
+    private fun copyMultipliers(): MutableMap<Addition, Multiplier> {
         val copy: MutableMap<Addition, Multiplier> = LinkedHashMap(
             multipliers.size
         )
@@ -131,7 +130,7 @@ class FineTuningAttributes : MergableRule, Cloneable {
     override fun toString(): String {
         if (this.isEmpty) return "No items"
 
-        val sb = java.lang.StringBuilder()
+        val sb = StringBuilder()
 
         if (this.getUseStacked()) sb.append("(all stk)")
 
@@ -139,11 +138,9 @@ class FineTuningAttributes : MergableRule, Cloneable {
             if (sb.isNotEmpty()) sb.append(", ")
 
             sb.append(getShortName(addition))
-            sb.append(": ")
-            sb.append(value)
+            sb.append(": ").append(value)
             if (useStacked1) {
-                sb.append(" (")
-                sb.append("stk)")
+                sb.append(" (stk)")
             }
         }
 

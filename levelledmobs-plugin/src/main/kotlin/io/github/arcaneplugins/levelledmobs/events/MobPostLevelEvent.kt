@@ -16,7 +16,7 @@ import org.bukkit.event.HandlerList
 class MobPostLevelEvent(
     val lmEntity: LivingEntityWrapper,
     val levelCause: LevelCause,
-    val additionalInformation: MutableSet<AdditionalLevelInformation?>
+    val additionalInformation: MutableSet<AdditionalLevelInformation>?
 ) : Event(!Bukkit.isPrimaryThread()) {
     companion object {
         private val HANDLERS = HandlerList()

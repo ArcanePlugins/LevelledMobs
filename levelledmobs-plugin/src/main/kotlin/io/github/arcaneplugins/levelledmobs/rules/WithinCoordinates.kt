@@ -17,9 +17,9 @@ class WithinCoordinates {
     var endX: Int? = null
     var endY: Int? = null
     var endZ: Int? = null
-    var infinityDirectionX = InfinityDirection.NONE
-    var infinityDirectionY = InfinityDirection.NONE
-    var infinityDirectionZ = InfinityDirection.NONE
+    private var infinityDirectionX = InfinityDirection.NONE
+    private var infinityDirectionY = InfinityDirection.NONE
+    private var infinityDirectionZ = InfinityDirection.NONE
 
     fun parseAxis(
         number: String?,

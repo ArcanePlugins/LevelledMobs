@@ -54,7 +54,7 @@ class MobDataManager {
         // Head drops
         val main = LevelledMobs.instance
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!main.helperSettings.getBoolean(main.settingsCfg, "mobs-multiply-head-drops")) {
+            if (!main.helperSettings.getBoolean( "mobs-multiply-head-drops")) {
                 return false
             }
         }

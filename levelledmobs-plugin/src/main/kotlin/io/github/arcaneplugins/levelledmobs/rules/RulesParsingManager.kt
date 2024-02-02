@@ -40,7 +40,7 @@ import org.bukkit.entity.EntityType
  * @since 3.0.0
  */
 class RulesParsingManager {
-    private val ymlHelper = YmlParsingHelper()
+    //private val ymlHelper = YmlParsingHelper(YamlConfiguration())
     private var parsingInfo = RuleInfo()
     val rulePresets: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     var customRules = mutableListOf<RuleInfo>()
@@ -62,28 +62,28 @@ class RulesParsingManager {
         }
 
         val main = LevelledMobs.instance
+        //ymlHelper.cs = config
         rulePresets.clear()
         main.rulesManager.rulesInEffect.clear()
         main.customMobGroups.clear()
 
-        parseCustomMobGroups(objToCS(config, "mob-groups"))
-        parseCustomBiomeGroups(objToCS(config, "biome-groups"))
+        parseCustomMobGroups(YmlParsingHelper.objToCS(config, "mob-groups"))
+        parseCustomBiomeGroups(YmlParsingHelper.objToCS(config, "biome-groups"))
 
-        val presets = parsePresets(objToCS(config, "presets"))
+        val presets = parsePresets(YmlParsingHelper.objToCS(config, "presets"))
         for (ri in presets) {
             rulePresets[ri.presetName!!] = ri
         }
 
-        this.defaultRule = parseDefaults(objToCS(config, "default-rule"))
-        main.rulesManager.rulesInEffect[Int.MIN_VALUE] = mutableListOf()
-        main.rulesManager.rulesInEffect[Int.MIN_VALUE]!!.add(defaultRule!!)
+        this.defaultRule = parseDefaults(YmlParsingHelper.objToCS(config, "default-rule"))
+        main.rulesManager.rulesInEffect.add(defaultRule!!)
         main.rulesManager.anyRuleHasChance = defaultRule!!.conditionsChance != null
         main.rulesManager.hasAnyWGCondition = (defaultRule!!.conditionsWGregions != null
                 || defaultRule!!.conditionsWGregionOwners != null)
 
         main.rulesManager.buildBiomeGroupMappings(customBiomeGroups)
         this.customRules = parseCustomRules(
-            config[ymlHelper.getKeyNameFromConfig(config, "custom-rules")]
+            config[YmlParsingHelper.getKeyNameFromConfig(config, "custom-rules")]
         )
 
         checkCustomRules()
@@ -91,10 +91,12 @@ class RulesParsingManager {
     }
 
     fun checkCustomRules() {
-        val ruleMappings: MutableMap<String, RuleInfo> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val ruleMappings: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
         val main = LevelledMobs.instance
 
         for (ruleInfo in customRules) {
+            LevelledMobs.instance.rulesManager.rulesInEffect.add(ruleInfo)
+
             ruleMappings[ruleInfo.ruleName] = ruleInfo
             if (ruleInfo.conditionsChance != null) {
                 main.rulesManager.anyRuleHasChance = true
@@ -114,11 +116,11 @@ class RulesParsingManager {
         Utils.logger.info("Current rules hash: " + main.rulesManager.currentRulesHash)
     }
 
-    fun getAllRules(): List<RuleInfo> {
+    fun getAllRules(): MutableList<RuleInfo> {
         return getAllRules(true)
     }
 
-    fun getAllRules(includePresets: Boolean): List<RuleInfo> {
+    fun getAllRules(includePresets: Boolean): MutableList<RuleInfo> {
         val results = mutableListOf<RuleInfo>()
         if (this.defaultRule != null) {
             results.add(this.defaultRule!!)
@@ -130,9 +132,7 @@ class RulesParsingManager {
     }
 
     private fun parseCustomMobGroups(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
         for (groupName in cs.getKeys(false)) {
             val names = cs.getStringList(groupName)
@@ -143,9 +143,8 @@ class RulesParsingManager {
     }
 
     private fun parseCustomBiomeGroups(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
+
         this.customBiomeGroups = mutableMapOf()
 
         for (groupName in cs.getKeys(false)) {
@@ -172,7 +171,7 @@ class RulesParsingManager {
             return this.parsingInfo
         }
 
-        parseValues(cs)
+        parseValues(YmlParsingHelper(cs))
         return this.parsingInfo
     }
 
@@ -180,14 +179,12 @@ class RulesParsingManager {
         cs: ConfigurationSection?
     ): MutableList<RuleInfo> {
         val results = mutableListOf<RuleInfo>()
-        if (cs == null) {
-            return results
-        }
+        if (cs == null) return results
 
         var count = -1
         for (key in cs.getKeys(false)) {
             count++
-            val csKey = objToCS(cs, key)
+            val csKey = YmlParsingHelper.objToCS(cs, key)
             if (csKey == null) {
                 Utils.logger.warning("nothing was specified for preset: $key")
                 continue
@@ -195,7 +192,7 @@ class RulesParsingManager {
 
             this.parsingInfo = RuleInfo("preset $count")
             parsingInfo.presetName = key
-            parseValues(csKey)
+            parseValues(YmlParsingHelper(csKey))
             results.add(this.parsingInfo)
         }
 
@@ -242,58 +239,56 @@ class RulesParsingManager {
         defaultValue: CachedModalList<*>?,
         mlpi: ModalListParsingInfo
     ): CachedModalList<*>? {
-        if (cs == null) {
-            return defaultValue
-        }
+        if (cs == null) return defaultValue
+
+        //TODO: test changes here
+        val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, mlpi.configurationKey!!)
 
         val cachedModalList = mlpi.cachedModalList
-        val simpleStringOrArray = cs[ymlHelper.getKeyNameFromConfig(cs, mlpi.configurationKey!!)]
+        val simpleStringOrArray = cs[useKeyName]
         var cs2: ConfigurationSection? = null
-        var useList: List<String?>? = null
+        var useList: MutableList<String>? = null
 
         if (simpleStringOrArray is ArrayList<*>) {
-            useList = simpleStringOrArray as ArrayList<String>
+            useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
         } else if (simpleStringOrArray is String) {
             useList = mutableListOf(simpleStringOrArray)
         }
 
         if (useList == null) {
-            val useKeyName = ymlHelper.getKeyNameFromConfig(cs, mlpi.configurationKey!!)
-            cs2 = objToCS(cs, useKeyName)
+            cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
         }
         if (cs2 == null && useList == null) {
             return defaultValue
         }
 
-        cachedModalList!!.doMerge = ymlHelper.getBoolean(cs2, "merge")
+        cachedModalList!!.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
 
         if (cs2 != null && mlpi.supportsGroups) {
             cachedModalList.allowedGroups = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
             cachedModalList.excludedGroups = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
 
             for (group in YmlParsingHelper.getListFromConfigItem(
-                cs2,
-                MLALLOWEDGROUPS
-            )) {
+                cs2, MLALLOWEDGROUPS)
+            ) {
                 if (group.trim { it <= ' ' }.isEmpty()) {
                     continue
                 }
                 if (mlpi.groupMapping == null || !mlpi.groupMapping!!.containsKey(group)) {
-                    Utils.logger.info(String.format("invalid %s group: %s", mlpi.itemName, group))
+                    Utils.logger.info("invalid ${mlpi.itemName} group: $group")
                 } else {
                     cachedModalList.allowedGroups.add(group)
                 }
             }
 
             for (group in YmlParsingHelper.getListFromConfigItem(
-                cs2,
-                MLEXCLUDEDGROUPS
-            )) {
+                cs2, MLEXCLUDEDGROUPS)
+            ){
                 if (group.trim { it <= ' ' }.isEmpty()) {
                     continue
                 }
                 if (!LevelledMobs.instance.rulesManager.biomeGroupMappings.containsKey(group)) {
-                    Utils.logger.info(String.format("invalid %s group: %s", mlpi.itemName, group))
+                    Utils.logger.info("invalid ${mlpi.itemName} group: $group")
                 } else {
                     cachedModalList.excludedGroups.add(group)
                 }
@@ -312,7 +307,7 @@ class RulesParsingManager {
             }
 
             for (item in useList!!) {
-                if (item!!.trim { it <= ' ' }.isEmpty()) {
+                if (item.trim { it <= ' ' }.isEmpty()) {
                     continue
                 }
                 if ("*" == item.trim { it <= ' ' }) {
@@ -327,25 +322,25 @@ class RulesParsingManager {
                 try {
                     when (mlpi.type) {
                         ModalListParsingTypes.BIOME -> {
-                            val biomeModalList = cachedModalList as CachedModalList<Biome>?
-                            val modalList = if (i == 0) biomeModalList!!.allowedList else biomeModalList!!.excludedList
+                            val biomeModalList = cachedModalList as CachedModalList<Biome>
+                            val modalList = if (i == 0) biomeModalList.allowedList else biomeModalList.excludedList
 
                             val biome = Biome.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                             modalList.add(biome)
                         }
                         ModalListParsingTypes.SPAWN_REASON -> {
-                            val spawnReasonModalList = cachedModalList as CachedModalList<LevelledMobSpawnReason>?
+                            val spawnReasonModalList = cachedModalList as CachedModalList<LevelledMobSpawnReason>
                             val modalList =
-                                if (i == 0) spawnReasonModalList!!.allowedList else spawnReasonModalList!!.excludedList
+                                if (i == 0) spawnReasonModalList.allowedList else spawnReasonModalList.excludedList
 
                             val spawnReason =
                                 LevelledMobSpawnReason.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                             modalList.add(spawnReason)
                         }
                         ModalListParsingTypes.VANILLA_BONUSES -> {
-                            val vanillaBonusModalList = cachedModalList as CachedModalList<VanillaBonusEnum>?
+                            val vanillaBonusModalList = cachedModalList as CachedModalList<VanillaBonusEnum>
                             val modalList =
-                                if (i == 0) vanillaBonusModalList!!.allowedList else vanillaBonusModalList!!.excludedList
+                                if (i == 0) vanillaBonusModalList.allowedList else vanillaBonusModalList.excludedList
 
                             val vanillaBonus =
                                 VanillaBonusEnum.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
@@ -353,11 +348,7 @@ class RulesParsingManager {
                         }
                     }
                 } catch (e: IllegalArgumentException) {
-                    Utils.logger.warning(
-                        String.format(
-                            "Invalid %s %s: %s", invalidWord, mlpi.itemName, item
-                        )
-                    )
+                    Utils.logger.warning("Invalid $invalidWord ${mlpi.itemName}: $item")
                 }
             }
         }
@@ -370,36 +361,34 @@ class RulesParsingManager {
         name: String,
         defaultValue: CachedModalList<String>?
     ): CachedModalList<String>? {
-        if (cs == null) {
-            return defaultValue
-        }
+        if (cs == null) return defaultValue
 
         val cachedModalList = CachedModalList(
             TreeSet(String.CASE_INSENSITIVE_ORDER),
             TreeSet(String.CASE_INSENSITIVE_ORDER)
         )
-        val useKeyName = ymlHelper.getKeyNameFromConfig(cs, name)
+        val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, name)
         val simpleStringOrArray = cs[useKeyName]
         var cs2: ConfigurationSection? = null
         var useList: MutableList<String>? = null
 
         if (simpleStringOrArray is java.util.ArrayList<*>) {
-            useList = (simpleStringOrArray as java.util.ArrayList<String>).toMutableList()
+            useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
         } else if (simpleStringOrArray is String) {
             useList = mutableListOf(simpleStringOrArray)
         }
 
         if (useList == null) {
-            cs2 = objToCS(cs, useKeyName)
+            cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
         }
         if (cs2 == null && useList == null) {
             return defaultValue
         }
 
-        cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge")
+        cachedModalList.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
 
         if (cs2 != null) {
-            val allowedList = ymlHelper.getKeyNameFromConfig(cs2, MLALLOWEDLIST)
+            val allowedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLALLOWEDLIST)
             useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList)
         }
 
@@ -420,9 +409,9 @@ class RulesParsingManager {
             return cachedModalList
         }
 
-        val allowedGroups = ymlHelper.getKeyNameFromConfig(cs2, MLALLOWEDGROUPS)
-        val excludedList = ymlHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDITEMS)
-        val excludedGroups = ymlHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDGROUPS)
+        val allowedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLALLOWEDGROUPS)
+        val excludedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDITEMS)
+        val excludedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDGROUPS)
         cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups)
 
         for (item in YmlParsingHelper.getListFromConfigItem(cs2, excludedList)) {
@@ -456,7 +445,7 @@ class RulesParsingManager {
             }
         }
 
-        val results: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val results: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
         if (foundKeyName == null) {
             return results
         }
@@ -510,60 +499,46 @@ class RulesParsingManager {
             }
 
             this.parsingInfo = RuleInfo("rule " + results.size)
-            parseValues(cs)
+            parseValues(YmlParsingHelper(cs))
             results.add(this.parsingInfo)
         }
 
         return results
     }
 
-    private fun parseValues(cs: ConfigurationSection) {
-        mergePreset(cs)
+    private fun parseValues(ymlHelper: YmlParsingHelper) {
+        mergePreset(ymlHelper)
 
-        parsingInfo.ruleIsEnabled = ymlHelper.getBoolean(cs, "enabled", true)
-        //final String ruleName = cs.getString(ymlHelper.getKeyNameFromConfig(cs, "name"));
-        val ruleName = ymlHelper.getString(cs, "name")
+        parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "enabled", true)
+        val ruleName = ymlHelper.getString( "name")
         if (ruleName != null) {
-            parsingInfo.ruleName = ymlHelper.getString(cs, "name")!!
+            parsingInfo.ruleName = ruleName
         }
 
-        parseStrategies(objToCS(cs, "strategies"))
-        parseConditions(objToCS(cs, "conditions"))
-        parseApplySettings(objToCS(cs, "apply-settings"))
+        parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
+        parseConditions(YmlParsingHelper.objToCS(ymlHelper.cs, "conditions"))
+        parseApplySettings(YmlParsingHelper.objToCS(ymlHelper.cs, "apply-settings"))
     }
 
-    private fun mergePreset(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
-
-        val usePresetName = ymlHelper.getKeyNameFromConfig(cs, "use-preset")
-        val presets = cs.getStringList(usePresetName)
-        if (presets.isEmpty() && cs.getString(usePresetName) != null)
-            presets.addAll(cs.getString(usePresetName)!!.split(","))
-
-        if (presets.isEmpty()) {
-            return
-        }
+    private fun mergePreset(ymlHelper: YmlParsingHelper) {
+        val presets = ymlHelper.getStringOrList("use-preset")
+        if (presets.isEmpty()) return
 
         for (checkName: String in presets) {
-            val checkName = checkName.trim { it <= ' ' }
-            if (!rulePresets.containsKey(checkName)) {
-                Utils.logger.info(
-                    parsingInfo.ruleName + ", specified preset name '" + checkName
-                            + "' but none was found"
+            val checkNameTrimmed = checkName.trim { it <= ' ' }
+            if (!rulePresets.containsKey(checkNameTrimmed)) {
+                Utils.logger.warning(
+                    parsingInfo.ruleName + ", specified preset name '$checkNameTrimmed' but none was found"
                 )
                 continue
             }
 
-            parsingInfo.mergePresetRules(rulePresets[checkName])
+            parsingInfo.mergePresetRules(rulePresets[checkNameTrimmed])
         }
     }
 
     private fun parseExternalCompat(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
         val results: MutableMap<ExternalCompatibility, Boolean> = EnumMap(
             ExternalCompatibility::class.java
@@ -578,7 +553,7 @@ class RulesParsingManager {
                     key.uppercase(Locale.getDefault())
                 )
                 results[compat] = value
-            } catch (e: java.lang.IllegalArgumentException) {
+            } catch (e: IllegalArgumentException) {
                 Utils.logger.warning("Invalid level-plugins key: $key")
             }
         }
@@ -589,9 +564,7 @@ class RulesParsingManager {
     }
 
     private fun parseTieredColoring(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
         for (name in cs.getKeys(false)) {
             val value = cs.getString(name)
@@ -616,15 +589,13 @@ class RulesParsingManager {
     }
 
     private fun parseEntityNameOverride(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
         val levelTiers: MutableMap<String, MutableList<LevelTierMatching>> = TreeMap(
-            java.lang.String.CASE_INSENSITIVE_ORDER
+            String.CASE_INSENSITIVE_ORDER
         )
         val entityNames: MutableMap<String, LevelTierMatching> = TreeMap(
-            java.lang.String.CASE_INSENSITIVE_ORDER
+            String.CASE_INSENSITIVE_ORDER
         )
 
         for (name in cs.getKeys(false)) {
@@ -638,7 +609,7 @@ class RulesParsingManager {
                 val mobNames = LevelTierMatching()
                 mobNames.mobName = name
                 mobNames.names = names
-                val names2: MutableList<String> = LinkedList()
+                val names2 = mutableListOf<String>()
 
                 for (nameFromList in names) {
                     if (nameFromList.isNotEmpty()) {
@@ -662,7 +633,7 @@ class RulesParsingManager {
                     entityNames[name] = mobNames
                 } else if (cs[name] is MemorySection || cs[name] is LinkedHashMap<*, *>) {
                     val tiers = parseNumberRange(
-                        objToCS(cs, name),
+                        YmlParsingHelper.objToCS(cs, name),
                         name
                     )
                     if (!tiers.isNullOrEmpty()) {
@@ -684,9 +655,7 @@ class RulesParsingManager {
         cs: ConfigurationSection?,
         keyName: String
     ): MutableList<LevelTierMatching>? {
-        if (cs == null) {
-            return null
-        }
+        if (cs == null) return null
 
         val levelTiers = mutableListOf<LevelTierMatching>()
 
@@ -719,102 +688,86 @@ class RulesParsingManager {
     }
 
     private fun parseApplySettings(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
-        parseFineTuning(objToCS(cs, "multipliers"))
-        parseEntityNameOverride(objToCS(cs, "entity-name-override"))
-        parseTieredColoring(objToCS(cs, "tiered-coloring"))
-        parseHealthIndicator(objToCS(cs, "health-indicator"))
+        val ymlHelper = YmlParsingHelper(cs)
+        parseFineTuning(YmlParsingHelper.objToCS(cs, "multipliers"))
+        parseEntityNameOverride(YmlParsingHelper.objToCS(cs, "entity-name-override"))
+        parseTieredColoring(YmlParsingHelper.objToCS(cs, "tiered-coloring"))
+        parseHealthIndicator(YmlParsingHelper.objToCS(cs, "health-indicator"))
 
         parsingInfo.restrictionsMinLevel = ymlHelper.getInt2(
-            cs, "minlevel",
-            parsingInfo.restrictionsMinLevel
+            "minlevel", parsingInfo.restrictionsMinLevel
         )
         parsingInfo.restrictionsMaxLevel = ymlHelper.getInt2(
-            cs, "maxlevel",
-            parsingInfo.restrictionsMaxLevel
+            "maxlevel", parsingInfo.restrictionsMaxLevel
         )
 
         parsingInfo.conditionsNoDropEntities = buildCachedModalListOfString(
-            cs,
-            "no-drop-multipler-entities", parsingInfo.conditionsNoDropEntities
+                  cs, "no-drop-multipler-entities", parsingInfo.conditionsNoDropEntities
         )
         parsingInfo.babyMobsInheritAdultSetting = ymlHelper.getBoolean2(
-            cs,
             "baby-mobs-inherit-adult-setting", parsingInfo.babyMobsInheritAdultSetting
         )
         parsingInfo.mobLevelInheritance = ymlHelper.getBoolean2(
-            cs, "level-inheritance",
-            parsingInfo.mobLevelInheritance
+            "level-inheritance", parsingInfo.mobLevelInheritance
         )
         parsingInfo.creeperMaxDamageRadius = ymlHelper.getInt2(
-            cs, "creeper-max-damage-radius",
+             "creeper-max-damage-radius",
             parsingInfo.creeperMaxDamageRadius
         )
         parsingInfo.customDropsUseForMobs = ymlHelper.getBoolean2(
-            cs,
             "use-custom-item-drops-for-mobs", parsingInfo.customDropsUseForMobs
         )
-        parseChunkKillOptions(cs)
+        parseChunkKillOptions(ymlHelper)
         parsingInfo.customDropDropTableIds.addAll(
-            YmlParsingHelper.getListFromConfigItem(cs, "use-droptable-id")
+            ymlHelper.getListFromConfigItem( "use-droptable-id")
         )
-        parsingInfo.nametag = ymlHelper.getString(cs, "nametag", parsingInfo.nametag)
+        parsingInfo.nametag = ymlHelper.getString("nametag", parsingInfo.nametag)
         parsingInfo.nametagCreatureDeath = ymlHelper.getString(
-            cs, "creature-death-nametag",
-            parsingInfo.nametagCreatureDeath
+            "creature-death-nametag", parsingInfo.nametagCreatureDeath
         )
         parsingInfo.nametagPlaceholderLevelled = ymlHelper.getString(
-            cs,
             "nametag-placeholder-levelled", parsingInfo.nametagPlaceholderLevelled
         )
         parsingInfo.nametagPlaceholderUnlevelled = ymlHelper.getString(
-            cs,
             "nametag-placeholder-unlevelled", parsingInfo.nametagPlaceholderUnlevelled
         )
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(
-            cs, "sunlight-intensity",
-            parsingInfo.sunlightBurnAmount
+            "sunlight-intensity", parsingInfo.sunlightBurnAmount
         )
-        parsingInfo.lockEntity = ymlHelper.getBoolean2(cs, "lock-entity", parsingInfo.lockEntity)
-        parseNBTData(cs)
+        parsingInfo.lockEntity = ymlHelper.getBoolean2(
+            "lock-entity", parsingInfo.lockEntity
+        )
+        parseNBTData(ymlHelper)
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(
-            cs, "passenger-match-level",
-            parsingInfo.passengerMatchLevel
+             "passenger-match-level", parsingInfo.passengerMatchLevel
         )
         parsingInfo.nametagVisibleTime = ymlHelper.getIntTimeUnitMS(
-            cs, "nametag-visible-time",
-            parsingInfo.nametagVisibleTime
+             "nametag-visible-time", parsingInfo.nametagVisibleTime
         )
         parsingInfo.maximumDeathInChunkThreshold = ymlHelper.getInt2(
-            cs,
             "maximum-death-in-chunk-threshold", parsingInfo.maximumDeathInChunkThreshold
         )
         parsingInfo.chunkMaxCoolDownTime = ymlHelper.getIntTimeUnit(
-            cs,
             "chunk-max-cooldown-seconds", parsingInfo.chunkMaxCoolDownTime
         )
         parsingInfo.spawnerParticlesCount = ymlHelper.getInt2(
-            cs, "spawner-particles-count",
-            parsingInfo.spawnerParticlesCount
+             "spawner-particles-count", parsingInfo.spawnerParticlesCount
         )
         parsingInfo.maxAdjacentChunks = ymlHelper.getInt2(
-            cs, "max-adjacent-chunks",
-            parsingInfo.maxAdjacentChunks
+            "max-adjacent-chunks", parsingInfo.maxAdjacentChunks
         )
         if (parsingInfo.maxAdjacentChunks != null && parsingInfo.maxAdjacentChunks!! > 10) {
             parsingInfo.maxAdjacentChunks = 10
         }
-        parseSpawnerParticle(ymlHelper.getString(cs, "spawner-particles"))
+        parseSpawnerParticle(ymlHelper.getString("spawner-particles"))
         parseDeathMessages(cs)
 
         val nametagVisibility = ymlHelper.getStringSet(
-            cs,
             "nametag-visibility-method"
         )
-        val nametagVisibilityEnums: MutableList<NametagVisibilityEnum> = LinkedList()
+        val nametagVisibilityEnums = mutableListOf<NametagVisibilityEnum>()
         for (nametagVisEnum: String in nametagVisibility) {
             try {
                 val nametagVisibilityEnum = NametagVisibilityEnum.valueOf(
@@ -823,39 +776,22 @@ class RulesParsingManager {
                 nametagVisibilityEnums.add(nametagVisibilityEnum)
             } catch (ignored: Exception) {
                 Utils.logger.warning(
-                    "Invalid value in nametag-visibility-method: " + nametagVisibility
-                            + ", in rule: " + parsingInfo.ruleName
+                    "Invalid value in nametag-visibility-method: $nametagVisibility" +
+                            ", in rule: ${parsingInfo.ruleName}"
                 )
             }
         }
 
-        if (nametagVisibilityEnums.isNotEmpty()) {
+        if (nametagVisibilityEnums.isNotEmpty())
             parsingInfo.nametagVisibilityEnum = nametagVisibilityEnums
-        } else if ((cs[ymlHelper.getKeyNameFromConfig(cs, "creature-nametag-always-visible")]
-                    != null)
-        ) {
-            val nametagVisibilityBackwardsComat = ymlHelper.getBoolean2(
-                cs,
-                "creature-nametag-always-visible", null
-            )
-            if (nametagVisibilityBackwardsComat != null) {
-                if (nametagVisibilityBackwardsComat) {
-                    parsingInfo.nametagVisibilityEnum = mutableListOf(NametagVisibilityEnum.ALWAYS_ON)
-                } else {
-                    parsingInfo.nametagVisibilityEnum = mutableListOf(NametagVisibilityEnum.MELEE)
-                }
-            } else {
-                parsingInfo.nametagVisibilityEnum = mutableListOf(NametagVisibilityEnum.MELEE)
-            }
-        }
     }
 
-    private fun parseChunkKillOptions(cs: ConfigurationSection) {
+    private fun parseChunkKillOptions(ymlHelper: YmlParsingHelper) {
         val opts = ChunkKillOptions()
 
-        opts.disableVanillaDrops = ymlHelper.getBoolean2(cs, "disable-vanilla-drops-on-chunk-max", null)
-        opts.disableItemBoost = ymlHelper.getBoolean2(cs, "disable-item-boost-on-chunk-max", null)
-        opts.disableXpDrops = ymlHelper.getBoolean2(cs, "disable-xp-boost-on-chunk-max", null)
+        opts.disableVanillaDrops = ymlHelper.getBoolean2( "disable-vanilla-drops-on-chunk-max", null)
+        opts.disableItemBoost = ymlHelper.getBoolean2( "disable-item-boost-on-chunk-max", null)
+        opts.disableXpDrops = ymlHelper.getBoolean2( "disable-xp-boost-on-chunk-max", null)
 
         if (!opts.isDefault) {
             parsingInfo.chunkKillOptions = opts
@@ -863,7 +799,8 @@ class RulesParsingManager {
     }
 
     private fun parseDeathMessages(csParent: ConfigurationSection) {
-        val cs: ConfigurationSection = objToCS(csParent, "death-messages") ?: return
+        val cs: ConfigurationSection = YmlParsingHelper.objToCS(
+            csParent, "death-messages") ?: return
 
         val deathMessages = DeathMessages()
 
@@ -882,12 +819,7 @@ class RulesParsingManager {
 
                 var weight = weightStr.toInt()
                 if (weight > 100) {
-                    Utils.logger.warning(
-                        String.format(
-                            "value of %s is over the limit of 100 for death message weight",
-                            weight
-                        )
-                    )
+                    Utils.logger.warning("value of $weight is over the limit of 100 for death message weight")
                     weight = 100
                 }
 
@@ -901,9 +833,7 @@ class RulesParsingManager {
     }
 
     private fun parseSpawnerParticle(particle: String?) {
-        if (particle == null) {
-            return
-        }
+        if (particle == null) return
 
         if ("none".equals(particle, ignoreCase = true)) {
             parsingInfo.spawnerParticle = null
@@ -915,29 +845,25 @@ class RulesParsingManager {
             parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase(Locale.getDefault()))
         } catch (ignored: java.lang.Exception) {
             Utils.logger.warning(
-                "Invalid value in spawner-particles: " + particle + ", in rule: "
+                "Invalid value in spawner-particles: $particle, in rule: "
                         + parsingInfo.ruleName
             )
         }
     }
 
-    private fun parseNBTData(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
-
-        val keyName = ymlHelper.getKeyNameFromConfig(cs, "nbt-data")
-        val temp = cs[keyName] ?: return
+    private fun parseNBTData(ymlHelper: YmlParsingHelper) {
+        val keyName = ymlHelper.getKeyNameFromConfig( "nbt-data")
+        val temp = ymlHelper.cs[keyName] ?: return
 
         if (temp is MemorySection || temp is java.util.LinkedHashMap<*, *>) {
-            val cs2 = ymlHelper.objToCS(cs, keyName) ?: return
+            val cs2 = ymlHelper.objToCS(keyName) ?: return
 
-            val nbt = ymlHelper.getString(cs2, "data", null)
-            val nbtList = ymlHelper.getStringSet(cs2, "data")
+            val nbt = YmlParsingHelper.getString(cs2, "data", null)
+            val nbtList = YmlParsingHelper.getStringSet(cs2, "data")
             if (nbt == null && nbtList.isEmpty()) {
                 return
             }
-            val doMerge = ymlHelper.getBoolean(cs2, "merge", false)
+            val doMerge = YmlParsingHelper.getBoolean(cs2, "merge", false)
 
             if (nbtList.isNotEmpty()) {
                 parsingInfo.mobNBTData = MergeableStringList()
@@ -955,82 +881,71 @@ class RulesParsingManager {
     }
 
     private fun parseConditions(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
+        val ymlHelper = YmlParsingHelper(cs)
         parsingInfo.conditionsWorlds = buildCachedModalListOfString(
             cs, "worlds",
             parsingInfo.conditionsWorlds
         )
 
-        parseExternalCompat(objToCS(cs, "level-plugins"))
+        parseExternalCompat(YmlParsingHelper.objToCS(cs, "level-plugins"))
 
         parsingInfo.conditionsMinLevel = ymlHelper.getInt2(
-            cs, "minlevel",
-            parsingInfo.conditionsMinLevel
+             "minlevel", parsingInfo.conditionsMinLevel
         )
         parsingInfo.conditionsMaxLevel = ymlHelper.getInt2(
-            cs, "maxlevel",
-            parsingInfo.conditionsMaxLevel
+             "maxlevel", parsingInfo.conditionsMaxLevel
         )
 
         parsingInfo.stopProcessingRules = ymlHelper.getBoolean2(
-            cs, "stop-processing",
-            parsingInfo.stopProcessingRules
+             "stop-processing", parsingInfo.stopProcessingRules
         )
         parsingInfo.conditionsChance = ymlHelper.getFloat2(
-            cs, "chance",
-            parsingInfo.conditionsChance
+             "chance", parsingInfo.conditionsChance
         )
 
-        val mobCustomNameStatus = ymlHelper.getString(cs, "mob-customname-status")
+        val mobCustomNameStatus = ymlHelper.getString( "mob-customname-status")
         if (mobCustomNameStatus != null) {
             try {
                 parsingInfo.conditionsMobCustomnameStatus = MobCustomNameStatus.valueOf(
                     mobCustomNameStatus.uppercase(Locale.getDefault())
                 )
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 Utils.logger.warning("Invalid value for $mobCustomNameStatus")
             }
         }
 
-        val mobTamedStatus = ymlHelper.getString(cs, "mob-tamed-status")
+        val mobTamedStatus = ymlHelper.getString( "mob-tamed-status")
         if (mobTamedStatus != null) {
             try {
                 parsingInfo.conditionsMobTamedStatus = MobTamedStatus.valueOf(
                     mobTamedStatus.uppercase(Locale.getDefault())
                 )
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 Utils.logger.warning("Invalid value for $mobTamedStatus")
             }
         }
 
         parsingInfo.conditionsApplyAboveY = ymlHelper.getInt2(
-            cs, "apply-above-y",
-            parsingInfo.conditionsApplyAboveY
+             "apply-above-y", parsingInfo.conditionsApplyAboveY
         )
         parsingInfo.conditionsApplyBelowY = ymlHelper.getInt2(
-            cs, "apply-below-y",
-            parsingInfo.conditionsApplyBelowY
+             "apply-below-y", parsingInfo.conditionsApplyBelowY
         )
         parsingInfo.conditionsMinDistanceFromSpawn = ymlHelper.getInt2(
-            cs,
             "min-distance-from-spawn", parsingInfo.conditionsMinDistanceFromSpawn
         )
         parsingInfo.conditionsMaxDistanceFromSpawn = ymlHelper.getInt2(
-            cs,
             "max-distance-from-spawn", parsingInfo.conditionsMaxDistanceFromSpawn
         )
         parsingInfo.conditionsCooldownTime = ymlHelper.getIntTimeUnitMS(
-            cs, "cooldown-duration",
-            parsingInfo.conditionsCooldownTime
+             "cooldown-duration", parsingInfo.conditionsCooldownTime
         )
         parsingInfo.conditionsTimesToCooldownActivation = ymlHelper.getInt2(
-            cs, "cooldown-limit",
-            parsingInfo.conditionsTimesToCooldownActivation
+            "cooldown-limit", parsingInfo.conditionsTimesToCooldownActivation
         )
-        parseWithinCoordinates(objToCS(cs, "within-coordinates"))
+        parseWithinCoordinates(YmlParsingHelper.objToCS(ymlHelper.cs, "within-coordinates"))
 
         parsingInfo.conditionsWGregions = buildCachedModalListOfString(
             cs,
@@ -1085,14 +1000,12 @@ class RulesParsingManager {
             parsingInfo.conditionsScoreboardTags
         )
         parsingInfo.conditionsSkyLightLevel = parseMinMaxValue(
-            ymlHelper.getString(cs, "skylight-level"), "skylight-level"
+            ymlHelper.getString( "skylight-level")
         )
     }
 
     private fun parseWithinCoordinates(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
         val mdr = WithinCoordinates()
 
@@ -1101,10 +1014,10 @@ class RulesParsingManager {
             WithinCoordinates.Axis.Y,
             WithinCoordinates.Axis.Z
         )) {
-            for (keyStart in listOf("start-", "end-")) {
+            for (keyStart in mutableListOf("start-", "end-")) {
                 val key = keyStart + axis.name.lowercase(Locale.getDefault())
                 val isStart = "start-" == keyStart
-                val value = ymlHelper.getString(cs, key)
+                val value = YmlParsingHelper.getString(cs, key)
 
                 if (!mdr.parseAxis(value, axis, isStart)) {
                     Utils.logger.warning(
@@ -1117,40 +1030,35 @@ class RulesParsingManager {
             }
         }
 
-        if (mdr.isEmpty) {
-            return
-        }
+        if (mdr.isEmpty) return
 
         parsingInfo.conditionsWithinCoords = mdr
     }
 
     private fun parseStrategies(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
+        val ymlHelper = YmlParsingHelper(cs)
         parsingInfo.maxRandomVariance = ymlHelper.getInt2(
-            cs, "max-random-variance",
-            parsingInfo.maxRandomVariance
+             "max-random-variance", parsingInfo.maxRandomVariance
         )
-        if (ymlHelper.getBoolean(cs, "random")) parsingInfo.levellingStrategy = RandomLevellingStrategy()
+        if (ymlHelper.getBoolean( "random"))
+            parsingInfo.levellingStrategy = RandomLevellingStrategy()
 
-        val csYDistance = objToCS(cs, "y-coordinate")
+        val csYDistance = YmlParsingHelper.objToCS(cs, "y-coordinate")
         if (csYDistance != null) {
+            val ymlHelper2 = YmlParsingHelper(csYDistance)
             val yDistanceStrategy =
                 if (parsingInfo.levellingStrategy is YDistanceStrategy) parsingInfo.levellingStrategy as YDistanceStrategy? else YDistanceStrategy()
 
-            yDistanceStrategy!!.startingYLevel = ymlHelper.getInt2(
-                csYDistance, "start",
-                yDistanceStrategy.startingYLevel
+            yDistanceStrategy!!.startingYLevel = ymlHelper2.getInt2(
+                 "start", yDistanceStrategy.startingYLevel
             )
-            yDistanceStrategy.endingYLevel = ymlHelper.getInt2(
-                csYDistance, "end",
-                yDistanceStrategy.endingYLevel
+            yDistanceStrategy.endingYLevel = ymlHelper2.getInt2(
+                 "end", yDistanceStrategy.endingYLevel
             )
-            yDistanceStrategy.yPeriod = ymlHelper.getInt2(
-                csYDistance, "period",
-                yDistanceStrategy.yPeriod
+            yDistanceStrategy.yPeriod = ymlHelper2.getInt2(
+                 "period", yDistanceStrategy.yPeriod
             )
 
             if (parsingInfo.levellingStrategy != null
@@ -1162,26 +1070,25 @@ class RulesParsingManager {
             }
         }
 
-        val csSpawnDistance = objToCS(cs, "distance-from-spawn")
+        val csSpawnDistance = YmlParsingHelper.objToCS(cs, "distance-from-spawn")
         if (csSpawnDistance != null) {
+            val ymlHelper2 = YmlParsingHelper(csSpawnDistance)
             val spawnDistanceStrategy =
                 if (parsingInfo.levellingStrategy is SpawnDistanceStrategy) parsingInfo.levellingStrategy as SpawnDistanceStrategy?
                 else SpawnDistanceStrategy()
 
-            spawnDistanceStrategy!!.increaseLevelDistance = ymlHelper.getInt2(
-                csSpawnDistance,
+            spawnDistanceStrategy!!.increaseLevelDistance = ymlHelper2.getInt2(
                 "increase-level-distance", spawnDistanceStrategy.increaseLevelDistance
             )
-            spawnDistanceStrategy.startDistance = ymlHelper.getInt2(
-                csSpawnDistance,
+            spawnDistanceStrategy.startDistance = ymlHelper2.getInt2(
                 "start-distance", spawnDistanceStrategy.startDistance
             )
 
             parseOptionalSpawnCoordinate(csSpawnDistance, spawnDistanceStrategy)
 
-            if (ymlHelper.getString(csSpawnDistance, "blended-levelling") != null) {
+            if (ymlHelper2.getString( "blended-levelling") != null) {
                 parseBlendedLevelling(
-                    objToCS(csSpawnDistance, "blended-levelling"),
+                    YmlParsingHelper.objToCS(csSpawnDistance, "blended-levelling"),
                     spawnDistanceStrategy
                 )
             }
@@ -1196,7 +1103,7 @@ class RulesParsingManager {
         }
 
         parseWeightedRandom(cs)
-        parsePlayerLevellingOptions(objToCS(cs, "player-levelling"))
+        parsePlayerLevellingOptions(YmlParsingHelper.objToCS(cs, "player-levelling"))
     }
 
     private fun parseWeightedRandom(cs: ConfigurationSection) {
@@ -1216,17 +1123,16 @@ class RulesParsingManager {
             return
         }
 
-        val cs_Random: ConfigurationSection = objToCS(cs, "weighted-random") ?: return
-
-        val randomMap: MutableMap<String, Int> = TreeMap()
+        val csRandom = YmlParsingHelper.objToCS(cs, "weighted-random") ?: return
+        val randomMap = mutableMapOf<String, Int>()
         val randomLevelling = RandomLevellingStrategy()
-        randomLevelling.doMerge = ymlHelper.getBoolean(cs_Random, "merge")
+        randomLevelling.doMerge = YmlParsingHelper.getBoolean(csRandom, "merge")
 
-        for (range in cs_Random.getKeys(false)) {
+        for (range in csRandom.getKeys(false)) {
             if ("merge".equals(range, ignoreCase = true)) {
                 continue
             }
-            val value = cs_Random.getInt(range)
+            val value = csRandom.getInt(range)
             randomMap[range] = value
         }
 
@@ -1247,9 +1153,7 @@ class RulesParsingManager {
         cs: ConfigurationSection?,
         existingList: CachedModalList<MinAndMax>?
     ): CachedModalList<MinAndMax>? {
-        if (cs == null) {
-            return existingList
-        }
+        if (cs == null) return existingList
 
         val configName = "world-time-tick"
         val temp = buildCachedModalListOfString(cs, configName, null) ?: return existingList
@@ -1264,13 +1168,10 @@ class RulesParsingManager {
 
     private fun parseMinMaxValue(
         numberPair: String?,
-        configName: String
     ): MinAndMax? {
-        if (numberPair == null) {
-            return null
-        }
+        if (numberPair == null) return null
 
-        val result = parseMinMaxValue(mutableSetOf(numberPair), configName)
+        val result = parseMinMaxValue(mutableSetOf(numberPair), "skylight-level")
 
         return if (result.isEmpty()) {
             null
@@ -1286,7 +1187,7 @@ class RulesParsingManager {
         val result = mutableSetOf<MinAndMax>()
 
         for (numberPair in numberPairs) {
-            val split = numberPair.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val split = numberPair.split("-")
             val minAndMax = MinAndMax()
             var hadInvalidValue = false
             for (i in 0..1) {
@@ -1322,32 +1223,30 @@ class RulesParsingManager {
     }
 
     private fun parseHealthIndicator(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null)return
 
+        val ymlHelper = YmlParsingHelper(cs)
         val indicator = HealthIndicator()
-        indicator.indicator = ymlHelper.getString(cs, "indicator", indicator.indicator)
+        indicator.indicator = ymlHelper.getString("indicator", indicator.indicator)
         indicator.indicatorHalf = ymlHelper.getString(
-            cs, "indicator-half",
-            indicator.indicatorHalf
+            "indicator-half", indicator.indicatorHalf
         )
-        indicator.maxIndicators = ymlHelper.getInt2(cs, "max", indicator.maxIndicators)
-        indicator.scale = ymlHelper.getDouble2(cs, "scale", indicator.scale)
-        indicator.merge = ymlHelper.getBoolean2(cs, "merge", indicator.merge)
+        indicator.maxIndicators = ymlHelper.getInt2( "max", indicator.maxIndicators)
+        indicator.scale = ymlHelper.getDouble2( "scale", indicator.scale)
+        indicator.merge = ymlHelper.getBoolean2( "merge", indicator.merge)
 
-        val cs_Tiers = objToCS(cs, "colored-tiers")
-        if (cs_Tiers != null) {
+        val csTiers = YmlParsingHelper.objToCS(cs, "colored-tiers")
+        if (csTiers != null) {
             val tiers = mutableMapOf<Int, String>()
 
-            for (name in cs_Tiers.getKeys(false)) {
+            for (name in csTiers.getKeys(false)) {
                 val name2 = name.lowercase(Locale.getDefault()).replace("tier-", "")
 
                 if ("default".equals(name, ignoreCase = true)) {
-                    if (cs_Tiers.getString(name).isNullOrEmpty()) {
+                    if (csTiers.getString(name).isNullOrEmpty()) {
                         Utils.logger.warning("No value entered for colored tier: $name")
                     } else {
-                        tiers[0] = cs_Tiers.getString(name)!!
+                        tiers[0] = csTiers.getString(name)!!
                     }
 
                     continue
@@ -1358,7 +1257,7 @@ class RulesParsingManager {
                     continue
                 }
 
-                val tierValue = cs_Tiers.getString(name)
+                val tierValue = csTiers.getString(name)
                 if (tierValue.isNullOrEmpty()) {
                     Utils.logger.warning("No value entered for colored tier: $name")
                     continue
@@ -1384,35 +1283,30 @@ class RulesParsingManager {
     }
 
     private fun parsePlayerLevellingOptions(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
+        val ymlHelper = YmlParsingHelper(cs)
         val options = PlayerLevellingOptions()
         options.matchPlayerLevel = ymlHelper.getBoolean2(
-            cs, "match-level",
-            options.matchPlayerLevel
+             "match-level", options.matchPlayerLevel
         )
         options.usePlayerMaxLevel = ymlHelper.getBoolean2(
-            cs, "use-player-max-level",
-            options.usePlayerMaxLevel
+             "use-player-max-level", options.usePlayerMaxLevel
         )
         options.playerLevelScale = ymlHelper.getDouble2(
-            cs, "player-level-scale",
-            options.playerLevelScale
+             "player-level-scale", options.playerLevelScale
         )
-        options.levelCap = ymlHelper.getInt2(cs, "level-cap", options.levelCap)
-        options.enabled = ymlHelper.getBoolean2(cs, "enabled", options.enabled)
-        options.doMerge = ymlHelper.getBoolean(cs, "merge", options.doMerge)
-        options.variable = ymlHelper.getString(cs, "variable", options.variable)
-        options.decreaseLevel = ymlHelper.getBoolean(cs, "decrease-level", true)
-        options.recheckPlayers = ymlHelper.getBoolean2(cs, "recheck-players", options.recheckPlayers)
-        options.preserveEntityTime = ymlHelper.getIntTimeUnitMS(cs, "preserve-entity", options.preserveEntityTime)
+        options.levelCap = ymlHelper.getInt2( "level-cap", options.levelCap)
+        options.enabled = ymlHelper.getBoolean2( "enabled", options.enabled)
+        options.doMerge = ymlHelper.getBoolean( "merge", options.doMerge)
+        options.variable = ymlHelper.getString( "variable", options.variable)
+        options.decreaseLevel = ymlHelper.getBoolean( "decrease-level", true)
+        options.recheckPlayers = ymlHelper.getBoolean2( "recheck-players", options.recheckPlayers)
+        options.preserveEntityTime = ymlHelper.getIntTimeUnitMS( "preserve-entity", options.preserveEntityTime)
         parsingInfo.playerLevellingOptions = options
 
-        val csTiers: ConfigurationSection = objToCS(cs, "tiers") ?: return
-
-        val levelTiers: MutableList<LevelTierMatching> = LinkedList()
+        val csTiers = YmlParsingHelper.objToCS(cs, "tiers") ?: return
+        val levelTiers = mutableListOf<LevelTierMatching>()
 
         for (name in csTiers.getKeys(false)) {
             val info = LevelTierMatching()
@@ -1454,29 +1348,23 @@ class RulesParsingManager {
         cs: ConfigurationSection?,
         spawnDistanceStrategy: SpawnDistanceStrategy
     ) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
+        val ymlHelper = YmlParsingHelper(cs)
         spawnDistanceStrategy.blendedLevellingEnabled = ymlHelper.getBoolean2(
-            cs, "enabled",
-            spawnDistanceStrategy.blendedLevellingEnabled
+             "enabled", spawnDistanceStrategy.blendedLevellingEnabled
         )
         spawnDistanceStrategy.transitionYheight = ymlHelper.getInt2(
-            cs, "transition-y-height",
-            spawnDistanceStrategy.transitionYheight
+             "transition-y-height", spawnDistanceStrategy.transitionYheight
         )
         spawnDistanceStrategy.lvlMultiplier = ymlHelper.getDouble2(
-            cs, "lvl-multiplier",
-            spawnDistanceStrategy.lvlMultiplier
+             "lvl-multiplier", spawnDistanceStrategy.lvlMultiplier
         )
         spawnDistanceStrategy.multiplierPeriod = ymlHelper.getInt2(
-            cs, "multiplier-period",
-            spawnDistanceStrategy.multiplierPeriod
+             "multiplier-period", spawnDistanceStrategy.multiplierPeriod
         )
         spawnDistanceStrategy.scaleDownward = ymlHelper.getBoolean2(
-            cs, "scale-downward",
-            spawnDistanceStrategy.scaleDownward
+             "scale-downward", spawnDistanceStrategy.scaleDownward
         )
     }
 
@@ -1484,7 +1372,7 @@ class RulesParsingManager {
         cs: ConfigurationSection,
         sds: SpawnDistanceStrategy
     ) {
-        val spawnLocation: ConfigurationSection = objToCS2(cs["spawn-location"]) ?: return
+        val spawnLocation = YmlParsingHelper.objToCS(cs, "spawn-location") ?: return
 
         if (!"default".equals(spawnLocation.getString("x"), ignoreCase = true)) {
             sds.spawnLocationX = spawnLocation.getInt("x")
@@ -1496,9 +1384,7 @@ class RulesParsingManager {
     }
 
     private fun parseFineTuning(cs: ConfigurationSection?) {
-        if (cs == null) {
-            return
-        }
+        if (cs == null) return
 
         parsingInfo.vanillaBonuses = buildCachedModalOfType(
             cs,
@@ -1506,13 +1392,12 @@ class RulesParsingManager {
         ) as CachedModalList<VanillaBonusEnum>?
         parsingInfo.allMobMultipliers = parseFineTuningValues(cs, parsingInfo.allMobMultipliers)
 
-        val cs_Custom: ConfigurationSection = objToCS(cs, "custom-mob-level") ?: return
-
+        val csCustom = YmlParsingHelper.objToCS(cs, "custom-mob-level") ?: return
         val fineTuning: MutableMap<String, FineTuningAttributes> = TreeMap(
-            java.lang.String.CASE_INSENSITIVE_ORDER
+            String.CASE_INSENSITIVE_ORDER
         )
 
-        for (mobName in cs_Custom.getKeys(false)) {
+        for (mobName in csCustom.getKeys(false)) {
             var checkName = mobName
             if (checkName.lowercase(Locale.getDefault()).startsWith("baby_")) {
                 checkName = checkName.substring(5)
@@ -1522,18 +1407,16 @@ class RulesParsingManager {
                 EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
             } catch (e: java.lang.IllegalArgumentException) {
                 Utils.logger.warning(
-                    "Invalid entity type: " + mobName + " for fine-tuning in rule: "
+                    "Invalid entity type: $mobName for fine-tuning in rule: "
                             + parsingInfo.ruleName
                 )
                 continue
             }
 
             val attribs = parseFineTuningValues(
-                objToCS(cs_Custom, mobName), null
+                YmlParsingHelper.objToCS(csCustom, mobName), null
             )
-            if (attribs == null) {
-                continue
-            }
+            if (attribs == null) continue
 
             fineTuning[mobName] = attribs
         }
@@ -1551,20 +1434,19 @@ class RulesParsingManager {
         cs: ConfigurationSection?,
         defaults: FineTuningAttributes?
     ): FineTuningAttributes? {
-        if (cs == null) {
-            return defaults
-        }
+        if (cs == null) return defaults
 
-        val doMerge = ymlHelper.getBoolean(cs, "merge", true)
-
+        val ymlHelper = YmlParsingHelper(cs)
+        val doMerge = ymlHelper.getBoolean( "merge", true)
         val attribs =
-            if (parsingInfo.allMobMultipliers != null && doMerge) parsingInfo.allMobMultipliers else FineTuningAttributes()
+            if (parsingInfo.allMobMultipliers != null && doMerge) parsingInfo.allMobMultipliers
+            else FineTuningAttributes()
 
         for (item in cs.getKeys(false)) {
             when (item.lowercase(Locale.getDefault())) {
-                "use-stacked" -> attribs!!.useStacked = ymlHelper.getBoolean2(cs, item, attribs.useStacked)
-                "do-not-merge" -> attribs!!.doNotMerge = ymlHelper.getBoolean(cs, item, false)
-                "merge" -> attribs!!.doNotMerge = !ymlHelper.getBoolean(cs, item, true)
+                "use-stacked" -> attribs!!.useStacked = ymlHelper.getBoolean2(item, attribs.useStacked)
+                "do-not-merge" -> attribs!!.doNotMerge = ymlHelper.getBoolean(item, false)
+                "merge" -> attribs!!.doNotMerge = !ymlHelper.getBoolean(item, true)
                 "vanilla-bonus", "custom-mob-level" -> {}
                 else -> {
                     var lmMultiplier: LMMultiplier
@@ -1588,9 +1470,7 @@ class RulesParsingManager {
             }
         }
 
-        if (attribs!!.isEmpty) {
-            return defaults
-        }
+        if (attribs!!.isEmpty) return defaults
 
         return attribs
     }
@@ -1602,7 +1482,7 @@ class RulesParsingManager {
     ): Multiplier? {
         val values = cs.getList(item)
         if (values == null) {
-            val value = ymlHelper.getFloat2(cs, item, null)
+            val value = YmlParsingHelper.getFloat2(cs, item, null)
             return if (value != null) Multiplier(addition, false, value) else null
         }
 
@@ -1643,18 +1523,16 @@ class RulesParsingManager {
         var minLevel = 1
         var maxLevel = 1
 
-        for (rules in LevelledMobs.instance.rulesManager.rulesInEffect.values) {
-            for (ruleInfo in rules) {
-                if ("defaults" != ruleInfo.ruleName) continue
+        for (ruleInfo in LevelledMobs.instance.rulesManager.rulesInEffect) {
+            if ("defaults" != ruleInfo.ruleName) continue
 
-                if (ruleInfo.levellingStrategy is RandomLevellingStrategy) {
-                    if (rls == null) rls = ruleInfo.levellingStrategy as RandomLevellingStrategy
-                    else rls.mergeRule(rls)
-                }
-
-                if (ruleInfo.restrictionsMinLevel != null) minLevel = ruleInfo.restrictionsMinLevel!!
-                if (ruleInfo.restrictionsMaxLevel != null) maxLevel = ruleInfo.restrictionsMaxLevel!!
+            if (ruleInfo.levellingStrategy is RandomLevellingStrategy) {
+                if (rls == null) rls = ruleInfo.levellingStrategy as RandomLevellingStrategy
+                else rls.mergeRule(rls)
             }
+
+            if (ruleInfo.restrictionsMinLevel != null) minLevel = ruleInfo.restrictionsMinLevel!!
+            if (ruleInfo.restrictionsMaxLevel != null) maxLevel = ruleInfo.restrictionsMaxLevel!!
         }
 
         if (rls == null || !rls.autoGenerate || rls.weightedRandom.isNotEmpty()) return
@@ -1663,49 +1541,10 @@ class RulesParsingManager {
         rls.populateWeightedRandom(minLevel, maxLevel)
     }
 
-    private fun objToCS(cs: ConfigurationSection?, path: String): ConfigurationSection? {
-        if (cs == null) {
-            return null
-        }
-        val useKey = ymlHelper.getKeyNameFromConfig(cs, path)
-        val obj = cs.get(useKey) ?: return null
-
-        when (obj) {
-            is ConfigurationSection -> {
-                return obj
-            }
-
-            is Map<*, *> -> {
-                val result = MemoryConfiguration()
-
-                // this is to convert any non-string objects
-                val temp = obj as Map<Any, Any>
-                val temp2: MutableMap<String, Any?> = HashMap(temp.size)
-                for (obj2: Any in temp.keys) {
-                    temp2[obj2.toString()] = temp[obj2]
-                }
-
-                result.addDefaults(temp2)
-                return result.defaultSection
-            }
-
-            else -> {
-                val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
-                Utils.logger.warning(
-                    "$currentPath: couldn't parse config of type: " + obj.javaClass
-                        .simpleName + ", value: " + obj
-                )
-                return null
-            }
-        }
-    }
-
     private fun objToCS2(
         obj: Any?
     ): ConfigurationSection? {
-        if (obj == null) {
-            return null
-        }
+        if (obj == null) return null
 
         when (obj) {
             is ConfigurationSection -> {
@@ -1714,14 +1553,14 @@ class RulesParsingManager {
 
             is Map<*, *> -> {
                 val result = MemoryConfiguration()
-                result.addDefaults((obj as Map<String?, Any>))
+                result.addDefaults((obj as Map<String, Any>))
                 return result.defaultSection
             }
 
             else -> {
                 Utils.logger.warning(
-                    "couldn't parse config of type: " + obj.javaClass.simpleName + ", value: "
-                            + obj
+                    "couldn't parse config of type: " + obj.javaClass.simpleName +
+                            ", value: $obj"
                 )
                 return null
             }
