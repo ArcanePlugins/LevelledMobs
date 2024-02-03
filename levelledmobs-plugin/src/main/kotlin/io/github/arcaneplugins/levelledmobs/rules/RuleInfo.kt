@@ -85,7 +85,7 @@ class RuleInfo(
     var maxAdjacentChunks: Int? = null
     @ExcludeFromHash @RuleFieldInfo("cooldown time", RuleType.APPLY_SETTING)
     var conditionsCooldownTime: Long? = null
-    @ExcludeFromHash
+    @ExcludeFromHash @RuleFieldInfo("times to cooldown activation", RuleType.CONDITION)
     var conditionsTimesToCooldownActivation: Int? = null
     @ExcludeFromHash @RuleFieldInfo("rule chance", RuleType.CONDITION)
     var conditionsChance: Float? = null
@@ -113,7 +113,7 @@ class RuleInfo(
     var levellingStrategy: LevellingStrategy? = null
     @RuleFieldInfo("player mod options", RuleType.STRATEGY)
     var playerLevellingOptions: PlayerLevellingOptions? = null
-    @ExcludeFromHash
+    @ExcludeFromHash @RuleFieldInfo("entity name overrides with level", RuleType.APPLY_SETTING)
     var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
     @ExcludeFromHash @RuleFieldInfo("entity name overrides", RuleType.APPLY_SETTING)
     var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
@@ -141,20 +141,31 @@ class RuleInfo(
     var conditionsBiomes: CachedModalList<Biome>? = null
     @RuleFieldInfo("level plugins", RuleType.CONDITION)
     var conditionsApplyPlugins: CachedModalList<String>? = null
+    @RuleFieldInfo("custom names", RuleType.CONDITION)
     var conditionsCustomNames: CachedModalList<String>? = null
+    @RuleFieldInfo("no drop entities", RuleType.CONDITION)
     var conditionsNoDropEntities: CachedModalList<String>? = null
+    @RuleFieldInfo("worldguard regions", RuleType.CONDITION)
     var conditionsWGregions: CachedModalList<String>? = null
+    @RuleFieldInfo("worldguard region owners", RuleType.CONDITION)
     var conditionsWGregionOwners: CachedModalList<String>? = null
+    @RuleFieldInfo("mythic mobs names", RuleType.CONDITION)
     var conditionsMMnames: CachedModalList<String>? = null
+    @RuleFieldInfo("spawner names", RuleType.CONDITION)
     var conditionsSpawnerNames: CachedModalList<String>? = null
+    @RuleFieldInfo("spawner egg names", RuleType.CONDITION)
     var conditionsSpawnegEggNames: CachedModalList<String>? = null
+    @RuleFieldInfo("scoreboard tags", RuleType.CONDITION)
     var conditionsScoreboardTags: CachedModalList<String>? = null
+    @RuleFieldInfo("world tick time", RuleType.CONDITION)
     var conditionsWorldTickTime: CachedModalList<MinAndMax>? = null
     @RuleFieldInfo("vanilla bonuses", RuleType.APPLY_SETTING)
     var vanillaBonuses: CachedModalList<VanillaBonusEnum>? = null
     @RuleFieldInfo("spawn reasons", RuleType.CONDITION)
     var conditionsSpawnReasons: CachedModalList<LevelledMobSpawnReason>? = null
+    @RuleFieldInfo("player permissions", RuleType.CONDITION)
     var conditionsPermission: CachedModalList<String>? = null
+    @RuleFieldInfo("within coordinates", RuleType.CONDITION)
     var conditionsWithinCoords: WithinCoordinates? = null
     @RuleFieldInfo("all mob multipliers", RuleType.APPLY_SETTING)
     var allMobMultipliers: FineTuningAttributes? = null
