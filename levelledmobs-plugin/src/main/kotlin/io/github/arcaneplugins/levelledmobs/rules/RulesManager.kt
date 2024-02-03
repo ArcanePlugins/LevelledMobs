@@ -1496,7 +1496,7 @@ class RulesManager {
             if (rulesCooldown.isEmpty()) {
                 val message = "No rules are currently temporarily disabled"
                 return if (isFromConsole) {
-                    String.format("%s %s", LevelledMobs.instance.configUtils.getPrefix(), message)
+                    String.format("%s %s", LevelledMobs.instance.configUtils.prefix, message)
                 } else {
                     message
                 }
@@ -1505,7 +1505,7 @@ class RulesManager {
 
             val sb = StringBuilder()
             if (isFromConsole) {
-                sb.append(LevelledMobs.instance.configUtils.getPrefix())
+                sb.append(LevelledMobs.instance.configUtils.prefix)
                 sb.append(" ${rulesCooldown.size} rule(s) currently disabled:")
             }
 

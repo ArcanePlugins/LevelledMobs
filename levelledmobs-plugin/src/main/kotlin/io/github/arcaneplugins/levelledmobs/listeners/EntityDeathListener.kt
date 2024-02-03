@@ -187,7 +187,7 @@ class EntityDeathListener : Listener {
                 )
             }
 
-            val prefix = main.configUtils.getPrefix()
+            val prefix = main.configUtils.prefix
             val msg = main.messagesCfg.getString("other.no-drop-in-chunk")
 
             if (msg != null) {

@@ -17,6 +17,9 @@ import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManage
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
+import io.github.arcaneplugins.levelledmobs.annotations.DoNotShow
+import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
+import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.rules.PlayerLevellingOptions
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
@@ -38,6 +41,7 @@ import org.bukkit.util.Vector
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 /**
  * Shows the current rules as parsed from the various config files
@@ -220,7 +224,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         difficulty: ResetDifficulty
     ) {
         val main = LevelledMobs.instance
-        val prefix = main.configUtils.getPrefix()
+        val prefix = main.configUtils.prefix
         showMessage(
             "command.levelledmobs.rules.resetting", "%difficulty%",
             difficulty.toString()
@@ -406,25 +410,22 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             )
         )
 
-        val main = LevelledMobs.instance
-        val sb = java.lang.StringBuilder()
-        sb.append(java.lang.String.join("\n", messages).replace(main.configUtils.getPrefix() + " ", ""))
+        val sb = StringBuilder()
+        sb.append(messages.joinToString("\n").replace(
+            LevelledMobs.instance.configUtils.prefix + " ", ""))
 
         player.sendMessage(sb.toString())
         if (!showOnConsole) {
             sb.setLength(0)
         }
 
+        var mobHash: String? = null
         if (lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING)) {
-            val mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
-            if (mobHash != null) {
-                sb.append("&r\nmobHash: ")
-                sb.append(mobHash)
-            }
+            mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
         }
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
-            showEffectiveValues(player, lmEntity, showOnConsole, sb)
+            showEffectiveValues(player, lmEntity, showOnConsole, mobHash)
             lmEntity.free()
         }
 
@@ -498,17 +499,18 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         sender: CommandSender,
         lmEntity: LivingEntityWrapper,
         showOnConsole: Boolean,
-        sb: StringBuilder
+        mobHash: String?
     ) {
-        val values: SortedMap<String, String> = TreeMap()
-        val printedKeys: MutableList<String> = LinkedList()
+        val values = mutableMapOf<RuleInfo.RuleSortingInfo, String>()
+        val printedKeys = mutableListOf<String>()
         val effectiveRules = lmEntity.getApplicableRules()
+        val sb = StringBuilder()
 
         if (effectiveRules.isEmpty()) {
             if (showOnConsole) {
                 Utils.logger.info(
                     sb.toString() + "\n" + getMessage("command.levelledmobs.rules.no-effective-rules").replace(
-                        LevelledMobs.instance.configUtils.getPrefix() + " ", ""
+                        LevelledMobs.instance.configUtils.prefix + " ", ""
                     )
                 )
             } else {
@@ -517,50 +519,49 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             return
         }
 
-        if (sb.isNotEmpty()) {
-            sb.append("\n")
-        }
-
         try {
-            for (i in effectiveRules.indices.reversed()) {
+            for (i in effectiveRules.indices) {
                 val pi = effectiveRules[i]
 
                 for (f in pi::class.declaredMemberProperties) {
-                    var showValue: String? = null
-
                     if (f.visibility == KVisibility.PRIVATE) continue
-                    if (f.findAnnotation<DoNotMerge>() != null) continue
-
+                    if (f.hasAnnotation<DoNotMerge>()) continue
+                    if (f.hasAnnotation<DoNotShow>()) continue
                     val value = f.getter.call(pi) ?: continue
+                    if (value.toString().isEmpty()) continue
 
-                    if (printedKeys.contains(f.name)) {
-                        continue
+                    var ruleName = f.name
+                    var showValue: String? = null
+                    var ruleInfoType = RuleType.MISC
+                    val ruleTypeInfo = f.findAnnotation<RuleFieldInfo>()
+                    if (ruleTypeInfo != null) {
+                        ruleInfoType = ruleTypeInfo.ruleType
+                        ruleName = ruleTypeInfo.value
                     }
-                    if (f.name == "ruleSourceNames" || f.name == "ruleIsEnabled") {
-                        continue
-                    }
+
+                    if (printedKeys.contains(f.name)) continue
+                    if (value is Map<*, *> && value.isEmpty()) continue
+                    if (value is List<*> && value.isEmpty()) continue
+
                     if (value is PlayerLevellingOptions) {
                         showValue = getPlayerLevellingFormatting(value, lmEntity)
                     }
-                    if (value is Map<*, *> && value.isEmpty()) {
-                        continue
-                    }
-                    if (value is List<*> && value.isEmpty()) {
-                        continue
-                    }
+
                     if (value is Enum<*> &&
                         ("NONE" == value.toString() || "NOT_SPECIFIED" == value.toString())
-                    ) {
-                        continue
-                    }
+                    ) continue
 
                     if (showValue == null) {
-                        showValue = "${f.name}, value: $value"
+                        showValue = "&b$value&r"
                     }
-                    showValue += ", &1source: " + (if (pi.ruleSourceNames.containsKey(f.name)) pi.ruleSourceNames[f.name] else pi.ruleName
-                            )
-                    values[f.name] = showValue
+                    showValue += ", &1source: " + (if (pi.ruleSourceNames.containsKey(f.name)) pi.ruleSourceNames[f.name] else pi.ruleName)
+                    showValue += "&r"
 
+                    val ruleInfo = RuleInfo.RuleSortingInfo(
+                        ruleInfoType,
+                        ruleName
+                    )
+                    values[ruleInfo] = showValue
                     printedKeys.add(f.name)
                 }
             }
@@ -568,18 +569,72 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             e.printStackTrace()
         }
 
-        val fineTuning =
-            "fine-tuning: " + (if (lmEntity.getFineTuningAttributes() == null) "(null)"
-            else lmEntity.getFineTuningAttributes().toString())
-        sb.append(fineTuning)
-        sb.append("&r\n")
-
-        for (s in values.values) {
-            sb.append(s)
-            sb.append("&r\n")
+        if (mobHash != null) {
+            val mobHashInfo = RuleInfo.RuleSortingInfo(
+                RuleType.MISC,
+                "mob hash"
+            )
+            values[mobHashInfo] = mobHash
         }
 
-        sb.setLength(sb.length - 1)
+        var hadConditions = false
+        var hadApplySettings = false
+        var hadStrategies = false
+        var hadMisc = false
+
+        for (item in values.asSequence()
+            .filter { v -> v.key.ruleType == RuleType.CONDITION }
+            .sortedBy { v -> v.key.fieldName }
+            .iterator()
+        ){
+            if (!hadConditions){
+                hadConditions = true
+                sb.append("\n&lConditions:&r")
+            }
+            sb.append("\n   ").append(item.key.fieldName)
+                .append(": ").append(item.value)
+        }
+
+        for (item in values.asSequence()
+            .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
+            .sortedBy { v -> v.key.fieldName }
+            .iterator()
+        ){
+            if (!hadApplySettings){
+                hadApplySettings = true
+                sb.append("\n&lApply Settings&r:")
+            }
+            sb.append("\n   ").append(item.key.fieldName)
+                .append(": ").append(item.value)
+        }
+
+        for (item in values.asSequence()
+            .filter { v -> v.key.ruleType == RuleType.STRATEGY }
+            .sortedBy { v -> v.key.fieldName }
+            .iterator()
+        ){
+            if (!hadStrategies){
+                hadStrategies = true
+                sb.append("\n&lStrategies:&r")
+            }
+            sb.append("\n   ").append(item.key.fieldName)
+                .append(": ").append(item.value)
+        }
+
+        for (item in values.asSequence()
+            .filter { v -> v.key.ruleType != RuleType.CONDITION &&
+                    v.key.ruleType != RuleType.APPLY_SETTING &&
+                    v.key.ruleType != RuleType.STRATEGY &&
+                    v.key.ruleType != RuleType.NO_CATEGORY }
+            .iterator()
+        ){
+            if (!hadMisc){
+                hadMisc = true
+                sb.append("\n&lMisc:&r")
+            }
+            sb.append("\n   ").append(item.key.fieldName)
+                .append(": ").append(item.value)
+        }
 
         if (showOnConsole) {
             Utils.logger.info(sb.toString())
@@ -668,7 +723,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         opts: PlayerLevellingOptions,
         lmEntity: LivingEntityWrapper
     ): String {
-        val sb = java.lang.StringBuilder("playerLevellingOptions, value: ")
+        val sb = StringBuilder("value: ")
 
         var userId: String? = null
         var plValue: String? = null

@@ -168,7 +168,7 @@ class EntityDamageDebugListener : Listener {
     ) {
         if (usePrefix) {
             player.sendMessage(
-                colorizeAll(LevelledMobs.instance.configUtils.getPrefix() + "&7 " + message)
+                colorizeAll(LevelledMobs.instance.configUtils.prefix + "&7 " + message)
             )
         } else {
             player.sendMessage(colorizeAll(message))

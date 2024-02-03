@@ -49,6 +49,7 @@ class RuleInfo(
     var stopProcessingRules: Boolean? = null
     @ExcludeFromHash @DoNotShow
     var mergeEntityNameOverrides: Boolean? = null
+    @RuleFieldInfo("passenger match level", RuleType.APPLY_SETTING)
     var passengerMatchLevel: Boolean? = null
     @ExcludeFromHash @RuleFieldInfo("lock entity", RuleType.APPLY_SETTING)
     var lockEntity: Boolean? = null
@@ -94,9 +95,9 @@ class RuleInfo(
     var nametag: String? = null
     @ExcludeFromHash @RuleFieldInfo("creature death nametag", RuleType.APPLY_SETTING)
     var nametagCreatureDeath: String? = null
-    @ExcludeFromHash
+    @ExcludeFromHash @RuleFieldInfo("nametag placeholder levelled", RuleType.APPLY_SETTING)
     var nametagPlaceholderLevelled: String? = null
-    @ExcludeFromHash
+    @ExcludeFromHash @RuleFieldInfo("nametag placeholder unlevelled", RuleType.APPLY_SETTING)
     var nametagPlaceholderUnlevelled: String? = null
     @DoNotMerge @ExcludeFromHash @DoNotShow
     var presetName: String? = null
@@ -279,7 +280,7 @@ class RuleInfo(
             property.setter.call(this, newValue)
     }
 
-    private class RuleSortingInfo(
+    class RuleSortingInfo(
         val ruleType: RuleType,
         val fieldName: String
     ){
@@ -296,11 +297,9 @@ class RuleInfo(
         isForHash: Boolean,
         excludedKeys: MutableList<String>?
     ): String {
-        //val values: SortedMap<String, String> = TreeMap()
         val values = mutableMapOf<RuleSortingInfo, String>()
         val sb = StringBuilder()
 
-        //if (excludedKeys == null || excludedKeys.contains("id")) {
         sb.append("\n&lId:&r ")
         if (this.presetName.isNullOrEmpty())
             sb.append(ruleName)
@@ -310,14 +309,10 @@ class RuleInfo(
             sb.append("&6(disabled)&r")
         else
             sb.append("&r")
-        //}
 
         try {
             for (f in this::class.declaredMemberProperties) {
-                if (f.visibility == KVisibility.PRIVATE) {
-                    continue
-                }
-
+                if (f.visibility == KVisibility.PRIVATE) continue
                 if (isForHash && f.findAnnotation<ExcludeFromHash>() != null) continue
                 if (!isForHash && f.hasAnnotation<DoNotShow>()) continue
                 val value = f.getter.call(this) ?: continue

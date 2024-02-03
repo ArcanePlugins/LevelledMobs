@@ -365,7 +365,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         )
 
         if (message.isNotEmpty()) {
-            Utils.logger.info(message[0].replace(LevelledMobs.instance.configUtils.getPrefix() + " ", ""))
+            Utils.logger.info(message[0].replace(LevelledMobs.instance.configUtils.prefix + " ", ""))
         }
 
         showMessage("command.levelledmobs.spawner.spawner-give-message", info.player!!)

@@ -24,9 +24,12 @@ open class MessagesBase{
         showMessage(path, commandSender!!)
     }
 
-    protected fun showMessage(path: String, sender: CommandSender) {
+    protected fun showMessage(
+        path: String,
+        sender: CommandSender
+    ) {
         var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
-        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.getPrefix())
+        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
         messages = replaceAllInList(messages, "%label%", messageLabel)
         messages = colorizeAllInList(messages)
         messages.forEach(Consumer { s: String -> sender.sendMessage(s) })
@@ -63,15 +66,15 @@ open class MessagesBase{
         replaceWith: Array<String>,
         sender: CommandSender
     ) {
-        val messages: List<String> = getMessage(path, replaceWhat, replaceWith)
+        val messages = getMessage(path, replaceWhat, replaceWith)
         messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
     }
 
     protected fun getMessage(
         path: String
     ): String {
-        var messages =  LevelledMobs.instance.messagesCfg.getStringList(path)
-        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.getPrefix())
+        var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
+        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
         messages = replaceAllInList(messages, "%label%", messageLabel)
         messages = colorizeAllInList(messages)
 
@@ -81,7 +84,7 @@ open class MessagesBase{
         return if (messages.size == 1) {
             messages[0]
         } else {
-            java.lang.String.join("\n", messages)
+            messages.joinToString("\n")
         }
     }
 
@@ -89,7 +92,7 @@ open class MessagesBase{
         path: String,
         replaceWhat: String,
         replaceWith: String
-    ): List<String> {
+    ): MutableList<String> {
         return getMessage(
             path,
             arrayOf(replaceWhat),
@@ -101,7 +104,7 @@ open class MessagesBase{
         path: String,
         replaceWhat: Array<String>,
         replaceWith: Array<String>
-    ): List<String> {
+    ): MutableList<String> {
         if (replaceWhat.size != replaceWith.size) {
             throw ArrayIndexOutOfBoundsException(
                 "replaceWhat must be the same size as replaceWith"
@@ -109,7 +112,7 @@ open class MessagesBase{
         }
 
         var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
-        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.getPrefix())
+        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
         messages = replaceAllInList(
             messages, "%label%",
             if (messageLabel != null) messageLabel else ""

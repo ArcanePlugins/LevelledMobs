@@ -69,7 +69,7 @@ class LevelledMobsCommand : CommandExecutor, TabCompleter {
 
     private fun sendMainUsage(sender: CommandSender, label: String) {
         var mainUsage = LevelledMobs.instance.messagesCfg.getStringList("command.levelledmobs.main-usage")
-        mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", LevelledMobs.instance.configUtils.getPrefix())
+        mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", LevelledMobs.instance.configUtils.prefix)
         mainUsage = Utils.replaceAllInList(mainUsage, "%label%", label)
         mainUsage = Utils.colorizeAllInList(mainUsage)
         mainUsage.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })

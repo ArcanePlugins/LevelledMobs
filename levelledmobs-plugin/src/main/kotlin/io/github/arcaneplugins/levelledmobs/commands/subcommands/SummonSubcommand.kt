@@ -420,7 +420,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.not-levellable"
             )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix())
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
             messages = Utils.replaceAllInList(
                 messages, "%entity%",
                 options.lmPlaceholder.typeName
@@ -437,7 +437,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.not-levellable"
             )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix())
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
             messages = Utils.replaceAllInList(
                 messages, "%entity%",
                 options.lmPlaceholder.typeName
@@ -451,7 +451,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.amount-limited.min"
             )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix())
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
             messages = Utils.colorizeAllInList(messages)
             messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
         }
@@ -465,7 +465,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.amount-limited.max"
             )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix())
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
             messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount.toString())
             messages = Utils.colorizeAllInList(messages)
             messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
@@ -482,7 +482,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.level-limited.min"
             )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix())
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
             messages = Utils.replaceAllInList(messages, "%minLevel%", java.lang.String.valueOf(levels.min))
             messages = Utils.colorizeAllInList(messages)
             messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
@@ -497,7 +497,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.level-limited.max"
             )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix())
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
             messages = Utils.replaceAllInList(messages, "%maxLevel%", java.lang.String.valueOf(levels.max))
             messages = Utils.colorizeAllInList(messages)
             messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })

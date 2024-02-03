@@ -174,7 +174,7 @@ class LevelledMobs : JavaPlugin() {
         )
         reloadStartedMsg = Utils.replaceAllInList(
             reloadStartedMsg, "%prefix%",
-            configUtils.getPrefix()
+            configUtils.prefix
         )
         reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg)
         reloadStartedMsg.forEach(Consumer { s: String? ->
@@ -191,7 +191,7 @@ class LevelledMobs : JavaPlugin() {
         )
         reloadFinishedMsg = Utils.replaceAllInList(
             reloadFinishedMsg, "%prefix%",
-            configUtils.getPrefix()
+            configUtils.prefix
         )
         reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg)
 

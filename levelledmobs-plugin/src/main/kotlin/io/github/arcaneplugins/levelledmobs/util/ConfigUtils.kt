@@ -32,16 +32,17 @@ class ConfigUtils{
         }
     }
 
-    fun getPrefix(): String {
-        return MessageUtils.colorizeAll(
-            LevelledMobs.instance.messagesCfg.getString("common.prefix")
-        )
-    }
+    val prefix: String
+        get() {
+            return MessageUtils.colorizeAll(
+                LevelledMobs.instance.messagesCfg.getString("common.prefix")
+            )
+        }
 
     fun sendNoPermissionMsg(sender: CommandSender) {
         var noPermissionMsg = LevelledMobs.instance.messagesCfg.getStringList("common.no-permission")
 
-        noPermissionMsg = replaceAllInList(noPermissionMsg, "%prefix%", getPrefix())
+        noPermissionMsg = replaceAllInList(noPermissionMsg, "%prefix%", prefix)
         noPermissionMsg = colorizeAllInList(noPermissionMsg)
 
         noPermissionMsg.forEach(Consumer { s: String -> sender.sendMessage(s) })

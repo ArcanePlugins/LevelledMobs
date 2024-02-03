@@ -237,7 +237,7 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
 
         if (message.isNotEmpty()) {
             val consoleMsg = message[0]
-                .replace(LevelledMobs.instance.configUtils.getPrefix() + " ", "&r")
+                .replace(LevelledMobs.instance.configUtils.prefix + " ", "&r")
             Utils.logger.info(consoleMsg)
         }
 
