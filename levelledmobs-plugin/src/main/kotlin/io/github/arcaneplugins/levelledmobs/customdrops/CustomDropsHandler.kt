@@ -180,7 +180,7 @@ class CustomDropsHandler {
         }
 
         processingInfo.addition = BigDecimal.valueOf(
-            main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).toDouble()
+            main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount.toDouble()
         )
             .setScale(0, RoundingMode.HALF_DOWN).intValueExact().toDouble() // truncate double to int
 

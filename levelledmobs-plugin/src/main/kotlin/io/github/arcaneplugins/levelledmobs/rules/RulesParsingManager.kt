@@ -507,13 +507,14 @@ class RulesParsingManager {
     }
 
     private fun parseValues(ymlHelper: YmlParsingHelper) {
-        mergePreset(ymlHelper)
-
-        parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "enabled", true)
         val ruleName = ymlHelper.getString( "name")
         if (ruleName != null) {
             parsingInfo.ruleName = ruleName
         }
+
+        mergePreset(ymlHelper)
+
+        parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "enabled", true)
 
         parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
         parseConditions(YmlParsingHelper.objToCS(ymlHelper.cs, "conditions"))
@@ -527,8 +528,9 @@ class RulesParsingManager {
         for (checkName: String in presets) {
             val checkNameTrimmed = checkName.trim { it <= ' ' }
             if (!rulePresets.containsKey(checkNameTrimmed)) {
+                val ruleName = parsingInfo.presetName?: parsingInfo.ruleName
                 Utils.logger.warning(
-                    parsingInfo.ruleName + ", specified preset name '$checkNameTrimmed' but none was found"
+                    "Rule: '$ruleName' specified preset name '$checkNameTrimmed' but none was found"
                 )
                 continue
             }
@@ -1483,35 +1485,52 @@ class RulesParsingManager {
         val values = cs.getList(item)
         if (values == null) {
             val value = YmlParsingHelper.getFloat2(cs, item, null)
-            return if (value != null) Multiplier(addition, false, value) else null
+            return if (value != null)
+                Multiplier(addition, false, value, null, false)
+            else
+                null
         }
 
-        var value = Float.MIN_VALUE
+        var customFormula: String? = null
         var useStacked = false
+        var value = 0f
         var count = 0
+        var valueStr: String? = null
+        var isAddition = false
         for (obj in values) {
             if (count > 2) break
 
-            if (obj is Float) {
-                value = obj
-            } else if (obj is Double) {
-                value = obj.toFloat()
-            } else if (obj is Int) {
-                value = obj.toFloat()
-            } else if (obj is String) {
-                if ("stacked".equals(obj, ignoreCase = true)) {
-                    useStacked = true
-                } else if (isDouble(obj)) {
-                    value = obj.toFloat()
+            when (obj) {
+                is Float -> { value = obj }
+                is Double -> { value = obj.toFloat() }
+                is Int -> { value = obj.toFloat() }
+                is String -> {
+                    if ("formula".equals(obj, ignoreCase = true) ||
+                        "formula_add".equals(obj, ignoreCase = true)){
+                        customFormula = valueStr
+                        isAddition = true
+                        useStacked = false
+                    } else if ("formula_mult".equals(obj, ignoreCase = true)) {
+                        customFormula = valueStr
+                        isAddition = false
+                        useStacked = false
+                    }
+                    else if ("stacked".equals(obj, ignoreCase = true)) {
+                        useStacked = true
+                    } else if (isDouble(obj)) {
+                        value = obj.toFloat()
+                    }
+
+                    valueStr = obj
                 }
             }
 
             count++
         }
 
-        if (value > Float.MIN_VALUE) {
+        if (value > Float.MIN_VALUE || !customFormula.isNullOrEmpty()) {
             return Multiplier(
-                addition, useStacked, value
+                addition, useStacked, value, customFormula, isAddition
             )
         }
 

@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
 import io.github.arcaneplugins.levelledmobs.enums.Addition
-import org.jetbrains.annotations.Contract
 
 /**
  * Holds any custom multipliers values parsed from rules.yml
@@ -29,7 +28,10 @@ class FineTuningAttributes : MergableRule, Cloneable {
         multipliers.putAll(mergableRule.copyMultipliers())
     }
 
-    fun addItem(addition: Addition, multiplier: Multiplier) {
+    fun addItem(
+        addition: Addition,
+        multiplier: Multiplier
+    ) {
         multipliers[addition] = multiplier
     }
 
@@ -83,14 +85,33 @@ class FineTuningAttributes : MergableRule, Cloneable {
     }
 
     @JvmRecord
-    data class Multiplier(val addition: Addition, val useStacked: Boolean, val value: Float) {
-        @Contract(pure = true)
+    data class Multiplier(
+        val addition: Addition,
+        val useStacked: Boolean,
+        val value: Float,
+        val formula: String?,
+        val isAddition: Boolean
+    ) {
+        val hasFormula: Boolean
+            get() = !this.formula.isNullOrEmpty()
+
         override fun toString(): String {
             val sb = StringBuilder()
             sb.append(getShortName(addition))
-            if (useStacked) sb.append(" (stkd): ")
-            else sb.append(": ")
-            sb.append(value)
+
+            if (hasFormula){
+                sb.append(" formula: '")
+                sb.append(formula).append("'")
+                if (isAddition)
+                    sb.append(" (add)")
+                else
+                    sb.append(" (multiply)")
+            }
+            else{
+                if (useStacked) sb.append(" (stkd): ")
+                else sb.append(": ")
+                sb.append(value)
+            }
 
             return sb.toString()
         }
@@ -109,9 +130,7 @@ class FineTuningAttributes : MergableRule, Cloneable {
     }
 
     private fun cloneMultipliers() {
-        val copy = copyMultipliers()
-        this.multipliers = LinkedHashMap(copy.size)
-        multipliers.putAll(copy)
+        multipliers.putAll(copyMultipliers())
     }
 
     private fun copyMultipliers(): MutableMap<Addition, Multiplier> {
@@ -121,7 +140,7 @@ class FineTuningAttributes : MergableRule, Cloneable {
 
         for (addition in multipliers.keys) {
             val old = multipliers[addition]
-            copy[addition] = Multiplier(addition, old!!.useStacked, old.value)
+            copy[addition] = Multiplier(addition, old!!.useStacked, old.value, old.formula, old.isAddition)
         }
 
         return copy

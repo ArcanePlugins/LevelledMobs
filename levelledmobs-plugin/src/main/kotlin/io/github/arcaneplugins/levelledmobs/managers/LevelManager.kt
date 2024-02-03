@@ -440,7 +440,7 @@ class LevelManager : LevelInterface2 {
             val additionValue: Float = main.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_ITEM_DROP, 2.0f
-            )
+            ).amount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
                     String.format(
@@ -600,7 +600,7 @@ class LevelManager : LevelInterface2 {
             val dropAddition: Float = LevelledMobs.instance.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_XP_DROP, 3.0f
-            )
+            ).amount
             var newXp = 0.0
 
             if (dropAddition == Float.MIN_VALUE) {
@@ -825,6 +825,11 @@ class LevelManager : LevelInterface2 {
         text.replace("%entity-health-rounded%", entityHealthRounded)
         text.replace("%entity-max-health%", roundedMaxHealth)
         text.replace("%entity-max-health-rounded%", roundedMaxHealthInt)
+        text.replaceIfExists("%base-health%"){
+            val baseHealth = lmEntity.livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue
+            if (baseHealth != null) return@replaceIfExists baseHealth.toString()
+            else return@replaceIfExists "0"
+        }
         text.replace("%heart_symbol%", "❤")
         text.replace("%tiered%", tieredPlaceholder)
         text.replace("%wg_region%", lmEntity.wgRegionName)
@@ -1388,7 +1393,7 @@ class LevelManager : LevelInterface2 {
         val damage = main.mobDataManager.getAdditionsForLevel(
             lmEntity,
             Addition.CREEPER_BLAST_DAMAGE, 3f
-        )
+        ).amount
         if (damage == 0.0f) {
             return
         }

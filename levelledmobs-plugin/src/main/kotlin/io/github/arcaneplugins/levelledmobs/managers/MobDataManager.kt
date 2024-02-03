@@ -1,20 +1,24 @@
 package io.github.arcaneplugins.levelledmobs.managers
 
-import java.util.Collections
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
-import io.github.arcaneplugins.levelledmobs.enums.Addition
-import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
+import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
+import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
+import io.github.arcaneplugins.levelledmobs.result.MultiplierResult
+import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.Collections
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.EntityType
+import redempt.crunch.Crunch
+import redempt.crunch.functional.EvaluationEnvironment
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Manages data related to various mob levelling
@@ -24,6 +28,10 @@ import kotlin.math.max
  */
 class MobDataManager {
     val vanillaMultiplierNames = mutableMapOf<String, VanillaBonusEnum>()
+
+    companion object {
+        private val crunchEvalEnv = EvaluationEnvironment()
+    }
 
     init {
         this.vanillaMultiplierNames.putAll(mapOf(
@@ -45,6 +53,43 @@ class MobDataManager {
             "Zombie reinforcement caller charge" to VanillaBonusEnum.ZOMBIE_REINFORCE_CALLER,
             "Zombie reinforcement callee charge" to VanillaBonusEnum.ZOMBIE_REINFORCE_CALLEE
         ))
+        /*
+        Syntax: between(num, lower, upper)
+
+        Returns `1` if `num` is between (inclusive) `lower` and `upper`, else, returning `0`.
+
+        Example: between(7, 1, 5) -> 0
+            (7 is not between 1 and 5 (inclusive), so 0 (false) was returned.)
+         */
+        crunchEvalEnv.addFunction("between", 3) { d: DoubleArray ->
+            if ((d[0] >= d[1] && d[0] <= d[2])
+            ) 1.0 else 0.0
+        }
+
+        /*
+        Syntax: clamp(num, lower, upper)
+
+        Returns `num` although increasing it / reducing it to be in between (inclusive) the
+        `lower` and `upper` bounds.
+
+        Example: clamp(7, 1, 5) -> 5
+            (7 is larger than the upper bound of 5, so 5 was returned.)
+         */
+        crunchEvalEnv.addFunction("clamp", 3) { d: DoubleArray ->
+            min(
+                d[2],
+                max(d[0], d[1])
+            )
+        }
+    }
+
+    /* methods */
+    private fun evaluateExpression(
+        expression: String
+    ): Double {
+        return Crunch.compileExpression(
+            expression, crunchEvalEnv
+        ).evaluate()
     }
 
     fun isLevelledDropManaged(
@@ -70,15 +115,19 @@ class MobDataManager {
     ) {
         val defaultValue = lmEntity.livingEntity
                 .getAttribute(attribute)!!.baseValue.toFloat()
-        val additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue)
-
+        val multiplierResult = getAdditionsForLevel(lmEntity, addition, defaultValue)
+        val additionValue = multiplierResult.amount
         if (additionValue == 0.0f) {
             return
         }
 
-        val mod = AttributeModifier(
-            attribute.name, additionValue.toDouble(),
+        val modifierOperation = if (multiplierResult.isAddition)
             AttributeModifier.Operation.ADD_NUMBER
+        else
+            AttributeModifier.Operation.MULTIPLY_SCALAR_1
+
+        val mod = AttributeModifier(
+            attribute.name, additionValue.toDouble(), modifierOperation
         )
         val attrib = lmEntity.livingEntity.getAttribute(attribute) ?: return
 
@@ -130,7 +179,7 @@ class MobDataManager {
             attrib.removeModifier(existingMod)
         }
         DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-            java.lang.String.format(
+            String.format(
                 "%s (%s): attrib: %s, base: %s, addtion: %s",
                 lmEntity.nameIfBaby,
                 lmEntity.getMobLevel(),
@@ -150,8 +199,7 @@ class MobDataManager {
                     1.0,
                     attrib.value - existingDamage
                 )
-            } catch (ignored: IllegalArgumentException) {
-            }
+            } catch (ignored: IllegalArgumentException) {}
         }
     }
 
@@ -159,14 +207,34 @@ class MobDataManager {
         lmEntity: LivingEntityWrapper,
         addition: Addition,
         defaultValue: Float
-    ): Float {
+    ): MultiplierResult {
         val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity).toFloat()
         val fineTuning = lmEntity.getFineTuningAttributes()
-        val multiplier: FineTuningAttributes.Multiplier?
+        var multiplier: FineTuningAttributes.Multiplier? = null
         var attributeMax = 0f
+        var multiplierValue = 0f
+        var isAddition = true
 
         if (fineTuning != null) {
             multiplier = fineTuning.getItem(addition)
+            if (multiplier?.hasFormula == true){
+                isAddition = multiplier.isAddition
+                val formulaStr = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
+                    multiplier.formula!!,
+                    lmEntity,
+                    true,
+                    null,
+                    true
+                )
+                try{ multiplierValue = evaluateExpression(formulaStr).toFloat() }
+                catch (e: Exception){
+                    Utils.logger.warning("Error evaluating formula: '$formulaStr', ${e.message}")
+                }
+                DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
+                    "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel()}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
+            }
+            else if (multiplier != null)
+                multiplierValue = multiplier.value
 
             attributeMax = when (addition) {
                 Addition.ATTRIBUTE_ARMOR_BONUS -> 30.0f
@@ -175,48 +243,48 @@ class MobDataManager {
                 Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE, Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> 1.0f
                 else -> 0.0f
             }
-        } else {
-            multiplier = null
         }
 
-        if (maxLevel == 0f || multiplier == null || multiplier.value == 0.0f) {
+        if (maxLevel == 0f || multiplierValue == 0.0f) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                 lmEntity.nameIfBaby +
-                        ", maxLevel=0 / multiplier=null; returning 0 for " + addition
+                        ", maxLevel was 0 or multiplier was 0; returning 0 for " + addition
             }
-            return 0.0f
+            return MultiplierResult(0.0f, isAddition)
         }
 
-        val multiplierValue: Float = multiplier.value
+        if (multiplier?.hasFormula == true)
+            return MultiplierResult(multiplierValue, isAddition)
+
+        //val multiplierValue: Float = multiplier.value
         if ((addition == Addition.CUSTOM_ITEM_DROP || addition == Addition.CUSTOM_XP_DROP)
             && multiplierValue == -1f
-        ) {
-            return Float.MIN_VALUE
-        }
+        ) return MultiplierResult(Float.MIN_VALUE, isAddition)
 
-        if (fineTuning!!.getUseStacked() || multiplier.useStacked) {
+        if (fineTuning!!.getUseStacked() || multiplier!!.useStacked) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                java.lang.String.format(
+                String.format(
                     "%s (%s): using stacked formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel(), multiplier.value
+                    lmEntity.nameIfBaby, lmEntity.getMobLevel(), multiplier!!.value
                 )
             }
-            return lmEntity.getMobLevel().toFloat() * multiplierValue
+            return MultiplierResult(lmEntity.getMobLevel().toFloat() * multiplierValue, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                java.lang.String.format(
+                String.format(
                     "%s (%s): using standard formula, multiplier: %s",
                     lmEntity.nameIfBaby, lmEntity.getMobLevel(), multiplier.value
                 )
             }
 
-            return if (attributeMax > 0.0) {
+            multiplierValue = if (attributeMax > 0.0) {
                 // only used for 5 specific attributes
                 lmEntity.getMobLevel() / maxLevel * (attributeMax * multiplierValue)
             } else {
                 // normal formula for most attributes
                 defaultValue * multiplierValue * ((lmEntity.getMobLevel()) / maxLevel)
             }
+            return MultiplierResult(multiplierValue, isAddition)
         }
     }
 }

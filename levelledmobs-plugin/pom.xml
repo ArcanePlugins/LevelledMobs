@@ -137,20 +137,12 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
-        </repository>
-        <repository>
-            <id>First Dark</id> <!-- Mojang Authlib -->
-            <url>https://maven.firstdarkdev.xyz/#/releases</url>
         </repository>
         <repository>
             <id>md_5-public</id>
@@ -160,13 +152,17 @@
             <id>mavenCentral</id>
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
+        <repository>
+            <id>redempt.dev</id>
+            <url>https://redempt.dev</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-            <version>1.9.22</version>
+            <groupId>com.github.Redempt</groupId>
+            <artifactId>Crunch</artifactId>
+            <version>2.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -177,6 +173,12 @@
         </dependency>
 
         <!-- Dependencies which are shaded in LM -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>1.9.22</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
@@ -231,12 +233,6 @@
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.dmulloy2</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>5.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
