@@ -161,6 +161,8 @@ print-lm-summon-results: true
 # ||  the LEW (LivingEntityWrapper) cache is cleared.
 lew-cache-clear-period: 3m
 
+exclude-players-in-creative: false
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This value must not be modified, else your configuration

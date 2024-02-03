@@ -1164,14 +1164,21 @@ class LevelManager : LevelInterface2 {
         players: List<Player>
     ) {
         val mob = lmEntity.livingEntity
-        val sortedPlayers = players
+        var sortedPlayersSequence = players
             .asSequence()
             .filter { p: Player -> p.world == mob.world }
             .filter { p: Player -> p.gameMode != GameMode.SPECTATOR }
             .map { p: Player -> Pair(mob.location.distanceSquared(p.location), p) }
             .sortedBy { it.first }
             .map { it.second }
-            .toMutableList()
+
+        if (LevelledMobs.instance.companion.excludePlayersInCreative){
+            sortedPlayersSequence = sortedPlayersSequence.filter {
+                p: Player -> p.gameMode != GameMode.CREATIVE
+            }
+        }
+
+        val sortedPlayers = sortedPlayersSequence.toMutableList()
 
         var closestPlayer: Player? = null
         for (player in sortedPlayers) {

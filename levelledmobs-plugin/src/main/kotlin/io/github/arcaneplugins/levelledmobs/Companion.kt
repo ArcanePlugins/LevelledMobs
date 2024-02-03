@@ -80,6 +80,7 @@ class Companion{
     private val playerWorldPortals = mutableMapOf<Player, Location>()
     val spawnerCopyIds = mutableListOf<UUID>()
     val spawnerInfoIds = mutableListOf<UUID>()
+    var excludePlayersInCreative = false
     private val pluginManager = Bukkit.getPluginManager()
     private val metricsInfo = MetricsInfo()
     val externalCompatibilityManager = ExternalCompatibilityManager()
@@ -171,6 +172,7 @@ class Companion{
             "player-levelling-relevel-min-time", 5000L
         )!!
         this.useAdventure = main.helperSettings.getBoolean( "use-adventure", true)
+        this.excludePlayersInCreative = main.helperSettings.getBoolean("exclude-players-in-creative")
 
         return true
     }

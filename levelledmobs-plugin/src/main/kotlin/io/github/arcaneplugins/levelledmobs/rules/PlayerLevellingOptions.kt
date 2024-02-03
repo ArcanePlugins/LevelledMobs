@@ -5,6 +5,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
+import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.max
@@ -83,7 +84,9 @@ class PlayerLevellingOptions : Cloneable {
     val getRecheckPlayers: Boolean
         get() = this.recheckPlayers != null && recheckPlayers!!
 
-    fun getPlayerLevels(lmEntity: LivingEntityWrapper): MinAndMaxHolder? {
+    fun getPlayerLevels(
+        lmEntity: LivingEntityWrapper
+    ): MinAndMaxHolder? {
         val options = lmEntity.main.rulesManager.getRulePlayerLevellingOptions(
             lmEntity
         )
@@ -102,15 +105,17 @@ class PlayerLevellingOptions : Cloneable {
             lmEntity.playerForLevelling, lmEntity, variableToUse
         )
 
-        val origLevelSource =
-            (if (playerLevelSourceResult.isNumericResult) playerLevelSourceResult.numericResult else 1).toDouble()
+        val origLevelSource = (
+                if (playerLevelSourceResult.isNumericResult) playerLevelSourceResult.numericResult
+                else 1
+                ).toDouble()
 
         applyValueToPdc(lmEntity, playerLevelSourceResult)
         levelSource = max(Math.round(origLevelSource * scale).toInt().toDouble(), 1.0).toInt()
 
         val results = MinAndMaxHolder(1, 1)
         var tierMatched: String? = null
-        val capDisplay = if (options.levelCap == null) "" else "cap: " + options.levelCap + ", "
+        val capDisplay = if (options.levelCap == null) "" else "cap: ${options.levelCap}, "
 
         if (options.getUsePlayerMaxLevel) {
             results.min = levelSource
@@ -194,10 +199,9 @@ class PlayerLevellingOptions : Cloneable {
             results.ensureMinAndMax(1, options.levelCap!!)
         }
 
-        val homeName = if (playerLevelSourceResult.homeNameUsed != null) String.format(
-            " (%s)",
-            playerLevelSourceResult.homeNameUsed
-        ) else ""
+        val homeName = if (playerLevelSourceResult.homeNameUsed != null)
+            " (${playerLevelSourceResult.homeNameUsed})"
+            else ""
 
         if (tierMatched == null) {
             DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
@@ -231,7 +235,11 @@ class PlayerLevellingOptions : Cloneable {
 
         if (options.getRecheckPlayers) {
             val numberOrString =
-                if (playerLevelSourceResult.isNumericResult) playerLevelSourceResult.numericResult.toString() else playerLevelSourceResult.stringResult
+                if (playerLevelSourceResult.isNumericResult)
+                    playerLevelSourceResult.numericResult.toString()
+                else
+                    playerLevelSourceResult.stringResult
+
             if (numberOrString != null) lmEntity.pdc.set(
                 NamespacedKeys.playerLevellingSourceNumber,
                 PersistentDataType.STRING,
@@ -248,7 +256,10 @@ class PlayerLevellingOptions : Cloneable {
         playerLevel: PlayerLevelSourceResult
     ) {
         val value =
-            if (playerLevel.isNumericResult) playerLevel.numericResult.toString() else playerLevel.stringResult!!
+            if (playerLevel.isNumericResult)
+                playerLevel.numericResult.toString()
+            else
+                playerLevel.stringResult?: "(null)"
 
         try {
             lmEntity.pdc.set(
@@ -256,8 +267,7 @@ class PlayerLevellingOptions : Cloneable {
                 PersistentDataType.STRING,
                 value
             )
-        } catch (ignored: java.lang.Exception) {
-        }
+        } catch (ignored: Exception) { }
     }
 
     override fun toString(): String {

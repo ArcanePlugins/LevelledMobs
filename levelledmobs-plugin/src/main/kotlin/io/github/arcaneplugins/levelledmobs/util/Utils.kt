@@ -17,10 +17,13 @@ import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Chunk
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Biome
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.persistence.PersistentDataType
@@ -63,7 +66,8 @@ object Utils {
      * @author stumper66
      */
     fun replaceEx(
-        message: String, replaceWhat: String,
+        message: String,
+        replaceWhat: String,
         replaceTo: String
     ): String {
         var count = 0
@@ -100,9 +104,7 @@ object Utils {
      * @return if str is an integer (e.g. "1234" = true, "hello" = false)
      */
     fun isInteger(str: String?): Boolean {
-        if (str.isNullOrEmpty()) {
-            return false
-        }
+        if (str.isNullOrEmpty()) return false
 
         try {
             str.toInt()
@@ -113,19 +115,17 @@ object Utils {
     }
 
     fun isDouble(str: String?): Boolean {
-        if (str.isNullOrEmpty()) {
-            return false
-        }
+        if (str.isNullOrEmpty()) return false
 
         try {
             str.toDouble()
             return true
-        } catch (ex: java.lang.NumberFormatException) {
+        } catch (ex: NumberFormatException) {
             return false
         }
     }
 
-    val oneToNine: MutableList<String> = mutableListOf(
+    val oneToNine = mutableListOf(
         "1", "2", "3", "4", "5", "6", "7", "8", "9"
     )
 
@@ -578,5 +578,25 @@ object Utils {
         }
 
         return defaultTime
+    }
+
+    fun filterPlayersList(
+        entities: MutableList<Player>,
+        mob: LivingEntity,
+        maxDistance: Double?
+    ): MutableList<Player>{
+        var temp = entities.asSequence()
+            .filter { p: Player -> p.world == mob.world }
+            .filter { p: Player -> p.gameMode != GameMode.SPECTATOR }
+            .map { p: Player -> Pair(mob.location.distanceSquared(p.location), p) }
+            .filter { maxDistance != null && it.first <= maxDistance }
+            .sortedBy { it.first }
+            .map { it.second }
+
+        if (LevelledMobs.instance.companion.excludePlayersInCreative){
+            temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
+        }
+
+        return temp.toMutableList()
     }
 }

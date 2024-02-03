@@ -502,7 +502,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
     ) {
         val values: SortedMap<String, String> = TreeMap()
         val printedKeys: MutableList<String> = LinkedList()
-        val effectiveRules: List<RuleInfo> = lmEntity.getApplicableRules()
+        val effectiveRules = lmEntity.getApplicableRules()
 
         if (effectiveRules.isEmpty()) {
             if (showOnConsole) {

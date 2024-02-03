@@ -149,31 +149,30 @@ class EntitySpawnListener : Listener{
         mob: LivingEntity,
         checkDistance: Int
     ): MutableList<Player> {
-        val maxDistanceSquared = (checkDistance * 4).toDouble()
-
-        return mob.world.players
-            .asSequence()
-            .filter { p: Player -> p.world == mob.world }
-            .filter { p: Player -> p.gameMode != GameMode.SPECTATOR }
-            .map { p: Player -> Pair(mob.location.distanceSquared(p.location), p) }
-            .filter { it.first <= maxDistanceSquared }
-            .sortedBy { it.first }
-            .map { it.second }
-            .toMutableList()
+        return Utils.filterPlayersList(
+            mob.world.players,
+            mob,
+            (checkDistance * 4).toDouble()
+        )
     }
 
     private fun getPlayersNearMob(
         mob: LivingEntity,
         checkDistance: Int
     ): MutableList<Player> {
-        return mob.getNearbyEntities(checkDistance.toDouble(), checkDistance.toDouble(), checkDistance.toDouble()
+        var temp = mob.getNearbyEntities(checkDistance.toDouble(), checkDistance.toDouble(), checkDistance.toDouble()
             ).asSequence()
             .filterIsInstance<Player>()
             .filter { e: Entity -> (e as Player).gameMode != GameMode.SPECTATOR }
             .map { e: Entity -> Pair(mob.location.distanceSquared(e.location), e as Player) }
             .sortedBy { it.first }
             .map { it.second }
-            .toMutableList()
+
+        if (LevelledMobs.instance.companion.excludePlayersInCreative){
+            temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
+        }
+
+        return temp.toMutableList()
     }
 
     private fun delayedAddToQueue(
