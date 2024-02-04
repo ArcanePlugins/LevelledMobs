@@ -54,7 +54,7 @@ public class PickedUpEquipment {
 
     public @NotNull List<ItemStack> getMobPickedUpItems(){
         final List<ItemStack> results = new LinkedList<>();
-        if (!lmEntity.getPDC().has(itemsNamespace)) return results;
+        if (!lmEntity.getPDC().has(itemsNamespace, PersistentDataType.STRING)) return results;
 
         parseExistingKey(lmEntity.getPDC().get(itemsNamespace, PersistentDataType.STRING));
         if (this.slotMappings.isEmpty()) return results;
@@ -79,7 +79,7 @@ public class PickedUpEquipment {
 
     private void storeItemInPDC(final int slotNumber){
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
-            if (lmEntity.getPDC().has(itemsNamespace)){
+            if (lmEntity.getPDC().has(itemsNamespace, PersistentDataType.STRING)){
                 parseExistingKey(lmEntity.getPDC().get(itemsNamespace, PersistentDataType.STRING));
             }
 
