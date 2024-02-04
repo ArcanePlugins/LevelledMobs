@@ -1,5 +1,38 @@
 package io.github.arcaneplugins.levelledmobs.managers
 
+import io.github.arcaneplugins.levelledmobs.LevelInterface2
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
+import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.enums.LevellableState
+import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
+import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.events.MobPostLevelEvent
+import io.github.arcaneplugins.levelledmobs.events.MobPreLevelEvent
+import io.github.arcaneplugins.levelledmobs.events.SummonedMobPreLevelEvent
+import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
+import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
+import io.github.arcaneplugins.levelledmobs.misc.PickedUpEquipment
+import io.github.arcaneplugins.levelledmobs.misc.QueueItem
+import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
+import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
+import io.github.arcaneplugins.levelledmobs.result.NametagResult
+import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
+import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
+import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
+import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
+import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
+import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -13,41 +46,6 @@ import java.util.WeakHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
-import io.github.arcaneplugins.levelledmobs.LevelInterface2
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
-import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
-import io.github.arcaneplugins.levelledmobs.debug.DebugManager
-import io.github.arcaneplugins.levelledmobs.events.MobPostLevelEvent
-import io.github.arcaneplugins.levelledmobs.events.MobPreLevelEvent
-import io.github.arcaneplugins.levelledmobs.events.SummonedMobPreLevelEvent
-import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
-import io.github.arcaneplugins.levelledmobs.enums.Addition
-import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
-import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.enums.LevellableState
-import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
-import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
-import io.github.arcaneplugins.levelledmobs.misc.PickedUpEquipment
-import io.github.arcaneplugins.levelledmobs.misc.QueueItem
-import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
-import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
-import io.github.arcaneplugins.levelledmobs.result.NametagResult
-import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
-import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
-import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
-import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
-import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
-import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
-import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
-import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
-import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
-import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
-import io.github.arcaneplugins.levelledmobs.util.Utils
-import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
-import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -178,9 +176,7 @@ class LevelManager : LevelInterface2 {
             lmEntity
         )
 
-        if (levellingStrategy is YDistanceStrategy
-            || levellingStrategy is SpawnDistanceStrategy
-        ) {
+        if (levellingStrategy != null && levellingStrategy !is RandomLevellingStrategy) {
             return levellingStrategy.generateLevel(lmEntity, useMinLevel, useMaxLevel)
         }
 
@@ -190,8 +186,8 @@ class LevelManager : LevelInterface2 {
         }
 
         val randomLevelling =
-            if ((levellingStrategy is RandomLevellingStrategy)) levellingStrategy
-            else null
+            if ((levellingStrategy is RandomLevellingStrategy))
+                levellingStrategy else null
 
         return generateRandomLevel(randomLevelling, useMinLevel, useMaxLevel)
     }
@@ -843,6 +839,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%x%", lmEntity.livingEntity.location.blockX)
         text.replace("%y%", lmEntity.livingEntity.location.blockY)
         text.replace("%z%", lmEntity.livingEntity.location.blockZ)
+        text.replaceIfExists("%distance-from-spawn%"){ lmEntity.distanceFromSpawn.toString() }
         text.replace("%player-uuid%", playerId)
         text.replace("%player%", playerName)
         text.replaceIfExists("%displayname%") {

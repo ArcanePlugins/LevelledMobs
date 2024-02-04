@@ -499,15 +499,14 @@ class DebugSubcommand: MessagesBase(), Subcommand {
 
         val distance: Double = lmEntity.distanceFromSpawn
 
-        val locationStr = java.lang.String.format(
-            "%s, %s, %s",
-            lmEntity.livingEntity.location.blockX,
-            lmEntity.livingEntity.location.blockY,
-            lmEntity.livingEntity.location.blockZ
-        )
-        val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel) else "0"
+        val locationStr =
+            "${lmEntity.livingEntity.location.blockX}, " +
+            "${lmEntity.livingEntity.location.blockY}, " +
+            "${lmEntity.livingEntity.location.blockZ}"
 
-        var entityName: String? = lmEntity.typeName
+        val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
+
+        var entityName = lmEntity.typeName
         if (ExternalCompatibilityManager.hasMythicMobsInstalled()
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {

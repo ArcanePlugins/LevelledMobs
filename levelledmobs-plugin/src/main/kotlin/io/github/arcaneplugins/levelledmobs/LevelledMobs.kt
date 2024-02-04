@@ -74,13 +74,11 @@ class LevelledMobs : JavaPlugin() {
     val ver = ServerVersionInfo()
 
     // Configuration
-    //var settingsCfg = YamlConfiguration()
-    //    internal set
     var messagesCfg = YamlConfiguration()
         internal set
     var dropsCfg = YamlConfiguration()
         internal set
-    val configUtils: ConfigUtils = ConfigUtils()
+    val configUtils = ConfigUtils()
 
     // Misc
     val customMobGroups = mutableMapOf<String, MutableSet<String>>()
@@ -134,7 +132,7 @@ class LevelledMobs : JavaPlugin() {
         companion.checkUpdates()
 
         loadTime += timer.timer
-        Utils.logger.info("Start-up complete (took " + loadTime + "ms)")
+        Utils.logger.info("Start-up complete (took ${loadTime}ms)")
     }
 
     override fun onDisable() {
@@ -144,7 +142,7 @@ class LevelledMobs : JavaPlugin() {
         levelManager.stopNametagAutoUpdateTask()
         companion.shutDownAsyncTasks()
 
-        Utils.logger.info(("Shut-down complete (took " + disableTimer.timer) + "ms)")
+        Utils.logger.info("Shut-down complete (took ${disableTimer.timer}ms)")
     }
 
     private fun prepareToLoadCustomDrops(){
@@ -236,10 +234,8 @@ class LevelledMobs : JavaPlugin() {
         )
         nametagQueueManager.nametagSenderHandler.refresh()
 
-        reloadFinishedMsg.forEach(Consumer { s: String? ->
-            sender.sendMessage(
-                s!!
-            )
+        reloadFinishedMsg.forEach(Consumer { s: String ->
+            sender.sendMessage(s)
         })
     }
 }

@@ -31,6 +31,14 @@ class MobDataManager {
 
     companion object {
         private val crunchEvalEnv = EvaluationEnvironment()
+
+        fun evaluateExpression(
+            expression: String
+        ): Double {
+            return Crunch.compileExpression(
+                expression, crunchEvalEnv
+            ).evaluate()
+        }
     }
 
     init {
@@ -81,15 +89,6 @@ class MobDataManager {
                 max(d[0], d[1])
             )
         }
-    }
-
-    /* methods */
-    private fun evaluateExpression(
-        expression: String
-    ): Double {
-        return Crunch.compileExpression(
-            expression, crunchEvalEnv
-        ).evaluate()
     }
 
     fun isLevelledDropManaged(

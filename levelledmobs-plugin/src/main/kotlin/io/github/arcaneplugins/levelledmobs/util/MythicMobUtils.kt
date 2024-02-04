@@ -36,7 +36,7 @@ object MythicMobUtils {
             return null
         }
 
-        val def: Definitions = LevelledMobs.instance.definitions
+        val def = LevelledMobs.instance.definitions
 
         if (def.fieldMMmobManager == null) {
             Utils.logger.warning("Mythic Mobs is installed but field_MM_mobManager is null")

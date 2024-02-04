@@ -128,5 +128,7 @@ enum class DebugType {
 
     MOB_HASH,
 
-    DEVELOPER_LEW_CACHE
+    DEVELOPER_LEW_CACHE,
+
+    CUSTOM_STRATEGY
 }

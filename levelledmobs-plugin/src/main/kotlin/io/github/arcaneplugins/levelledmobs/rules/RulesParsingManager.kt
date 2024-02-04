@@ -19,6 +19,7 @@ import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes.Multiplier
+import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
@@ -1046,6 +1047,22 @@ class RulesParsingManager {
         )
         if (ymlHelper.getBoolean( "random"))
             parsingInfo.levellingStrategy = RandomLevellingStrategy()
+
+        val csCustom = YmlParsingHelper.objToCS(cs, "custom")
+        if (csCustom != null){
+            Utils.logger.info("csCustom was not null")
+            val customStrategy = CustomStrategy()
+            customStrategy.formula = csCustom.getString("formula")
+
+            if (!customStrategy.formula.isNullOrEmpty()) {
+                parsingInfo.levellingStrategy = customStrategy
+                Utils.logger.info("settings levelingstrategy to $customStrategy")
+            }
+            else
+                Utils.logger.info("customStrategy was null")
+        }
+        else
+            Utils.logger.info("${parsingInfo.ruleName} csCustom was null")
 
         val csYDistance = YmlParsingHelper.objToCS(cs, "y-coordinate")
         if (csYDistance != null) {
