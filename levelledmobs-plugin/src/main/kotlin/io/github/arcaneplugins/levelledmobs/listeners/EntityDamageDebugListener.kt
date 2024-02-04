@@ -84,7 +84,7 @@ class EntityDamageDebugListener : Listener {
 
         // Print non-attributes
         send(player, "&f&nGlobal Values:", false)
-        send(player, "&8&m->&b Level: &7" + lmEntity.getMobLevel())
+        send(player, "&8&m->&b Level: &7" + lmEntity.getMobLevel)
         send(
             player,
             "&8&m->&b Current Health: &7" + Utils.round(lmEntity.livingEntity.health),

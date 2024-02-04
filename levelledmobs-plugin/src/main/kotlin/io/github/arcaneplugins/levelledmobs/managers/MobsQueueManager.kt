@@ -80,7 +80,7 @@ class MobsQueueManager {
     private fun processItem(item: QueueItem) {
         if (!item.lmEntity.isPopulated) return
 
-        if (!item.lmEntity.getShouldShowLMNametag()) {
+        if (!item.lmEntity.shouldShowLMNametag) {
             return
         }
         LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)

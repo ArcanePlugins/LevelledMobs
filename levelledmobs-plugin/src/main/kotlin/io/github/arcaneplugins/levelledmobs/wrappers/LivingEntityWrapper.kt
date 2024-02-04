@@ -30,7 +30,6 @@ import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
 import org.bukkit.entity.WaterMob
-import org.bukkit.entity.Zombie
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -49,29 +48,30 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private var _livingEntity: LivingEntity? = null
     private var isBuildingCache = false
     private var groupsAreBuilt = false
-    var chunkKillcount: Int = 0
-    private var mobLevel: Int? = null
-    private var skylightLevelAtSpawn: Int? = null
-    private var nametagCooldownTime: Long = 0
-    private var sourceSpawnerName: String? = null
-    private var sourceSpawnEggName: String? = null
+    var chunkKillcount = 0
+    var mobLevel: Int? = null
+    private var _spawnedTimeOfDay: Int? = null
+    private var _skylightLevelAtSpawn: Int? = null
+    private var nametagCooldownTime = 0L
+    private var _sourceSpawnerName: String? = null
+    private var _sourceSpawnEggName: String? = null
     private val applicableRules = mutableListOf<RuleInfo>()
     private var spawnedWGRegions: List<String>? = null
     val mobExternalTypes = mutableListOf<ExternalCompatibility>()
-    private var fineTuningAttributes: FineTuningAttributes? = null
-    private var spawnReason: LevelledMobSpawnReason? = null
+    //private var fineTuningAttributes: FineTuningAttributes? = null
+    private var _spawnReason: LevelledMobSpawnReason? = null
     var prevChanceRuleResults: MutableMap<String, Boolean>? = null
         private set
     private val cacheLock = ReentrantLock()
     private val pdcLock = ReentrantLock()
 
     // publics:
-    var reEvaluateLevel: Boolean = false
-    var wasPreviouslyLevelled: Boolean = false
-    var isRulesForceAll: Boolean = false
-    var isNewlySpawned: Boolean = false
-    var lockEntitySettings: Boolean = false
-    var hasLockedDropsOverride: Boolean = false
+    var reEvaluateLevel = false
+    var wasPreviouslyLevelled = false
+    var isRulesForceAll = false
+    var isNewlySpawned = false
+    var lockEntitySettings = false
+    var hasLockedDropsOverride = false
     var playerLevellingAllowDecrease: Boolean? = null
     var libsDisguiseCache: Any? = null
     var playersNeedingNametagCooldownUpdate: MutableSet<Player>? = null
@@ -165,7 +165,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         applicableGroups.clear()
         applicableRules.clear()
         mobExternalTypes.clear()
-        this.spawnReason = null
+        this._spawnedTimeOfDay = null
+        this._spawnReason = null
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM
         this.isBuildingCache = false
         this.hasCache = false
@@ -178,8 +179,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.groupsAreBuilt = false
         this.playerForLevelling = null
         this.prevChanceRuleResults = null
-        this.sourceSpawnerName = null
-        this.sourceSpawnEggName = null
+        this._sourceSpawnerName = null
+        this._sourceSpawnEggName = null
         this.associatedPlayer = null
         this.playersNeedingNametagCooldownUpdate = null
         this.nametagCooldownTime = 0
@@ -187,7 +188,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.summonedSender = null
         this.playerLevellingAllowDecrease = null
         this.pendingPlayerIdToSet = null
-        this.skylightLevelAtSpawn = null
+        this._skylightLevelAtSpawn = null
         this.wasSummoned = false
         this.lockedNametag = null
         this.lockedOverrideName = null
@@ -445,12 +446,14 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             this.associatedPlayer = value
         }
 
-    fun getFineTuningAttributes(): FineTuningAttributes? {
-        if (!hasCache) {
-            buildCache()
-        }
+    var fineTuningAttributes: FineTuningAttributes? = null
+        private set
+        get() {
+            if (!hasCache) {
+                buildCache()
+            }
 
-        return this.fineTuningAttributes
+            return field
     }
 
     override fun getApplicableRules(): MutableList<RuleInfo> {
@@ -461,13 +464,14 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         return this.applicableRules
     }
 
-    fun getMobLevel(): Int {
-        if (!hasCache) {
-            buildCache()
-        }
+    val getMobLevel: Int
+        get() {
+            if (!hasCache) {
+                buildCache()
+            }
 
-        return if (this.mobLevel == null) 0
-        else mobLevel!!
+            return if (this.mobLevel == null) 0
+            else mobLevel!!
     }
 
     fun setMobPrelevel(level: Int) {
@@ -483,28 +487,20 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     val pdc: PersistentDataContainer
         get() = this.livingEntity.persistentDataContainer
 
-    @Suppress("DEPRECATION")
     val isBabyMob: Boolean
         get() {
-            if (livingEntity is Zombie) {
-                val zombie = livingEntity as Zombie
-                // for backwards compatibility
-                try {
-                    zombie.isAdult
-                    return !zombie.isAdult
-                } catch (err: NoSuchMethodError) {
-                    return zombie.isBaby
-                }
-            } else if (livingEntity is Ageable) {
+            if (livingEntity is Ageable) {
                 return !((livingEntity as Ageable).isAdult)
             }
 
             return false
         }
 
-    fun getSpawnReason(): LevelledMobSpawnReason {
-        if (this.spawnReason != null) {
-            return spawnReason!!
+    var spawnReason: LevelledMobSpawnReason
+        set(value) { setSpawnReason(value, false) }
+        get() {
+        if (this._spawnReason != null) {
+            return _spawnReason!!
         }
 
         if (!getPDCLock()) {
@@ -519,13 +515,13 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                     if (livingEntity.persistentDataContainer
                             .has(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING)
                     ) {
-                        this.spawnReason = LevelledMobSpawnReason.valueOf(
+                        this._spawnReason = LevelledMobSpawnReason.valueOf(
                             pdc[NamespacedKeys.spawnReasonKey, PersistentDataType.STRING]!!
                         )
                     }
                     succeeded = true
                     break
-                } catch (ignored: java.util.ConcurrentModificationException) {
+                } catch (ignored: ConcurrentModificationException) {
                     hadError = true
                     try {
                         Thread.sleep(5)
@@ -552,95 +548,97 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
 
-        return if (this.spawnReason != null) this.spawnReason!! else LevelledMobSpawnReason.DEFAULT
+        return if (this._spawnReason != null)
+            this._spawnReason!!
+        else
+            LevelledMobSpawnReason.DEFAULT
     }
 
-    fun getSkylightLevel(): Int {
-        if (this.skylightLevelAtSpawn != null) {
-            return skylightLevelAtSpawn!!
-        }
+    var skylightLevel: Int
+        set(value) {
+            this._skylightLevelAtSpawn = value
 
-        if (!getPDCLock()) {
-            return currentSkyLightLevel
-        }
-        var hadError = false
-        var succeeded = false
+            if (!getPDCLock()) {
+                return
+            }
 
-        try {
-            for (i in 0..1) {
-                try {
-                    if (livingEntity.persistentDataContainer
-                            .has(NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER)
-                    ) {
-                        this.skylightLevelAtSpawn = livingEntity.persistentDataContainer
-                            .get(NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER)
-                    }
-                    succeeded = true
-                    break
-                } catch (ignored: java.util.ConcurrentModificationException) {
-                    hadError = true
+            try {
+                if (!livingEntity.persistentDataContainer
+                        .has(NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER)
+                ) {
+                    livingEntity.persistentDataContainer
+                        .set(
+                            NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER,
+                            _skylightLevelAtSpawn!!
+                        )
+                }
+            } finally {
+                releasePDCLock()
+            }
+        }
+        get() {
+            if (this._skylightLevelAtSpawn != null) {
+                return _skylightLevelAtSpawn!!
+            }
+
+            if (!getPDCLock()) {
+                return currentSkyLightLevel
+            }
+            var hadError = false
+            var succeeded = false
+
+            try {
+                for (i in 0..1) {
                     try {
-                        Thread.sleep(5)
-                    } catch (ignored2: InterruptedException) {
-                        return 0
+                        if (livingEntity.persistentDataContainer
+                                .has(NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER)
+                        ) {
+                            this._skylightLevelAtSpawn = livingEntity.persistentDataContainer
+                                .get(NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER)
+                        }
+                        succeeded = true
+                        break
+                    } catch (ignored: java.util.ConcurrentModificationException) {
+                        hadError = true
+                        try {
+                            Thread.sleep(5)
+                        } catch (ignored2: InterruptedException) {
+                            return 0
+                        }
+                    } finally {
+                        releasePDCLock()
                     }
-                } finally {
-                    releasePDCLock()
+                }
+            } finally {
+                releasePDCLock()
+            }
+
+            if (hadError) {
+                if (succeeded) {
+                    Utils.logger.warning(
+                        "Got ConcurrentModificationException in LivingEntityWrapper getting skyLightLevel, succeeded on retry"
+                    )
+                } else {
+                    Utils.logger.warning(
+                        "Got ConcurrentModificationException (2x) in LivingEntityWrapper getting skyLightLevel"
+                    )
                 }
             }
-        } finally {
-            releasePDCLock()
+
+            return if (this._skylightLevelAtSpawn != null)
+                this._skylightLevelAtSpawn!!
+            else
+                currentSkyLightLevel
         }
-
-        if (hadError) {
-            if (succeeded) {
-                Utils.logger.warning(
-                    "Got ConcurrentModificationException in LivingEntityWrapper getting skyLightLevel, succeeded on retry"
-                )
-            } else {
-                Utils.logger.warning(
-                    "Got ConcurrentModificationException (2x) in LivingEntityWrapper getting skyLightLevel"
-                )
-            }
-        }
-
-        return if (this.skylightLevelAtSpawn != null) this.skylightLevelAtSpawn!! else currentSkyLightLevel
-    }
-
-    fun setSkylightLevelAtSpawn() {
-        this.skylightLevelAtSpawn = currentSkyLightLevel
-
-        if (!getPDCLock()) {
-            return
-        }
-
-        try {
-            if (!livingEntity.persistentDataContainer
-                    .has(NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER)
-            ) {
-                livingEntity.persistentDataContainer
-                    .set(
-                        NamespacedKeys.skyLightLevel, PersistentDataType.INTEGER,
-                        skylightLevelAtSpawn!!
-                    )
-            }
-        } finally {
-            releasePDCLock()
-        }
-    }
 
     val currentSkyLightLevel: Int
         get() = location.block.lightFromSky.toInt()
-
-    fun setSpawnReason(spawnReason: LevelledMobSpawnReason) {
-        setSpawnReason(spawnReason, false)
-    }
 
     fun setSpawnReason(
         spawnReason: LevelledMobSpawnReason,
         doForce: Boolean
     ) {
-        this.spawnReason = spawnReason
+        this._spawnReason = spawnReason
 
         if (!getPDCLock()) {
             return
@@ -658,83 +656,107 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
     }
 
-    fun setSourceSpawnerName(name: String?) {
-        this.sourceSpawnerName = name
+    var sourceSpawnerName: String?
+        set(value) {
+            this._sourceSpawnerName = value
 
-        if (!getPDCLock()) {
-            return
-        }
-        try {
-            if (name == null && pdc.has(
-                    NamespacedKeys.sourceSpawnerName,
-                    PersistentDataType.STRING
-                )
-            ) {
-                pdc.remove(NamespacedKeys.sourceSpawnerName)
-            } else if (name != null) {
-                pdc.set(
-                    NamespacedKeys.sourceSpawnerName, PersistentDataType.STRING,
-                    name
-                )
+            if (!getPDCLock()) {
+                return
             }
-        } finally {
-            releasePDCLock()
-        }
-    }
-
-    fun getSourceSpawnerName(): String? {
-        if (this.sourceSpawnerName != null) {
-            return this.sourceSpawnerName
-        }
-
-        if (getPDCLock()) {
             try {
-                if (pdc.has(
+                if (value == null && pdc.has(
                         NamespacedKeys.sourceSpawnerName,
                         PersistentDataType.STRING
                     )
                 ) {
-                    this.sourceSpawnerName = pdc.get(
+                    pdc.remove(NamespacedKeys.sourceSpawnerName)
+                } else if (value != null) {
+                    pdc.set(
+                        NamespacedKeys.sourceSpawnerName, PersistentDataType.STRING,
+                        value
+                    )
+                }
+            } finally {
+                releasePDCLock()
+            }
+        }
+        get() {
+            if (this._sourceSpawnerName != null) {
+                return this._sourceSpawnerName
+            }
+
+            if (getPDCLock()) {
+                try {
+                    if (pdc.has(
+                            NamespacedKeys.sourceSpawnerName,
+                            PersistentDataType.STRING
+                        )
+                    ) {
+                        this._sourceSpawnerName = pdc.get(
+                            NamespacedKeys.sourceSpawnerName,
+                            PersistentDataType.STRING
+                        )
+                    }
+                } finally {
+                    releasePDCLock()
+                }
+            }
+
+            if (this._sourceSpawnerName == null) {
+                this._sourceSpawnerName = "(none)"
+            }
+
+            return this._sourceSpawnerName
+        }
+
+    var sourceSpawnEggName: String?
+        set(value) {
+            this._sourceSpawnerName = value
+
+            if (!getPDCLock()) {
+                return
+            }
+            try {
+                if (value == null && pdc.has(
                         NamespacedKeys.sourceSpawnerName,
                         PersistentDataType.STRING
                     )
-                }
-            } finally {
-                releasePDCLock()
-            }
-        }
-
-        if (this.sourceSpawnerName == null) {
-            this.sourceSpawnerName = "(none)"
-        }
-
-        return this.sourceSpawnerName
-    }
-
-    fun getSourceSpawnEggName(): String? {
-        if (this.sourceSpawnEggName != null) {
-            return this.sourceSpawnEggName
-        }
-
-        if (getPDCLock()) {
-            try {
-                if (pdc.has(NamespacedKeys.spawnerEggName, PersistentDataType.STRING)) {
-                    this.sourceSpawnEggName = pdc.get(
-                        NamespacedKeys.spawnerEggName,
-                        PersistentDataType.STRING
+                ) {
+                    pdc.remove(NamespacedKeys.sourceSpawnerName)
+                } else if (value != null) {
+                    pdc.set(
+                        NamespacedKeys.sourceSpawnerName, PersistentDataType.STRING,
+                        value
                     )
                 }
             } finally {
                 releasePDCLock()
             }
         }
+        get() {
+            if (this._sourceSpawnEggName != null) {
+                return this._sourceSpawnEggName
+            }
 
-        if (this.sourceSpawnEggName == null) {
-            this.sourceSpawnEggName = "(none)"
+            if (getPDCLock()) {
+                try {
+                    if (pdc.has(NamespacedKeys.spawnerEggName, PersistentDataType.STRING)) {
+                        this._sourceSpawnEggName = pdc.get(
+                            NamespacedKeys.spawnerEggName,
+                            PersistentDataType.STRING
+                        )
+                    }
+                } finally {
+                    releasePDCLock()
+                }
+            }
+
+            if (this._sourceSpawnEggName == null) {
+                this._sourceSpawnEggName = "(none)"
+            }
+
+            return this._sourceSpawnEggName
         }
-
-        return this.sourceSpawnEggName
-    }
 
     val nameIfBaby: String
         get() {
@@ -768,7 +790,20 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
 
-    val getOverridenEntityName: String?
+    var overridenEntityName: String?
+        set(value) {
+            if (!getPDCLock()) {
+                return
+            }
+            try {
+                if (value != null)
+                    pdc.set(NamespacedKeys.overridenEntityNameKey, PersistentDataType.STRING, value)
+                else if (pdc.has(NamespacedKeys.overridenEntityNameKey))
+                    pdc.remove(NamespacedKeys.overridenEntityNameKey)
+            } finally {
+                releasePDCLock()
+            }
+        }
         get() {
             if (!getPDCLock()) {
                 return null
@@ -789,122 +824,96 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             return spawnedWGRegions!![0]
         }
 
-    fun setOverridenEntityName(name: String) {
-        if (!getPDCLock()) {
-            return
-        }
-        try {
-            pdc.set(NamespacedKeys.overridenEntityNameKey, PersistentDataType.STRING, name)
-        } finally {
-            releasePDCLock()
-        }
-    }
-
-    fun setShouldShowLMNametag(doShow: Boolean) {
-        if (!getPDCLock()) {
-            return
-        }
-
-        try {
-            if (doShow && pdc.has(
-                    NamespacedKeys.denyLmNametag,
-                    PersistentDataType.INTEGER
-                )
-            ) {
-                pdc.remove(NamespacedKeys.denyLmNametag)
-            } else if (!doShow && !pdc.has(
-                    NamespacedKeys.denyLmNametag,
-                    PersistentDataType.INTEGER
-                )
-            ) {
-                pdc.set(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER, 1)
-            }
-        } finally {
-            releasePDCLock()
-        }
-    }
-
-    fun getShouldShowLMNametag(): Boolean {
-        if (!getPDCLock()) {
-            return true
-        }
-
-        try {
-            return !pdc.has(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER)
-        } finally {
-            releasePDCLock()
-        }
-    }
-
-    private fun setSpawnedTimeOfDay(
-        ticks: Int
-    ) {
-        if (!getPDCLock()) {
-            return
-        }
-
-        try {
-            for (i in 0..1) {
-                try {
-                    if (pdc.has(
-                            NamespacedKeys.spawnedTimeOfDay,
-                            PersistentDataType.INTEGER
-                        )
-                    ) {
-                        return
-                    }
-
-                    pdc.set(
-                        NamespacedKeys.spawnedTimeOfDay, PersistentDataType.INTEGER,
-                        ticks
-                    )
-                } catch (ignored: ConcurrentModificationException) {
-                    try {
-                        Thread.sleep(10)
-                    } catch (ignored2: InterruptedException) {
-                        break
-                    }
-                }
-            }
-        } finally {
-            releasePDCLock()
-        }
-
-        this.spawnedTimeOfDay = ticks
-    }
-
-    private fun getSpawnedTimeOfDay(): Int{
-        synchronized(livingEntity.persistentDataContainer) {
-            if (pdc.has(
-                    NamespacedKeys.spawnedTimeOfDay,
-                    PersistentDataType.INTEGER
-                )
-            ) {
-                val result = pdc.get(
-                    NamespacedKeys.spawnedTimeOfDay,
-                    PersistentDataType.INTEGER
-                )
-                if (result != null) {
-                    return result
-                }
-            }
-        }
-
-        return world.time.toInt()
-    }
-
-    override var spawnedTimeOfDay: Int? = null
-        get() {
-            if (field == null) {
-                field = getSpawnedTimeOfDay()
-            }
-
-            return field
-        }
+    var shouldShowLMNametag: Boolean
         set(value) {
-            field = value
-            if (value != null)
-                setSpawnedTimeOfDay(value)
+            if (!getPDCLock()) {
+                return
+            }
+
+            try {
+                if (value && pdc.has(
+                        NamespacedKeys.denyLmNametag,
+                        PersistentDataType.INTEGER
+                    )
+                ) {
+                    pdc.remove(NamespacedKeys.denyLmNametag)
+                } else if (!value && !pdc.has(
+                        NamespacedKeys.denyLmNametag,
+                        PersistentDataType.INTEGER
+                    )
+                ) {
+                    pdc.set(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER, 1)
+                }
+            } finally {
+                releasePDCLock()
+            }
+        }
+        get() {
+            if (!getPDCLock()) {
+                return true
+            }
+
+            try {
+                return !pdc.has(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER)
+            } finally {
+                releasePDCLock()
+            }
+        }
+
+
+    override var spawnedTimeOfDay: Int
+        set(value) {
+            if (!getPDCLock()) {
+                return
+            }
+
+            try {
+                for (i in 0..1) {
+                    try {
+                        if (pdc.has(
+                                NamespacedKeys.spawnedTimeOfDay,
+                                PersistentDataType.INTEGER
+                            )
+                        ) {
+                            return
+                        }
+
+                        pdc.set(
+                            NamespacedKeys.spawnedTimeOfDay, PersistentDataType.INTEGER,
+                            value
+                        )
+                    } catch (ignored: ConcurrentModificationException) {
+                        try {
+                            Thread.sleep(10)
+                        } catch (ignored2: InterruptedException) {
+                            break
+                        }
+                    }
+                }
+            } finally {
+                releasePDCLock()
+            }
+
+            this._spawnedTimeOfDay = value
+        }
+        get() {
+            synchronized(livingEntity.persistentDataContainer) {
+                if (pdc.has(
+                        NamespacedKeys.spawnedTimeOfDay,
+                        PersistentDataType.INTEGER
+                    )
+                ) {
+                    val result = pdc.get(
+                        NamespacedKeys.spawnedTimeOfDay,
+                        PersistentDataType.INTEGER
+                    )
+                    if (result != null) {
+                        return result
+                    }
+                }
+            }
+
+            return world.time.toInt()
         }
 
     override var wasSummoned: Boolean = false

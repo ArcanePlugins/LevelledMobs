@@ -199,7 +199,7 @@ class CustomDropsHandler {
 
         if (!equippedOnly) {
             val mobLevel =
-                if (lmEntity.getMobLevel() > 0) "&r (level " + lmEntity.getMobLevel() + ")" else ""
+                if (lmEntity.getMobLevel > 0) "&r (level " + lmEntity.getMobLevel + ")" else ""
             processingInfo.addDebugMessage(
                 DebugType.CUSTOM_DROPS,
                 "&7Custom drops for &b" + lmEntity.nameIfBaby + mobLevel
@@ -230,14 +230,14 @@ class CustomDropsHandler {
                     DebugType.CUSTOM_DROPS,
                     String.format(
                         "&7%s (%s) - didn't make overall chance",
-                        lmEntity.typeName, lmEntity.getMobLevel()
+                        lmEntity.typeName, lmEntity.getMobLevel
                     )
                 )
             } else {
                 processingInfo.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&7%s (%s) - didn't make overall chance permission for player: &b%s &r",
-                        lmEntity.typeName, lmEntity.getMobLevel(),
+                        lmEntity.typeName, lmEntity.getMobLevel,
                         if (processingInfo.mobKiller == null) "(null)"
                         else processingInfo.mobKiller!!.name
                     )
@@ -256,11 +256,11 @@ class CustomDropsHandler {
 
         if (showCustomDrops || showCustomEquips) {
             if (equippedOnly && drops.isNotEmpty() && showCustomEquips) {
-                if (lmEntity.getMobLevel() > -1) {
+                if (lmEntity.getMobLevel > -1) {
                     processingInfo.addDebugMessage(
                         String.format(
                             "&7Custom equipment for &b%s &r(%s)", lmEntity.typeName,
-                            lmEntity.getMobLevel()
+                            lmEntity.getMobLevel
                         )
                     )
                 } else {
@@ -548,8 +548,8 @@ class CustomDropsHandler {
 
         val main = LevelledMobs.instance
         var doDrop =
-            dropBase.maxLevel <= -1 || info.lmEntity!!.getMobLevel() <= dropBase.maxLevel
-        if (dropBase.minLevel > -1 && info.lmEntity!!.getMobLevel() < dropBase.minLevel) {
+            dropBase.maxLevel <= -1 || info.lmEntity!!.getMobLevel <= dropBase.maxLevel
+        if (dropBase.minLevel > -1 && info.lmEntity!!.getMobLevel < dropBase.minLevel) {
             doDrop = false
         }
         if (!doDrop) {
@@ -562,7 +562,7 @@ class CustomDropsHandler {
                     info.addDebugMessage(
                         String.format(
                             "&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
-                            info.lmEntity!!.getMobLevel(), info.isSpawner, itemStack.type.name,
+                            info.lmEntity!!.getMobLevel, info.isSpawner, itemStack.type.name,
                             dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner
                         )
                     )
@@ -571,7 +571,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&8- custom-cmd: &7level: &b%s&7, fromSpawner: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, executed: &bfalse",
-                        info.lmEntity!!.getMobLevel(), info.isSpawner, dropBase.minLevel,
+                        info.lmEntity!!.getMobLevel, info.isSpawner, dropBase.minLevel,
                         dropBase.maxLevel, dropBase.noSpawner
                     )
                 )
@@ -606,7 +606,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, chunk kill count reached",
-                        info.lmEntity!!.getMobLevel(),
+                        info.lmEntity!!.getMobLevel,
                         dropBase.material.name, dropBase.groupId
                     )
                 )
@@ -614,7 +614,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, chunk kill count reached",
-                        info.lmEntity!!.getMobLevel(), dropBase.groupId
+                        info.lmEntity!!.getMobLevel, dropBase.groupId
                     )
                 )
             }
@@ -623,7 +623,7 @@ class CustomDropsHandler {
         }
 
         val dropChance =
-            if (dropBase.chance != null) dropBase.chance!!.getSlidingChance(info.lmEntity!!.getMobLevel()) else 0.0f
+            if (dropBase.chance != null) dropBase.chance!!.getSlidingChance(info.lmEntity!!.getMobLevel) else 0.0f
         if ((!info.equippedOnly || runOnSpawn) && dropChance < 1.0f) {
             chanceRole =
                 if (dropChance > 0.0f) ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f else 0.0f
@@ -678,7 +678,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, dropped: &bfalse",
-                                info.lmEntity!!.getMobLevel(),
+                                info.lmEntity!!.getMobLevel,
                                 dropBase.material.name, dropBase.groupId,
                                 info.getItemsDropsByGroup(dropBase), groupDroppedCount
                             )
@@ -687,7 +687,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &bfalse",
-                                info.lmEntity!!.getMobLevel(),
+                                info.lmEntity!!.getMobLevel,
                                 info.getItemsDropsByGroup(dropBase),
                                 dropBase.maxDropGroup,
                                 groupDroppedCount
@@ -708,7 +708,7 @@ class CustomDropsHandler {
                     val count = info.getItemsDropsByGroup(dropBase)
                     var msg = String.format(
                         "&8- &7level: &b%s&7, item: command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
-                        info.lmEntity!!.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count
+                        info.lmEntity!!.getMobLevel, dropBase.groupId, dropBase.maxDropGroup, count
                     )
                     if (info.retryNumber > 0) {
                         msg += ", retry: ${info.retryNumber}"
@@ -718,7 +718,7 @@ class CustomDropsHandler {
             } else if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 var msg = String.format(
                     "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
-                    info.lmEntity!!.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup
+                    info.lmEntity!!.getMobLevel, dropBase.groupId, dropBase.maxDropGroup
                 )
 
                 if (info.retryNumber > 0) {
@@ -895,7 +895,7 @@ class CustomDropsHandler {
     ): Boolean {
         if (!info.equippedOnly) return true
         val equippedChance = if (dropItem.equippedChance != null) dropItem.equippedChance!!.getSlidingChance(
-            info.lmEntity!!.getMobLevel()
+            info.lmEntity!!.getMobLevel
         ) else 0.0f
         if (equippedChance >= 1.0f) return true
 
@@ -907,7 +907,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     String.format(
                         "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
-                        info.lmEntity!!.typeName, info.lmEntity!!.getMobLevel(),
+                        info.lmEntity!!.typeName, info.lmEntity!!.getMobLevel,
                         dropItem.material.name, dropItem.equippedChance!!.showMatchedChance(),
                         Utils.round(info.equippedChanceRole.toDouble(), 4)
                     )
@@ -942,7 +942,7 @@ class CustomDropsHandler {
             val chanceRole =
                 ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
             val madeChance =
-                1.0f - chanceRole < dropInstance.overallChance!!.getSlidingChance(info.lmEntity!!.getMobLevel())
+                1.0f - chanceRole < dropInstance.overallChance!!.getSlidingChance(info.lmEntity!!.getMobLevel)
             if (info.equippedOnly) {
                 synchronized(info.lmEntity!!.livingEntity.persistentDataContainer) {
                     info.lmEntity!!.pdc
@@ -1328,7 +1328,7 @@ class CustomDropsHandler {
             var mobScale = ""
             var mobScaleRounded = ""
             if (customCommand.mobScale != null) {
-                val newScale = info.lmEntity!!.getMobLevel().toFloat() * customCommand.mobScale!!.toFloat()
+                val newScale = info.lmEntity!!.getMobLevel.toFloat() * customCommand.mobScale!!.toFloat()
                 mobScale = newScale.toString()
                 mobScaleRounded = (Utils.round(newScale.toDouble()).toInt()).toString()
             }

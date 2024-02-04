@@ -19,6 +19,7 @@ class LivingEntityPlaceholder : LivingEntityWrapperBase(), LivingEntityInterface
     companion object{
         private val cache = Stack<LivingEntityPlaceholder>()
         private val cachedplaceholdersLock = Any()
+        private var _spawnedTimeOfDay: Int? = null
 
         fun getInstance(
             entityType: EntityType,
@@ -82,12 +83,13 @@ class LivingEntityPlaceholder : LivingEntityWrapperBase(), LivingEntityInterface
     override val typeName: String
         get() = this.entityType!!.name
 
-    override var spawnedTimeOfDay: Int? = null
+    override var spawnedTimeOfDay: Int
+        set(value) { _spawnedTimeOfDay = value }
         get() {
-            if (field == null)
-                field = world.time.toInt()
+            if (_spawnedTimeOfDay == null)
+                _spawnedTimeOfDay = world.time.toInt()
 
-            return field
+            return _spawnedTimeOfDay!!
         }
 
     override val wasSummoned: Boolean

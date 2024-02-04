@@ -30,7 +30,7 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
             player.uniqueId
         ) { _: UUID? -> LastMobKilledInfo() }
 
-        mobInfo.entityLevel = if (lmEntity != null && lmEntity.isLevelled) lmEntity.getMobLevel() else null
+        mobInfo.entityLevel = if (lmEntity != null && lmEntity.isLevelled) lmEntity.getMobLevel else null
 
         mobInfo.entityName = if (lmEntity != null) LevelledMobs.instance.levelManager.getNametag(lmEntity, false).nametag else null
 
@@ -44,7 +44,7 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
         val mobInfo = LastMobKilledInfo()
         playerDeathInfo[player.uniqueId] = mobInfo
 
-        mobInfo.entityLevel = if (lmEntity != null && lmEntity.isLevelled) lmEntity.getMobLevel() else null
+        mobInfo.entityLevel = if (lmEntity != null && lmEntity.isLevelled) lmEntity.getMobLevel else null
 
         mobInfo.entityName = if (lmEntity != null) LevelledMobs.instance.levelManager.getNametag(lmEntity, false).nametag else null
     }

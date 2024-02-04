@@ -49,13 +49,13 @@ class EntitySpawnListener : Listener{
 
         val main = LevelledMobs.instance
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
-        lmEntity.setSkylightLevelAtSpawn()
+        lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
 
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason
 
-            lmEntity.setSpawnReason(Utils.adaptVanillaSpawnReason(spawnReason))
+            lmEntity.spawnReason = Utils.adaptVanillaSpawnReason(spawnReason)
             if ((spawnReason == CreatureSpawnEvent.SpawnReason.CUSTOM
                         || spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) &&
                 !lmEntity.isLevelled
@@ -71,7 +71,7 @@ class EntitySpawnListener : Listener{
                 return
             }
         } else if (event is SpawnerSpawnEvent) {
-            lmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER)
+            lmEntity.spawnReason = LevelledMobSpawnReason.SPAWNER
         }
 
         if (!processMobSpawns) {
@@ -234,7 +234,7 @@ class EntitySpawnListener : Listener{
             }
         }
 
-        lmEntity.setSourceSpawnerName(spawnerName)
+        lmEntity.sourceSpawnerName = spawnerName
         lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER, true)
 
         val customDropIdFinal = customDropId
@@ -294,7 +294,7 @@ class EntitySpawnListener : Listener{
                     .persistentDataContainer
                     .has(NamespacedKeys.keySpawner, PersistentDataType.INTEGER)
             ) {
-                lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER)
+                lmEntity.spawnReason = LevelledMobSpawnReason.LM_SPAWNER
                 lmSpawnerSpawn(lmEntity, event)
                 return
             }
@@ -325,7 +325,7 @@ class EntitySpawnListener : Listener{
             }
 
             if (!lmEntity.reEvaluateLevel) {
-                lmEntity.setSpawnReason(Utils.adaptVanillaSpawnReason(event.spawnReason))
+                lmEntity.spawnReason = Utils.adaptVanillaSpawnReason(event.spawnReason)
             }
         } else if (event is ChunkLoadEvent) {
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER
@@ -352,7 +352,7 @@ class EntitySpawnListener : Listener{
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                     String.format(
                         "Entity &b%s (lvl %s)&r denied relevelling to &b%s&r due to decrease-level disabled",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel(), levelAssignment
+                        lmEntity.nameIfBaby, lmEntity.getMobLevel, levelAssignment
                     )
                 }
             } else {
@@ -409,7 +409,7 @@ class EntitySpawnListener : Listener{
             lmEntity.reEvaluateLevel &&
                     !lmEntity.isRulesForceAll && lmEntity.playerLevellingAllowDecrease != null &&
                     !lmEntity.playerLevellingAllowDecrease!! &&
-                    lmEntity.isLevelled && levelAssignment < lmEntity.getMobLevel()
+                    lmEntity.isLevelled && levelAssignment < lmEntity.getMobLevel
 
         if (result) {
             synchronized(lmEntity.livingEntity.persistentDataContainer) {

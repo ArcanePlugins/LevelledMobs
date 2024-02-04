@@ -18,11 +18,13 @@ abstract class LivingEntityWrapperBase {
     private var _distanceFromSpawn: Double? = null
     val main = LevelledMobs.instance
     var summonedLevel: Int? = null
-    protected open var spawnedTimeOfDay: Int? = null
     var isPopulated = false
     val inUseCount = AtomicInteger()
 
-    protected fun populateData(world: World, location: Location) {
+    protected fun populateData(
+        world: World,
+        location: Location
+    ) {
         this._world = world
         this._location = location
         this.isPopulated = true
@@ -32,7 +34,6 @@ abstract class LivingEntityWrapperBase {
         this._world = null
         this._location = null
         this._distanceFromSpawn = null
-        this.spawnedTimeOfDay = null
         inUseCount.set(0)
         this.isPopulated = false
         this.summonedLevel = null

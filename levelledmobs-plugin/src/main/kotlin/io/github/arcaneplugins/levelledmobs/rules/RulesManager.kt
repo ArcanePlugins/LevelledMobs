@@ -506,7 +506,7 @@ class RulesManager {
             return null
         }
 
-        val mobLevel = lmEntity.getMobLevel()
+        val mobLevel = lmEntity.getMobLevel
         for (info in coloringInfo) {
             if (info.isDefault) {
                 tieredText = info.text
@@ -540,7 +540,7 @@ class RulesManager {
         var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
 
         if (lmEntity.hasOverridenEntityName) {
-            return lmEntity.getOverridenEntityName
+            return lmEntity.overridenEntityName
         }
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
@@ -601,7 +601,7 @@ class RulesManager {
 
         if (namesInfo.size > 1) {
             // set a PDC key with the name otherwise the name will constantly change
-            lmEntity.setOverridenEntityName(result)
+            lmEntity.overridenEntityName = result
         }
 
         return result
@@ -620,13 +620,13 @@ class RulesManager {
 
         for (tiers in entityNameOverridesLevel.values) {
             for (tier in tiers) {
-                if (tier.isApplicableToMobLevel(lmEntity.getMobLevel())) {
+                if (tier.isApplicableToMobLevel(lmEntity.getMobLevel)) {
                     if ("all_entities".equals(tier.mobName, ignoreCase = true)
-                        && tier.isApplicableToMobLevel(lmEntity.getMobLevel())
+                        && tier.isApplicableToMobLevel(lmEntity.getMobLevel)
                     ) {
                         allEntities = tier
                     } else if (lmEntity.nameIfBaby.equals(tier.mobName, ignoreCase = true)
-                        && tier.isApplicableToMobLevel(lmEntity.getMobLevel())
+                        && tier.isApplicableToMobLevel(lmEntity.getMobLevel)
                     ) {
                         thisMob = tier
                     }
@@ -836,14 +836,14 @@ class RulesManager {
     ): Boolean {
         if (ri.conditionsMinLevel != null) {
             val result = (lmEntity.isLevelled &&
-                    lmEntity.getMobLevel() >= ri.conditionsMinLevel!!)
+                    lmEntity.getMobLevel >= ri.conditionsMinLevel!!)
 
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel(),
+                    ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel,
                     ri.conditionsMinLevel
                 )
             }
@@ -852,13 +852,13 @@ class RulesManager {
 
         if (ri.conditionsMaxLevel != null) {
             val result = (lmEntity.isLevelled &&
-                    lmEntity.getMobLevel() <= ri.conditionsMaxLevel!!)
+                    lmEntity.getMobLevel <= ri.conditionsMaxLevel!!)
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel(),
+                    ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel,
                     ri.conditionsMaxLevel
                 )
             }
@@ -892,14 +892,14 @@ class RulesManager {
 
         if (ri.conditionsSpawnReasons != null) {
             val result = ri.conditionsSpawnReasons!!.isEnabledInList(
-                lmEntity.getSpawnReason(), lmEntity
+                lmEntity.spawnReason, lmEntity
             )
             DebugManager.log(
                 DebugType.CONDITION_SPAWN_REASON, ri, lmEntity, result
             ) {
                 String.format(
                     "&b%s&7, mob: &b%s&7, spawn reason: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, lmEntity.getSpawnReason()
+                    ri.ruleName, lmEntity.typeName, lmEntity.spawnReason
                 )
             }
             if (!result) return false
@@ -950,7 +950,7 @@ class RulesManager {
         }
 
         if (ri.conditionsSpawnerNames != null) {
-            val checkName = if (lmEntity.getSourceSpawnerName() != null) lmEntity.getSourceSpawnerName() else "(none)"
+            val checkName = if (lmEntity.sourceSpawnerName != null) lmEntity.sourceSpawnerName else "(none)"
 
             val result = ri.conditionsSpawnerNames!!.isEnabledInList(checkName!!, lmEntity)
             DebugManager.log(
@@ -966,7 +966,7 @@ class RulesManager {
         }
 
         if (ri.conditionsSpawnegEggNames != null) {
-            val checkName = if (lmEntity.getSourceSpawnEggName() != null) lmEntity.getSourceSpawnEggName() else "(none)"
+            val checkName = if (lmEntity.sourceSpawnEggName != null) lmEntity.sourceSpawnEggName else "(none)"
 
             val result = ri.conditionsSpawnegEggNames!!.isEnabledInList(checkName!!, lmEntity)
             DebugManager.log(
@@ -1108,7 +1108,7 @@ class RulesManager {
         }
 
         if (ri.conditionsSkyLightLevel != null) {
-            val lightLevel = lmEntity.getSkylightLevel()
+            val lightLevel = lmEntity.skylightLevel
             val result = (lightLevel >= ri.conditionsSkyLightLevel!!.min
                     && lightLevel <= ri.conditionsSkyLightLevel!!.max)
             DebugManager.log(
@@ -1351,7 +1351,7 @@ class RulesManager {
         }
 
         if (ri.conditionsWorldTickTime != null) {
-            val currentWorldTickTime = lmInterface.spawnedTimeOfDay!!
+            val currentWorldTickTime = lmInterface.spawnedTimeOfDay
             val result = isIntegerInModalList(ri.conditionsWorldTickTime!!, currentWorldTickTime)
             DebugManager.log(
                 DebugType.CONDITION_WORLD_TIME_TICK, ri, lmInterface, result

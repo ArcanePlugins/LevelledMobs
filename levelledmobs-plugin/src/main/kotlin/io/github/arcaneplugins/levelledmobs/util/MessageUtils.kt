@@ -46,18 +46,13 @@ object MessageUtils {
      * @see MessageUtils#colorizeHexCodes(String, String, String)
      * @since unknown
      */
-    fun colorizeHexCodes(
-        msg: String
-    ): String {
-        return colorizeHexCodes("&#", "", msg)
-    }
 
-    fun colorizeHexCodes(
-        startTag: String,
-        endTag: String,
+    private fun colorizeHexCodes(
         message: String
     ): String {
         val ver = LevelledMobs.instance.ver
+        val startTag = "&#"
+        val endTag = ""
 
         if (ver.minecraftVersion < 1.16 || !ver.isRunningSpigot) return message
 

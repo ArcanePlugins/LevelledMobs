@@ -45,7 +45,7 @@ class EntityTameListener : Listener {
         DebugManager.log(DebugType.ENTITY_TAME, lmEntity) { "Applying level to tamed mob" }
         var level = -1
         if (lmEntity.isLevelled) {
-            level = lmEntity.getMobLevel()
+            level = lmEntity.getMobLevel
         }
 
         if (level == -1) {

@@ -394,7 +394,7 @@ class YmlParsingHelper(
         val results = mutableListOf<String>()
         if (cs == null) return results
 
-        val foundKeyName = getKeyNameFromConfig(cs, key);
+        val foundKeyName = getKeyNameFromConfig(cs, key)
         val lst = cs.getStringList(foundKeyName)
 
         if (lst.isNotEmpty()) {

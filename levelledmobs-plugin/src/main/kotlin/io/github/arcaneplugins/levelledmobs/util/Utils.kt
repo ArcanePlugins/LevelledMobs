@@ -421,7 +421,7 @@ object Utils {
         return formatted
     }
 
-    fun showLocation(location: Location): String {
+    private fun showLocation(location: Location): String {
         return String.format(
             "%s at %s,%s,%s",
             location.world.name,

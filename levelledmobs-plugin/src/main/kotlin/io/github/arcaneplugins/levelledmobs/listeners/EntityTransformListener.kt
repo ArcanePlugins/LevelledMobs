@@ -51,7 +51,7 @@ class EntityTransformListener : Listener {
 
         if (main.rulesManager.getRuleMobLevelInheritance(lmEntity)) {
             useInheritance = true
-            level = lmEntity.getMobLevel()
+            level = lmEntity.getMobLevel
         }
 
         for (transformedEntity in event.transformedEntities) {
@@ -86,8 +86,8 @@ class EntityTransformListener : Listener {
             ) { transformedEntity.getType().name + ": entity was transformed" }
 
             if (useInheritance) {
-                if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER) {
-                    transformedLmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER)
+                if (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER) {
+                    transformedLmEntity.spawnReason = LevelledMobSpawnReason.SPAWNER
                 }
 
                 main.levelInterface.applyLevelToMob(
@@ -113,8 +113,8 @@ class EntityTransformListener : Listener {
 
     private fun checkForSlimeSplit(livingEntity: LivingEntity, transformedEntities: List<Entity>) {
         val parent = LivingEntityWrapper.getInstance(livingEntity)
-        if (parent.getSpawnReason() == LevelledMobSpawnReason.DEFAULT ||
-            parent.getSpawnReason() == LevelledMobSpawnReason.SLIME_SPLIT
+        if (parent.spawnReason == LevelledMobSpawnReason.DEFAULT ||
+            parent.spawnReason == LevelledMobSpawnReason.SLIME_SPLIT
         ) {
             parent.free()
             return
@@ -124,7 +124,7 @@ class EntityTransformListener : Listener {
             if (transformedEntity !is LivingEntity) continue
 
             val lew = LivingEntityWrapper.getInstance(transformedEntity)
-            lew.setSpawnReason(parent.getSpawnReason())
+            lew.spawnReason = parent.spawnReason
             lew.free()
         }
 

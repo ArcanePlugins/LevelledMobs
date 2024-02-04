@@ -445,7 +445,7 @@ class LevelManager : LevelInterface2 {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
                     String.format(
                         "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel()
+                        lmEntity.nameIfBaby, lmEntity.getMobLevel
                     )
                 }
                 currentDrops.clear()
@@ -473,7 +473,7 @@ class LevelManager : LevelInterface2 {
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
             String.format(
                 "&7Mob: &b%s&7, mob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
-                nameWithOverride, lmEntity.getMobLevel(), vanillaDrops, currentDrops.size,
+                nameWithOverride, lmEntity.getMobLevel, vanillaDrops, currentDrops.size,
                 additionUsedFinal
             )
         }
@@ -607,7 +607,7 @@ class LevelManager : LevelInterface2 {
                 DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
                     String.format(
                         "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b0&7",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel(), xp
+                        lmEntity.nameIfBaby, lmEntity.getMobLevel, xp
                     )
                 }
                 return 0
@@ -621,7 +621,7 @@ class LevelManager : LevelInterface2 {
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
                 String.format(
                     "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel(), xp, newXpFinal
+                    lmEntity.nameIfBaby, lmEntity.getMobLevel, xp, newXpFinal
                 )
             }
             return newXp.toInt()
@@ -816,7 +816,7 @@ class LevelManager : LevelInterface2 {
         }
 
         // replace them placeholders ;)
-        text.replace("%mob-lvl%", lmEntity.getMobLevel())
+        text.replace("%mob-lvl%", lmEntity.getMobLevel)
         text.replace(
             "%entity-name%",
             Utils.capitalize(lmEntity.nameIfBaby.replace("_", " "))
@@ -1078,8 +1078,8 @@ class LevelManager : LevelInterface2 {
 
         val main = LevelledMobs.instance
         if (lmEntity.isLevelled) {
-            var skipLevelling = (lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
-                    lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
+            var skipLevelling = (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER ||
+                    lmEntity.spawnReason == LevelledMobSpawnReason.LM_SUMMON
                     )
             if (main.configUtils.playerLevellingEnabled && !lmEntity.isRulesForceAll && !checkIfReadyForRelevelling(
                     lmEntity
@@ -1354,7 +1354,7 @@ class LevelManager : LevelInterface2 {
             Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK
             Addition.ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE
             Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
-                if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.REINFORCEMENTS) {
+                if (lmEntity.spawnReason == LevelledMobSpawnReason.REINFORCEMENTS) {
                     return
                 }
                 attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
@@ -1385,7 +1385,7 @@ class LevelManager : LevelInterface2 {
             }
             DebugManager.log(
                 DebugType.CREEPER_BLAST_RADIUS, lmEntity
-            ) { "lvl: ${lmEntity.getMobLevel()}, mulp: null, result: 3" }
+            ) { "lvl: ${lmEntity.getMobLevel}, mulp: null, result: 3" }
             return
         }
 
@@ -1410,7 +1410,7 @@ class LevelManager : LevelInterface2 {
         DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) {
             java.lang.String.format(
                 "lvl: %s, mulp: %s, max: %s, result: %s",
-                lmEntity.getMobLevel(), Utils.round(damage.toDouble(), 3), maxRadius, blastRadiusFinal
+                lmEntity.getMobLevel, Utils.round(damage.toDouble(), 3), maxRadius, blastRadiusFinal
             )
         }
 
@@ -1706,7 +1706,7 @@ class LevelManager : LevelInterface2 {
                 lmEntity.livingEntity.vehicle as LivingEntity
             )
             if (vehicle.isLevelled) {
-                useLevel = vehicle.getMobLevel()
+                useLevel = vehicle.getMobLevel
                 lmEntity.setMobPrelevel(useLevel)
             }
 
@@ -1738,7 +1738,7 @@ class LevelManager : LevelInterface2 {
             lmEntity.setMobPrelevel(useLevel)
             if (!mobPreLevelEvent.showLMNametag) {
                 skipLMNametag = true
-                lmEntity.setShouldShowLMNametag(false)
+                lmEntity.shouldShowLMNametag = false
             }
         }
 
@@ -1840,7 +1840,7 @@ class LevelManager : LevelInterface2 {
         if (!doSkipLMNametag) {
             LevelledMobs.instance.levelManager.updateNametagWithDelay(lmEntity)
         }
-        LevelledMobs.instance.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel())
+        LevelledMobs.instance.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel)
     }
 
     private fun applyAttribs(

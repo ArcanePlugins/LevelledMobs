@@ -24,7 +24,7 @@ interface LivingEntityInterface {
 
     var distanceFromSpawn: Double
 
-    var spawnedTimeOfDay: Int?
+    var spawnedTimeOfDay: Int
 
     val summonedLevel: Int?
 

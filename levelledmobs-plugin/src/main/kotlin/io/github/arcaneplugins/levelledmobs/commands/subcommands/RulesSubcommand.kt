@@ -400,7 +400,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             lmEntity.location.blockY,
             lmEntity.location.blockZ
         )
-        val mobLevel: String = if (lmEntity.isLevelled) lmEntity.getMobLevel().toString() else "0"
+        val mobLevel: String = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
         val messages = getMessage(
             "command.levelledmobs.rules.effective-rules",
             arrayOf("%mobname%", "%entitytype%", "%location%", "%world%", "%level%"),

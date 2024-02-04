@@ -505,7 +505,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             lmEntity.livingEntity.location.blockY,
             lmEntity.livingEntity.location.blockZ
         )
-        val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel()) else "0"
+        val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel) else "0"
 
         var entityName: String? = lmEntity.typeName
         if (ExternalCompatibilityManager.hasMythicMobsInstalled()
@@ -582,7 +582,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             lmEntity.livingEntity.location.blockY,
             lmEntity.livingEntity.location.blockZ
         )
-        val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel()) else "0"
+        val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel) else "0"
 
         val message = java.lang.String.format(
             "Showing nbt dump for: %s (lvl %s %s) in %s, %s\n%s",

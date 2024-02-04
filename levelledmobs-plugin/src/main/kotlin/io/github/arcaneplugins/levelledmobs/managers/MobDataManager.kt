@@ -167,7 +167,7 @@ class MobDataManager {
                     String.format(
                         "Removing %s from (lvl %s) %s at %s,%s,%s",
                         existingMod.name,
-                        lmEntity.getMobLevel(),
+                        lmEntity.getMobLevel,
                         lmEntity.nameIfBaby,
                         lmEntity.location.blockX,
                         lmEntity.location.blockY,
@@ -182,7 +182,7 @@ class MobDataManager {
             String.format(
                 "%s (%s): attrib: %s, base: %s, addtion: %s",
                 lmEntity.nameIfBaby,
-                lmEntity.getMobLevel(),
+                lmEntity.getMobLevel,
                 attribute.name,
                 Utils.round(attrib.baseValue, 3),
                 Utils.round(additionValue.toDouble(), 3)
@@ -209,7 +209,7 @@ class MobDataManager {
         defaultValue: Float
     ): MultiplierResult {
         val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity).toFloat()
-        val fineTuning = lmEntity.getFineTuningAttributes()
+        val fineTuning = lmEntity.fineTuningAttributes
         var multiplier: FineTuningAttributes.Multiplier? = null
         var attributeMax = 0f
         var multiplierValue = 0f
@@ -231,7 +231,7 @@ class MobDataManager {
                     Utils.logger.warning("Error evaluating formula: '$formulaStr', ${e.message}")
                 }
                 DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                    "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel()}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
+                    "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
             }
             else if (multiplier != null)
                 multiplierValue = multiplier.value
@@ -265,24 +265,24 @@ class MobDataManager {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                 String.format(
                     "%s (%s): using stacked formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel(), multiplier!!.value
+                    lmEntity.nameIfBaby, lmEntity.getMobLevel, multiplier!!.value
                 )
             }
-            return MultiplierResult(lmEntity.getMobLevel().toFloat() * multiplierValue, isAddition)
+            return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                 String.format(
                     "%s (%s): using standard formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel(), multiplier.value
+                    lmEntity.nameIfBaby, lmEntity.getMobLevel, multiplier.value
                 )
             }
 
             multiplierValue = if (attributeMax > 0.0) {
                 // only used for 5 specific attributes
-                lmEntity.getMobLevel() / maxLevel * (attributeMax * multiplierValue)
+                lmEntity.getMobLevel / maxLevel * (attributeMax * multiplierValue)
             } else {
                 // normal formula for most attributes
-                defaultValue * multiplierValue * ((lmEntity.getMobLevel()) / maxLevel)
+                defaultValue * multiplierValue * ((lmEntity.getMobLevel) / maxLevel)
             }
             return MultiplierResult(multiplierValue, isAddition)
         }

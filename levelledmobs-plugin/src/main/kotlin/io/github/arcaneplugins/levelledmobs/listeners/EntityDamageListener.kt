@@ -93,7 +93,7 @@ class EntityDamageListener : Listener {
                 return
             }
 
-            if (lmEntity.getMobLevel() < 0) {
+            if (lmEntity.getMobLevel < 0) {
                 lmEntity.reEvaluateLevel = true
             }
         }
@@ -215,7 +215,7 @@ class EntityDamageListener : Listener {
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, shooter) {
             String.format(
                 "&7Source: &b%s&7 (lvl &b%s&7), damage: &b%s&7, new damage: &b%s&7",
-                shooter.nameIfBaby, shooter.getMobLevel(), event.damage, newDamage
+                shooter.nameIfBaby, shooter.getMobLevel, event.damage, newDamage
             )
         }
         event.damage = newDamage.toDouble()

@@ -53,7 +53,7 @@ class EntityTargetListener : Listener {
                 return
             }
 
-            if (lmEntity.getMobLevel() < 0) {
+            if (lmEntity.getMobLevel < 0) {
                 lmEntity.reEvaluateLevel = true
             }
             main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))

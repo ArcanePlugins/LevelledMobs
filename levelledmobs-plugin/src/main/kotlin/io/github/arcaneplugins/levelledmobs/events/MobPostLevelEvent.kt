@@ -48,5 +48,5 @@ class MobPostLevelEvent(
         get() = lmEntity.livingEntity
 
     val level: Int
-        get() = lmEntity.getMobLevel()
+        get() = lmEntity.getMobLevel
 }
