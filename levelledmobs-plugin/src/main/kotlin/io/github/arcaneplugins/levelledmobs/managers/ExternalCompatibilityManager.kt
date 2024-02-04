@@ -138,10 +138,6 @@ class ExternalCompatibilityManager {
             return PlaceholderAPI.setPlaceholders(player, placeholder!!)
         }
 
-        fun hasProtocolLibInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("ProtocolLib")
-        }
-
         fun hasMythicMobsInstalled(): Boolean {
             return checkIfPluginIsInstalledAndEnabled("MythicMobs")
         }

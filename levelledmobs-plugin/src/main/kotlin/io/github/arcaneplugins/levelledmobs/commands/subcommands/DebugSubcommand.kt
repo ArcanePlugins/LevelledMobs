@@ -155,12 +155,16 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         LevelledMobs.instance.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(commandSender!!)
     }
 
-    private fun enableOrDisableDebug(isEnable: Boolean, isEnableAll: Boolean, debugCategory: String?) {
+    private fun enableOrDisableDebug(
+        isEnable: Boolean,
+        isEnableAll: Boolean,
+        debugCategory: String?
+    ){
         val main = LevelledMobs.instance
-        val wasEnabled: Boolean = main.debugManager.isEnabled
+        val wasEnabled = main.debugManager.isEnabled
 
         if (isEnable) {
-            val wasTimerEnabled: Boolean = main.debugManager.isTimerEnabled
+            val wasTimerEnabled = main.debugManager.isTimerEnabled
             val enableAllChanged = main.debugManager.bypassAllFilters != isEnableAll
             if (debugCategory != null) {
                 if (!parseEnableDebugCategory(debugCategory)) return
@@ -244,7 +248,10 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         commandSender!!.sendMessage("All filters have been cleared")
     }
 
-    private fun parseNumberValue(args: Array<String>, numberSetting: NumberSettings) {
+    private fun parseNumberValue(
+        args: Array<String>,
+        numberSetting: NumberSettings
+    ) {
         val argNumber = if (numberSetting == NumberSettings.MAX_PLAYERS_DIST) 3 else 4
 
         if (args.size == argNumber) {
@@ -298,7 +305,10 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         }
     }
 
-    private fun parseTypeValues(args: Array<String>, listType: ListTypes) {
+    private fun parseTypeValues(
+        args: Array<String>,
+        listType: ListTypes
+    ) {
         if (args.size == 3) {
             viewList(listType)
             return
@@ -456,7 +466,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             return
         }
 
-        val result: String = LivingEntityWrapper.getLEWDebug()
+        val result = LivingEntityWrapper.getLEWDebug()
         sender.sendMessage(result)
     }
 
@@ -470,7 +480,10 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         sender.sendMessage("Cleared the LEW cache")
     }
 
-    private fun showSpawnDistance(sender: CommandSender, args: Array<String>) {
+    private fun showSpawnDistance(
+        sender: CommandSender,
+        args: Array<String>
+    ) {
         var player: Player? = null
         if (sender !is Player && args.size < 3) {
             sender.sendMessage("Must specify a player when running this command from console")
@@ -513,7 +526,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
         }
 
-        val message = java.lang.String.format(
+        val message = String.format(
             "Spawn distance is %s for: %s (lvl %s %s) in %s, %s",
             Utils.round(distance, 1),
             entityName,
@@ -533,16 +546,18 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             return
         }
 
-        val l: Location = sender.location
-        val locationStr = String.format(
-            "location is %s, %s, %s in %s",
-            l.blockX, l.blockY, l.blockZ, l.world.name
-        )
-        sender.sendMessage("Your $locationStr")
-        Utils.logger.info(String.format("Player %s %s", sender.getName(), locationStr))
+        val l = sender.location
+        val locationStr =
+            "location is ${l.blockX}, ${l.blockY}, ${l.blockZ} in ${l.world.name}"
+
+        sender.sendMessage("Your location: $locationStr")
+        Utils.logger.info("Player ${sender.getName()}, location: $locationStr")
     }
 
-    private fun doNbtDump(sender: CommandSender, args: Array<String>) {
+    private fun doNbtDump(
+        sender: CommandSender,
+        args: Array<String>
+    ) {
         var player: Player? = null
         if (sender !is Player && args.size < 3) {
             sender.sendMessage("Must specify a player when running this command from console")
@@ -568,22 +583,21 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             return
         }
 
-        var entityName: String? = lmEntity.typeName
+        var entityName = lmEntity.typeName
         if (ExternalCompatibilityManager.hasMythicMobsInstalled()
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
         }
 
-        val locationStr = java.lang.String.format(
-            "%s, %s, %s",
-            lmEntity.livingEntity.location.blockX,
-            lmEntity.livingEntity.location.blockY,
-            lmEntity.livingEntity.location.blockZ
-        )
+        val locationStr =
+            "${lmEntity.livingEntity.location.blockX}, " +
+            "${lmEntity.livingEntity.location.blockX}, " +
+            "${lmEntity.livingEntity.location.blockX}"
+
         val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel) else "0"
 
-        val message = java.lang.String.format(
+        val message = String.format(
             "Showing nbt dump for: %s (lvl %s %s) in %s, %s\n%s",
             entityName,
             mobLevel,
@@ -717,21 +731,10 @@ class DebugSubcommand: MessagesBase(), Subcommand {
 
         if (args.size >= 5 && (isAdd || isRemove)) {
             when (args[2].lowercase(Locale.getDefault())) {
-                "set-debug" -> {
-                    return getUnusedDebugTypes(isAdd)
-                }
-
-                "set-entities" -> {
-                    return getUnusedEntityTypes(isAdd)
-                }
-
-                "set-rules" -> {
-                    return getUnusedRuleNames(isAdd)
-                }
-
-                "set-players" -> {
-                    return getUnusedPlayers(isAdd)
-                }
+                "set-debug" -> { return getUnusedDebugTypes(isAdd) }
+                "set-entities" -> { return getUnusedEntityTypes(isAdd) }
+                "set-rules" -> { return getUnusedRuleNames(isAdd) }
+                "set-players" -> { return getUnusedPlayers(isAdd) }
             }
         }
 
@@ -806,6 +809,6 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             else players.add(playerName)
         }
 
-        return java.util.ArrayList(players)
+        return players.toMutableList()
     }
 }

@@ -26,6 +26,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
 import io.github.arcaneplugins.levelledmobs.misc.FileMigrator.migrateSettingsToRules
+import io.github.arcaneplugins.levelledmobs.misc.MobPluginDetection
 import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
@@ -43,6 +44,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.LinkedList
 import java.util.Locale
+import java.util.TreeMap
 import java.util.UUID
 import java.util.WeakHashMap
 import java.util.function.Consumer
@@ -52,6 +54,7 @@ import org.bstats.charts.SimplePie
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -74,6 +77,7 @@ class Companion{
     var reloadSender: CommandSender? = null
     var hasFinishedLoading = false
     var showCustomDrops = false
+    val mobPluginDetectionDefinitions: MutableMap<String, MobPluginDetection> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     private val entityDeathInChunkCounter = mutableMapOf<Long, MutableMap<EntityType, ChunkKillInfo>>()
     private val chunkKillNoticationTracker = mutableMapOf<Long, MutableMap<UUID, Instant>>()
     private val playerNetherPortals = mutableMapOf<Player, Location>()
@@ -173,6 +177,7 @@ class Companion{
         )!!
         this.useAdventure = main.helperSettings.getBoolean( "use-adventure", true)
         this.excludePlayersInCreative = main.helperSettings.getBoolean("exclude-players-in-creative")
+        parseMobPluginDetection()
 
         return true
     }
@@ -217,6 +222,43 @@ class Companion{
         }
 
         this.showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
+    }
+
+
+    private fun parseMobPluginDetection(){
+        val settings = LevelledMobs.instance.helperSettings
+        val root = settings.cs.get("mob-plugin-detection") ?: return
+        val cs = root as ConfigurationSection
+
+        for (key in cs.getKeys(false)){
+            val csKey = cs.get(key) ?: continue
+            if (csKey !is ConfigurationSection) continue
+
+            val pluginName = csKey.getString("plugin-name")
+            val keyName = csKey.getString("key-name")
+            val requirementStr = csKey.getString("requirement")
+
+            if (pluginName.isNullOrEmpty()) continue
+            if (keyName.isNullOrEmpty()){
+                Utils.logger.warning("no key-name was supplied for $pluginName")
+                continue
+            }
+            var requirement = MobPluginDetection.RequirementTypes.EXISTS
+            if (!requirementStr.isNullOrEmpty()){
+                try{
+                    requirement = MobPluginDetection.RequirementTypes.valueOf(requirementStr.uppercase())
+                }
+                catch (ignored: Exception){
+                    Utils.logger.warning("Invalid value: $requirementStr")
+                }
+            }
+
+            val mpd = MobPluginDetection(pluginName, keyName, requirement)
+            mpd.requirementValue = csKey.getString("requirement-value")
+            this.mobPluginDetectionDefinitions[mpd.pluginName] = mpd
+        }
+
+        Utils.logger.info("plugins: $mobPluginDetectionDefinitions")
     }
 
     private fun loadEmbeddedResource(filename: String): YamlConfiguration? {
