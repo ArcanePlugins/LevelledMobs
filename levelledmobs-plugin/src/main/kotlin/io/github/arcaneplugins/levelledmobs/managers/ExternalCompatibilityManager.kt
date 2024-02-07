@@ -2,18 +2,22 @@ package io.github.arcaneplugins.levelledmobs.managers
 
 import com.earth2me.essentials.Essentials
 import java.io.InvalidObjectException
-import java.lang.reflect.InvocationTargetException
 import me.clip.placeholderapi.PlaceholderAPI
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
+import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
+import io.github.arcaneplugins.levelledmobs.misc.ExternalPluginDetection
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.result.PlayerHomeCheckResult
+import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.TreeMap
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.World
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -29,6 +33,86 @@ import org.bukkit.persistence.PersistentDataType
 class ExternalCompatibilityManager {
     private var lmiMeetsVersionRequirement: Boolean? = null
     private var lmiMeetsVersionRequirement2: Boolean? = null
+    val externalPluginDefinitions: MutableMap<String, ExternalPluginDetection> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    val externalPluginPlaceholders: MutableMap<String, ExternalPluginDetection> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+
+    init {
+        instance = this
+    }
+
+    fun parseMobPluginDetection(
+        cs: YamlConfiguration?
+    ){
+        externalPluginDefinitions.clear()
+        externalPluginPlaceholders.clear()
+        buildBuiltInCompatibilities()
+        if (cs == null) return
+
+        for (key in cs.getKeys(false)){
+            val csKey = cs.get(key) ?: continue
+            if (csKey !is ConfigurationSection) continue
+
+            var keyType = ExternalPluginDetection.KeyTypes.PDC
+            var friendlyName = csKey.getString("friendly-name")
+            val pluginName = csKey.getString("plugin-name")
+            val keyName = csKey.getString("key-name")
+            if ("metadata".equals(csKey.getString("key-type"), ignoreCase = true))
+                keyType = ExternalPluginDetection.KeyTypes.METADATA
+            val requirementStr = csKey.getString("requirement")
+            if (friendlyName.isNullOrEmpty())
+                friendlyName = pluginName
+
+            if (pluginName.isNullOrEmpty()) continue
+            if (keyName.isNullOrEmpty()){
+                Utils.logger.warning("no key-name was supplied for $pluginName")
+                continue
+            }
+            var requirement = ExternalPluginDetection.RequirementTypes.EXISTS
+            if (!requirementStr.isNullOrEmpty()){
+                try{
+                    requirement = ExternalPluginDetection.RequirementTypes.valueOf(requirementStr.uppercase())
+                }
+                catch (ignored: Exception){
+                    Utils.logger.warning("Invalid value: $requirementStr")
+                }
+            }
+
+            val mpd = ExternalPluginDetection(
+                pluginName,
+                friendlyName!!,
+                keyName,
+                requirement,
+                keyType
+            )
+            mpd.requirementValue = csKey.getString("requirement-value")
+            mpd.placeholderName = csKey.getString("placeholder-name")
+            this.externalPluginDefinitions[mpd.friendlyName] = mpd
+            if (!mpd.placeholderName.isNullOrEmpty())
+                this.externalPluginPlaceholders[mpd.placeholderName!!] = mpd
+        }
+    }
+
+    fun buildBuiltInCompatibilities(){
+        val compats = mutableListOf(
+            ExternalCompatibility.MYTHIC_MOBS,
+            ExternalCompatibility.SIMPLE_PETS,
+            ExternalCompatibility.ELITE_BOSSES,
+            ExternalCompatibility.ELITE_MOBS,
+            ExternalCompatibility.CITIZENS
+        )
+
+        for (compat in compats){
+            val mobPluginDetection = ExternalPluginDetection(
+                compat.toString(),
+                compat.toString().replace("_", "-"),
+                "(built-in)",
+                ExternalPluginDetection.RequirementTypes.EXISTS,
+                ExternalPluginDetection.KeyTypes.PDC
+            )
+            mobPluginDetection.externalCompatibility = compat
+            this.externalPluginDefinitions[mobPluginDetection.friendlyName] = mobPluginDetection
+        }
+    }
 
     fun doesLMIMeetVersionRequirement(): Boolean {
         // must be 1.1.0 or newer
@@ -69,44 +153,12 @@ class ExternalCompatibilityManager {
         return lmiMeetsVersionRequirement2!!
     }
 
-    enum class ExternalCompatibility {
-        NOT_APPLICABLE,
-
-        // DangerousCaves plugin
-        DANGEROUS_CAVES,
-
-        // EcoBosses plugin
-        ECO_BOSSES,
-
-        // MythicMobs plugin
-        MYTHIC_MOBS,
-
-        // EliteMobs plugin
-        ELITE_MOBS, ELITE_MOBS_NPCS, ELITE_MOBS_SUPER_MOBS,
-
-        // InfernalMobs plugin
-        INFERNAL_MOBS,
-
-        // Citizens plugin
-        CITIZENS,
-
-        // Shopkeepers plugin
-        SHOPKEEPERS,
-
-        // PlaceholderAPI plugin
-        PLACEHOLDER_API,
-
-        SIMPLE_PETS,  //SimplePets plugin
-
-        ELITE_BOSSES,  //EliteBosses plugin
-
-        BLOOD_NIGHT // Blood Night plugin
-    }
-
     companion object{
+        @JvmStatic
+        lateinit var instance: ExternalCompatibilityManager
+            private set
+
         private var useNewerEliteMobsKey: Boolean? = null
-        private var dangerousCavesMobTypeKey: NamespacedKey? = null
-        private var ecoBossesKey: NamespacedKey? = null
 
         private fun isExternalCompatibilityEnabled(
             externalCompatibility: ExternalCompatibility,
@@ -122,33 +174,27 @@ class ExternalCompatibilityManager {
             return plugin != null && plugin.isEnabled
         }
 
-        fun hasLMItemsInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("LM_Items")
-        }
+        val hasLMItemsInstalled: Boolean
+            get() = checkIfPluginIsInstalledAndEnabled("LM_Items")
 
-        fun hasPapiInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("PlaceholderAPI")
-        }
+        val hasPapiInstalled: Boolean
+            get() = checkIfPluginIsInstalledAndEnabled("PlaceholderAPI")
 
-        fun hasNbtApiInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("NBTAPI")
-        }
+        val hasNbtApiInstalled: Boolean
+            get() = checkIfPluginIsInstalledAndEnabled("NBTAPI")
 
         fun getPapiPlaceholder(player: Player?, placeholder: String?): String {
             return PlaceholderAPI.setPlaceholders(player, placeholder!!)
         }
 
-        fun hasMythicMobsInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("MythicMobs")
-        }
+        val hasMythicMobsInstalled: Boolean
+            get() = checkIfPluginIsInstalledAndEnabled("MythicMobs")
 
-        fun hasLibsDisguisesInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("LibsDisguises")
-        }
+        val hasLibsDisguisesInstalled: Boolean
+            get() = checkIfPluginIsInstalledAndEnabled("LibsDisguises")
 
-        fun hasWorldGuardInstalled(): Boolean {
-            return checkIfPluginIsInstalledAndEnabled("WorldGuard")
-        }
+        val hasWorldGuardInstalled: Boolean
+            get() = checkIfPluginIsInstalledAndEnabled("WorldGuard")
 
         private fun isMobOfSimplePets(lmEntity: LivingEntityWrapper): Boolean {
             val plugin = Bukkit.getPluginManager().getPlugin("SimplePets")
@@ -168,35 +214,6 @@ class ExternalCompatibilityManager {
             } else {
                 return isSimplePets(lmEntity)
             }
-        }
-
-        private fun isMobOfEliteBosses(lmEntity: LivingEntityWrapper): Boolean {
-            val plugin = Bukkit.getPluginManager().getPlugin("EliteBosses")
-            if (plugin == null || !plugin.isEnabled) {
-                return false
-            }
-
-            for (meta in lmEntity.livingEntity.getMetadata("EliteBosses")) {
-                if (meta.asInt() > 0) {
-                    return true
-                }
-            }
-
-            return false
-        }
-
-        fun isMobOfBloodNight(lmEntity: LivingEntityWrapper): Boolean {
-            val plugin = Bukkit.getPluginManager().getPlugin("BloodNight")
-            if (plugin == null || !plugin.isEnabled) {
-                return false
-            }
-
-            val isBloodNightMob: Boolean = lmEntity.pdc
-                .has(NamespacedKey(plugin, "mobtype"), PersistentDataType.STRING)
-
-            if (isBloodNightMob) lmEntity.setMobExternalType(ExternalCompatibility.BLOOD_NIGHT)
-
-            return isBloodNightMob
         }
 
         fun isMythicMob(lmEntity: LivingEntityWrapper): Boolean {
@@ -233,68 +250,48 @@ class ExternalCompatibilityManager {
         }
 
         fun checkAllExternalCompats(lmEntity: LivingEntityWrapper): LevellableState {
-            val compatRules: Map<ExternalCompatibility, Boolean?> =
-                LevelledMobs.instance.rulesManager.getRuleExternalCompatibility(
+            val externalPlugins = RulesManager.instance.getRuleExternalPlugins(
                     lmEntity
-                )
+            )
+            if (externalPlugins == null) return LevellableState.ALLOWED
 
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, compatRules)) {
-                if (isMobOfDangerousCaves(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES
+            for (pluginName in instance.externalPluginDefinitions.keys){
+                if (!externalPlugins.isEnabledInList(pluginName, lmEntity)){
+                    val mobPlugin = instance.externalPluginDefinitions[pluginName]!!
+                    val result = evaluateExternalPluginMob(mobPlugin, lmEntity)
+                    if (result != LevellableState.ALLOWED) return result
                 }
             }
 
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.ECO_BOSSES, compatRules)) {
-                if (isMobOfEcoBosses(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES
-                }
+            return LevellableState.ALLOWED
+        }
+
+        private fun evaluateExternalPluginMob(
+            mobPlugin: ExternalPluginDetection,
+            lmEntity: LivingEntityWrapper
+        ): LevellableState{
+            if (!mobPlugin.isBuiltIn){
+                if (!mobPlugin.isMobOfType(lmEntity))
+                    return LevellableState.DENIED_EXTERNAL_PLUGIN
+
+                return LevellableState.ALLOWED
             }
 
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS, compatRules)) {
-                if (isMobOfMythicMobs(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS
+            when (mobPlugin.externalCompatibility!!){
+                ExternalCompatibility.MYTHIC_MOBS -> {
+                    if (isMobOfMythicMobs(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS
                 }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS, compatRules)) {
-                if (isMobOfEliteMobs(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS
+                ExternalCompatibility.SIMPLE_PETS -> {
+                    if (isMobOfSimplePets(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS
                 }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS, compatRules)) {
-                if (isMobOfInfernalMobs(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS
+                ExternalCompatibility.ELITE_BOSSES -> {
+                    if (isMobOfEliteBosses(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES
                 }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS, compatRules)) {
-                if (isMobOfCitizens(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS
+                ExternalCompatibility.ELITE_MOBS -> {
+                    if (isMobOfMythicMobs(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS
                 }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, compatRules)) {
-                if (isMobOfShopkeepers(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS
-                }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules)) {
-                if (isMobOfSimplePets(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS
-                }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_BOSSES, compatRules)) {
-                if (isMobOfEliteBosses(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES
-                }
-            }
-
-            if (!isExternalCompatibilityEnabled(ExternalCompatibility.BLOOD_NIGHT, compatRules)) {
-                if (isMobOfBloodNight(lmEntity)) {
-                    return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT
+                else -> {
+                    return LevellableState.ALLOWED
                 }
             }
 
@@ -302,66 +299,18 @@ class ExternalCompatibilityManager {
         }
 
         fun updateAllExternalCompats(lmEntity: LivingEntityWrapper) {
-            isMobOfDangerousCaves(lmEntity)
-            isMobOfEcoBosses(lmEntity)
+            for (mobPlugin in instance.externalPluginDefinitions.values){
+                if (mobPlugin.isBuiltIn) continue
+
+                mobPlugin.isMobOfType(lmEntity)
+            }
+
             isMobOfMythicMobs(lmEntity)
             isMobOfEliteMobs(lmEntity)
-            isMobOfInfernalMobs(lmEntity)
-            isMobOfCitizens(lmEntity)
-            isMobOfShopkeepers(lmEntity)
             isMobOfSimplePets(lmEntity)
             isMobOfEliteMobs(lmEntity)
-            isMobOfBloodNight(lmEntity)
-        }
-
-        /**
-         * @param lmEntity mob to check
-         * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
-         * @author lokka30, stumper66, imDaniX (author of DC2 - provided part of this method)
-         */
-        private fun isMobOfDangerousCaves(lmEntity: LivingEntityWrapper): Boolean {
-            val plugin = Bukkit.getPluginManager().getPlugin("DangerousCaves") ?: return false
-
-            if (dangerousCavesMobTypeKey == null) {
-                dangerousCavesMobTypeKey = NamespacedKey(plugin, "mob-type")
-            }
-
-            synchronized(lmEntity.livingEntity.persistentDataContainer) {
-                if (!lmEntity.pdc.has(
-                        dangerousCavesMobTypeKey!!,
-                        PersistentDataType.STRING
-                    )
-                ) {
-                    return false
-                }
-            }
-
-            lmEntity.setMobExternalType(ExternalCompatibility.DANGEROUS_CAVES)
-            return true
-        }
-
-        /**
-         * @param lmEntity mob to check
-         * @return if the compat is enabled and if the mob belongs to EcoBosses
-         * @author lokka30, Auxilor (author of EcoBosses - provided part of this method)
-         */
-        private fun isMobOfEcoBosses(lmEntity: LivingEntityWrapper): Boolean {
-            val plugin = Bukkit.getPluginManager().getPlugin("EcoBosses") ?: return false
-
-            if (ecoBossesKey == null) {
-                ecoBossesKey = NamespacedKey(plugin, "boss")
-            }
-
-            synchronized(lmEntity.livingEntity.persistentDataContainer) {
-                if (!lmEntity.pdc
-                        .has(ecoBossesKey!!, PersistentDataType.STRING)
-                ) {
-                    return false
-                }
-            }
-
-            lmEntity.setMobExternalType(ExternalCompatibility.ECO_BOSSES)
-            return true
+            isMobOfSimplePets(lmEntity)
+            isMobOfCitizens(lmEntity)
         }
 
         /**
@@ -369,7 +318,7 @@ class ExternalCompatibilityManager {
          * @return if MythicMobs compatibility enabled and entity is from MythicMobs
          */
         private fun isMobOfMythicMobs(lmEntity: LivingEntityWrapper): Boolean {
-            if (!hasMythicMobsInstalled()) {
+            if (!hasMythicMobsInstalled) {
                 return false
             }
             if (lmEntity.isMobOfExternalType) {
@@ -378,7 +327,7 @@ class ExternalCompatibilityManager {
 
             val isExternalType = isMythicMob(lmEntity)
             if (isExternalType) {
-                lmEntity.setMobExternalType(ExternalCompatibility.MYTHIC_MOBS)
+                lmEntity.setMobExternalType("MYTHIC-MOBS")
             }
 
             return isExternalType
@@ -418,7 +367,7 @@ class ExternalCompatibilityManager {
                 }
 
                 if (isEliteMob) {
-                    lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS)
+                    lmEntity.setMobExternalType("ELITE-MOBS")
                     return true
                 }
             }
@@ -434,21 +383,7 @@ class ExternalCompatibilityManager {
             val isExternalType = isMobOfCitizens(lmEntity.livingEntity)
 
             if (isExternalType) {
-                lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS)
-            }
-
-            return isExternalType
-        }
-
-        /**
-         * @param lmEntity mob to check
-         * @return if InfernalMobs compatibility enabled and entity is from InfernalMobs
-         */
-        private fun isMobOfInfernalMobs(lmEntity: LivingEntityWrapper): Boolean {
-            val isExternalType = lmEntity.livingEntity.hasMetadata("infernalMetadata")
-
-            if (isExternalType) {
-                lmEntity.setMobExternalType(ExternalCompatibility.INFERNAL_MOBS)
+                lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS.toString())
             }
 
             return isExternalType
@@ -458,24 +393,10 @@ class ExternalCompatibilityManager {
             return livingEntity.hasMetadata("NPC")
         }
 
-        /**
-         * @param lmEntity mob to check
-         * @return if Shopkeepers compatibility enabled and entity is from Shopkeepers
-         */
-        private fun isMobOfShopkeepers(lmEntity: LivingEntityWrapper): Boolean {
-            val isExternalType = lmEntity.livingEntity.hasMetadata("shopkeeper")
-
-            if (isExternalType) {
-                lmEntity.setMobExternalType(ExternalCompatibility.SHOPKEEPERS)
-            }
-
-            return isExternalType
-        }
-
         fun getWGRegionsAtLocation(
             lmInterface: LivingEntityInterface
         ): MutableList<String> {
-            if (!hasWorldGuardInstalled()) {
+            if (!hasWorldGuardInstalled) {
                 return mutableListOf()
             }
 
@@ -527,18 +448,24 @@ class ExternalCompatibilityManager {
 
                 val methodIsPetEntity = clazzIPetsPlugin.getDeclaredMethod("isPetEntity", Entity::class.java)
                 return methodIsPetEntity.invoke(objIPetsPlugin, lmEntity.livingEntity) as Boolean
-            } catch (e: NoSuchMethodException) {
+            } catch (e: Exception) {
                 Utils.logger.error("Error checking if " + lmEntity.nameIfBaby + " is a SimplePet")
                 e.printStackTrace()
-            } catch (e: InvocationTargetException) {
-                Utils.logger.error("Error checking if " + lmEntity.nameIfBaby + " is a SimplePet")
-                e.printStackTrace()
-            } catch (e: IllegalAccessException) {
-                Utils.logger.error("Error checking if " + lmEntity.nameIfBaby + " is a SimplePet")
-                e.printStackTrace()
-            } catch (e: ClassNotFoundException) {
-                Utils.logger.error("Error checking if " + lmEntity.nameIfBaby + " is a SimplePet")
-                e.printStackTrace()
+            }
+
+            return false
+        }
+
+        private fun isMobOfEliteBosses(lmEntity: LivingEntityWrapper): Boolean {
+            val plugin = Bukkit.getPluginManager().getPlugin("EliteBosses")
+            if (plugin == null || !plugin.isEnabled) {
+                return false
+            }
+
+            for (meta in lmEntity.livingEntity.getMetadata("EliteBosses")) {
+                if (meta.asInt() > 0) {
+                    return true
+                }
             }
 
             return false

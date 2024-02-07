@@ -25,8 +25,6 @@ import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
-import io.github.arcaneplugins.levelledmobs.misc.FileMigrator.migrateSettingsToRules
-import io.github.arcaneplugins.levelledmobs.misc.MobPluginDetection
 import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
@@ -44,7 +42,6 @@ import java.time.Duration
 import java.time.Instant
 import java.util.LinkedList
 import java.util.Locale
-import java.util.TreeMap
 import java.util.UUID
 import java.util.WeakHashMap
 import java.util.function.Consumer
@@ -54,7 +51,6 @@ import org.bstats.charts.SimplePie
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -65,7 +61,7 @@ import org.bukkit.entity.Player
  * @author lokka30, stumper66
  * @since 2.4.0
  */
-class Companion{
+class MainCompanion{
     private val recentlyJoinedPlayers = WeakHashMap<Player, Instant>()
     val hostileMobsGroup = mutableSetOf<EntityType>()
     val aquaticMobsGroup = mutableSetOf<EntityType>()
@@ -77,7 +73,6 @@ class Companion{
     var reloadSender: CommandSender? = null
     var hasFinishedLoading = false
     var showCustomDrops = false
-    val mobPluginDetectionDefinitions: MutableMap<String, MobPluginDetection> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     private val entityDeathInChunkCounter = mutableMapOf<Long, MutableMap<EntityType, ChunkKillInfo>>()
     private val chunkKillNoticationTracker = mutableMapOf<Long, MutableMap<UUID, Instant>>()
     private val playerNetherPortals = mutableMapOf<Player, Location>()
@@ -93,6 +88,16 @@ class Companion{
     private val playerNetherPortalsLock = Any()
     private val entityDeathInChunkCounterLock = Any()
     private val entityDeathInChunkNotifierLock = Any()
+
+    companion object {
+        @JvmStatic
+        lateinit var instance: MainCompanion
+            private set
+    }
+
+    init {
+        instance = this
+    }
 
     fun load(){
         buildUniversalGroups()
@@ -113,22 +118,6 @@ class Companion{
     fun loadFiles(isReload: Boolean): Boolean {
         Utils.logger.info("&fFile Loader: &7Loading files...")
         val main = LevelledMobs.instance
-
-        val rulesFile = loadFile(
-            main, "rules",
-            FileLoader.RULES_FILE_VERSION
-        )
-        this.hadRulesLoadError = rulesFile == null
-        main.rulesParsingManager.parseRulesMain(rulesFile)
-
-        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled()
-
-        val settingsVersion = getSettingsVersion()
-        if (settingsVersion in 21..29
-        ) { // anything older than 2.0 will not be migrated
-            migrateSettingsToRules()
-        }
-
         val configLoad = loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION)
 
         if (configLoad != null) // only load if settings were loaded successfully
@@ -143,11 +132,16 @@ class Companion{
             return false
         }
 
+        ExternalCompatibilityManager.instance.parseMobPluginDetection(
+            loadFile(main, "externalplugins", FileLoader.EXTERNALPLUGINS_FILE_VERSION))
+
+        val rulesFile = loadFile(main, "rules", FileLoader.RULES_FILE_VERSION)
+        this.hadRulesLoadError = rulesFile == null
+        main.rulesParsingManager.parseRulesMain(rulesFile)
+        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled()
         main.customDropsHandler.load()
 
         if (!isReload) {
-            //main.dropsCfg = loadEmbeddedResource("defaultDrops.yml")!!
-
             // remove legacy files if they exist
             val legacyFile = arrayOf("attributes.yml", "drops.yml")
             for (lFile in legacyFile) {
@@ -177,7 +171,6 @@ class Companion{
         )!!
         this.useAdventure = main.helperSettings.getBoolean( "use-adventure", true)
         this.excludePlayersInCreative = main.helperSettings.getBoolean("exclude-players-in-creative")
-        parseMobPluginDetection()
 
         return true
     }
@@ -222,59 +215,6 @@ class Companion{
         }
 
         this.showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
-    }
-
-
-    private fun parseMobPluginDetection(){
-        val settings = LevelledMobs.instance.helperSettings
-        val root = settings.cs.get("mob-plugin-detection") ?: return
-        val cs = root as ConfigurationSection
-
-        for (key in cs.getKeys(false)){
-            val csKey = cs.get(key) ?: continue
-            if (csKey !is ConfigurationSection) continue
-
-            val pluginName = csKey.getString("plugin-name")
-            val keyName = csKey.getString("key-name")
-            val requirementStr = csKey.getString("requirement")
-
-            if (pluginName.isNullOrEmpty()) continue
-            if (keyName.isNullOrEmpty()){
-                Utils.logger.warning("no key-name was supplied for $pluginName")
-                continue
-            }
-            var requirement = MobPluginDetection.RequirementTypes.EXISTS
-            if (!requirementStr.isNullOrEmpty()){
-                try{
-                    requirement = MobPluginDetection.RequirementTypes.valueOf(requirementStr.uppercase())
-                }
-                catch (ignored: Exception){
-                    Utils.logger.warning("Invalid value: $requirementStr")
-                }
-            }
-
-            val mpd = MobPluginDetection(pluginName, keyName, requirement)
-            mpd.requirementValue = csKey.getString("requirement-value")
-            this.mobPluginDetectionDefinitions[mpd.pluginName] = mpd
-        }
-
-        Utils.logger.info("plugins: $mobPluginDetectionDefinitions")
-    }
-
-    private fun loadEmbeddedResource(filename: String): YamlConfiguration? {
-        var result: YamlConfiguration? = null
-        val inputStream = LevelledMobs.instance.getResource(filename) ?: return null
-
-        try {
-            val reader = InputStreamReader(inputStream)
-            result = YamlConfiguration.loadConfiguration(reader)
-            reader.close()
-            inputStream.close()
-        } catch (e: IOException) {
-            Utils.logger.error("Error reading embedded file: " + filename + ", " + e.message)
-        }
-
-        return result
     }
 
     fun registerListeners() {
@@ -566,9 +506,7 @@ class Companion{
                         // for some reason config#getStringList doesn't allow defaults??
 
                         updateResult = if (main.messagesCfg.contains("other.update-notice.messages")) {
-                            main.messagesCfg.getStringList(
-                                "other.update-notice.messages"
-                            )
+                            main.messagesCfg.getStringList("other.update-notice.messages")
                         } else {
                             mutableListOf(
                                 "&b&nLevelledMobs Update Checker Notice:",

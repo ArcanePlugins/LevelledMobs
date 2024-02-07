@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.managers
 import io.github.arcaneplugins.levelledmobs.LevelInterface2
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
@@ -296,7 +297,7 @@ class LevelManager : LevelInterface2 {
             var usePlayerLevel = false
             var papiResult: String? = null
 
-            if (ExternalCompatibilityManager.hasPapiInstalled()) {
+            if (ExternalCompatibilityManager.hasPapiInstalled) {
                 papiResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse)
                 if (papiResult.isEmpty()) {
                     val l = player.location
@@ -729,7 +730,7 @@ class LevelManager : LevelInterface2 {
         nametag.replace("%health-indicator%", indicatorStr)
         nametag.replace("%health-indicator-color%", colorOnly)
 
-        if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
+        if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
             nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag.text)
         }
 
@@ -865,7 +866,11 @@ class LevelManager : LevelInterface2 {
             useDisplayname
         }
 
-        if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
+        for (placeholder in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
+            text.replaceIfExists(placeholder.key){ placeholder.value.getPlaceholder(lmEntity) }
+        }
+
+        if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
             text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text)
         }
 
@@ -1174,7 +1179,7 @@ class LevelManager : LevelInterface2 {
             .sortedBy { it.first }
             .map { it.second }
 
-        if (LevelledMobs.instance.companion.excludePlayersInCreative){
+        if (MainCompanion.instance.excludePlayersInCreative){
             sortedPlayersSequence = sortedPlayersSequence.filter {
                 p: Player -> p.gameMode != GameMode.CREATIVE
             }
@@ -1197,12 +1202,12 @@ class LevelManager : LevelInterface2 {
         }
 
         // if player has been logged in for less than 5 seconds then ignore
-        val logonTime =  LevelledMobs.instance.companion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
+        val logonTime =  MainCompanion.instance.getRecentlyJoinedPlayerLogonTime(closestPlayer)
         if (logonTime != null) {
             if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) {
                 return
             }
-            LevelledMobs.instance.companion.removeRecentlyJoinedPlayer(closestPlayer)
+            MainCompanion.instance.removeRecentlyJoinedPlayer(closestPlayer)
         }
 
         if (doesMobNeedRelevelling(lmEntity, closestPlayer)) {
@@ -1771,7 +1776,7 @@ class LevelManager : LevelInterface2 {
                 lmEntity
             )
 
-        if (nbtDatas!!.isNotEmpty() && !ExternalCompatibilityManager.hasNbtApiInstalled()) {
+        if (nbtDatas!!.isNotEmpty() && !ExternalCompatibilityManager.hasNbtApiInstalled) {
             if (!hasMentionedNBTAPIMissing) {
                 Utils.logger.warning(
                     "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!"

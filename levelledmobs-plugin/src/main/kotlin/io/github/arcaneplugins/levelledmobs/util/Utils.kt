@@ -6,6 +6,7 @@ import java.util.AbstractMap
 import java.util.Locale
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
@@ -336,10 +337,10 @@ object Utils {
         var isWorldPortalCoord = false
 
         if (player.world.environment == World.Environment.NETHER) {
-            location = LevelledMobs.instance.companion.getPlayerNetherPortalLocation(player)
+            location = MainCompanion.instance.getPlayerNetherPortalLocation(player)
             isNetherPortalCoord = true
         } else if (player.world.environment == World.Environment.NORMAL) {
-            location = LevelledMobs.instance.companion.getPlayerWorldPortalLocation(player)
+            location = MainCompanion.instance.getPlayerWorldPortalLocation(player)
             isWorldPortalCoord = true
         }
 
@@ -593,7 +594,7 @@ object Utils {
             .sortedBy { it.first }
             .map { it.second }
 
-        if (LevelledMobs.instance.companion.excludePlayersInCreative){
+        if (MainCompanion.instance.excludePlayersInCreative){
             temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
         }
 

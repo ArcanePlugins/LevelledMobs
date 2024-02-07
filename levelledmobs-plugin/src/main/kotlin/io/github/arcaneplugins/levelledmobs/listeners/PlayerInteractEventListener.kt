@@ -56,17 +56,17 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         }
 
         val main = LevelledMobs.instance
-        if (main.companion.spawnerInfoIds.isEmpty() && main.companion.spawnerCopyIds.isEmpty()) {
+        if (main.mainCompanion.spawnerInfoIds.isEmpty() && main.mainCompanion.spawnerCopyIds.isEmpty()) {
             return
         }
         if (event.hand == null || event.hand != EquipmentSlot.HAND) {
             return
         }
 
-        val doShowInfo: Boolean = main.companion.spawnerInfoIds.contains(
+        val doShowInfo: Boolean = main.mainCompanion.spawnerInfoIds.contains(
             event.player.uniqueId
         )
-        val doCopy: Boolean = main.companion.spawnerCopyIds.contains(
+        val doCopy: Boolean = main.mainCompanion.spawnerCopyIds.contains(
             event.player.uniqueId
         )
 

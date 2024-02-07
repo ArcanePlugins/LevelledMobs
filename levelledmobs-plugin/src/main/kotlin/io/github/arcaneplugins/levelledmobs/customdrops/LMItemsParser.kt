@@ -22,8 +22,8 @@ class LMItemsParser {
         materialName: String,
         item: CustomDropItem
     ): Boolean {
-        if (!LevelledMobs.instance.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
-            if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+        if (!ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
+            if (ExternalCompatibilityManager.hasLMItemsInstalled) {
                 Utils.logger.warning(
                     String.format(
                         "customdrops.yml references external item '%s' but LM_Items is an old version",
@@ -75,7 +75,7 @@ class LMItemsParser {
         itemRequest.itemType = item.externalType
         itemRequest.amount = item.externalAmount
 
-        if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
+        if (main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
             itemRequest.getMultipleItems = "-" == itemRequest.itemId
             itemRequest.minItems = item.minItems
             itemRequest.maxItems = item.maxItems
@@ -93,7 +93,7 @@ class LMItemsParser {
                     if (info != null) {
                         value = main.levelManager.replaceStringPlaceholders(
                             value, info.lmEntity!!,true,info.mobKiller,false)
-                    } else if (ExternalCompatibilityManager.hasPapiInstalled()) {
+                    } else if (ExternalCompatibilityManager.hasPapiInstalled) {
                         value = ExternalCompatibilityManager.getPapiPlaceholder(null, value)
                     }
                 }
@@ -143,7 +143,7 @@ class LMItemsParser {
 
             // on server startup show as warning message
             // after reload show as debug
-            if (main.companion.hasFinishedLoading) {
+            if (main.mainCompanion.hasFinishedLoading) {
                 DebugManager.log(DebugType.CUSTOM_DROPS) { msg }
             } else {
                 Utils.logger.warning(msg)
@@ -154,7 +154,7 @@ class LMItemsParser {
             return false
         }
 
-        if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
+        if (main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
             if (result.itemStacks != null && result.itemStacks!!.isNotEmpty())
                 item.itemStacks = result.itemStacks as MutableList<ItemStack>
             else

@@ -25,7 +25,7 @@ class ReloadSubcommand : Subcommand {
 
         main.reloadLM(sender)
 
-        if (main.companion.hadRulesLoadError && sender is Player) {
+        if (main.mainCompanion.hadRulesLoadError && sender is Player) {
             sender.sendMessage(FileLoader.getFileLoadErrorMessage())
         }
     }

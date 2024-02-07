@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.commands.subcommands
 import java.lang.reflect.Modifier
 import java.util.TreeSet
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
@@ -103,8 +104,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
 
             val ver: ServerVersionInfo = LevelledMobs.instance.ver
 
-            if (ver.isRunningPaper
-                && LevelledMobs.instance.companion.useAdventure
+            if (ver.isRunningPaper && MainCompanion.instance.useAdventure
             ) {
                 PaperUtils.updateItemDisplayName(
                     meta,
@@ -159,7 +159,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
 
             if (!info.noLore && info.lore == null && info.customLore == null) {
                 lore = colorizeAllInList(lore)
-                if (ver.isRunningPaper && LevelledMobs.instance.companion.useAdventure) {
+                if (ver.isRunningPaper && MainCompanion.instance.useAdventure) {
                     PaperUtils.updateItemMetaLore(meta, lore)
                 } else {
                     SpigotUtils.updateItemMetaLore(meta, lore)
@@ -183,7 +183,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
 
                 lore.clear()
                 lore.addAll(useLore.split("\n"))
-                if (ver.isRunningPaper && LevelledMobs.instance.companion.useAdventure) {
+                if (ver.isRunningPaper && MainCompanion.instance.useAdventure) {
                     PaperUtils.updateItemMetaLore(meta, lore)
                 } else {
                     SpigotUtils.updateItemMetaLore(meta, lore)

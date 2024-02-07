@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
@@ -119,12 +120,12 @@ class EntitySpawnListener : Listener{
             return
         }
         // if player has been logged in for less than 5 seconds then ignore
-        val logonTime = main.companion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
+        val logonTime = main.mainCompanion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
         if (logonTime != null) {
             if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) {
                 return
             }
-            main.companion.removeRecentlyJoinedPlayer(closestPlayer)
+            main.mainCompanion.removeRecentlyJoinedPlayer(closestPlayer)
         }
 
         synchronized(lmEntity.livingEntity.persistentDataContainer) {
@@ -168,7 +169,7 @@ class EntitySpawnListener : Listener{
             .sortedBy { it.first }
             .map { it.second }
 
-        if (LevelledMobs.instance.companion.excludePlayersInCreative){
+        if (MainCompanion.instance.excludePlayersInCreative){
             temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
         }
 

@@ -8,7 +8,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
+import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
@@ -44,6 +44,7 @@ import org.bukkit.persistence.PersistentDataType
 class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), LivingEntityInterface {
     // privates:
     private var applicableGroups: MutableSet<String> = TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    val mobExternalTypes: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     private var hasCache = false
     private var _livingEntity: LivingEntity? = null
     private var isBuildingCache = false
@@ -57,7 +58,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private var _sourceSpawnEggName: String? = null
     private val applicableRules = mutableListOf<RuleInfo>()
     private var spawnedWGRegions: List<String>? = null
-    val mobExternalTypes = mutableListOf<ExternalCompatibility>()
     //private var fineTuningAttributes: FineTuningAttributes? = null
     private var _spawnReason: LevelledMobSpawnReason? = null
     var prevChanceRuleResults: MutableMap<String, Boolean>? = null
@@ -770,7 +770,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
 
     fun setMobExternalType(
-        externalType: ExternalCompatibility
+        externalType: String
     ) {
         if (!mobExternalTypes.contains(externalType)) {
             mobExternalTypes.add(externalType)
@@ -943,12 +943,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         val eType = livingEntity.type
 
         if (livingEntity is Monster || livingEntity is Boss
-            || main.companion.hostileMobsGroup.contains(eType)
+            || main.mainCompanion.hostileMobsGroup.contains(eType)
         ) {
             groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS.toString())
         }
 
-        if (livingEntity is WaterMob || main.companion.aquaticMobsGroup.contains(eType)) {
+        if (livingEntity is WaterMob || main.mainCompanion.aquaticMobsGroup.contains(eType)) {
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString())
         }
 
@@ -969,12 +969,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             groups.add(CustomUniversalGroups.ALL_GROUND_MOBS.toString())
         }
 
-        if (livingEntity is WaterMob || main.companion.aquaticMobsGroup.contains(eType)) {
+        if (livingEntity is WaterMob || main.mainCompanion.aquaticMobsGroup.contains(eType)) {
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString())
         }
 
         if (livingEntity is Animals && livingEntity !is Hoglin || livingEntity is WaterMob
-            || main.companion.passiveMobsGroup.contains(eType)
+            || main.mainCompanion.passiveMobsGroup.contains(eType)
         ) {
             groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString())
         }

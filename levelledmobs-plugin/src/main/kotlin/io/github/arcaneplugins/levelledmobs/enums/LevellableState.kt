@@ -75,6 +75,8 @@ enum class LevellableState {
      */
     DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT,
 
+    DENIED_EXTERNAL_PLUGIN,
+
     /**
      * A rule has been configured to block nametagged mobs from being levelled.
      */

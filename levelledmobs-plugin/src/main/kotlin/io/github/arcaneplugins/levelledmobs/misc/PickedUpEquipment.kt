@@ -41,7 +41,7 @@ class PickedUpEquipment(
 
     fun getMobPickedUpItems(): MutableList<ItemStack> {
         val results = mutableListOf<ItemStack>()
-        if (!lmEntity.pdc.has(itemsNamespace)) return results
+        if (!lmEntity.pdc.has(itemsNamespace, PersistentDataType.STRING)) return results
 
         parseExistingKey(lmEntity.pdc.get(itemsNamespace, PersistentDataType.STRING))
         if (slotMappings.isEmpty()) return results
@@ -65,7 +65,7 @@ class PickedUpEquipment(
 
     private fun storeItemInPDC(slotNumber: Int) {
         synchronized(lmEntity.livingEntity.persistentDataContainer) {
-            if (lmEntity.pdc.has(itemsNamespace)) {
+            if (lmEntity.pdc.has(itemsNamespace, PersistentDataType.STRING)) {
                 parseExistingKey(lmEntity.pdc.get(itemsNamespace, PersistentDataType.STRING))
             }
             slotMappings[slotNumber] = bytesToHex(itemStack!!.serializeAsBytes())

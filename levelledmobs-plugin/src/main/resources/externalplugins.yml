@@ -1,0 +1,39 @@
+dangerous-caves:
+  friendly-name: 'Dangerous-Caves'
+  plugin-name: 'DangerousCaves'
+  key-name: 'mob-type'
+  key-type: 'PDC'
+  requirement: 'exists'
+#  placeholder-name: '%dangerous-caves-name%'
+
+infernal-mobs:
+  friendly-name: 'infernal-mobs'
+  plugin-name: 'InfernalMobs'
+  key-name: 'infernalMetadata'
+  key-type: 'metadata'
+  requirement: 'exists'
+#  placeholder-name: '%infernal-mobs-name%'
+
+shop-keepers:
+  friendly-name: 'shop-keepers'
+  plugin-name: 'ShopKeepers'
+  key-name: 'shopkeeper'
+  key-type: 'metadata'
+  requirement: 'exists'
+#  placeholder-name: '%shop-keeper-name%'
+
+blood-night:
+  friendly-name: 'blood-night'
+  plugin-name: 'BloodNight'
+  key-name: 'mobtype'
+  key-type: 'PDC'
+  requirement: 'exists'
+#  placeholder-name: '%blood-night-name%'
+
+# +------------------------------------------------------------------------------------------LM3
+# +                                                                                         +LM3
+# +   Section 05 - Advanced Message Settings                                                +LM3
+# +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                    +LM3
+# +                                                                                         +LM3
+# +------------------------------------------------------------------------------------------LM3
+file-version: 1

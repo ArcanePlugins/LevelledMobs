@@ -4,7 +4,7 @@ import java.util.Locale
 import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
+import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
@@ -157,7 +157,7 @@ class MetricsInfo {
     }
 
     fun usesNbtData(): String {
-        if (!ExternalCompatibilityManager.hasNbtApiInstalled()) {
+        if (!ExternalCompatibilityManager.hasNbtApiInstalled) {
             return "No"
         }
 

@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.enums.Addition
@@ -68,7 +69,7 @@ class CustomDropsHandler {
     private val customEquippedItems = WeakHashMap<LivingEntity, EquippedItemsInfo>()
 
     fun load(){
-        if (LevelledMobs.instance.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
+        if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
             this.lmItemsParser = LMItemsParser()
         }
     }
@@ -761,14 +762,14 @@ class CustomDropsHandler {
 
         // if we made it this far then the item will be dropped
         if (dropBase.isExternalItem &&
-            !main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
+            !main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
         ) {
             Utils.logger.warning("Could not get external custom item - LM_Items is not installed")
         }
 
         processEnchantmentChances(dropBase)
 
-        if (dropBase.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
+        if (dropBase.isExternalItem && main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             lmItemsParser!!.getExternalItem(dropBase, info)
         }
 
@@ -851,7 +852,7 @@ class CustomDropsHandler {
 
                         newLore.add(lore)
 
-                        if (main.ver.isRunningPaper && main.companion.useAdventure) {
+                        if (main.ver.isRunningPaper && main.mainCompanion.useAdventure) {
                             PaperUtils.updateItemMetaLore(meta, newLore)
                         } else {
                             SpigotUtils.updateItemMetaLore(meta, newLore)
@@ -872,7 +873,7 @@ class CustomDropsHandler {
                         false
                     )
 
-                    if (main.ver.isRunningPaper && main.companion.useAdventure) {
+                    if (main.ver.isRunningPaper && main.mainCompanion.useAdventure) {
                         PaperUtils.updateItemDisplayName(meta, customName)
                     } else {
                         SpigotUtils.updateItemDisplayName(meta, colorizeAll(customName))
@@ -1335,7 +1336,7 @@ class CustomDropsHandler {
             command = command.replace("%mob-scale%", mobScale)
             command = command.replace("%mob-scale-rounded%", mobScaleRounded)
 
-            if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
+            if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
                 command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command)
             }
 

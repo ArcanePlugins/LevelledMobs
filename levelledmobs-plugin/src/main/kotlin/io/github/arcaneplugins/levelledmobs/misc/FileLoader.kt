@@ -20,18 +20,19 @@ object FileLoader {
     const val MESSAGES_FILE_VERSION: Int = 8 // Last changed: v3.4.0 b621
     const val CUSTOMDROPS_FILE_VERSION: Int = 10 // Last changed: v3.1.0 b474
     const val RULES_FILE_VERSION: Int = 4 // Last changed: v3.13.0 b789
+    const val EXTERNALPLUGINS_FILE_VERSION: Int = 1 // Last changed: v4.0.0
 
     fun loadFile(
         plugin: Plugin,
         cfgName: String,
         compatibleVersion: Int
     ): YamlConfiguration? {
-        var cfgName = cfgName
-        cfgName += ".yml"
+        var useCfgName = cfgName
+        useCfgName += ".yml"
 
-        Utils.logger.info("&fFile Loader: &7Loading file '&b$cfgName&7'...")
+        Utils.logger.info("&fFile Loader: &7Loading file '&b$useCfgName&7'...")
 
-        val file = File(plugin.dataFolder, cfgName)
+        val file = File(plugin.dataFolder, useCfgName)
 
         saveResourceIfNotExists(plugin, file)
         try {
@@ -52,28 +53,27 @@ object FileLoader {
                             &bhttps://discord.io/arcaneplugins
                             """.trimIndent()
 
-            Utils.logger.error(String.format(parseErrorMessage, cfgName, e))
+            Utils.logger.error(String.format(parseErrorMessage, useCfgName, e))
             return null
         }
 
         var cfg = YamlConfiguration.loadConfiguration(file)
         cfg.options().copyDefaults(true)
         val ymlHelper = YmlParsingHelper(cfg)
-        val fileVersion: Int = ymlHelper.getInt( "file-version")
-        val isCustomDrops = cfgName == "customdrops.yml"
-        val isRules = cfgName == "rules.yml"
+        val fileVersion = ymlHelper.getInt( "file-version")
+        val isCustomDrops = useCfgName == "customdrops.yml"
+        val isRules = useCfgName == "rules.yml"
 
-        // not migrating rules version 2 or newer
-        if ((!isRules || fileVersion < 2) && fileVersion < compatibleVersion) {
+        if (fileVersion < compatibleVersion) {
             val backedupFile = File(
                 plugin.dataFolder,
-                "$cfgName.v$fileVersion.old"
+                "$useCfgName.v$fileVersion.old"
             )
 
             // copy to old file
             FileUtil.copy(file, backedupFile)
             Utils.logger.info(
-                "&fFile Loader: &8(Migration) &b" + cfgName + " backed up to "
+                "&fFile Loader: &8(Migration) &b$useCfgName backed up to "
                         + backedupFile.name
             )
             // overwrite the file from new version
@@ -83,8 +83,8 @@ object FileLoader {
 
             // copy supported values from old file to new
             Utils.logger.info(
-                ("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName
-                        + "&7 from old version to new version.")
+                "&fFile Loader: &8(Migration) &7Migrating &b$useCfgName" +
+                        "&7 from old version to new version."
             )
 
             if (isCustomDrops) {
@@ -106,22 +106,27 @@ object FileLoader {
 
     fun getFileLoadErrorMessage(): String {
         return colorizeStandardCodes(
-            "&4An error occured&r whilst attempting to parse the file &brules.yml&r due to a user-caused YAML syntax error. Please see the console logs for more details."
+            "&4An error occured&r whilst attempting to parse the file &brules.yml&r due " +
+                    "to a user-caused YAML syntax error. Please see the console logs for more details."
         )
     }
 
-    private fun saveResourceIfNotExists(instance: Plugin, file: File) {
+    private fun saveResourceIfNotExists(
+        instance: Plugin,
+        file: File
+    ) {
         if (!file.exists()) {
             Utils.logger.info(
-                "&fFile Loader: &7File '&b" + file.name
-                        + "&7' doesn't exist, creating it now..."
+                "&fFile Loader: &7File '&b${file.name}" +
+                        "&7' doesn't exist, creating it now..."
             )
             instance.saveResource(file.name, false)
         }
     }
 
     private fun checkFileVersion(
-        file: File, compatibleVersion: Int,
+        file: File,
+        compatibleVersion: Int,
         installedVersion: Int
     ) {
         if (compatibleVersion == installedVersion) {
@@ -132,13 +137,12 @@ object FileLoader {
         else "ahead of the compatible version of this file for this version of the plugin"
 
         Utils.logger.error(
-            "&fFile Loader: &7The version of &b" + file.name + "&7 you have installed is "
-                    + what
+            "&fFile Loader: &7The version of &b${file.name}&7 you have installed is $what"
                     + "! Fix this as soon as possible, else the plugin will most likely malfunction."
         )
         Utils.logger.error(
-            ("&fFile Loader: &8(&7You have &bv" + installedVersion
-                    + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)")
+            ("&fFile Loader: &8(&7You have &bv$installedVersion"
+                    + "&7 installed but you are meant to be running &bv$compatibleVersion&8)")
         )
     }
 }

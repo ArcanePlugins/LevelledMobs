@@ -1,13 +1,13 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.util.EnumMap
 import java.util.LinkedList
 import java.util.Locale
 import java.util.TreeMap
 import java.util.TreeSet
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
@@ -15,6 +15,7 @@ import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.ModalListParsingTypes
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
+import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
@@ -540,32 +541,6 @@ class RulesParsingManager {
         }
     }
 
-    private fun parseExternalCompat(cs: ConfigurationSection?) {
-        if (cs == null) return
-
-        val results: MutableMap<ExternalCompatibility, Boolean> = EnumMap(
-            ExternalCompatibility::class.java
-        )
-
-        for (key in cs.getKeys(false)) {
-            val value = cs.getBoolean(key)
-
-            val compat: ExternalCompatibility
-            try {
-                compat = ExternalCompatibility.valueOf(
-                    key.uppercase(Locale.getDefault())
-                )
-                results[compat] = value
-            } catch (e: IllegalArgumentException) {
-                Utils.logger.warning("Invalid level-plugins key: $key")
-            }
-        }
-
-        if (results.isNotEmpty()) {
-            parsingInfo.enabledExtCompats = results
-        }
-    }
-
     private fun parseTieredColoring(cs: ConfigurationSection?) {
         if (cs == null) return
 
@@ -892,8 +867,6 @@ class RulesParsingManager {
             parsingInfo.conditionsWorlds
         )
 
-        parseExternalCompat(YmlParsingHelper.objToCS(cs, "level-plugins"))
-
         parsingInfo.conditionsMinLevel = ymlHelper.getInt2(
              "minlevel", parsingInfo.conditionsMinLevel
         )
@@ -974,9 +947,9 @@ class RulesParsingManager {
             cs,
             parsingInfo.conditionsBiomes, ModalListParsingTypes.BIOME
         ) as CachedModalList<Biome>?
-        parsingInfo.conditionsApplyPlugins = buildCachedModalListOfString(
-            cs, "apply-plugins",
-            parsingInfo.conditionsApplyPlugins
+        parsingInfo.conditionsExternalPlugins = buildCachedModalListOfString(
+            cs,
+            "external-plugins", parsingInfo.conditionsExternalPlugins
         )
         parsingInfo.conditionsMMnames = buildCachedModalListOfString(
             cs,
@@ -1005,6 +978,28 @@ class RulesParsingManager {
         parsingInfo.conditionsSkyLightLevel = parseMinMaxValue(
             ymlHelper.getString( "skylight-level")
         )
+
+        checkExternalPlugins()
+    }
+
+    private fun checkExternalPlugins(){
+        val compats = parsingInfo.conditionsExternalPlugins
+
+        if (compats == null || compats.isEmpty())
+            return
+
+        for (pluginName in compats.allowedList){
+            val checkName = pluginName.replace("_", "-")
+            if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
+                Utils.logger.warning("no external plugin definition found for: '$checkName'")
+            }
+        }
+        for (pluginName in compats.excludedList){
+            val checkName = pluginName.replace("_", "-")
+            if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
+                Utils.logger.warning("no external plugin definition found for: '$checkName'")
+            }
+        }
     }
 
     private fun parseWithinCoordinates(cs: ConfigurationSection?) {

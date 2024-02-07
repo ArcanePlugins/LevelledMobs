@@ -12,7 +12,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
+import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.managers.WorldGuardIntegration.getWorldGuardRegionOwnersForLocation
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
@@ -50,6 +50,10 @@ class RulesManager {
     private var lastRulesCheck: Instant? = null
     var currentRulesHash = ""
         private set
+
+    init {
+        instance = this
+    }
 
     fun getRuleIsWorldAllowedInAnyRule(world: World?): Boolean {
         if (world == null) return false
@@ -252,14 +256,18 @@ class RulesManager {
         }
     }
 
-    fun getRuleExternalCompatibility(
+    @Suppress("UNCHECKED_CAST")
+    fun getRuleExternalPlugins(
         lmEntity: LivingEntityWrapper
-    ): MutableMap<ExternalCompatibility, Boolean> {
-        val result = mutableMapOf<ExternalCompatibility, Boolean>()
+    ): CachedModalList<String>? {
+        var result: CachedModalList<String>? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.enabledExtCompats != null) {
-                result.putAll(ruleInfo.enabledExtCompats!!)
+            if (ruleInfo.conditionsExternalPlugins != null) {
+                if (result != null)
+                    result.mergeCachedModal(ruleInfo.conditionsExternalPlugins!!)
+                else
+                    result = ruleInfo.conditionsExternalPlugins!!.clone() as CachedModalList<String>
             }
         }
 
@@ -905,14 +913,14 @@ class RulesManager {
             if (!result) return false
         }
 
-        if (ri.conditionsApplyPlugins != null) {
+        if (ri.conditionsExternalPlugins != null) {
             ExternalCompatibilityManager.updateAllExternalCompats(lmEntity)
             val mobCompats = lmEntity.mobExternalTypes
-            if (!lmEntity.isMobOfExternalType) mobCompats.add(ExternalCompatibility.NOT_APPLICABLE)
+            //if (!lmEntity.isMobOfExternalType) mobCompats.add("NOT-APPLICABLE")
 
             var madeIt = false
             for (compat in mobCompats) {
-                if (ri.conditionsApplyPlugins!!.isEnabledInList(compat.name, lmEntity)) {
+                if (ri.conditionsExternalPlugins!!.isEnabledInList(compat, lmEntity)) {
                     madeIt = true
                     break
                 }
@@ -920,12 +928,7 @@ class RulesManager {
 
             DebugManager.log(
                 DebugType.CONDITION_PLUGIN_COMPAT, ri, lmEntity, madeIt
-            ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, mob plugins: &b%s&7",
-                    ri.ruleName, lmEntity.nameIfBaby, mobCompats
-                )
-            }
+            ) { "&b${ri.ruleName}&7, mob: &b${lmEntity.nameIfBaby}&7, mob plugins: &b$mobCompats&7" }
             if (!madeIt) return false
         }
 
@@ -1134,7 +1137,7 @@ class RulesManager {
 
         if (mdr.getHasX && !mdr.isLocationWithinRange(lmEntity.location.blockX, WithinCoordinates.Axis.X)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
-                java.lang.String.format(
+                String.format(
                     "entity: %s, xCoord: %s, startX: %s, endX: %s",
                     lmEntity.nameIfBaby, lmEntity.location.blockX, mdr.startX, mdr.endX
                 )
@@ -1144,7 +1147,7 @@ class RulesManager {
 
         if (mdr.getHasY && !mdr.isLocationWithinRange(lmEntity.location.blockY, WithinCoordinates.Axis.Y)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
-                java.lang.String.format(
+                String.format(
                     "entity: %s, yCoord: %s, startY: %s, endY: %s",
                     lmEntity.nameIfBaby, lmEntity.location.blockY, mdr.startY, mdr.endY
                 )
@@ -1154,7 +1157,7 @@ class RulesManager {
 
         if (mdr.getHasZ && !mdr.isLocationWithinRange(lmEntity.location.blockZ, WithinCoordinates.Axis.Z)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
-                java.lang.String.format(
+                String.format(
                     "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
                     lmEntity.nameIfBaby, lmEntity.location.blockZ, mdr.startZ, mdr.endZ
                 )
@@ -1163,7 +1166,7 @@ class RulesManager {
         }
 
         DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, true) {
-            java.lang.String.format(
+            String.format(
                 "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
                 lmEntity.nameIfBaby, lmEntity.location.blockZ, mdr.startZ, mdr.endZ
             )
@@ -1232,7 +1235,7 @@ class RulesManager {
         }
 
         if (ri.conditionsWGregions != null
-            && ExternalCompatibilityManager.hasWorldGuardInstalled()
+            && ExternalCompatibilityManager.hasWorldGuardInstalled
         ) {
             var isInList = false
             val wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(
@@ -1261,7 +1264,7 @@ class RulesManager {
         }
 
         if (ri.conditionsWGregionOwners != null
-            && ExternalCompatibilityManager.hasWorldGuardInstalled()
+            && ExternalCompatibilityManager.hasWorldGuardInstalled
         ) {
             var isInList = false
             val wgRegionOwners = getWorldGuardRegionOwnersForLocation(
@@ -1555,6 +1558,10 @@ class RulesManager {
     }
 
     companion object{
+        @JvmStatic
+        lateinit var instance: RulesManager
+            private set
+
         val ruleLocker = Any()
 
         // taken from https://www.baeldung.com/sha-256-hashing-java

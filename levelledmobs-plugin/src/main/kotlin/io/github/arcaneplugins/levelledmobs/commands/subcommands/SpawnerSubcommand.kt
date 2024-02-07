@@ -4,6 +4,7 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
@@ -94,19 +95,19 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
 
         if (args.size == 2) {
             showMessage(
-                if (main.companion.spawnerInfoIds.contains(playerId)) "command.levelledmobs.spawner.info.status-enabled"
+                if (main.mainCompanion.spawnerInfoIds.contains(playerId)) "command.levelledmobs.spawner.info.status-enabled"
                 else "command.levelledmobs.spawner.info.status-not-enabled"
             )
             return
         }
 
         if ("on".equals(args[2], ignoreCase = true)) {
-            if (main.companion.spawnerCopyIds.contains(playerId)) {
+            if (main.mainCompanion.spawnerCopyIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable copy first
                 copyGotDisabled(playerId)
             }
 
-            main.companion.spawnerInfoIds.add(playerId)
+            main.mainCompanion.spawnerInfoIds.add(playerId)
             showMessage("command.levelledmobs.spawner.info.enabled")
         } else if ("off".equals(args[2], ignoreCase = true)) {
             infoGotDisabled(playerId)
@@ -126,19 +127,19 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
 
         if (args.size == 2) {
             showMessage(
-                if (main.companion.spawnerCopyIds.contains(playerId)) "command.levelledmobs.spawner.copy.status-enabled"
+                if (main.mainCompanion.spawnerCopyIds.contains(playerId)) "command.levelledmobs.spawner.copy.status-enabled"
                 else "command.levelledmobs.spawner.copy.status-not-enabled"
             )
             return
         }
 
         if ("on".equals(args[2], ignoreCase = true)) {
-            if (main.companion.spawnerInfoIds.contains(playerId)) {
+            if (main.mainCompanion.spawnerInfoIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable info first
                 infoGotDisabled(playerId)
             }
 
-            main.companion.spawnerCopyIds.add(playerId)
+            main.mainCompanion.spawnerCopyIds.add(playerId)
             showMessage("command.levelledmobs.spawner.copy.enabled")
         } else if ("off".equals(args[2], ignoreCase = true)) {
             copyGotDisabled(playerId)
@@ -146,12 +147,12 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
     }
 
     private fun copyGotDisabled(playerId: UUID) {
-        LevelledMobs.instance.companion.spawnerCopyIds.remove(playerId)
+        MainCompanion.instance.spawnerCopyIds.remove(playerId)
         showMessage("command.levelledmobs.spawner.copy.disabled")
     }
 
     private fun infoGotDisabled(playerId: UUID) {
-        LevelledMobs.instance.companion.spawnerInfoIds.remove(playerId)
+        MainCompanion.instance.spawnerInfoIds.remove(playerId)
         showMessage("command.levelledmobs.spawner.info.disabled")
     }
 

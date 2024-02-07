@@ -11,7 +11,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import java.util.TreeMap
-import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager.ExternalCompatibility
+import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import org.bukkit.Particle
@@ -29,6 +29,7 @@ import kotlin.reflect.full.hasAnnotation
  * @author stumper66
  * @since 3.0.0
  */
+@Suppress("UNCHECKED_CAST")
 class RuleInfo(
     @DoNotMerge @ExcludeFromHash @DoNotShow
     internal var ruleName: String = "Unnamed"
@@ -139,8 +140,8 @@ class RuleInfo(
     var conditionsEntities: CachedModalList<String>? = null
     @RuleFieldInfo("allowed biomes", RuleType.CONDITION)
     var conditionsBiomes: CachedModalList<Biome>? = null
-    @RuleFieldInfo("level plugins", RuleType.CONDITION)
-    var conditionsApplyPlugins: CachedModalList<String>? = null
+    @RuleFieldInfo("external plugins", RuleType.CONDITION)
+    var conditionsExternalPlugins: CachedModalList<String>? = null
     @RuleFieldInfo("custom names", RuleType.CONDITION)
     var conditionsCustomNames: CachedModalList<String>? = null
     @RuleFieldInfo("no drop entities", RuleType.CONDITION)

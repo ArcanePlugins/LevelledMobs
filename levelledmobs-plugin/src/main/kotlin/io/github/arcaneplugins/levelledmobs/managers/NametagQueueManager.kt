@@ -38,7 +38,7 @@ class NametagQueueManager {
     val nametagSenderHandler = NametagSenderHandler()
 
     fun load(){
-        hasLibsDisguisesInstalled = ExternalCompatibilityManager.hasLibsDisguisesInstalled()
+        hasLibsDisguisesInstalled = ExternalCompatibilityManager.hasLibsDisguisesInstalled
         this.nametagSender = nametagSenderHandler.getCurrentUtil()
     }
 

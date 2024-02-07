@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.listeners
 import java.time.Instant
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropResult
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
@@ -144,7 +145,7 @@ class EntityDeathListener : Listener {
     ): Boolean {
         val main = LevelledMobs.instance
         val chunkKey: Long = Utils.getChunkKey(lmEntity.location.chunk)
-        val pairList: MutableMap<EntityType, ChunkKillInfo> = main.companion.getorAddPairForSpecifiedChunk(
+        val pairList: MutableMap<EntityType, ChunkKillInfo> = main.mainCompanion.getorAddPairForSpecifiedChunk(
             chunkKey
         )
         var numberOfEntityDeathInChunk =
@@ -175,7 +176,7 @@ class EntityDeathListener : Listener {
         ) {
             val chunkKeys =
                 adjacentChunksResult?.chunkKeys ?: mutableListOf(chunkKey)
-            if (main.companion.doesUserHaveCooldown(chunkKeys, player.uniqueId)) {
+            if (main.mainCompanion.doesUserHaveCooldown(chunkKeys, player.uniqueId)) {
                 return true
             }
 
@@ -194,7 +195,7 @@ class EntityDeathListener : Listener {
                 player.sendMessage(colorizeAll(msg.replace("%prefix%", prefix)))
             }
 
-            main.companion.addUserCooldown(chunkKeys, player.uniqueId)
+            main.mainCompanion.addUserCooldown(chunkKeys, player.uniqueId)
         }
 
         return true
@@ -227,7 +228,7 @@ class EntityDeathListener : Listener {
             }
         }
 
-        val pairLists: List<Map<EntityType, ChunkKillInfo>> = LevelledMobs.instance.companion.getorAddPairForSpecifiedChunks(
+        val pairLists: List<Map<EntityType, ChunkKillInfo>> = MainCompanion.instance.getorAddPairForSpecifiedChunks(
             result.chunkKeys
         )
         for (pairList in pairLists) {

@@ -433,6 +433,13 @@ custom-rules:
         allowed-list: [ 'BABY_', 'WANDERING_TRADER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'BAT' ]
 
   - enabled: true
+    name: 'No Levels For External Plugins'
+    conditions:
+      external-plugins: '*'
+    apply-settings:
+      maxLevel: 0
+
+  - enabled: true
     name: 'Custom Nether Levelling'
     conditions:
       worlds: 'world_nether'

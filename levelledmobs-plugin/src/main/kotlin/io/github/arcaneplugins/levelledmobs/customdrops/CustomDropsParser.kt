@@ -379,7 +379,7 @@ class CustomDropsParser(
                         continue
                     }
 
-                    if (item.isExternalItem && LevelledMobs.instance.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
+                    if (item.isExternalItem && ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
                         if (!handler.lmItemsParser!!.getExternalItem(item, null)) {
                             continue
                         }
@@ -593,7 +593,7 @@ class CustomDropsParser(
         parseEnchantments(objectToConfigurationSection2(ymlHelper.cs, "enchantments"), item)
         item.nbtData = ymlHelper.getString("nbt-data", defaults.nbtData)
         if (item.material != Material.AIR && !item.nbtData.isNullOrEmpty()) {
-            if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
+            if (ExternalCompatibilityManager.hasNbtApiInstalled) {
                 val result: NBTApplyResult = NBTManager.applyNBTDataItem(item, item.nbtData!!)
                 if (result.hadException) {
                     Utils.logger.warning(
@@ -1032,12 +1032,12 @@ class CustomDropsParser(
 
         if (useMaterialName.contains(":")) {
             // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
-            if (LevelledMobs.instance.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
+            if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
                 if (!handler.lmItemsParser!!.parseExternalItemAttributes(useMaterialName, item)) {
                     return false
                 }
             } else {
-                if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+                if (ExternalCompatibilityManager.hasLMItemsInstalled) {
                     Utils.logger.warning(
                         String.format(
                             "Custom drop '%s' requires plugin LM_Items but it is an old version",

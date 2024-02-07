@@ -17,7 +17,7 @@ object LibsDisguisesUtils {
     private var hasLibsDisguises: Boolean = false
 
     init {
-        hasLibsDisguises = ExternalCompatibilityManager.hasLibsDisguisesInstalled()
+        hasLibsDisguises = ExternalCompatibilityManager.hasLibsDisguisesInstalled
     }
 
     fun isMobUsingLibsDisguises(

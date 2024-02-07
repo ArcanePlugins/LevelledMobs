@@ -38,7 +38,7 @@ class PlayerJoinListener : Listener {
             main.debugManager.playerThatEnabledDebug = event.player
         }
 
-        main.companion.addRecentlyJoinedPlayer(event.player)
+        main.mainCompanion.addRecentlyJoinedPlayer(event.player)
         checkForNetherPortalCoords(event.player)
         main.nametagTimerChecker.addPlayerToQueue(PlayerQueueItem(event.player, true))
         parseUpdateChecker(event.player)
@@ -46,7 +46,7 @@ class PlayerJoinListener : Listener {
         updateNametagsInWorldAsync(event.player, event.player.world.entities)
 
         if (event.player.isOp) {
-            if (main.companion.hadRulesLoadError) {
+            if (main.mainCompanion.hadRulesLoadError) {
                 event.player.sendMessage(FileLoader.getFileLoadErrorMessage())
             }
 
@@ -88,9 +88,9 @@ class PlayerJoinListener : Listener {
                 )
 
                 if (i == 0) {
-                    main.companion.setPlayerNetherPortalLocation(player, location)
+                    main.mainCompanion.setPlayerNetherPortalLocation(player, location)
                 } else {
-                    main.companion.setPlayerWorldPortalLocation(player, location)
+                    main.mainCompanion.setPlayerWorldPortalLocation(player, location)
                 }
             }
         } catch (e: Exception) {
@@ -107,8 +107,8 @@ class PlayerJoinListener : Listener {
             main.placeholderApiIntegration!!.playedLoggedOut(event.player)
         }
 
-        main.companion.spawnerCopyIds.remove(event.player.uniqueId)
-        main.companion.spawnerInfoIds.remove(event.player.uniqueId)
+        main.mainCompanion.spawnerCopyIds.remove(event.player.uniqueId)
+        main.mainCompanion.spawnerInfoIds.remove(event.player.uniqueId)
         main.nametagTimerChecker.addPlayerToQueue(PlayerQueueItem(event.player, false))
 
         if (main.placeholderApiIntegration != null) {
@@ -170,7 +170,7 @@ class PlayerJoinListener : Listener {
         if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)
             && player.hasPermission("levelledmobs.receive-update-notifications")
         ) {
-            main.companion.updateResult.forEach(player::sendMessage)
+            main.mainCompanion.updateResult.forEach(player::sendMessage)
         }
     }
 }

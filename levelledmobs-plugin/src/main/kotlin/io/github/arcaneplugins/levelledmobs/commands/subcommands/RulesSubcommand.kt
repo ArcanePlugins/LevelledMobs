@@ -388,7 +388,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             ?: return
 
         var entityName: String = lmEntity.typeName
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled()
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
@@ -575,6 +575,13 @@ class RulesSubcommand : MessagesBase(), Subcommand {
                 "mob hash"
             )
             values[mobHashInfo] = mobHash
+        }
+        if (lmEntity.mobExternalTypes.isNotEmpty()) {
+            val externalMobTypeMisc = RuleInfo.RuleSortingInfo(
+                RuleType.MISC,
+                "external plugin type"
+            )
+            values[externalMobTypeMisc] = lmEntity.mobExternalTypes.toString()
         }
 
         var hadConditions = false

@@ -4,6 +4,7 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.TreeSet
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
@@ -13,7 +14,6 @@ import io.github.arcaneplugins.levelledmobs.nametag.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.EntityType
@@ -55,6 +55,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             "lew-debug" -> showLEWDebug(sender)
             "lew-clear" -> clearLEWCache(sender)
             "show-customdrops" -> showCustomDrops()
+            "show-plugin-definitions" -> showPluginDefinitions()
             "enable" -> enableOrDisableDebug(isEnable = true, isEnableAll = false, debugCategory = debugArg)
             "enable-all" -> enableOrDisableDebug(isEnable = true, isEnableAll = true, debugCategory = null)
             "enable-timer" -> parseEnableTimer(args)
@@ -68,6 +69,21 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             "view-debug-status" -> commandSender!!.sendMessage(LevelledMobs.instance.debugManager.getDebugStatus())
             else -> commandSender!!.sendMessage("Please enter a debug option.")
         }
+    }
+
+    private fun showPluginDefinitions(){
+        val ext = ExternalCompatibilityManager.instance
+        if (ext.externalPluginDefinitions.isEmpty()){
+            commandSender!!.sendMessage("No external plugins defined")
+        }
+
+        val sb = StringBuilder()
+        for (plugin in ext.externalPluginDefinitions.values){
+            if (sb.isNotEmpty()) sb.append("\n")
+            sb.append(plugin.toString())
+        }
+
+        commandSender!!.sendMessage(sb.toString())
     }
 
     private fun createDebugZip(args: Array<String>) {
@@ -520,7 +536,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
 
         var entityName = lmEntity.typeName
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled()
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
@@ -584,7 +600,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         }
 
         var entityName = lmEntity.typeName
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled()
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
@@ -616,7 +632,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         args: Array<String>
     ) {
         if (args.size >= 3 && "reset".equals(args[2], ignoreCase = true)) {
-            LevelledMobs.instance.companion.clearChunkKillCache()
+            MainCompanion.instance.clearChunkKillCache()
             sender.sendMessage("cache has been cleared")
             return
         }
@@ -643,6 +659,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
                 "view-debug-status",
                 "create-zip",
                 "show-customdrops",
+                "show-plugin-definitions",
                 "chunk-kill-count",
                 "mylocation",
                 "spawn-distance",
@@ -653,26 +670,11 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         }
 
         when (args[1].lowercase(Locale.getDefault())) {
-            "enable" -> {
-                if (args.size == 3) return getDebugTypes()
-            }
-
-            "enable-timer" -> {
-                if (args.size == 4) return getDebugTypes()
-            }
-
-            "chunk-kill-count" -> {
-                return mutableListOf("reset")
-            }
-
-            "filter-results" -> {
-                return parseFilterTabCompletion(args)
-            }
-
-            "nbt-dump" -> {
-                if (args.size == 3) return null
-            }
-
+            "enable" -> { if (args.size == 3) return getDebugTypes() }
+            "enable-timer" -> { if (args.size == 4) return getDebugTypes() }
+            "chunk-kill-count" -> { return mutableListOf("reset") }
+            "filter-results" -> { return parseFilterTabCompletion(args)            }
+            "nbt-dump" -> { if (args.size == 3) return null }
             "output-debug" -> {
                 val values: MutableList<String> = LinkedList()
                 for (outputTypes in DebugManager.OutputTypes.entries) {

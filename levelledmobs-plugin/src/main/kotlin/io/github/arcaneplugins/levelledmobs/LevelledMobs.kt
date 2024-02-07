@@ -53,7 +53,7 @@ class LevelledMobs : JavaPlugin() {
     var blockPlaceListener = BlockPlaceListener()
     var playerInteractEventListener = PlayerInteractEventListener()
     val entityDeathListener = EntityDeathListener()
-    val companion = Companion()
+    val mainCompanion = MainCompanion()
     val rulesParsingManager = RulesParsingManager()
     val rulesManager = RulesManager()
     val mobsQueueManager = MobsQueueManager()
@@ -101,11 +101,14 @@ class LevelledMobs : JavaPlugin() {
         val timer = QuickTimer()
 
         this.ver.load()
+        if (ver.minecraftVersion <= 1.18){
+            Utils.logger.error("This minecraft version is NOT supported. Use at your own risk!")
+        }
         this.definitions.load()
         this.nametagQueueManager.load()
-        this.companion.load()
+        this.mainCompanion.load()
         (this.levelInterface as LevelManager).load()
-        if (!companion.loadFiles(false)) {
+        if (!mainCompanion.loadFiles(false)) {
             // had fatal error reading required files
             Bukkit.getPluginManager().disablePlugin(this)
             return
@@ -117,8 +120,8 @@ class LevelledMobs : JavaPlugin() {
             helperSettings.getBoolean("use-legacy-serializer", true)
         )
         nametagQueueManager.nametagSenderHandler.refresh()
-        companion.registerListeners()
-        companion.registerCommands()
+        mainCompanion.registerListeners()
+        mainCompanion.registerCommands()
 
         Utils.logger.info("Running misc procedures")
         if (nametagQueueManager.hasNametagSupport) {
@@ -127,9 +130,9 @@ class LevelledMobs : JavaPlugin() {
         }
 
         prepareToLoadCustomDrops()
-        companion.startCleanupTask()
-        companion.setupMetrics()
-        companion.checkUpdates()
+        mainCompanion.startCleanupTask()
+        mainCompanion.setupMetrics()
+        mainCompanion.checkUpdates()
 
         loadTime += timer.timer
         Utils.logger.info("Start-up complete (took ${loadTime}ms)")
@@ -140,7 +143,7 @@ class LevelledMobs : JavaPlugin() {
         disableTimer.start()
 
         levelManager.stopNametagAutoUpdateTask()
-        companion.shutDownAsyncTasks()
+        mainCompanion.shutDownAsyncTasks()
 
         Utils.logger.info("Shut-down complete (took ${disableTimer.timer}ms)")
     }
@@ -152,15 +155,15 @@ class LevelledMobs : JavaPlugin() {
                 customDropsHandler.customDropsParser.loadDrops(
                     FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
                 )
-                companion.hasFinishedLoading = true
-                if (companion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
+                mainCompanion.hasFinishedLoading = true
+                if (mainCompanion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
             }
             wrapper.runDelayed(10L)
         } else {
             customDropsHandler.customDropsParser.loadDrops(
                 FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
             )
-            if (companion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
+            if (mainCompanion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
         }
     }
 
@@ -181,8 +184,8 @@ class LevelledMobs : JavaPlugin() {
             )
         })
 
-        companion.reloadSender = sender
-        companion.loadFiles(true)
+        mainCompanion.reloadSender = sender
+        mainCompanion.loadFiles(true)
 
         var reloadFinishedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.finished"
