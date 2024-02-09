@@ -766,6 +766,7 @@ public class LevelManager implements LevelInterface {
         text.replace("%mob-lvl%", lmEntity.getMobLevel());
         text.replace("%entity-name%",
             Utils.capitalize(lmEntity.getNameIfBaby().replace("_", " ")));
+        text.replace("%entity-name-raw%", lmEntity.getLivingEntity().getName());
         text.replace("%entity-health%", Utils.round(entityHealth));
         text.replace("%entity-health-rounded%", entityHealthRounded);
         text.replace("%entity-max-health%", roundedMaxHealth);
