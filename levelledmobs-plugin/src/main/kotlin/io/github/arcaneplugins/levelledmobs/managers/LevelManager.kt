@@ -818,6 +818,7 @@ class LevelManager : LevelInterface2 {
             "%entity-name%",
             Utils.capitalize(lmEntity.nameIfBaby.replace("_", " "))
         )
+        text.replace("%entity-name-raw%", lmEntity.typeName)
         text.replace("%entity-health%", Utils.round(entityHealth))
         text.replace("%entity-health-rounded%", entityHealthRounded)
         text.replace("%entity-max-health%", roundedMaxHealth)

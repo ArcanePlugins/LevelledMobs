@@ -767,8 +767,6 @@ class CustomDropsHandler {
             Utils.logger.warning("Could not get external custom item - LM_Items is not installed")
         }
 
-        processEnchantmentChances(dropBase)
-
         if (dropBase.isExternalItem && main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             lmItemsParser!!.getExternalItem(dropBase, info)
         }
@@ -780,11 +778,13 @@ class CustomDropsHandler {
 
             var newItem = newItemPre.clone()
 
+            processEnchantmentChances(dropBase, newItem)
+
             if (info.deathByFire) {
                 newItem = getCookedVariantOfMeat(dropBase.itemStack!!)
             }
 
-            newItem.amount = newDropAmount
+            if (newDropAmount > 1) newItem.amount = newDropAmount
 
             if (!dropBase.noMultiplier && !info.doNotMultiplyDrops) {
                 main.levelManager.multiplyDrop(info.lmEntity!!, newItem, info.addition, true)
@@ -960,14 +960,18 @@ class CustomDropsHandler {
         return true
     }
 
-    private fun processEnchantmentChances(dropItem: CustomDropItem) {
+    private fun processEnchantmentChances(
+        dropItem: CustomDropItem,
+        itemStack: ItemStack
+    ) {
         if (dropItem.enchantmentChances == null || dropItem.enchantmentChances!!.isEmpty) return
 
+        val chances = dropItem.enchantmentChances!!
         val main = LevelledMobs.instance
         val debug = StringBuilder()
         var isFirstEnchantment = true
-        for (enchantment in dropItem.enchantmentChances!!.items.keys) {
-            val opts = dropItem.enchantmentChances!!.options[enchantment]
+        for (enchantment in chances.items.keys) {
+            val opts = chances.options[enchantment]
             var madeAnyChance = false
             if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 if (!isFirstEnchantment) debug.append("; ")
@@ -978,11 +982,11 @@ class CustomDropsHandler {
 
             var enchantmentNumber = 0
             val levelsList = mutableListOf<Int>()
-            levelsList.addAll(dropItem.enchantmentChances!!.items[enchantment]!!.keys)
+            levelsList.addAll(chances.items[enchantment]!!.keys)
             if (opts == null || opts.doShuffle) levelsList.shuffled()
 
             for (enchantLevel in levelsList) {
-                val chanceValue = dropItem.enchantmentChances!!.items[enchantment]!![enchantLevel]!!
+                val chanceValue = chances.items[enchantment]!![enchantLevel]!!
                 if (chanceValue <= 0.0f) continue
                 enchantmentNumber++
 
@@ -1002,19 +1006,25 @@ class CustomDropsHandler {
                     debug.append(String.format("%s: &2%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue))
                 }
 
-                if (dropItem.material == Material.ENCHANTED_BOOK) {
-                    val meta = dropItem.itemStack!!.itemMeta as EnchantmentStorageMeta
+                if (itemStack.type == Material.ENCHANTED_BOOK) {
+                    val meta = itemStack.itemMeta as EnchantmentStorageMeta
                     meta.addStoredEnchant(enchantment, enchantLevel, true)
-                    dropItem.itemStack!!.setItemMeta(meta)
+                    itemStack.setItemMeta(meta)
                 } else {
-                    dropItem.itemStack!!.addUnsafeEnchantment(enchantment, enchantLevel)
+                    itemStack.addUnsafeEnchantment(enchantment, enchantLevel)
                 }
                 madeAnyChance = true
                 break
             }
 
-            if (!madeAnyChance && opts != null && opts.defaultLevel != null) {
-                dropItem.itemStack!!.addUnsafeEnchantment(enchantment, opts.defaultLevel!!)
+            if (!madeAnyChance && opts != null && opts.defaultLevel != null && opts.defaultLevel!! > 0) {
+                if (itemStack.type == Material.ENCHANTED_BOOK) {
+                    val meta = itemStack.itemMeta as EnchantmentStorageMeta
+                    meta.addStoredEnchant(enchantment, opts.defaultLevel!!, true)
+                    itemStack.setItemMeta(meta)
+                } else {
+                    itemStack.addUnsafeEnchantment(enchantment, opts.defaultLevel!!)
+                }
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) debug.append(", used dflt: &2")
                     .append(opts.defaultLevel).append("&r")
             }
