@@ -10,11 +10,9 @@ import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.regex.Pattern
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.util.Utils
-import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.util.FileUtil
 
 /**
  * Migrates older yml versions to the latest available
@@ -105,66 +103,6 @@ object FileMigrator {
         }
 
         return result
-    }
-
-    fun migrateSettingsToRules() {
-        val main = LevelledMobs.instance
-        val fileSettings = File(main.dataFolder, "settings.yml")
-        val fileRules = File(main.dataFolder, "rules.yml")
-        if (!fileSettings.exists() || !fileRules.exists()) {
-            return
-        }
-
-        val backedupFile = File(main.dataFolder, "rules.yml.old")
-        FileUtil.copy(fileRules, backedupFile)
-
-        val worldListAllowedLine = 177 - 1 // minus 1 is due to 0 indexing of arrays
-        val worldListExcludedLine = worldListAllowedLine + 1
-
-        val settings = YamlConfiguration.loadConfiguration(fileSettings)
-        try {
-            val rulesLines = Files.readAllLines(
-                fileRules.toPath(),
-                StandardCharsets.UTF_8
-            )
-
-            val worldMode = settings.getString("allowed-worlds-list.mode")!!
-            val worldList = settings.getStringList("allowed-worlds-list.list")
-
-            if ("ALL".equals(worldMode, ignoreCase = true)) {
-                rulesLines[worldListAllowedLine] = "        allowed-list: ['*']"
-                rulesLines[worldListExcludedLine] = "        excluded-list: ['']"
-            } else if ("WHITELIST".equals(worldMode, ignoreCase = true)) {
-                val newWorldList: String = compileListFromArray(worldList)
-                rulesLines[worldListAllowedLine] = "        allowed-list: $newWorldList"
-                rulesLines[worldListExcludedLine] = "        excluded-list: ['']"
-            } else {
-                val newWorldList: String = compileListFromArray(worldList)
-                rulesLines[worldListAllowedLine] = "        allowed-list: ['']"
-                rulesLines[worldListExcludedLine] = "        excluded-list: $newWorldList"
-            }
-
-            Files.write(
-                fileRules.toPath(), rulesLines, StandardCharsets.UTF_8,
-                StandardOpenOption.TRUNCATE_EXISTING
-            )
-            Utils.logger.info(
-                "&fFile Loader: &8(Migration) &7Migrated &bworld allowed list&7 successfully."
-            )
-            val msg = mutableListOf(
-                "\n&c[WARNING] LevelledMobs3 Settings have Reset!",
-                "\n&c[WARNING] Your original LM configuration files have been saved!",
-                "\n&c[WARNING]&r Due to significant changes, most settings WILL NOT MIGRATE from LM2.X to LM3.X.",
-                "\n&c[WARNING]&r You must edit rules.yml to further customize LM!",
-                "\n&c[WARNING]&r FOR ASSISTANCE, VISIT OUR SUPPORT DISCORD",
-                "\n&c[WARNING]&r https://discord.io/arcaneplugins"
-            )
-            val msg2 = colorizeAllInList(msg).toString()
-            Utils.logger.warning(msg2.substring(1, msg2.length - 2))
-            main.migratedFromPre30 = true
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
     }
 
     private fun compileListFromArray(list: List<String>): String {
@@ -373,39 +311,85 @@ object FileMigrator {
                 to.toPath(),
                 StandardCharsets.UTF_8
             )
-            var hasVisibleTime = false
-            for (line in newConfigLines) {
-                if (line.lowercase(Locale.getDefault()).contains("nametag-visible-time")) {
-                    hasVisibleTime = true
-                    break
+
+            val enabledCompats = mutableListOf<String>()
+            val rulesCfg = YamlConfiguration.loadConfiguration(to)
+            val cs = rulesCfg.get("default-rule.conditions.level-plugins") as? ConfigurationSection
+            if (cs != null){
+                for (key in cs.getKeys(false)){
+                    val foundValue = cs.getString(key)
+                    if ("true".equals(foundValue, ignoreCase = true)){
+                        enabledCompats.add(key.toString().lowercase().replace("_", "-"))
+                    }
                 }
             }
+            else
+                Utils.logger.info("cs was null")
 
-            var i = 0
-            while (i < newConfigLines.size) {
+            val newText = mutableListOf(
+                "",
+                "  - enabled: true",
+                "    name: 'No Stat Change for External Plugins'",
+                "    use-preset: vanilla_challenge, nametag_no_level",
+                "    conditions:",
+                "      external-plugins: '*'"
+            )
+
+            var foundLine = -1
+            var madeUpdate = false
+            var i = -1
+            while (true) {
+                i++
+                if (i >= newConfigLines.size) break
                 val line = newConfigLines[i]
                 if (line.trim { it <= ' ' }.startsWith("#")) {
-                    i++
                     continue
                 }
 
-                val startOfText = line.lowercase(Locale.getDefault())
-                    .indexOf("creature-nametag-always-visible:")
-                if (startOfText > 0) {
-                    var newline = (line.substring(0, startOfText)
-                            + "nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']")
-                    newConfigLines[i] = newline
-                    if (!hasVisibleTime) {
-                        newline = line.substring(0, startOfText) + "nametag-visible-time: 1s"
-                        newConfigLines.add(i, newline)
+                var lineText = line.indexOf("No Stat Change for Specific Entities", ignoreCase = true)
+                if (lineText <= 0){
+                    lineText = line.indexOf("NoLevel All Passive + EntityTypes", ignoreCase = true)
+                }
+
+                if (lineText > 0){
+                    foundLine = i
+                }
+                else if (!madeUpdate && foundLine > -1){
+                    if (!line.contains("- enabled: true")) continue
+
+                    i -= 1
+                    for (newTextLine in newText){
+                        var useNewTextLine = newTextLine
+                        var hadExternalCompats = false
+                        if (enabledCompats.isNotEmpty() && useNewTextLine.contains("external-plugins:")){
+                            var isFirst = true
+                            hadExternalCompats = true
+                            val sb = StringBuilder((useNewTextLine.replace(" '*'",
+                                "\n        excluded-list: [")))
+                            for (compat in enabledCompats){
+                                if (isFirst)
+                                    isFirst = false
+                                else
+                                    sb.append(", ")
+
+                                sb.append("'").append(compat).append("'")
+                            }
+                            sb.append("]")
+                            useNewTextLine = sb.toString()
+                        }
+
+                        newConfigLines.add(i, useNewTextLine)
                         i++
+                        if (hadExternalCompats) i++
                     }
+
+                    madeUpdate = true
                 }
 
                 if (line.startsWith("file-version")) {
-                    newConfigLines[i] = "file-version: 2"
+                    Utils.logger.info("found file-version")
+                    newConfigLines[i] = "file-version: 5"
                 }
-                i++
             }
 
             Files.write(
@@ -891,16 +875,16 @@ object FileMigrator {
 
         for (line in input) {
             val depth = getFieldDepth(line)
-            val line = line.replace("\t", "").trim { it <= ' ' }
-            if (line.startsWith("#") || line.isEmpty()) {
+            val useLine = line.replace("\t", "").trim { it <= ' ' }
+            if (useLine.startsWith("#") || useLine.isEmpty()) {
                 continue
             }
 
             //if (line.contains(":")) {
-            if (line.matches(regexPattern.toRegex())) {
-                val firstColon = line.indexOf(':')
-                val hasValues = line.length > firstColon + 1
-                var key: String? = line.substring(0, firstColon).replace("\t", "").trim { it <= ' ' }
+            if (useLine.matches(regexPattern.toRegex())) {
+                val firstColon = useLine.indexOf(':')
+                val hasValues = useLine.length > firstColon + 1
+                var key: String? = useLine.substring(0, firstColon).replace("\t", "").trim { it <= ' ' }
                 val origKey = key
 
                 if (origKey!!.startsWith("-")) {
@@ -940,14 +924,14 @@ object FileMigrator {
                         configMap[key] = FieldInfo(null, depth)
                     }
                 } else {
-                    val value = line.substring(firstColon + 1).trim { it <= ' ' }
+                    val value = useLine.substring(firstColon + 1).trim { it <= ' ' }
                     val fi = FieldInfo(value, depth)
                     fi.hasValue = true
                     configMap[key] = fi
                 }
-            } else if (line.startsWith("-")) {
+            } else if (useLine.startsWith("-")) {
                 val key = getKeyFromList(currentKey, null)
-                val value = line.trim { it <= ' ' }.substring(1).trim { it <= ' ' }
+                val value = useLine.trim { it <= ' ' }.substring(1).trim { it <= ' ' }
                 if (configMap.containsKey(key)) {
                     val fi = configMap[key]
                     fi!!.addListValue(value)

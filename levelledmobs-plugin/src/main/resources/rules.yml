@@ -432,12 +432,10 @@ custom-rules:
         allowed-groups: [ 'all_passive_mobs' ]
         allowed-list: [ 'BABY_', 'WANDERING_TRADER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'BAT' ]
 
-  - enabled: true
-    name: 'No Levels For External Plugins'
+    name: 'No Stat Change for External Plugins'
+    use-preset: vanilla_challenge, nametag_no_level
     conditions:
       external-plugins: '*'
-    apply-settings:
-      maxLevel: 0
 
   - enabled: true
     name: 'Custom Nether Levelling'
@@ -525,4 +523,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 4
+file-version: 5

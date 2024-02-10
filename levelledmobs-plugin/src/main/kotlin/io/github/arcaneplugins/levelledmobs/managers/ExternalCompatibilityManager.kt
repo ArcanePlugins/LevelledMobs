@@ -308,9 +308,8 @@ class ExternalCompatibilityManager {
             isMobOfMythicMobs(lmEntity)
             isMobOfEliteMobs(lmEntity)
             isMobOfSimplePets(lmEntity)
-            isMobOfEliteMobs(lmEntity)
-            isMobOfSimplePets(lmEntity)
             isMobOfCitizens(lmEntity)
+            isMobOfEliteBosses(lmEntity)
         }
 
         /**
