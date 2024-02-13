@@ -1,7 +1,11 @@
 # JetBrains IntelliJ
 target/
 .idea/
+.gradle/
+gradle/
+build-logic/
 #LevelledMobs.iml
+build/
 *.iml
 
 # Eclipse

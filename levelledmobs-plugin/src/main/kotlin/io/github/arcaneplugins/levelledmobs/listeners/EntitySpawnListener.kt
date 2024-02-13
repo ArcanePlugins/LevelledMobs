@@ -15,6 +15,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import org.bukkit.block.CreatureSpawner
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -194,9 +195,10 @@ class EntitySpawnListener : Listener{
         lmEntity: LivingEntityWrapper,
         event: SpawnerSpawnEvent
     ) {
-        val cs = event.spawner
+        val cs = event.getSpawner()
         val main = LevelledMobs.instance
 
+        if (cs == null) return
         // mob was spawned from a custom LM spawner
         val useParticle = main.rulesManager.getSpawnerParticle(lmEntity)
         val particleCount = main.rulesManager.getSpawnerParticleCount(lmEntity)
@@ -291,7 +293,7 @@ class EntitySpawnListener : Listener{
         if (event is SpawnerSpawnEvent) {
             // on spigot servers event.spawner can be null
             @Suppress("SENSELESS_COMPARISON")
-            if (event.spawner != null && event.spawner
+            if (event.getSpawner() != null && (event.getSpawner() as CreatureSpawner)
                     .persistentDataContainer
                     .has(NamespacedKeys.keySpawner, PersistentDataType.INTEGER)
             ) {

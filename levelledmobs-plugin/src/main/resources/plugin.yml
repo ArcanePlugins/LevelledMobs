@@ -1,6 +1,6 @@
 name: 'LevelledMobs'
-version: '${project.version}'
-description: '${project.description}'
+version: '${version}'
+description: '${description}'
 authors: [ 'PenalBuffalo', 'lokka30', 'UltimaOath' ]
 website: 'https://github.com/ArcanePlugins/LevelledMobs/'
 folia-supported: true
