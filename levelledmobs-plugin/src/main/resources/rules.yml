@@ -432,6 +432,7 @@ custom-rules:
         allowed-groups: [ 'all_passive_mobs' ]
         allowed-list: [ 'BABY_', 'WANDERING_TRADER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'BAT' ]
 
+  - enabled: true
     name: 'No Stat Change for External Plugins'
     use-preset: vanilla_challenge, nametag_no_level
     conditions:

@@ -284,121 +284,6 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         }
     }
 
-    override fun parseTabCompletions(
-        sender: CommandSender,
-        args: Array<String>
-    ): MutableList<String>? {
-        if (!sender.hasPermission("levelledmobs.command.summon")) {
-            return null
-        }
-
-        // len:    1      2        3        4       5          6            7   8     9     10
-        // arg:    0      1        2        3       4          5            6   7     8     9
-        // lvlmobs summon <amount> <entity> <level> here       /override
-        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername> /override
-        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world] /override
-
-        // <amount>
-        if (args.size == 2) {
-            return Utils.oneToNine
-        }
-
-        // <entity>
-        if (args.size == 3) {
-            val entityNames: MutableList<String> = LinkedList()
-            for (entityType in EntityType.entries) {
-                entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
-            }
-            return entityNames
-        }
-
-        // <level>
-        if (args.size == 4) {
-            return Utils.oneToNine
-        }
-
-        // here, atPlayer, atLocation
-        if (args.size == 5) {
-            return mutableListOf("here", "atPlayer", "atLocation", "/override")
-        }
-
-        var skipOverride = false
-        for (i in 5 until args.size) {
-            val arg = args[i]
-            if (arg.startsWith("{") && !arg.endsWith("}")) {
-                skipOverride = true
-            }
-            if (skipOverride && arg.endsWith("}")) {
-                skipOverride = false
-            }
-        }
-        if (args[args.size - 1].endsWith("}")) {
-            skipOverride = true
-        }
-
-        // no suggestions for 'here' since it is the last argument for itself
-        // these are for atPlayer and atLocation
-        if (args.size > 5) {
-            when (args[4].lowercase(Locale.getDefault())) {
-                "atplayer" -> {
-                    if (args.size == 6) {
-                        val suggestions: MutableList<String> = LinkedList()
-                        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-                            if (sender is Player) {
-                                if (sender.canSee(onlinePlayer) || sender.isOp()) {
-                                    suggestions.add(onlinePlayer.name)
-                                }
-                            } else {
-                                suggestions.add(onlinePlayer.name)
-                            }
-                        }
-                        return suggestions
-                    } else if (args.size == 7) {
-                        return if (!skipOverride) {
-                            mutableListOf("/override")
-                        } else {
-                            mutableListOf()
-                        }
-                    }
-                }
-
-                "atlocation" -> {
-                    if (args.size < 9) { // args 6, 7 and 8 = x, y and z
-                        return mutableListOf("~")
-                    } else if (args.size == 9) {
-                        val worlds: MutableList<String> = LinkedList()
-                        Bukkit.getWorlds().forEach(Consumer { world: World ->
-                            worlds.add(
-                                world.name
-                            )
-                        })
-                        return worlds
-                    } else if (args.size == 10) {
-                        return if (!skipOverride) {
-                            mutableListOf("/override")
-                        } else {
-                            mutableListOf()
-                        }
-                    }
-                }
-
-                "here" -> {
-                    return if (!skipOverride) {
-                        mutableListOf("/override")
-                    } else {
-                        mutableListOf()
-                    }
-                }
-
-                else -> {
-                    return mutableListOf()
-                }
-            }
-        }
-
-        return mutableListOf()
-    }
-
     enum class SummonType {
         HERE,
         AT_PLAYER,
@@ -886,5 +771,120 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         }
 
         return oldLocation
+    }
+
+    override fun parseTabCompletions(
+        sender: CommandSender,
+        args: Array<String>
+    ): MutableList<String>? {
+        if (!sender.hasPermission("levelledmobs.command.summon")) {
+            return null
+        }
+
+        // len:    1      2        3        4       5          6            7   8     9     10
+        // arg:    0      1        2        3       4          5            6   7     8     9
+        // lvlmobs summon <amount> <entity> <level> here       /override
+        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername> /override
+        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world] /override
+
+        // <amount>
+        if (args.size == 2) {
+            return Utils.oneToNine
+        }
+
+        // <entity>
+        if (args.size == 3) {
+            val entityNames: MutableList<String> = LinkedList()
+            for (entityType in EntityType.entries) {
+                entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
+            }
+            return entityNames
+        }
+
+        // <level>
+        if (args.size == 4) {
+            return Utils.oneToNine
+        }
+
+        // here, atPlayer, atLocation
+        if (args.size == 5) {
+            return mutableListOf("here", "atPlayer", "atLocation", "/override")
+        }
+
+        var skipOverride = false
+        for (i in 5 until args.size) {
+            val arg = args[i]
+            if (arg.startsWith("{") && !arg.endsWith("}")) {
+                skipOverride = true
+            }
+            if (skipOverride && arg.endsWith("}")) {
+                skipOverride = false
+            }
+        }
+        if (args[args.size - 1].endsWith("}")) {
+            skipOverride = true
+        }
+
+        // no suggestions for 'here' since it is the last argument for itself
+        // these are for atPlayer and atLocation
+        if (args.size > 5) {
+            when (args[4].lowercase(Locale.getDefault())) {
+                "atplayer" -> {
+                    if (args.size == 6) {
+                        val suggestions: MutableList<String> = LinkedList()
+                        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                            if (sender is Player) {
+                                if (sender.canSee(onlinePlayer) || sender.isOp()) {
+                                    suggestions.add(onlinePlayer.name)
+                                }
+                            } else {
+                                suggestions.add(onlinePlayer.name)
+                            }
+                        }
+                        return suggestions
+                    } else if (args.size == 7) {
+                        return if (!skipOverride) {
+                            mutableListOf("/override")
+                        } else {
+                            mutableListOf()
+                        }
+                    }
+                }
+
+                "atlocation" -> {
+                    if (args.size < 9) { // args 6, 7 and 8 = x, y and z
+                        return mutableListOf("~")
+                    } else if (args.size == 9) {
+                        val worlds: MutableList<String> = LinkedList()
+                        Bukkit.getWorlds().forEach(Consumer { world: World ->
+                            worlds.add(
+                                world.name
+                            )
+                        })
+                        return worlds
+                    } else if (args.size == 10) {
+                        return if (!skipOverride) {
+                            mutableListOf("/override")
+                        } else {
+                            mutableListOf()
+                        }
+                    }
+                }
+
+                "here" -> {
+                    return if (!skipOverride) {
+                        mutableListOf("/override")
+                    } else {
+                        mutableListOf()
+                    }
+                }
+
+                else -> {
+                    return mutableListOf()
+                }
+            }
+        }
+
+        return mutableListOf()
     }
 }

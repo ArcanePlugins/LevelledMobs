@@ -7,13 +7,13 @@
     <artifactId>levelledmobs-plugin</artifactId>
     <name>LevelledMobs</name>
     <description>The Ultimate RPG Mob Levelling Solution</description>
-    <version>4.0.0 prelease</version>
+    <version>4.0.0 b1</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>io.github.arcaneplugins</groupId>
         <artifactId>LevelledMobs-Parent</artifactId>
-        <version>4.0.0-rebuild2</version>
+        <version>4.0.0</version>
     </parent>
 
     <properties>

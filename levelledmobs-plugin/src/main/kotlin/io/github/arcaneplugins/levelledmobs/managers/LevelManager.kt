@@ -1778,10 +1778,12 @@ class LevelManager : LevelInterface2 {
             )
 
         if (nbtDatas!!.isNotEmpty() && !ExternalCompatibilityManager.hasNbtApiInstalled) {
+            val msg = if (isSummoned)
+                "NBT Data was supplied but the required plugin NBTAPI is not installed!"
+            else
+                "NBT Data has been specified in customdrops.yml but the required plugin NBTAPI is not installed!"
             if (!hasMentionedNBTAPIMissing) {
-                Utils.logger.warning(
-                    "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!"
-                )
+                Utils.logger.warning(msg)
                 hasMentionedNBTAPIMissing = true
             }
             nbtDatas.clear()

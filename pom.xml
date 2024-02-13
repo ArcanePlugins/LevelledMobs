@@ -6,7 +6,7 @@
 
     <groupId>io.github.arcaneplugins</groupId>
     <artifactId>LevelledMobs-Parent</artifactId>
-    <version>4.0.0-rebuild2</version>
+    <version>4.0.0</version>
     <name>LevelledMobs</name>
     <description>The Ultimate RPG Mob Levelling Solution</description>
     <modules>

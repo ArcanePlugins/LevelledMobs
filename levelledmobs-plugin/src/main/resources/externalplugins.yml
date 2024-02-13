@@ -28,6 +28,7 @@ blood-night:
   key-name: 'mobtype'
   key-type: 'PDC'
   requirement: 'exists'
+#  placeholder-name: '%blood-night-name%'
 
 eco-bosses:
   friendly-name: 'eco-bosses'
@@ -35,8 +36,7 @@ eco-bosses:
   key-name: 'boss'
   key-type: 'PDC'
   requirement: 'exists'
-
-#  placeholder-name: '%blood-night-name%'
+#  placeholder-name: '%eco-bosses-name%'
 
 # +------------------------------------------------------------------------------------------LM3
 # +                                                                                         +LM3

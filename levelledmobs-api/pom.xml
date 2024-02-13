@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.arcaneplugins</groupId>
         <artifactId>LevelledMobs-Parent</artifactId>
-        <version>4.0.0-rebuild2</version>
+        <version>4.0.0</version>
     </parent>
 
     <artifactId>levelledmobs-api</artifactId>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>io.github.arcaneplugins</groupId>
             <artifactId>levelledmobs-plugin</artifactId>
-            <version>4.0.0 prelease</version>
+            <version>4.0.0 b1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
