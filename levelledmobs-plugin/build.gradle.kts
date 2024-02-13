@@ -60,14 +60,21 @@ java {
 
 tasks {
     shadowJar {
-        archiveBaseName.set("LevelledMobs")
-        archiveClassifier.set("")
+        archiveFileName.set("LevelledMobs-$version.jar")
         dependencies{
             relocate("org.bstats", "io.github.arcaneplugins.levelledmobs.libs.bstats")
             relocate("redempt.crunch", "io.github.arcaneplugins.levelledmobs.libs.crunch")
             relocate("org.jetbrains.annotations", "io.github.arcaneplugins.levelledmobs.libs.jetbrains.annotations")
         }
+        // do not use minimize, it breaks reflection use
+        //minimize()
     }
+
+    jar.configure {
+        actions.clear()
+        dependsOn(shadowJar)
+    }
+
     compileKotlin {
         kotlinOptions {
             jvmTarget = "17"

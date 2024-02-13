@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -22,6 +24,7 @@ import java.util.SortedMap
 import java.util.TreeMap
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Registry
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemoryConfiguration
@@ -661,20 +664,20 @@ class CustomDropsParser(
         ymlHelper: YmlParsingHelper,
         defaultValue: CachedModalList<DeathCause>?
     ): CachedModalList<DeathCause>? {
-        val cachedModalList: CachedModalList<DeathCause> = CachedModalList()
-        val useKeyName = YmlParsingHelper.getKeyNameFromConfig(ymlHelper.cs, "cause-of-death")
+        val cachedModalList = CachedModalList<DeathCause>()
+        val useKeyName = ymlHelper.getKeyNameFromConfig("cause-of-death")
 
         val simpleStringOrArray = ymlHelper.cs[useKeyName]
         var cs2: ConfigurationSection? = null
-        var useList = mutableListOf<String>()
+        var useList: MutableList<String>? = null
 
-        if (simpleStringOrArray is ArrayList<*>) {
-            useList = simpleStringOrArray as ArrayList<String>
+        if (simpleStringOrArray is java.util.ArrayList<*>) {
+            useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
         } else if (simpleStringOrArray is String) {
             useList = mutableListOf(simpleStringOrArray)
         }
 
-        if (useList.isEmpty()) {
+        if (useList == null) {
             cs2 = YmlParsingHelper.objToCS(ymlHelper.cs, useKeyName)
         }
         if (cs2 == null && useList == null) {
@@ -686,7 +689,7 @@ class CustomDropsParser(
             useList = YmlParsingHelper.getListFromConfigItem(cs2, "allowed-list")
         }
 
-        for (item in useList) {
+        for (item in useList!!) {
             if (item.trim { it <= ' ' }.isEmpty()) {
                 continue
             }
@@ -739,7 +742,7 @@ class CustomDropsParser(
             if (value is LinkedHashMap<*, *>) {
                 // contains enchantment chances
 
-                val en = Enchantment.getByKey(
+                val en = Registry.ENCHANTMENT.get(
                     NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
                 )
 
@@ -758,7 +761,7 @@ class CustomDropsParser(
                 enchantLevel = value.toString().toInt()
             }
 
-            val en = Enchantment.getByKey(
+            val en = Registry.ENCHANTMENT.get(
                 NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
             )
             if (en != null) {

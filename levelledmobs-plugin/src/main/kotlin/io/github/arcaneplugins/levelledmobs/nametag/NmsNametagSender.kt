@@ -22,6 +22,7 @@ import org.bukkit.entity.Player
  * @author PenalBuffalo (aka stumper66)
  * @since 3.6.0
  */
+@Suppress("UNCHECKED_CAST")
 class NmsNametagSender : NametagSender {
     private var def = LevelledMobs.instance.definitions
 

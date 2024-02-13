@@ -275,7 +275,7 @@ class LevelManager : LevelInterface2 {
 
             origLevelSource = useLocation!!.distance(player.location)
         } else if ("%bed_distance%".equals(variableToUse, ignoreCase = true)) {
-            var useLocation = player.bedSpawnLocation
+            var useLocation = player.respawnLocation
             homeNameUsed = "bed"
 
             if (useLocation == null || useLocation.world !== player.world) {

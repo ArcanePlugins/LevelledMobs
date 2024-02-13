@@ -117,7 +117,7 @@ class PlayerDeathListener {
 
         var mobKey: String? = null
         var itemComp: Component? = null
-        for (c in tc.args()) {
+        for (c in tc.arguments()) {
             if (c is TranslatableComponent) {
                 if ("chat.square_brackets" == c.key()) {
                     // this is when the mob was holding a weapon

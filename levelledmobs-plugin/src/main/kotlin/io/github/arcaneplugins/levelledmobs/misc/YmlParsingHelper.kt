@@ -292,6 +292,7 @@ class YmlParsingHelper(
 
                 is Map<*, *> -> {
                     val result = MemoryConfiguration()
+                    @Suppress("UNCHECKED_CAST")
                     result.addDefaults((obj as MutableMap<String, Any>))
                     return result.defaultSection
                 }
