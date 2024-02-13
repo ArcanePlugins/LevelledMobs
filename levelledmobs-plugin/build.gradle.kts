@@ -1,11 +1,9 @@
-description = "The Ultimate RPG Mob Levelling Solution"
 group = "io.github.arcaneplugins"
-version = "4.0.0 b1"
+description = description
+version = version
 
 plugins {
     id("java")
-    id("java-library")
-    id("buildlogic.java-conventions")
     kotlin("jvm") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
@@ -32,7 +30,6 @@ dependencies {
 
 repositories {
     gradlePluginPortal()
-    //mavenLocal()
     mavenCentral()
     maven("https://repo.md-5.net/content/groups/public/")
     maven("https://repo.papermc.io/repository/maven-public/")
@@ -49,13 +46,14 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks {
     shadowJar {
-        archiveBaseName.set("LevelledMobs-$version")
+        archiveBaseName.set("LevelledMobs")
         archiveClassifier.set("")
-        archiveVersion.set("")
         dependencies{
             relocate("org.bstats", "io.github.arcaneplugins.levelledmobs.libs.bstats")
             relocate("redempt.crunch", "io.github.arcaneplugins.levelledmobs.libs.crunch")
@@ -68,11 +66,6 @@ tasks {
         }
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
     compileJava {
         options.isDeprecation = true
         options.encoding = "UTF-8"
@@ -81,13 +74,13 @@ tasks {
     }
 
     processResources {
+        outputs.upToDateWhen { false }
         filesMatching("plugin.yml") {
             expand(mapOf(
                 "version" to version,
-                "description" to "The Ultimate RPG Mob Levelling Solution"
+                "description" to project.findProperty("description")
             ))
         }
-        outputs.upToDateWhen { false }
     }
 
     build {
