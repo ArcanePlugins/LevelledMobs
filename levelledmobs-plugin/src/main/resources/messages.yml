@@ -54,12 +54,14 @@ command:
   levelledmobs:
     main-usage:
       - '%prefix% Available commands:'
-      - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
-      - '&8 &m->&b /%label% rules &8- &7printout of the rules system'
+      - '&8 &m->&b /%label% debug &8- &7various commands relating to debugging'
+      - '&8 &m->&b /%label% egg &8- &7create spawner eggs'
+      - '&8 &m->&b /%label% help &8- &7show URL to the wiki'
+      - '&8 &m->&b /%label% info &8- &7view info about the plugin'
       - '&8 &m->&b /%label% kill &8- &7mass kill levelled mobs'
       - '&8 &m->&b /%label% reload &8- &7reload the configuration files'
-      - '&8 &m->&b /%label% info &8- &7view info about the plugin'
-      - '&8 &m->&b /%label% compatibility &8- &7check plugin''s compatibility with the server'
+      - '&8 &m->&b /%label% rules &8- &7printout of the rules system'
+      - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
 
 
 # +------------------------------------------------------------------------------------------LM3
@@ -256,7 +258,7 @@ command:
         - '%prefix% Rules Reprocessed for &b%entitycount%&7 mobs in &b%worldcount%&7 world(s)'
       reset:
         - '%prefix% Running this command will reset your rules to one of 4 defaults.'
-        - 'You must select if you want basic/average/advanced/extreme difficulty.'
+        - 'You must select if you want vanilla/basic/average/advanced/extreme difficulty.'
         - 'A backup will be made and your rules.yml reset to default.'
       resetting:
         - '%prefix% Resetting rules to %difficulty%'

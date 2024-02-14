@@ -41,7 +41,7 @@ class InfoSubcommand : MessagesBase(), Subcommand {
                 arrayOf(
                     main.description.version,
                     main.description.description ?: "",
-                    "1.16 - 1.20",
+                    "1.19 - 1.20",
                     java.lang.String.join(listSeparator, main.description.authors),
                     "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
                 )

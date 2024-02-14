@@ -80,7 +80,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             }
         }
 
-        if ("show_all".equals(args[1], ignoreCase = true)) {
+        if ("show-all".equals(args[1], ignoreCase = true)) {
             if (sender is Player) {
                 showMessage("command.levelledmobs.rules.console-rules")
             }
@@ -114,26 +114,26 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             } else {
                 sender.sendMessage(colorizeAll(sb.toString()))
             }
-        } else if ("show_effective".equals(args[1], ignoreCase = true)) {
+        } else if ("show-effective".equals(args[1], ignoreCase = true)) {
             if (sender !is Player) {
                 showMessage("common.players-only")
                 return
             }
 
             showEffectiveRules(sender, showOnConsole, findNearbyEntities)
-        } else if ("show_rule".equals(args[1], ignoreCase = true)) {
+        } else if ("show-rule".equals(args[1], ignoreCase = true)) {
             showRule(sender, args)
-        } else if ("help_discord".equals(args[1], ignoreCase = true)) {
+        } else if ("help-discord".equals(args[1], ignoreCase = true)) {
             val message = getMessage("command.levelledmobs.rules.discord-invite")
             showHyperlink(sender, message, "https://www.discord.io/arcaneplugins")
-        } else if ("help_wiki".equals(args[1], ignoreCase = true)) {
+        } else if ("help-wiki".equals(args[1], ignoreCase = true)) {
             val message = getMessage("command.levelledmobs.rules.wiki-link")
-            showHyperlink(sender, message, "https://github.com/lokka30/LevelledMobs/wiki")
+            showHyperlink(sender, message, "https://github.com/ArcanePlugins/LevelledMobs/wiki")
         } else if ("reset".equals(args[1], ignoreCase = true)) {
             resetRules(sender, args)
-        } else if ("force_all".equals(args[1], ignoreCase = true)) {
+        } else if ("force-all".equals(args[1], ignoreCase = true)) {
             forceRelevel(sender)
-        } else if ("show_temp_disabled".equals(args[1], ignoreCase = true)) {
+        } else if ("show-temp-disabled".equals(args[1], ignoreCase = true)) {
             showTempDisabled(sender)
         } else {
             showMessage("common.invalid-command")
@@ -662,13 +662,13 @@ class RulesSubcommand : MessagesBase(), Subcommand {
 
         if (args.size == 2) {
             return mutableListOf(
-                "force_all", "help_discord", "help_wiki", "reset", "show_all",
-                "show_effective", "show_rule", "show_temp_disabled"
+                "force-all", "help-discord", "help-wiki", "reset", "show-all",
+                "show-effective", "show-rule", "show-temp-disabled"
             )
         } else if (args.size >= 3) {
             if ("reset".equals(args[1], ignoreCase = true) && args.size == 3) {
                 suggestions.addAll(listOf("vanilla", "basic", "average", "advanced", "extreme"))
-            } else if ("show_all".equals(args[1], ignoreCase = true)) {
+            } else if ("show-all".equals(args[1], ignoreCase = true)) {
                 var showOnConsole = false
                 for (i in 2 until args.size) {
                     val arg = args[i].lowercase(Locale.getDefault())
@@ -681,12 +681,12 @@ class RulesSubcommand : MessagesBase(), Subcommand {
                 if (!showOnConsole) {
                     suggestions.add("/console")
                 }
-            } else if ("show_rule".equals(args[1], ignoreCase = true) || "show_effective".equals(
+            } else if ("show-rule".equals(args[1], ignoreCase = true) || "show-effective".equals(
                     args[1], ignoreCase = true
                 )
             ) {
-                val isShowRule = "show_rule".equals(args[1], ignoreCase = true)
-                val isEffective = "show_effective".equals(args[1], ignoreCase = true)
+                val isShowRule = "show-rule".equals(args[1], ignoreCase = true)
+                val isEffective = "show-effective".equals(args[1], ignoreCase = true)
                 var showOnConsole = false
                 var findNearbyEntities = false
                 var foundValue = false
