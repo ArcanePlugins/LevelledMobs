@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException
 import java.util.Optional
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.result.MythicMobsMobInfo
-import io.github.arcaneplugins.levelledmobs.nametag.Definitions
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
 
@@ -39,7 +38,7 @@ object MythicMobUtils {
         val def = LevelledMobs.instance.definitions
 
         if (def.fieldMMmobManager == null) {
-            Utils.logger.warning("Mythic Mobs is installed but field_MM_mobManager is null")
+            Log.war("Mythic Mobs is installed but field_MM_mobManager is null")
             return null
         }
 
@@ -66,9 +65,9 @@ object MythicMobUtils {
 
             return result
         } catch (e: InvocationTargetException) {
-            Utils.logger.warning("Error getting MythicMob info: " + e.message)
+            Log.war("Error getting MythicMob info: " + e.message)
         } catch (e: IllegalAccessException) {
-            Utils.logger.warning("Error getting MythicMob info: " + e.message)
+            Log.war("Error getting MythicMob info: " + e.message)
         }
         return null
     }

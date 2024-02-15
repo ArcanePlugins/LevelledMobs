@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 
 /**
@@ -31,7 +31,7 @@ class TieredColoringInfo : Cloneable {
             val numbers = key.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             if (numbers.size != 2 && numbers.size != 1) {
-                Utils.logger.warning("Invalid tiered coloring key: $key")
+                Log.war("Invalid tiered coloring key: $key")
                 return null
             }
 
@@ -47,7 +47,7 @@ class TieredColoringInfo : Cloneable {
             for (i in 0..1) {
                 val num = numbers[i].trim { it <= ' ' }
                 if (!isInteger(num)) {
-                    Utils.logger.warning("Invalid number in tiered coloring key: $key")
+                    Log.war("Invalid number in tiered coloring key: $key")
                     return null
                 }
 

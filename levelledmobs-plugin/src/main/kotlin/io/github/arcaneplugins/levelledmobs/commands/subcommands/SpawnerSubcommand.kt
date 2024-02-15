@@ -6,10 +6,10 @@ import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
@@ -366,7 +366,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         )
 
         if (message.isNotEmpty()) {
-            Utils.logger.info(message[0].replace(LevelledMobs.instance.configUtils.prefix + " ", ""))
+            Log.inf(message[0].replace(LevelledMobs.instance.configUtils.prefix + " ", ""))
         }
 
         showMessage("command.levelledmobs.spawner.spawner-give-message", info.player!!)
@@ -433,7 +433,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
                     for (player in Bukkit.getOnlinePlayers()) {
                         players.add(player.name)
                     }
-                    players.sortWith(java.lang.String.CASE_INSENSITIVE_ORDER)
+                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
                     return players
                 }
             }

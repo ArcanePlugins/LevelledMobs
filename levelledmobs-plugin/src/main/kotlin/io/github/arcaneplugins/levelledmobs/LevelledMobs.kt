@@ -21,6 +21,7 @@ import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.RulesParsingManager
 import io.github.arcaneplugins.levelledmobs.util.ConfigUtils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.QuickTimer
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -102,7 +103,7 @@ class LevelledMobs : JavaPlugin() {
 
         this.ver.load()
         if (ver.minecraftVersion <= 1.18){
-            Utils.logger.error("This minecraft version is NOT supported. Use at your own risk!")
+            Log.sev("This minecraft version is NOT supported. Use at your own risk!")
         }
         this.definitions.load()
         this.nametagQueueManager.load()
@@ -123,7 +124,7 @@ class LevelledMobs : JavaPlugin() {
         mainCompanion.registerListeners()
         mainCompanion.registerCommands()
 
-        Utils.logger.info("Running misc procedures")
+        Log.inf("Running misc procedures")
         if (nametagQueueManager.hasNametagSupport) {
             levelManager.startNametagAutoUpdateTask()
             levelManager.startNametagTimer()
@@ -135,7 +136,7 @@ class LevelledMobs : JavaPlugin() {
         mainCompanion.checkUpdates()
 
         loadTime += timer.timer
-        Utils.logger.info("Start-up complete (took ${loadTime}ms)")
+        Log.inf("Start-up complete (took ${loadTime}ms)")
     }
 
     override fun onDisable() {
@@ -145,7 +146,7 @@ class LevelledMobs : JavaPlugin() {
         levelManager.stopNametagAutoUpdateTask()
         mainCompanion.shutDownAsyncTasks()
 
-        Utils.logger.info("Shut-down complete (took ${disableTimer.timer}ms)")
+        Log.inf("Shut-down complete (took ${disableTimer.timer}ms)")
     }
 
     private fun prepareToLoadCustomDrops(){

@@ -10,7 +10,7 @@ import io.github.arcaneplugins.levelledmobs.misc.ExternalPluginDetection
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.result.PlayerHomeCheckResult
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.TreeMap
 import org.bukkit.Bukkit
@@ -64,7 +64,7 @@ class ExternalCompatibilityManager {
 
             if (pluginName.isNullOrEmpty()) continue
             if (keyName.isNullOrEmpty()){
-                Utils.logger.warning("no key-name was supplied for $pluginName")
+                Log.war("no key-name was supplied for $pluginName")
                 continue
             }
             var requirement = ExternalPluginDetection.RequirementTypes.EXISTS
@@ -73,7 +73,7 @@ class ExternalCompatibilityManager {
                     requirement = ExternalPluginDetection.RequirementTypes.valueOf(requirementStr.uppercase())
                 }
                 catch (ignored: Exception){
-                    Utils.logger.warning("Invalid value: $requirementStr")
+                    Log.war("Invalid value: $requirementStr")
                 }
             }
 
@@ -349,9 +349,7 @@ class ExternalCompatibilityManager {
                         val cutoverVersion = VersionInfo("7.3.12")
                         useNewerEliteMobsKey = pluginVer >= cutoverVersion
                     } catch (e: InvalidObjectException) {
-                        Utils.logger.warning(
-                            "Got error comparing EliteMob versions: " + e.message
-                        )
+                        Log.war("Got error comparing EliteMob versions: ${e.message}")
                         // default to newer version on error
                         useNewerEliteMobsKey = true
                     }
@@ -448,7 +446,7 @@ class ExternalCompatibilityManager {
                 val methodIsPetEntity = clazzIPetsPlugin.getDeclaredMethod("isPetEntity", Entity::class.java)
                 return methodIsPetEntity.invoke(objIPetsPlugin, lmEntity.livingEntity) as Boolean
             } catch (e: Exception) {
-                Utils.logger.error("Error checking if " + lmEntity.nameIfBaby + " is a SimplePet")
+                Log.sev("Error checking if ${lmEntity.nameIfBaby} is a SimplePet")
                 e.printStackTrace()
             }
 

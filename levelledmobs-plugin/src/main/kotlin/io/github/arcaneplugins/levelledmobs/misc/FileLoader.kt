@@ -1,9 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.io.File
 import java.io.FileInputStream
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.FileUtil
@@ -30,7 +30,7 @@ object FileLoader {
         var useCfgName = cfgName
         useCfgName += ".yml"
 
-        Utils.logger.info("&fFile Loader: &7Loading file '&b$useCfgName&7'...")
+        Log.inf("&fFile Loader: &7Loading file '&b$useCfgName&7'...")
 
         val file = File(plugin.dataFolder, useCfgName)
 
@@ -53,7 +53,7 @@ object FileLoader {
                             &bhttps://discord.io/arcaneplugins
                             """.trimIndent()
 
-            Utils.logger.error(String.format(parseErrorMessage, useCfgName, e))
+            Log.sev(String.format(parseErrorMessage, useCfgName, e))
             return null
         }
 
@@ -72,7 +72,7 @@ object FileLoader {
 
             // copy to old file
             FileUtil.copy(file, backedupFile)
-            Utils.logger.info(
+            Log.inf(
                 "&fFile Loader: &8(Migration) &b$useCfgName backed up to "
                         + backedupFile.name
             )
@@ -82,7 +82,7 @@ object FileLoader {
             }
 
             // copy supported values from old file to new
-            Utils.logger.info(
+            Log.inf(
                 "&fFile Loader: &8(Migration) &7Migrating &b$useCfgName" +
                         "&7 from old version to new version."
             )
@@ -116,7 +116,7 @@ object FileLoader {
         file: File
     ) {
         if (!file.exists()) {
-            Utils.logger.info(
+            Log.inf(
                 "&fFile Loader: &7File '&b${file.name}" +
                         "&7' doesn't exist, creating it now..."
             )
@@ -136,11 +136,11 @@ object FileLoader {
         val what = if (installedVersion < compatibleVersion) "outdated"
         else "ahead of the compatible version of this file for this version of the plugin"
 
-        Utils.logger.error(
+        Log.sev(
             "&fFile Loader: &7The version of &b${file.name}&7 you have installed is $what"
                     + "! Fix this as soon as possible, else the plugin will most likely malfunction."
         )
-        Utils.logger.error(
+        Log.war(
             ("&fFile Loader: &8(&7You have &bv$installedVersion"
                     + "&7 installed but you are meant to be running &bv$compatibleVersion&8)")
         )

@@ -42,7 +42,7 @@ class InfoSubcommand : MessagesBase(), Subcommand {
                     main.description.version,
                     main.description.description ?: "",
                     "1.19 - 1.20",
-                    java.lang.String.join(listSeparator, main.description.authors),
+                    main.description.authors.joinToString(listSeparator),
                     "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
                 )
             )

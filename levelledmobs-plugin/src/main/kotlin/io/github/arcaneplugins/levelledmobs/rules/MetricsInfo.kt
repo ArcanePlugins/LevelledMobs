@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
 import java.util.Locale
-import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
@@ -179,7 +178,7 @@ class MetricsInfo {
     }
 
     fun enabledCompats(): Map<String, Int> {
-        val results: MutableMap<String, Int> = TreeMap()
+        val results = mutableMapOf<String, Int>()
 
         for (compat in ExternalCompatibility.entries.toTypedArray()) {
             if (compat == ExternalCompatibility.NOT_APPLICABLE ||

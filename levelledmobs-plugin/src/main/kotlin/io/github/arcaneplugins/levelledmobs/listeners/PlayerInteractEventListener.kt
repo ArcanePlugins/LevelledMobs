@@ -11,8 +11,8 @@ import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.misc.Cooldown
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.Point
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -160,7 +160,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
                 try {
                     spawnType = EntityType.valueOf(temp)
                 } catch (ignored: Exception) {
-                    Utils.logger.warning("Invalid spawn type on spawner egg: $temp")
+                    Log.war("Invalid spawn type on spawner egg: $temp")
                 }
             }
         }

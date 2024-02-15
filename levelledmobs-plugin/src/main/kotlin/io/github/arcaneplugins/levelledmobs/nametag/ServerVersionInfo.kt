@@ -1,9 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Bukkit
 
 /**
@@ -76,7 +76,7 @@ class ServerVersionInfo {
                 versionStr = versionStr.replace("_", ".").replace("V", "")
                 this.minecraftVersion = versionStr.toDouble()
             } catch (e: Exception) {
-                Utils.logger.warning(
+                Log.war(
                     String.format(
                         "Could not extract the minecraft version from '%s'. %s",
                         Bukkit.getServer().javaClass.canonicalName, e.message
@@ -89,7 +89,7 @@ class ServerVersionInfo {
         if (nmsRegex.find()) {
             this.nmsVersion = nmsRegex.group(1)
         } else {
-            Utils.logger.warning(
+            Log.war(
                 "NMSHandler: Could not match regex for bukkit version: " + Bukkit.getServer()
                     .javaClass.canonicalName
             )

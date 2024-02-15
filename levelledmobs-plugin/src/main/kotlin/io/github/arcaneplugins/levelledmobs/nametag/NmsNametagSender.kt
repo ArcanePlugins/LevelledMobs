@@ -161,7 +161,7 @@ class NmsNametagSender : NametagSender {
                 results.add(def.methodDataWatcherItemValue!!.invoke(dataWatcherItem))
                 //results.add(objDataItem);
             }
-        } catch (ex: java.lang.Exception) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
         }
 

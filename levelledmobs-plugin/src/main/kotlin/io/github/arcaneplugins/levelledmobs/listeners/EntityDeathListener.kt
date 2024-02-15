@@ -181,7 +181,7 @@ class EntityDeathListener : Listener {
             }
 
             DebugManager.log(DebugType.CHUNK_KILL_COUNT, lmEntity) {
-                java.lang.String.format(
+                String.format(
                     "%s: player: %s, entity: %s, reached chunk kill limit, max: %s",
                     Utils.displayChunkLocation(lmEntity.location), player.name,
                     lmEntity.typeName, maximumDeathInChunkThreshold

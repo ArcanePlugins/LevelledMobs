@@ -29,6 +29,7 @@ import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -42,7 +43,6 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Collections
 import java.util.LinkedList
-import java.util.TreeMap
 import java.util.WeakHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
@@ -311,7 +311,7 @@ class LevelManager : LevelInterface2 {
                     usePlayerLevel = true
                 }
             } else {
-                Utils.logger.warning(
+                Log.war(
                     "PlaceHolderAPI is not installed, unable to get variable $variableToUse"
                 )
                 usePlayerLevel = true
@@ -800,7 +800,7 @@ class LevelManager : LevelInterface2 {
         val maxHealth: Double = getMobAttributeValue(lmEntity)
         val entityHealth: Double = getMobHealth(lmEntity)
         val entityHealthRounded = if (entityHealth < 1.0 && entityHealth > 0.0) 1 else Utils.round(entityHealth).toInt()
-        val roundedMaxHealth: String = java.lang.String.valueOf(Utils.round(maxHealth))
+        val roundedMaxHealth: String = Utils.round(maxHealth).toString()
         val roundedMaxHealthInt = (Utils.round(maxHealth).toInt()).toString()
         val percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0).toDouble()
         val percentHealth = if (percentHealthTemp < 1.0) 1 else percentHealthTemp.toInt()
@@ -920,7 +920,7 @@ class LevelManager : LevelInterface2 {
      */
 
     fun startNametagAutoUpdateTask() {
-        Utils.logger.info("&fTasks: &7Starting async nametag auto update task...")
+        Log.inf("&fTasks: &7Starting async nametag auto update task...")
 
         val main = LevelledMobs.instance
         val period = main.helperSettings.getInt(
@@ -1329,7 +1329,7 @@ class LevelManager : LevelInterface2 {
         }
 
         if (nametagAutoUpdateTask != null && !nametagAutoUpdateTask!!.isCancelled()) {
-            Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...")
+            Log.inf("&fTasks: &7Stopping async nametag auto update task...")
             nametagAutoUpdateTask!!.cancelTask()
         }
 
@@ -1411,7 +1411,7 @@ class LevelManager : LevelInterface2 {
 
         val blastRadiusFinal = blastRadius
         DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) {
-            java.lang.String.format(
+            String.format(
                 "lvl: %s, mulp: %s, max: %s, result: %s",
                 lmEntity.getMobLevel, Utils.round(damage.toDouble(), 3), maxRadius, blastRadiusFinal
             )
@@ -1484,7 +1484,7 @@ class LevelManager : LevelInterface2 {
         val equipment = lmEntity.livingEntity.equipment ?: return
 
         if (lmEntity.lockEntitySettings && customDropsRuleSet.useDropTableIds.isNotEmpty()) {
-            val customDrops: String = java.lang.String.join(";", customDropsRuleSet.useDropTableIds)
+            val customDrops = customDropsRuleSet.useDropTableIds.joinToString(";")
             lmEntity.pdc.set(NamespacedKeys.lockedDropRules, PersistentDataType.STRING, customDrops)
             if (customDropsRuleSet.chunkKillOptions!!.getDisableVanillaDrops()) lmEntity.pdc
                 .set(NamespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER, 1)
@@ -1493,7 +1493,7 @@ class LevelManager : LevelInterface2 {
         var hadMainItem = false
         var hadPlayerHead = false
         val equippedItemsInfo = EquippedItemsInfo()
-        val equippedCountPerGroup: MutableMap<String?, Int> = TreeMap()
+        val equippedCountPerGroup = mutableMapOf<String?, Int>()
         var equippedSoFar = 0
 
         dropResult.stackToItem.shuffle()
@@ -1783,7 +1783,7 @@ class LevelManager : LevelInterface2 {
             else
                 "NBT Data has been specified in customdrops.yml but the required plugin NBTAPI is not installed!"
             if (!hasMentionedNBTAPIMissing) {
-                Utils.logger.warning(msg)
+                Log.war(msg)
                 hasMentionedNBTAPIMissing = true
             }
             nbtDatas.clear()
@@ -1933,8 +1933,8 @@ class LevelManager : LevelInterface2 {
                 )
                 if (result.hadException) {
                     if (lmEntity.summonedSender == null) {
-                        Utils.logger.warning(
-                            java.lang.String.format(
+                        Log.war(
+                            String.format(
                                 "Error applying NBT data '%s' to %s. Exception message: %s",
                                 nbtData, lmEntity.nameIfBaby, result.exceptionMessage
                             )
@@ -2056,11 +2056,11 @@ class LevelManager : LevelInterface2 {
 
         if (hadError) {
             if (succeeded) {
-                Utils.logger.warning(
+                Log.war(
                     "Got ConcurrentModificationException in LevelManager checking entity isLevelled, succeeded on retry"
                 )
             } else {
-                Utils.logger.warning(
+                Log.war(
                     "Got ConcurrentModificationException (2x) in LevelManager checking entity isLevelled"
                 )
             }

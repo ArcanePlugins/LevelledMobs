@@ -101,7 +101,7 @@ object DebugCreator {
 
         try {
             shaDigest = MessageDigest.getInstance("SHA-256")
-        } catch (ignored: java.lang.Exception) {
+        } catch (ignored: Exception) {
         }
 
         sb.append(main.description.name)

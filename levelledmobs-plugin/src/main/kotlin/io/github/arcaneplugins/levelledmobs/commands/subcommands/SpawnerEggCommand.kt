@@ -4,10 +4,10 @@ import java.util.LinkedList
 import java.util.Locale
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
@@ -230,7 +230,7 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
             "command.levelledmobs.spawn_egg.give-message-console",
             arrayOf("%minlevel%", "%maxlevel%", "%playername%", "%entitytype%"),
             arrayOf(
-                java.lang.String.valueOf(info.minLevel), java.lang.String.valueOf(info.maxLevel), playerName,
+                info.minLevel.toString(), info.maxLevel.toString(), playerName,
                 info.spawnType.name
             )
         )
@@ -238,14 +238,14 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
         if (message.isNotEmpty()) {
             val consoleMsg = message[0]
                 .replace(LevelledMobs.instance.configUtils.prefix + " ", "&r")
-            Utils.logger.info(consoleMsg)
+            Log.inf(consoleMsg)
         }
 
         showMessage(
             "command.levelledmobs.spawn_egg.give-message",
             arrayOf("%minlevel%", "%maxlevel%", "%playername%", "%entitytype%"),
             arrayOf(
-                java.lang.String.valueOf(info.minLevel), java.lang.String.valueOf(info.maxLevel), playerName,
+                info.minLevel.toString(), info.maxLevel.toString(), playerName,
                 info.spawnType.name
             ),
             info.player!!
@@ -271,7 +271,7 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
                     for (player in Bukkit.getOnlinePlayers()) {
                         players.add(player.name)
                     }
-                    players.sortWith(java.lang.String.CASE_INSENSITIVE_ORDER)
+                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
                     return players
                 }
             }

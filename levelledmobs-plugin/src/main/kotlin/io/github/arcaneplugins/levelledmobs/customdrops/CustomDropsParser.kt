@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import java.util.LinkedList
@@ -94,7 +95,7 @@ class CustomDropsParser(
         cs: ConfigurationSection?
     ) {
         if (cs == null) {
-            Utils.logger.warning("Defaults section was null")
+            Log.war("Defaults section was null")
             return
         }
 
@@ -165,9 +166,7 @@ class CustomDropsParser(
                             mobTypeOrGroup.uppercase(Locale.getDefault())
                         )
                     } catch (e: Exception) {
-                        Utils.logger.warning(
-                            "invalid universal group in customdrops.yml: $mobTypeOrGroup"
-                        )
+                        Log.war("invalid universal group in customdrops.yml: $mobTypeOrGroup")
                         continue
                     }
                     dropInstance = CustomDropInstance(universalGroup)
@@ -186,9 +185,7 @@ class CustomDropsParser(
                         entityType = EntityType.valueOf(mobTypeOrGroup.uppercase(Locale.getDefault()))
                     } catch (e: Exception) {
                         if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.uppercase(Locale.getDefault()))) {
-                            Utils.logger.warning(
-                                "invalid mob type in customdrops.yml: $mobTypeOrGroup"
-                            )
+                            Log.war("invalid mob type in customdrops.yml: $mobTypeOrGroup")
                         }
                         continue
                     }
@@ -214,9 +211,9 @@ class CustomDropsParser(
                                 useEntityDropId
                             )
                         ) {
-                            Utils.logger.warning("Did not find droptable id match for name: $useEntityDropId")
+                            Log.war("Did not find droptable id match for name: $useEntityDropId")
                         } else if (useEntityDropId == null) {
-                            Utils.logger.warning("Found a drop-table reference with no id!")
+                            Log.war("Found a drop-table reference with no id!")
                         } else {
                             val refDrop = handler.customItemGroups[useEntityDropId]
                             for (itemDrop in refDrop!!.customItems) {
@@ -332,7 +329,7 @@ class CustomDropsParser(
 
                 if ("usedroptable".equals(materialName, ignoreCase = true)) {
                     if (itemEntry.value == null) {
-                        Utils.logger.warning("Found a drop-table reference with no id!")
+                        Log.war("Found a drop-table reference with no id!")
                         continue
                     }
 
@@ -342,9 +339,7 @@ class CustomDropsParser(
                             useEntityDropId
                         )
                     ) {
-                        Utils.logger.warning(
-                            "Did not find droptable id match for name: $useEntityDropId"
-                        )
+                        Log.war("Did not find droptable id match for name: $useEntityDropId")
                     } else {
                         val refDrop = handler.customItemGroups[useEntityDropId]
                         for (itemDrop in refDrop!!.customItems) {
@@ -400,7 +395,7 @@ class CustomDropsParser(
         cs: ConfigurationSection
     ): MutableMap<String, Any>? {
         val cs2: ConfigurationSection = YmlParsingHelper.objToCS(cs, "extras") ?: return null
-        val results: MutableMap<String, Any> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val results: MutableMap<String, Any> = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
         for (name in cs2.getKeys(false)) {
             val value = cs2[name]
@@ -450,8 +445,8 @@ class CustomDropsParser(
 
         if (!ymlHelper.getString( "amount").isNullOrEmpty()) {
             if (!dropBase.setAmountRangeFromString(ymlHelper.getString( "amount"))) {
-                Utils.logger.warning(
-                    java.lang.String.format(
+                Log.war(
+                    String.format(
                         "Invalid number or number range for amount on %s, %s",
                         dropInstance!!.getMobOrGroupName(), ymlHelper.getString( "amount")
                     )
@@ -574,7 +569,7 @@ class CustomDropsParser(
 
         if (!ymlHelper.getString("damage").isNullOrEmpty()) {
             if (!item.setDamageRangeFromString(ymlHelper.getString( "damage"))) {
-                Utils.logger.warning(
+                Log.war(
                     String.format(
                         "Invalid number range for damage on %s, %s",
                         dropInstance!!.getMobOrGroupName(), ymlHelper.getString("damage")
@@ -599,19 +594,17 @@ class CustomDropsParser(
             if (ExternalCompatibilityManager.hasNbtApiInstalled) {
                 val result: NBTApplyResult = NBTManager.applyNBTDataItem(item, item.nbtData!!)
                 if (result.hadException) {
-                    Utils.logger.warning(
-                        java.lang.String.format(
-                            "custom drop %s for %s has invalid NBT data: %s",
-                            item.material, dropInstance!!.getMobOrGroupName(),
-                            result.exceptionMessage
-                        )
+                    String.format(
+                        "custom drop %s for %s has invalid NBT data: %s",
+                        item.material, dropInstance!!.getMobOrGroupName(),
+                        result.exceptionMessage
                     )
                 } else if (result.itemStack != null) {
                     item.itemStack = result.itemStack
                     this.dropsUtilizeNBTAPI = true
                 }
             } else if (!hasMentionedNBTAPIMissing) {
-                Utils.logger.warning(
+                Log.war(
                     "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!"
                 )
                 hasMentionedNBTAPIMissing = true
@@ -654,7 +647,7 @@ class CustomDropsParser(
         parseRangedVariables(customCommand, ymlHelper.cs)
 
         if (customCommand.commands.isEmpty()) {
-            Utils.logger.warning("no command was specified for custom command")
+            Log.war("no command was specified for custom command")
         } else {
             dropInstance!!.customItems.add(customCommand)
         }
@@ -701,7 +694,7 @@ class CustomDropsParser(
                 val cause = DeathCause.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                 cachedModalList.allowedList.add(cause)
             } catch (ignored: IllegalArgumentException) {
-                Utils.logger.warning("Invalid damage cause: $item")
+                Log.war("Invalid damage cause: $item")
             }
         }
         if (cs2 == null) {
@@ -720,7 +713,7 @@ class CustomDropsParser(
                 val cause = DeathCause.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                 cachedModalList.excludedList.add(cause)
             } catch (ignored: IllegalArgumentException) {
-                Utils.logger.warning("Invalid damage cause: $item")
+                Log.war("Invalid damage cause: $item")
             }
         }
 
@@ -747,7 +740,7 @@ class CustomDropsParser(
                 )
 
                 if (en == null) {
-                    Utils.logger.warning("Invalid enchantment: $enchantName")
+                    Log.war("Invalid enchantment: $enchantName")
                     continue
                 }
 
@@ -774,7 +767,7 @@ class CustomDropsParser(
                     item.itemStack!!.addUnsafeEnchantment(en, enchantLevel)
                 }
             } else {
-                Utils.logger.warning("Invalid enchantment: $enchantName")
+                Log.war("Invalid enchantment: $enchantName")
             }
         }
     }
@@ -784,7 +777,7 @@ class CustomDropsParser(
         enchantmentsMap: Map<Any, Any>,
         item: CustomDropItem
     ) {
-        val items: MutableMap<Int, Float> = TreeMap()
+        val items = mutableMapOf<Int, Float>()
         var defaultLevel: Int? = null
         var doShuttle: Boolean? = null
 
@@ -807,7 +800,7 @@ class CustomDropsParser(
 
             if (!isDefault) {
                 if (!Utils.isInteger(key.toString())) {
-                    Utils.logger.warning(
+                    Log.war(
                         String.format(
                             "Enchantment: %s, invalid enchantment level %s",
                             enchantment, key
@@ -821,8 +814,8 @@ class CustomDropsParser(
             var chanceValue: Double
             try {
                 chanceValue = value.toString().toDouble()
-            } catch (ignored: java.lang.Exception) {
-                Utils.logger.warning(
+            } catch (ignored: Exception) {
+                Log.war(
                     String.format(
                         "Enchantment: %s, invalid chance specified: %s",
                         enchantment, value
@@ -928,8 +921,8 @@ class CustomDropsParser(
             try {
                 val newFlag = ItemFlag.valueOf(flag.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                 results.add(newFlag)
-            } catch (e: java.lang.Exception) {
-                Utils.logger.warning(
+            } catch (e: Exception) {
+                Log.war(
                     String.format(
                         "Invalid itemflag: %s, item: %s, mobOrGroup: %s",
                         flag, item.material.name, dropInstance!!.getMobOrGroupName()
@@ -986,7 +979,7 @@ class CustomDropsParser(
 
             else -> {
                 val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
-                Utils.logger.warning(
+                Log.war(
                     String.format(
                         "%s: couldn't parse Config of type: %s, value: %s",
                         currentPath, obj.javaClass.simpleName, obj
@@ -1016,9 +1009,8 @@ class CustomDropsParser(
             }
 
             else -> {
-                Utils.logger.warning(
-                    "couldn't parse Config of type: " + obj.javaClass.simpleName + ", value: "
-                            + obj
+                Log.war(
+                    "couldn't parse Config of type: ${obj.javaClass.simpleName}, value: $obj"
                 )
                 return null
             }
@@ -1041,14 +1033,14 @@ class CustomDropsParser(
                 }
             } else {
                 if (ExternalCompatibilityManager.hasLMItemsInstalled) {
-                    Utils.logger.warning(
+                    Log.war(
                         String.format(
                             "Custom drop '%s' requires plugin LM_Items but it is an old version",
                             useMaterialName
                         )
                     )
                 } else {
-                    Utils.logger.warning(
+                    Log.war(
                         String.format(
                             "Custom drop '%s' requires plugin LM_Items but it is not installed",
                             useMaterialName
@@ -1065,8 +1057,8 @@ class CustomDropsParser(
             }
             try {
                 material = Material.valueOf(useMaterialName.uppercase(Locale.getDefault()))
-            } catch (e: java.lang.Exception) {
-                Utils.logger.warning(
+            } catch (e: Exception) {
+                Log.war(
                     String.format(
                         "Invalid material type specified in customdrops.yml for: %s, %s",
                         dropInstance!!.getMobOrGroupName(), useMaterialName
@@ -1188,7 +1180,7 @@ class CustomDropsParser(
         if (sender != null)
             sender.sendMessage(colorizeAll(sbMain.toString()))
         else
-            Utils.logger.info(sbMain.toString())
+            Log.inf(sbMain.toString())
     }
 
     private fun showCustomDropsDebugInfo2(
@@ -1197,7 +1189,7 @@ class CustomDropsParser(
         val command = if (baseItem is CustomCommand) baseItem else null
         val item = if (baseItem is CustomDropItem) baseItem else null
 
-        val sb = java.lang.StringBuilder()
+        val sb = StringBuilder()
         if (item != null) {
             val itemMaterial = item.material.toString()
             sb.append(
@@ -1327,7 +1319,7 @@ class CustomDropsParser(
         }
 
         if (item.enchantmentChances != null && !item.enchantmentChances!!.isEmpty) {
-            val enchantmentLevels = java.lang.StringBuilder()
+            val enchantmentLevels = StringBuilder()
             enchantmentLevels.append("encht-lvls: ")
 
             for (enchantment in item.enchantmentChances!!.items.keys) {
@@ -1357,7 +1349,7 @@ class CustomDropsParser(
 
         if (item.itemStack != null) {
             val meta = item.itemStack!!.itemMeta
-            val sb2 = java.lang.StringBuilder()
+            val sb2 = StringBuilder()
             if (meta != null) {
                 for (enchant in meta.enchants.keys) {
                     if (sb2.isNotEmpty()) sb2.append(", ")

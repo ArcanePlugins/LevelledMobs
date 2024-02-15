@@ -18,7 +18,7 @@ object Compat121 {
     }
 
     fun all21Mobs(): MutableSet<String> {
-        val names: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val names: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
         names.add("ARMADILLO")
         return names
     }

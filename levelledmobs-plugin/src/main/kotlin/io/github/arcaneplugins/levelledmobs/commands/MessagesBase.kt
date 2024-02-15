@@ -53,7 +53,7 @@ open class MessagesBase{
         replaceWith: Array<String>
     ) {
         if (commandSender == null) {
-            throw java.lang.NullPointerException("CommandSender must be set before calling showMessage")
+            throw NullPointerException("CommandSender must be set before calling showMessage")
         }
 
         val messages = getMessage(path, replaceWhat, replaceWith)

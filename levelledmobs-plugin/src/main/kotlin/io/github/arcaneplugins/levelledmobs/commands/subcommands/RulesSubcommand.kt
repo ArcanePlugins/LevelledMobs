@@ -22,10 +22,10 @@ import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.rules.PlayerLevellingOptions
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
@@ -110,7 +110,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
             )
 
             if (showOnConsole) {
-                Utils.logger.info(colorizeAll(sb.toString()))
+                Log.inf(colorizeAll(sb.toString()))
             } else {
                 sender.sendMessage(colorizeAll(sb.toString()))
             }
@@ -260,7 +260,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         try {
             main.getResource(filename).use { stream ->
                 if (stream == null) {
-                    Utils.logger.error("$prefix Input stream was null")
+                    Log.sev("$prefix Input stream was null")
                     return
                 }
                 var rulesText =
@@ -327,7 +327,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
 
         var showOnConsole = sender is ConsoleCommandSender
         var foundRule: String? = null
-        val allRuleNames: MutableMap<String, RuleInfo> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val allRuleNames: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
             allRuleNames[ruleInfo.ruleName.replace(" ", "_")] = ruleInfo
         }
@@ -371,7 +371,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
 
         sb.append(rule.formatRulesVisually(false, mutableListOf("id")))
         if (showOnConsole) {
-            Utils.logger.info(sb.toString())
+            Log.inf(sb.toString())
         } else {
             sender.sendMessage(colorizeAll(sb.toString()))
         }
@@ -502,7 +502,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
 
         if (effectiveRules.isEmpty()) {
             if (showOnConsole) {
-                Utils.logger.info(
+                Log.inf(
                     sb.toString() + "\n" + getMessage("command.levelledmobs.rules.no-effective-rules").replace(
                         LevelledMobs.instance.configUtils.prefix + " ", ""
                     )
@@ -638,7 +638,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         }
 
         if (showOnConsole) {
-            Utils.logger.info(sb.toString())
+            Log.inf(sb.toString())
         } else {
             sender.sendMessage(colorizeAll(sb.toString()))
         }
@@ -684,7 +684,7 @@ class RulesSubcommand : MessagesBase(), Subcommand {
                 var showOnConsole = false
                 var findNearbyEntities = false
                 var foundValue = false
-                val allRuleNames: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+                val allRuleNames: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
                 for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
                     allRuleNames.add(ruleInfo.ruleName.replace(" ", "_"))
                 }

@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.TreeSet
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.util.Utils.parseTimeUnit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemoryConfiguration
@@ -215,7 +215,7 @@ class YmlParsingHelper(
             if (cs == null) return mutableSetOf()
 
             val useName = getKeyNameFromConfig(cs, name)
-            val results: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+            val results: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
             // rather than use addAll we'll make sure there no empty strings
             for (item in cs.getStringList(useName)) {
                 if (item.isNotEmpty()) {
@@ -299,9 +299,9 @@ class YmlParsingHelper(
 
                 else -> {
                     val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
-                    Utils.logger.warning(
+                    Log.war(
                         "$currentPath: couldn't parse Config of type: " + obj.javaClass
-                            .simpleName + ", value: " + obj
+                            .simpleName + ", value: $obj"
                     )
                     return null
                 }

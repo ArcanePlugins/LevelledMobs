@@ -43,7 +43,7 @@ object ComponentUtils {
                 // #nullToEmpty(text)
                 def.methodTextComponent!!.invoke(null, text)
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             return null
         }
@@ -77,7 +77,7 @@ object ComponentUtils {
                         .newInstance(key, args)
                 }
             }
-        } catch (ex: java.lang.Exception) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
             return null
         }

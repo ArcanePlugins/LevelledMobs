@@ -1,7 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.lang.reflect.Modifier
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.declaredMemberProperties
 
 /**
  * Specifies a region based on coordinates that can be
@@ -65,13 +66,11 @@ class WithinCoordinates {
 
     val isEmpty: Boolean
         get() {
-            for (f in this.javaClass.declaredFields) {
-                if (!Modifier.isPublic(f.modifiers)) continue
+            for (p in this::class.declaredMemberProperties) {
+                if (p.visibility == KVisibility.PRIVATE) continue
 
                 try {
-                    if (f[this] != null) {
-                        return false
-                    }
+                    if (p.getter.call(this) != null) return false
                 } catch (e: IllegalAccessException) {
                     e.printStackTrace()
                 }
@@ -83,14 +82,11 @@ class WithinCoordinates {
     val getHasX: Boolean
         get() = startX != null || endX != null
 
-
     val getHasY: Boolean
         get() = startY != null || endY != null
 
-
     val getHasZ: Boolean
         get() = startZ != null || endZ != null
-
 
     fun isLocationWithinRange(
         coord: Int,
@@ -165,7 +161,7 @@ class WithinCoordinates {
         else sb.toString()
     }
 
-    private fun checkNumber(num: Int?, name: String, sb: java.lang.StringBuilder) {
+    private fun checkNumber(num: Int?, name: String, sb: StringBuilder) {
         if (num == null) return
 
         if (sb.isNotEmpty()) sb.append(", ")
@@ -175,7 +171,7 @@ class WithinCoordinates {
     private fun checkInfinityDirection(
         infinityDirection: InfinityDirection,
         name: String,
-        sb: java.lang.StringBuilder
+        sb: StringBuilder
     ) {
         if (infinityDirection == InfinityDirection.NONE) return
 

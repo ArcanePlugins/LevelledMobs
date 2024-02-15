@@ -39,7 +39,6 @@ import kotlin.math.pow
  * @since 2.5.0
  */
 object Utils {
-    val logger: MicroLogger = MicroLogger("&bLevelledMobs:&7 ")
     private val timeUnitPattern: Pattern = Pattern.compile("(\\d+\\.?\\d+|\\d+)?(\\w+)")
 
     /**
@@ -393,7 +392,7 @@ object Utils {
         val chopped = match.split("\\*".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         // 0 = *, 1 = text, 2 = *
         if (chopped.size > 3) {
-            logger.warning("Invalid wildcard pattern: $match")
+            Log.war("Invalid wildcard pattern: $match")
             return input.equals(match, ignoreCase = true)
         }
 
@@ -499,7 +498,7 @@ object Utils {
 
         if (!match.matches() || match.groupCount() != 2) {
             if (sender != null) sender.sendMessage("Invalid time: $input")
-            else logger.warning("Invalid time: $input")
+            else Log.war("Invalid time: $input")
 
             return defaultTime
         }
@@ -522,7 +521,7 @@ object Utils {
                 numberPart = split[0]
             } catch (e: Exception) {
                 if (sender != null) sender.sendMessage("Invalid time: $input")
-                else logger.warning("Invalid time: $input")
+                else Log.war("Invalid time: $input")
 
                 return defaultTime
             }
@@ -532,7 +531,7 @@ object Utils {
             time = numberPart.toLong()
         } catch (e: Exception) {
             if (sender != null) sender.sendMessage("Invalid time: $input")
-            else logger.warning("Invalid time: $input")
+            else Log.war("Invalid time: $input")
 
             return defaultTime
         }
@@ -571,7 +570,7 @@ object Utils {
             "" -> duration = if (useMS) Duration.ofMillis(time) else Duration.ofSeconds(time)
             else -> {
                 if (sender != null) sender.sendMessage("Invalid time unit specified: $input ($unit)")
-                else logger.warning("Invalid time unit specified: $input ($unit)")
+                else Log.war("Invalid time unit specified: $input ($unit)")
             }
         }
         if (duration != null) {

@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManage
 import io.github.arcaneplugins.levelledmobs.debug.DebugCreator
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.nametag.MiscUtils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
@@ -295,7 +296,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
                     commandSender!!.sendMessage("Max y-height set to $value")
                 }
             }
-        } catch (ignored: java.lang.Exception) {
+        } catch (ignored: Exception) {
             commandSender!!.sendMessage("Invalid number: " + args[argNumber])
         }
     }
@@ -316,7 +317,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
                 DebugManager.ListenFor.FAILURE -> commandSender!!.sendMessage("Listening for failed debug notice events")
                 DebugManager.ListenFor.SUCCESS -> commandSender!!.sendMessage("Listening for successful debug notice events")
             }
-        } catch (ignored: java.lang.Exception) {
+        } catch (ignored: Exception) {
             commandSender!!.sendMessage("Invalid listen-for type: " + args[3] + ", valid options are: failure, success, both")
         }
     }
@@ -397,7 +398,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
                             dm.filterDebugTypes.remove(debugType)
                             optionsAddedOrRemoved.add(debugType.name)
                         }
-                    } catch (ignored: java.lang.Exception) {
+                    } catch (ignored: Exception) {
                         if (isAdd) commandSender!!.sendMessage("Invalid debug type: $debugTypeStr")
                     }
                 }
@@ -414,14 +415,14 @@ class DebugSubcommand: MessagesBase(), Subcommand {
                             dm.filterEntityTypes.remove(entityType)
                             optionsAddedOrRemoved.add(entityType.name)
                         }
-                    } catch (ignored: java.lang.Exception) {
+                    } catch (ignored: Exception) {
                         if (isAdd) commandSender!!.sendMessage("Invalid entity type: $entityTypeStr")
                     }
                 }
             }
 
             ListTypes.RULE_NAMES -> {
-                val allRuleNames: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+                val allRuleNames: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
                 for (ruleInfo in main.rulesParsingManager.getAllRules(false)) {
                     allRuleNames.add(ruleInfo.ruleName.replace(" ", "_"))
                 }
@@ -567,7 +568,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             "location is ${l.blockX}, ${l.blockY}, ${l.blockZ} in ${l.world.name}"
 
         sender.sendMessage("Your location: $locationStr")
-        Utils.logger.info("Player ${sender.getName()}, location: $locationStr")
+        Log.inf("Player ${sender.getName()}, location: $locationStr")
     }
 
     private fun doNbtDump(
@@ -611,7 +612,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
             "${lmEntity.livingEntity.location.blockX}, " +
             "${lmEntity.livingEntity.location.blockX}"
 
-        val mobLevel = if (lmEntity.isLevelled) java.lang.String.valueOf(lmEntity.getMobLevel) else "0"
+        val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
 
         val message = String.format(
             "Showing nbt dump for: %s (lvl %s %s) in %s, %s\n%s",
@@ -624,7 +625,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
         )
 
         lmEntity.free()
-        Utils.logger.info(message)
+        Log.inf(message)
     }
 
     private fun chunkKillCount(
@@ -781,7 +782,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
     private fun getUnusedRuleNames(
         isAdd: Boolean
     ): MutableList<String> {
-        val ruleNames: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val ruleNames: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
         if (isAdd) {
             for (ri in LevelledMobs.instance.rulesParsingManager.getAllRules(false)) {
                 ruleNames.add(ri.ruleName.replace(" ", "_"))
@@ -799,7 +800,7 @@ class DebugSubcommand: MessagesBase(), Subcommand {
     private fun getUnusedPlayers(
         isAdd: Boolean
     ): MutableList<String> {
-        val players: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val players: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
         if (isAdd) {
             for (player in Bukkit.getOnlinePlayers()) {
                 players.add(player.name)

@@ -7,8 +7,8 @@ import java.util.Locale
 import java.util.function.Supplier
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -234,11 +234,11 @@ class DebugManager {
         }
 
         if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CONSOLE) {
-            Utils.logger.info("&8[&bDebug: $debugType&8]&7 $msg")
+            Log.inf("&8[&bDebug: $debugType&8]&7 $msg")
         }
         if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CHAT) {
             if (playerThatEnabledDebug == null) {
-                Utils.logger.info("No player to send chat messages to")
+                Log.inf("No player to send chat messages to")
             } else {
                 playerThatEnabledDebug!!.sendMessage(
                     colorizeAll(
@@ -374,7 +374,7 @@ class DebugManager {
 
             val msg = "Debug timer has elapsed, debugging is now disabled"
             if (outputType == OutputTypes.TO_CONSOLE || outputType == OutputTypes.TO_BOTH) {
-                Utils.logger.info(msg)
+                Log.inf(msg)
             }
             if ((outputType == OutputTypes.TO_CHAT || outputType == OutputTypes.TO_BOTH)
                 && playerThatEnabledDebug != null
@@ -400,7 +400,7 @@ class DebugManager {
         } else if (secondsLeft < 3600) {
             val minutes = floor(secondsLeft.toDouble() / 60.0).toInt()
             val newSeconds = secondsLeft % 60
-            val sb = java.lang.StringBuilder()
+            val sb = StringBuilder()
             sb.append(minutes)
                 .append(if (minutes == 1) " minute, " else " minutes, ")
                 .append(newSeconds)

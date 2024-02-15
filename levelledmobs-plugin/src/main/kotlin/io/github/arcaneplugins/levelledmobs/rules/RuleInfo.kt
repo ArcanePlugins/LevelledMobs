@@ -10,7 +10,6 @@ import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
-import java.util.TreeMap
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
@@ -207,7 +206,7 @@ class RuleInfo(
                 } else if (p.name == "specificMobMultipliers") {
                     val mergingPreset = presetValue as MutableMap<String, FineTuningAttributes>
                     if (this.specificMobMultipliers == null) {
-                        this.specificMobMultipliers = TreeMap()
+                        this.specificMobMultipliers = mutableMapOf()
                     }
 
                     for ((key, value) in mergingPreset) {

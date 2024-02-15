@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.enums.Addition
@@ -11,6 +10,7 @@ import io.github.arcaneplugins.levelledmobs.enums.DropInstanceBuildResult
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
@@ -208,7 +208,7 @@ class CustomDropsHandler {
 
             processingInfo.addDebugMessage(
                 DebugType.MOB_GROUPS,
-                "&8- &7Groups: &b" + java.lang.String.join("&7, &b", lmEntity.getApplicableGroups()) + "&7."
+                "&8- &7Groups: &b" + lmEntity.getApplicableGroups().joinToString("&7, &b") + "&7."
             )
         }
 
@@ -303,7 +303,7 @@ class CustomDropsHandler {
 
         for (id in getDropIds(info)) {
             if (!customItemGroups.containsKey(id.trim())) {
-                Utils.logger.warning("rule specified an invalid value for use-droptable-id: $id")
+                Log.war("rule specified an invalid value for use-droptable-id: $id")
                 continue
             }
 
@@ -472,7 +472,7 @@ class CustomDropsHandler {
                                 val itemDescription =
                                     if ((drop is CustomDropItem)) drop.material.name else "CustomCommand"
                                 DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity!!) {
-                                    java.lang.String.format(
+                                    String.format(
                                         "Reached cap-per-item limit of %s for %s",
                                         info.groupLimits!!.capPerItem, itemDescription
                                     )
@@ -484,7 +484,7 @@ class CustomDropsHandler {
                         val groupDroppedCount = info.getDropItemsCountForGroup(drop)
                         if (info.groupLimits!!.hasReachedCapTotal(groupDroppedCount)) {
                             DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity!!) {
-                                java.lang.String.format(
+                                String.format(
                                     "Reached cap-total of %s for group: %s",
                                     info.groupLimits!!.capTotal, drop.groupId
                                 )
@@ -640,7 +640,7 @@ class CustomDropsHandler {
                     else dropBase.itemStack!!
 
                 info.addDebugMessage(
-                    DebugType.CUSTOM_DROPS, java.lang.String.format(
+                    DebugType.CUSTOM_DROPS, String.format(
                         "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
                         itemStack.type.name, dropBase.amountAsString, dropBase.chance?.showMatchedChance(),
                         Utils.round(chanceRole.toDouble(), 4)
@@ -648,7 +648,7 @@ class CustomDropsHandler {
                 )
             } else {
                 info.addDebugMessage(
-                    DebugType.CUSTOM_DROPS, java.lang.String.format(
+                    DebugType.CUSTOM_DROPS, String.format(
                         "&8 - &7Custom command&7, chance: &b%s&7, chanceRole: &b%s&7, executed: &bfalse&7.",
                         dropBase.chance?.showMatchedChance(), Utils.round(chanceRole.toDouble(), 4)
                     )
@@ -732,7 +732,7 @@ class CustomDropsHandler {
             // -----------------------------------------------------------------------------------------------------------------------------------------------
         }
         if (dropBase !is CustomDropItem) {
-            Utils.logger.warning("Unsupported drop type: " + dropBase.javaClass.name)
+            Log.war("Unsupported drop type: " + dropBase.javaClass.name)
             return
         }
 
@@ -764,7 +764,7 @@ class CustomDropsHandler {
         if (dropBase.isExternalItem &&
             !main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
         ) {
-            Utils.logger.warning("Could not get external custom item - LM_Items is not installed")
+            Log.war("Could not get external custom item - LM_Items is not installed")
         }
 
         if (dropBase.isExternalItem && main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
@@ -801,7 +801,7 @@ class CustomDropsHandler {
                 val equippedChance =
                     if (dropBase.equippedChance != null) dropBase.equippedChance!!.showMatchedChance() else "0.0"
                 info.addDebugMessage(
-                    java.lang.String.format(
+                    String.format(
                         "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
                         newItem.type.name, equippedChance,
                         Utils.round(info.equippedChanceRole.toDouble(), 4)
@@ -811,7 +811,7 @@ class CustomDropsHandler {
                 val retryMsg = if (info.retryNumber > 0) ", retry: " + info.retryNumber else ""
 
                 info.addDebugMessage(
-                    java.lang.String.format(
+                    String.format(
                         "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7%s.",
                         newItem.type.name, dropBase.amountAsString, newDropAmount,
                         dropBase.chance?.showMatchedChance(), Utils.round(chanceRole.toDouble(), 4), retryMsg
@@ -1030,7 +1030,7 @@ class CustomDropsHandler {
             }
         }
 
-        if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) Utils.logger.info(debug.toString())
+        if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) Log.inf(debug.toString())
     }
 
     private fun hasReachedChunkKillLimit(lmEntity: LivingEntityWrapper): Boolean {

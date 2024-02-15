@@ -13,8 +13,8 @@ import io.github.arcaneplugins.levelledmobs.nametag.NametagSenderHandler
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.util.LibsDisguisesUtils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
@@ -58,7 +58,7 @@ class NametagQueueManager {
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            Utils.logger.info("Nametag update queue Manager has exited")
+            Log.inf("Nametag update queue Manager has exited")
         }
         scheduler.run()
     }
@@ -116,7 +116,7 @@ class NametagQueueManager {
         } catch (ex: Exception) {
             val entityName = lastEntityType ?: "Unknown Entity"
 
-            Utils.logger.error("Unable to process nametag update for '$entityName'. ")
+            Log.sev("Unable to process nametag update for '$entityName'. ")
             ex.printStackTrace()
         } finally {
             item.lmEntity.free()

@@ -4,7 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
 
@@ -33,7 +33,7 @@ class MobsQueueManager {
                 } catch (ignored: InterruptedException) {
                     isRunning = false
                 }
-                Utils.logger.info("Mob processing queue Manager has exited")
+                Log.inf("Mob processing queue Manager has exited")
             }
 
             Bukkit.getScheduler().runTaskAsynchronously(LevelledMobs.instance, bgThread)

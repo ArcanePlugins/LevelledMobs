@@ -7,7 +7,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -24,14 +24,14 @@ class LMItemsParser {
     ): Boolean {
         if (!ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
             if (ExternalCompatibilityManager.hasLMItemsInstalled) {
-                Utils.logger.warning(
+                Log.war(
                     String.format(
                         "customdrops.yml references external item '%s' but LM_Items is an old version",
                         materialName
                     )
                 )
             } else {
-                Utils.logger.warning(
+                Log.war(
                     String.format(
                         "customdrops.yml references external item '%s' but LM_Items is not installed",
                         materialName
@@ -47,7 +47,7 @@ class LMItemsParser {
         val lmitems = LM_Items.plugin
 
         if (!lmitems.doesSupportPlugin(item.externalPluginName!!)) {
-            Utils.logger.warning(
+            Log.war(
                 String.format(
                     "customdrops.yml references item from plugin '%s' but LM_Items does not support that plugin",
                     item.externalPluginName
@@ -64,7 +64,7 @@ class LMItemsParser {
         val itemsAPI = LM_Items.plugin.getItemAPIForPlugin(item.externalPluginName!!)
 
         if (itemsAPI == null) {
-            Utils.logger.warning(
+            Log.war(
                 "Unable to get ItemsAPI from LM_Items for plugin " + item.externalPluginName
             )
             return false
@@ -105,7 +105,7 @@ class LMItemsParser {
         val result = itemsAPI.getItem(itemRequest)
 
         if (!result.pluginIsInstalled) {
-            Utils.logger.warning(
+            Log.war(
                 String.format(
                     "custom item references plugin '%s' but that plugin is not installed",
                     item.externalPluginName
@@ -118,14 +118,14 @@ class LMItemsParser {
         if (itemStack == null) {
             if (result.typeIsNotSupported) {
                 if (item.externalType == null) {
-                    Utils.logger.warning(
+                    Log.war(
                         String.format(
                             "custom item '%s:%s' doesn't support type (null)",
                             item.externalPluginName, item.externalItemId
                         )
                     )
                 } else {
-                    Utils.logger.warning(
+                    Log.war(
                         String.format(
                             "custom item '%s:%s' doesn't support type %s",
                             item.externalPluginName, item.externalItemId, item.externalType
@@ -146,7 +146,7 @@ class LMItemsParser {
             if (main.mainCompanion.hasFinishedLoading) {
                 DebugManager.log(DebugType.CUSTOM_DROPS) { msg }
             } else {
-                Utils.logger.warning(msg)
+                Log.war(msg)
             }
 
             main.customDropsHandler.customDropsParser.invalidExternalItems.add(msg)

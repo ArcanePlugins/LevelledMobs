@@ -165,7 +165,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
                     SpigotUtils.updateItemMetaLore(meta, lore)
                 }
 
-                val sbLore = java.lang.StringBuilder()
+                val sbLore = StringBuilder()
                 for (loreLine in lore) {
                     if (sbLore.isNotEmpty()) {
                         sbLore.append("\n")
@@ -227,7 +227,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
         options: MutableList<String>,
         args: Array<String>
     ): MutableList<String> {
-        val commandsList: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+        val commandsList: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
         commandsList.addAll(options)
 
         var inQuotes = false

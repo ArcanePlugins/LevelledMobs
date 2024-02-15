@@ -12,7 +12,6 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.managers.WorldGuardIntegration.getWorldGuardRegionOwnersForLocation
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
@@ -22,7 +21,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.result.RuleCheckResult
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.capitalize
 import io.github.arcaneplugins.levelledmobs.util.Utils.isBiomeInModalList
 import io.github.arcaneplugins.levelledmobs.util.Utils.isIntegerInModalList
@@ -476,7 +475,7 @@ class RulesManager {
                 }
             }
         } catch (e: ConcurrentModificationException) {
-            Utils.logger.info(
+            Log.war(
                 "Got ConcurrentModificationException in getRule_CreatureNametagVisbility"
             )
         }
@@ -1552,7 +1551,7 @@ class RulesManager {
             )
             this.currentRulesHash = bytesToHex(hashbytes)
         } catch (e: NoSuchAlgorithmException) {
-            Utils.logger.error("Unable to run SHA-256 hash: " + e.message)
+            Log.war("Unable to run SHA-256 hash: " + e.message)
             this.currentRulesHash = "1234"
         }
     }
@@ -1566,7 +1565,7 @@ class RulesManager {
 
         // taken from https://www.baeldung.com/sha-256-hashing-java
         private fun bytesToHex(hash: ByteArray): String {
-            val hexString = java.lang.StringBuilder(2 * hash.size)
+            val hexString = StringBuilder(2 * hash.size)
             for (b in hash) {
                 val hex = Integer.toHexString(0xff and b.toInt())
                 if (hex.length == 1) {

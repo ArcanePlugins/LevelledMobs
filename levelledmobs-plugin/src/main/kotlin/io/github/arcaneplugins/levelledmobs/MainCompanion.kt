@@ -28,15 +28,13 @@ import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
 import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.UpdateChecker
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
 import java.io.InvalidObjectException
 import java.time.Duration
 import java.time.Instant
@@ -116,7 +114,7 @@ class MainCompanion{
 
     // Note: also called by the reload subcommand.
     fun loadFiles(isReload: Boolean): Boolean {
-        Utils.logger.info("&fFile Loader: &7Loading files...")
+        Log.inf("&fFile Loader: &7Loading files...")
         val main = LevelledMobs.instance
         val configLoad = loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION)
 
@@ -151,7 +149,7 @@ class MainCompanion{
                         delFile.delete()
                     }
                 } catch (e: Exception) {
-                    Utils.logger.warning("Unable to delete file " + lFile + ", " + e.message)
+                    Log.war("Unable to delete file " + lFile + ", " + e.message)
                 }
             }
 
@@ -199,8 +197,8 @@ class MainCompanion{
                 val debugType = DebugType.valueOf(debug.uppercase(Locale.getDefault()))
                 main.debugManager.filterDebugTypes.add(debugType)
                 addedDebugs = true
-            } catch (ignored: java.lang.Exception) {
-                Utils.logger.warning("Invalid value for debug-misc: $debug")
+            } catch (ignored: Exception) {
+                Log.war("Invalid value for debug-misc: $debug")
             }
         }
 
@@ -218,7 +216,7 @@ class MainCompanion{
     }
 
     fun registerListeners() {
-        Utils.logger.info("&fListeners: &7Registering event listeners...")
+        Log.inf("&fListeners: &7Registering event listeners...")
 
         val main = LevelledMobs.instance
         main.levelManager.load()
@@ -268,11 +266,11 @@ class MainCompanion{
     }
 
     fun registerCommands(){
-        Utils.logger.info("&fCommands: &7Registering commands...")
+        Log.inf("&fCommands: &7Registering commands...")
 
         val levelledMobsCommand = LevelledMobs.instance.getCommand("levelledmobs")
         if (levelledMobsCommand == null) {
-            Utils.logger.error(
+            Log.sev(
                 "Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?"
             )
         } else {
@@ -479,16 +477,14 @@ class MainCompanion{
                         isOutOfDate = (thisVersion < spigotVersion)
                         isNewerVersion = (thisVersion > spigotVersion)
                     } catch (e: InvalidObjectException) {
-                        Utils.logger.warning(
-                            "Got exception creating version objects: " + e.message
-                        )
+                        Log.war("Got exception creating version objects: ${e.message}")
 
                         isOutOfDate = currentVersion != latestVersion
                         isNewerVersion = currentVersion.contains("indev")
                     }
                     if (isNewerVersion) {
                         updateResult = mutableListOf(
-                            "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)"
+                            "Your LevelledMobs version is a pre-release. Latest release version is %latestVersion%. (You're running %currentVersion%)"
                         )
 
                         updateResult = replaceAllInList(
@@ -500,7 +496,7 @@ class MainCompanion{
                         updateResult = colorizeAllInList(updateResult)
 
                         updateResult.forEach(Consumer { message: String ->
-                            Utils.logger.warning(message)
+                            Log.war(message)
                         })
                     } else if (isOutOfDate) {
                         // for some reason config#getStringList doesn't allow defaults??
@@ -509,9 +505,9 @@ class MainCompanion{
                             main.messagesCfg.getStringList("other.update-notice.messages")
                         } else {
                             mutableListOf(
-                                "&b&nLevelledMobs Update Checker Notice:",
-                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
-                                    "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)"
+                                "LevelledMobs Update Checker Notice:",
+                                "Your LevelledMobs version is outdated! Please update to" +
+                                    "%latestVersion% as soon as possible. (You''re running v%currentVersion%)"
                             )
                         }
 
@@ -529,7 +525,7 @@ class MainCompanion{
                             )
                         ) {
                             updateResult.forEach(Consumer { message: String ->
-                                Utils.logger.warning(message)
+                                Log.war(message)
                             })
                         }
 
@@ -556,7 +552,7 @@ class MainCompanion{
     }
 
     fun shutDownAsyncTasks() {
-        Utils.logger.info("&fTasks: &7Shutting down other async tasks...")
+        Log.inf("&fTasks: &7Shutting down other async tasks...")
         val main = LevelledMobs.instance
         main.mobsQueueManager.stop()
         main.nametagQueueManager.stop()

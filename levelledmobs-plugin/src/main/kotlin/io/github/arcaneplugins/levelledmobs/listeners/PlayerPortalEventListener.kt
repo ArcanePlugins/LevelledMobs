@@ -2,7 +2,7 @@ package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -65,8 +65,8 @@ class PlayerPortalEventListener : Listener {
                             )
                     }
                 } catch (e: ConcurrentModificationException) {
-                    Utils.logger.warning(
-                        "Error updating PDC on " + player.name + ", " + e.message
+                    Log.war(
+                        "Error updating PDC on ${player.name}, ${e.message}"
                     )
                 }
             }

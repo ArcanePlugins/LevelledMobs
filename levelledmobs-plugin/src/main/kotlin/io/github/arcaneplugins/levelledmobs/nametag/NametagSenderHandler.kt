@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 
 /**
  * Manages the ideal nametag sender implementation for the server's version
@@ -19,7 +19,7 @@ class NametagSenderHandler {
 
         this.currentUtil = NmsNametagSender()
 
-        Utils.logger.info(
+        Log.inf(
             "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
         )
 

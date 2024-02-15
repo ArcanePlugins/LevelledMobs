@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Material
 import org.bukkit.inventory.EntityEquipment
@@ -48,7 +48,7 @@ class PickedUpEquipment(
 
         for (itemsHex in slotMappings.values) {
             if (itemsHex.length % 2 != 0) {
-                Utils.logger.info("Unable to deserialize picked up item, invalid length: " + itemsHex.length)
+                Log.inf("Unable to deserialize picked up item, invalid length: " + itemsHex.length)
                 continue
             }
 
@@ -56,7 +56,7 @@ class PickedUpEquipment(
             try {
                 results.add(ItemStack.deserializeBytes(bytes))
             } catch (e: Exception) {
-                Utils.logger.info("Unable to deserialize itemstack: " + e.message)
+                Log.inf("Unable to deserialize itemstack: " + e.message)
             }
         }
 

@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -70,7 +71,7 @@ object FileMigrator {
                 return if (this.valueList == null || valueList!!.isEmpty()) {
                     super.toString()
                 } else {
-                    java.lang.String.join(",", this.valueList)
+                    this.valueList!!.joinToString(",")
                 }
             }
 
@@ -97,7 +98,7 @@ object FileMigrator {
             return currentKey
         }
 
-        var result = java.lang.String.join(".", list)
+        var result = list.joinToString(".")
         if (currentKey != null) {
             result += ".$currentKey"
         }
@@ -199,11 +200,11 @@ object FileMigrator {
                 to.toPath(), newConfigLines, StandardCharsets.UTF_8,
                 StandardOpenOption.TRUNCATE_EXISTING
             )
-            Utils.logger.info(
-                "&fFile Loader: &8(Migration) &7Migrated &b" + to.name + "&7 successfully."
+            Log.inf(
+                "&fFile Loader: &8(Migration) &7Migrated &b${to.name}&7 successfully."
             )
         } catch (e: IOException) {
-            Utils.logger.error(
+            Log.sev(
                 "&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.name
                         + "&7! Stack trace:"
             )
@@ -324,7 +325,7 @@ object FileMigrator {
                 }
             }
             else
-                Utils.logger.info("cs was null")
+                Log.war("cs was null")
 
             val newText = mutableListOf(
                 "",
@@ -387,7 +388,6 @@ object FileMigrator {
                 }
 
                 if (line.startsWith("file-version")) {
-                    Utils.logger.info("found file-version")
                     newConfigLines[i] = "file-version: 5"
                 }
             }
@@ -538,7 +538,7 @@ object FileMigrator {
                                                 "$padding- $oldValue" // + "\r\n" + line;
                                             newConfigLines.add(currentLine + 1, newline)
                                             if (showMessages) {
-                                                Utils.logger.info(
+                                                Log.inf(
                                                     "&fFile Loader: &8(Migration) &7Added array value: &b"
                                                             + oldValue
                                                 )
@@ -575,7 +575,7 @@ object FileMigrator {
                                                             + fi.simpleValue)
                                                 newConfigLines.add(currentLine + 1, newline)
                                                 if (showMessages) {
-                                                    Utils.logger.info(
+                                                    Log.inf(
                                                         ("&fFile Loader: &8(Migration) &7Adding key: &b"
                                                                 + enumeratedKey + "&7, value: &r"
                                                                 + fi.simpleValue + "&7.")
@@ -641,7 +641,7 @@ object FileMigrator {
                                         ))
                             ) {
                                 if (showMessages) {
-                                    Utils.logger.info(
+                                    Log.inf(
                                         ("&fFile Loader: &8(Migration) &7Current key: &b" + key
                                                 + "&7, resetting to: &rfalse&7.")
                                     )
@@ -701,9 +701,9 @@ object FileMigrator {
                                         padding + getEndingKey(oldValue) + ": " + fiOld.simpleValue
                                     newConfigLines.add(currentLine + 1, newline)
                                     if (showMessages) {
-                                        Utils.logger.info(
+                                        Log.inf(
                                             ("&fFile Loader: &8(Migration) &7Adding key: &b"
-                                                    + oldValue + "&7, value: &r" + fiOld.simpleValue
+                                                    + "$oldValue&7, value: &r" + fiOld.simpleValue
                                                     + "&7.")
                                         )
                                     }
@@ -715,10 +715,10 @@ object FileMigrator {
                                 if (migratedValue != null) {
                                     valuesUpdated++
                                     if (showMessages) {
-                                        Utils.logger.info(
-                                            ("&fFile Loader: &8(Migration) &7Current key: &b" + key
-                                                    + "&7, replacing: &r" + value + "&7, with: &r"
-                                                    + migratedValue + "&7.")
+                                        Log.inf(
+                                            ("&fFile Loader: &8(Migration) &7Current key: &b$key"
+                                                    + "&7, replacing: &r$value&7, with: &r"
+                                                    + "$migratedValue&7.")
                                         )
                                     }
                                     line = line.replace(value, migratedValue)
@@ -748,9 +748,9 @@ object FileMigrator {
                             newConfigLines.removeAt(currentLine)
                             currentLine--
                             if (showMessages) {
-                                Utils.logger.info(
+                                Log.inf(
                                     ("&fFile Loader: &8(Migration) &7Current key: &b" + key
-                                            + "&7, removing value: &r" + value + "&7.")
+                                            + "&7, removing value: &r$value&7.")
                                 )
                             }
                         }
@@ -792,18 +792,18 @@ object FileMigrator {
                 to.toPath(), newConfigLines, StandardCharsets.UTF_8,
                 StandardOpenOption.TRUNCATE_EXISTING
             )
-            Utils.logger.info(
-                "&fFile Loader: &8(Migration) &7Migrated &b" + to.name + "&7 successfully."
+            Log.inf(
+                "&fFile Loader: &8(Migration) &7Migrated &b${to.name}&7 successfully."
             )
-            Utils.logger.info(
+            Log.inf(
                 String.format(
                     "&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.",
                     keysMatched, valuesMatched, valuesUpdated
                 )
             )
         } catch (e: Exception) {
-            Utils.logger.error(
-                ("&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.name
+            Log.sev(
+                ("&fFile Loader: &8(Migration) &7Failed to migrate &b${to.name}"
                         + "&7! Stack trace:")
             )
             e.printStackTrace()

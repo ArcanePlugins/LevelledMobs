@@ -1,9 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.rules.strategies
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.LinkedList
 import java.util.TreeMap
 import java.util.concurrent.ThreadLocalRandom
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import kotlin.math.max
@@ -80,7 +80,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
 
             val numRange: IntArray = parseNumberRange(range)
             if (numRange[0] == -1 && numRange[1] == -1) {
-                Utils.logger.warning("Invalid number range for weighted random: $range")
+                Log.war("Invalid number range for weighted random: $range")
                 continue
             }
 

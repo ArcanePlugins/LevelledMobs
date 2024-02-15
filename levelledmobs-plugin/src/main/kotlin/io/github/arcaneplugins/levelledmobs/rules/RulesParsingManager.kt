@@ -24,7 +24,7 @@ import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 import org.bukkit.Particle
@@ -59,7 +59,7 @@ class RulesParsingManager {
 
     fun parseRulesMain(config: YamlConfiguration?) {
         if (config == null) {
-            Utils.logger.info("rules config was null")
+            Log.war("rules config was null")
             return
         }
 
@@ -115,7 +115,7 @@ class RulesParsingManager {
         }
 
         main.rulesManager.updateRulesHash()
-        Utils.logger.info("Current rules hash: " + main.rulesManager.currentRulesHash)
+        Log.inf("Current rules hash: " + main.rulesManager.currentRulesHash)
     }
 
     fun getAllRules(): MutableList<RuleInfo> {
@@ -138,7 +138,7 @@ class RulesParsingManager {
 
         for (groupName in cs.getKeys(false)) {
             val names = cs.getStringList(groupName)
-            val groupMembers: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+            val groupMembers: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
             groupMembers.addAll(names)
             LevelledMobs.instance.customMobGroups[groupName] = groupMembers
         }
@@ -151,7 +151,7 @@ class RulesParsingManager {
 
         for (groupName in cs.getKeys(false)) {
             val names = cs.getStringList(groupName)
-            val groupMembers: MutableSet<String> = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+            val groupMembers: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
             groupMembers.addAll(names)
             customBiomeGroups!![groupName] = groupMembers
         }
@@ -169,7 +169,7 @@ class RulesParsingManager {
         parsingInfo.nametagVisibleTime = 1000L
 
         if (cs == null) {
-            Utils.logger.info("default-rule section was null")
+            Log.war("default-rule section was null")
             return this.parsingInfo
         }
 
@@ -188,7 +188,7 @@ class RulesParsingManager {
             count++
             val csKey = YmlParsingHelper.objToCS(cs, key)
             if (csKey == null) {
-                Utils.logger.warning("nothing was specified for preset: $key")
+                Log.war("nothing was specified for preset: $key")
                 continue
             }
 
@@ -267,8 +267,8 @@ class RulesParsingManager {
         cachedModalList!!.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
 
         if (cs2 != null && mlpi.supportsGroups) {
-            cachedModalList.allowedGroups = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
-            cachedModalList.excludedGroups = TreeSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+            cachedModalList.allowedGroups = TreeSet(String.CASE_INSENSITIVE_ORDER)
+            cachedModalList.excludedGroups = TreeSet(String.CASE_INSENSITIVE_ORDER)
 
             for (group in YmlParsingHelper.getListFromConfigItem(
                 cs2, MLALLOWEDGROUPS)
@@ -277,7 +277,7 @@ class RulesParsingManager {
                     continue
                 }
                 if (mlpi.groupMapping == null || !mlpi.groupMapping!!.containsKey(group)) {
-                    Utils.logger.info("invalid ${mlpi.itemName} group: $group")
+                    Log.war("invalid ${mlpi.itemName} group: $group")
                 } else {
                     cachedModalList.allowedGroups.add(group)
                 }
@@ -290,7 +290,7 @@ class RulesParsingManager {
                     continue
                 }
                 if (!LevelledMobs.instance.rulesManager.biomeGroupMappings.containsKey(group)) {
-                    Utils.logger.info("invalid ${mlpi.itemName} group: $group")
+                    Log.war("invalid ${mlpi.itemName} group: $group")
                 } else {
                     cachedModalList.excludedGroups.add(group)
                 }
@@ -350,7 +350,7 @@ class RulesParsingManager {
                         }
                     }
                 } catch (e: IllegalArgumentException) {
-                    Utils.logger.warning("Invalid $invalidWord ${mlpi.itemName}: $item")
+                    Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
                 }
             }
         }
@@ -469,7 +469,7 @@ class RulesParsingManager {
                     )
                     results.add(customGroup.toString())
                     continue
-                } catch (e: java.lang.IllegalArgumentException) {
+                } catch (e: IllegalArgumentException) {
                     invalidGroup = true
                 }
             }
@@ -480,7 +480,7 @@ class RulesParsingManager {
             }
 
             if (invalidGroup) {
-                Utils.logger.warning("Invalid group: $group")
+                Log.war("Invalid group: $group")
             }
         }
 
@@ -496,7 +496,7 @@ class RulesParsingManager {
         for (hashMap in rulesSection as MutableList<MutableMap<String, Any>>) {
             val cs = objToCS2(hashMap)
             if (cs == null) {
-                Utils.logger.info("cs was null (parsing custom-rules)")
+                Log.war("cs was null (parsing custom-rules)")
                 continue
             }
 
@@ -531,7 +531,7 @@ class RulesParsingManager {
             val checkNameTrimmed = checkName.trim { it <= ' ' }
             if (!rulePresets.containsKey(checkNameTrimmed)) {
                 val ruleName = parsingInfo.presetName?: parsingInfo.ruleName
-                Utils.logger.warning(
+                Log.war(
                     "Rule: '$ruleName' specified preset name '$checkNameTrimmed' but none was found"
                 )
                 continue
@@ -656,7 +656,7 @@ class RulesParsingManager {
             }
 
             if (!tier.setRangeFromString(keyName)) {
-                Utils.logger.warning("Invalid number range: $keyName")
+                Log.war("Invalid number range: $keyName")
             } else if (tier.names!!.isNotEmpty()) {
                 levelTiers.add(tier)
             }
@@ -753,7 +753,7 @@ class RulesParsingManager {
                 )
                 nametagVisibilityEnums.add(nametagVisibilityEnum)
             } catch (ignored: Exception) {
-                Utils.logger.warning(
+                Log.war(
                     "Invalid value in nametag-visibility-method: $nametagVisibility" +
                             ", in rule: ${parsingInfo.ruleName}"
                 )
@@ -791,13 +791,13 @@ class RulesParsingManager {
 
             for (message in messages) {
                 if (!isInteger(weightStr)) {
-                    Utils.logger.warning("Invalid number in DeathMessages section: $weightStr")
+                    Log.war("Invalid number in DeathMessages section: $weightStr")
                     continue
                 }
 
                 var weight = weightStr.toInt()
                 if (weight > 100) {
-                    Utils.logger.warning("value of $weight is over the limit of 100 for death message weight")
+                    Log.war("value of $weight is over the limit of 100 for death message weight")
                     weight = 100
                 }
 
@@ -821,8 +821,8 @@ class RulesParsingManager {
 
         try {
             parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase(Locale.getDefault()))
-        } catch (ignored: java.lang.Exception) {
-            Utils.logger.warning(
+        } catch (ignored: Exception) {
+            Log.war(
                 "Invalid value in spawner-particles: $particle, in rule: "
                         + parsingInfo.ruleName
             )
@@ -888,7 +888,7 @@ class RulesParsingManager {
                     mobCustomNameStatus.uppercase(Locale.getDefault())
                 )
             } catch (e: Exception) {
-                Utils.logger.warning("Invalid value for $mobCustomNameStatus")
+                Log.war("Invalid value for $mobCustomNameStatus")
             }
         }
 
@@ -899,7 +899,7 @@ class RulesParsingManager {
                     mobTamedStatus.uppercase(Locale.getDefault())
                 )
             } catch (e: Exception) {
-                Utils.logger.warning("Invalid value for $mobTamedStatus")
+                Log.war("Invalid value for $mobTamedStatus")
             }
         }
 
@@ -991,13 +991,13 @@ class RulesParsingManager {
         for (pluginName in compats.allowedList){
             val checkName = pluginName.replace("_", "-")
             if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
-                Utils.logger.warning("no external plugin definition found for: '$checkName'")
+                Log.war("no external plugin definition found for: '$checkName'")
             }
         }
         for (pluginName in compats.excludedList){
             val checkName = pluginName.replace("_", "-")
             if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
-                Utils.logger.warning("no external plugin definition found for: '$checkName'")
+                Log.war("no external plugin definition found for: '$checkName'")
             }
         }
     }
@@ -1018,8 +1018,8 @@ class RulesParsingManager {
                 val value = YmlParsingHelper.getString(cs, key)
 
                 if (!mdr.parseAxis(value, axis, isStart)) {
-                    Utils.logger.warning(
-                        java.lang.String.format(
+                    Log.war(
+                        String.format(
                             "rule: %s, invalid value for %s: %s",
                             parsingInfo.ruleName, key, value
                         )
@@ -1200,8 +1200,8 @@ class RulesParsingManager {
             var hadInvalidValue = false
             for (i in 0..1) {
                 if (!isInteger(split[i])) {
-                    Utils.logger.info(
-                        java.lang.String.format(
+                    Log.war(
+                        String.format(
                             "Invalid value for %s: '%s' in rule %s", configName, split[i],
                             parsingInfo.ruleName
                         )
@@ -1252,7 +1252,7 @@ class RulesParsingManager {
 
                 if ("default".equals(name, ignoreCase = true)) {
                     if (csTiers.getString(name).isNullOrEmpty()) {
-                        Utils.logger.warning("No value entered for colored tier: $name")
+                        Log.war("No value entered for colored tier: $name")
                     } else {
                         tiers[0] = csTiers.getString(name)!!
                     }
@@ -1261,19 +1261,19 @@ class RulesParsingManager {
                 }
 
                 if (!isInteger(name2)) {
-                    Utils.logger.warning("Not a valid colored tier, missing number: $name")
+                    Log.war("Not a valid colored tier, missing number: $name")
                     continue
                 }
 
                 val tierValue = csTiers.getString(name)
                 if (tierValue.isNullOrEmpty()) {
-                    Utils.logger.warning("No value entered for colored tier: $name")
+                    Log.war("No value entered for colored tier: $name")
                     continue
                 }
 
                 val tierNumber = name2.toInt()
                 if (tiers.containsKey(tierNumber)) {
-                    Utils.logger.warning("Duplicate tier: $name")
+                    Log.war("Duplicate tier: $name")
                 } else {
                     tiers[tierNumber] = tierValue
                 }
@@ -1321,7 +1321,7 @@ class RulesParsingManager {
 
             val value = csTiers.getString(name)
             if (value == null) {
-                Utils.logger.warning("No value was specified for: $name")
+                Log.war("No value was specified for: $name")
                 continue
             }
 
@@ -1329,17 +1329,17 @@ class RulesParsingManager {
                 // found a source tier name rather than number
                 info.sourceTierName = name
             } else if (!info.setRangeFromString(name)) {
-                Utils.logger.warning("Invalid number range: $name")
+                Log.war("Invalid number range: $name")
                 continue
             }
 
             val levelRange = LevelTierMatching.getRangeFromString(value)
             if (levelRange.size < 2) {
-                Utils.logger.warning("Invalid number range (len): $value")
+                Log.war("Invalid number range (len): $value")
                 continue
             }
             if (levelRange[0] == -1 && levelRange[1] == -1) {
-                Utils.logger.warning("Invalid number range: $value")
+                Log.war("Invalid number range: $value")
                 continue
             }
 
@@ -1413,8 +1413,8 @@ class RulesParsingManager {
 
             try {
                 EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
-            } catch (e: java.lang.IllegalArgumentException) {
-                Utils.logger.warning(
+            } catch (e: IllegalArgumentException) {
+                Log.war(
                     "Invalid entity type: $mobName for fine-tuning in rule: "
                             + parsingInfo.ruleName
                 )
@@ -1464,8 +1464,8 @@ class RulesParsingManager {
                                 item.replace("-", "_")
                                     .uppercase(Locale.getDefault())
                             )
-                    } catch (ignored: java.lang.Exception) {
-                        Utils.logger.warning("Invalid multiplier: $item")
+                    } catch (ignored: Exception) {
+                        Log.war("Invalid multiplier: $item")
                         continue
                     }
 
@@ -1583,7 +1583,7 @@ class RulesParsingManager {
             }
 
             else -> {
-                Utils.logger.warning(
+                Log.war(
                     "couldn't parse config of type: " + obj.javaClass.simpleName +
                             ", value: $obj"
                 )

@@ -8,7 +8,6 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
@@ -16,7 +15,7 @@ import io.github.arcaneplugins.levelledmobs.rules.ApplicableRulesResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
-import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.util.Log
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Ageable
@@ -207,7 +206,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
         try {
             if (!cacheLock.tryLock(500, TimeUnit.MILLISECONDS)) {
-                Utils.logger.warning("lock timed out building cache")
+                Log.war("lock timed out building cache")
                 return
             }
 
@@ -241,7 +240,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             this.nametagCooldownTime = main.rulesManager.getRuleNametagVisibleTime(this)
             this.isBuildingCache = false
         } catch (e: InterruptedException) {
-            Utils.logger.warning("exception in buildCache: " + e.message)
+            Log.war("exception in buildCache: " + e.message)
         } finally {
             if (cacheLock.isHeldByCurrentThread) {
                 cacheLock.unlock()
@@ -280,7 +279,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                 }
             }
         } catch (e: InterruptedException) {
-            Utils.logger.warning("getPDCLock InterruptedException: " + e.message)
+            Log.war("getPDCLock InterruptedException: " + e.message)
             return false
         }
     }
@@ -538,11 +537,11 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
         if (hadError) {
             if (succeeded) {
-                Utils.logger.warning(
+                Log.war(
                     "Got ConcurrentModificationException in LivingEntityWrapper getting spawn reason, succeeded on retry"
                 )
             } else {
-                Utils.logger.warning(
+                Log.war(
                     "Got ConcurrentModificationException (2x) in LivingEntityWrapper getting spawn reason"
                 )
             }
@@ -615,11 +614,11 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
             if (hadError) {
                 if (succeeded) {
-                    Utils.logger.warning(
+                    Log.war(
                         "Got ConcurrentModificationException in LivingEntityWrapper getting skyLightLevel, succeeded on retry"
                     )
                 } else {
-                    Utils.logger.warning(
+                    Log.war(
                         "Got ConcurrentModificationException (2x) in LivingEntityWrapper getting skyLightLevel"
                     )
                 }

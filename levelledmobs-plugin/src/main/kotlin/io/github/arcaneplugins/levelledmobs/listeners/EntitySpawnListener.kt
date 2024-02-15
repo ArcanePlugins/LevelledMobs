@@ -195,7 +195,7 @@ class EntitySpawnListener : Listener{
         lmEntity: LivingEntityWrapper,
         event: SpawnerSpawnEvent
     ) {
-        val cs = event.getSpawner()
+        val cs = event.spawner
         val main = LevelledMobs.instance
 
         if (cs == null) return
@@ -292,8 +292,7 @@ class EntitySpawnListener : Listener{
 
         if (event is SpawnerSpawnEvent) {
             // on spigot servers event.spawner can be null
-            @Suppress("SENSELESS_COMPARISON")
-            if (event.getSpawner() != null && (event.getSpawner() as CreatureSpawner)
+            if (event.spawner != null && (event.spawner as CreatureSpawner)
                     .persistentDataContainer
                     .has(NamespacedKeys.keySpawner, PersistentDataType.INTEGER)
             ) {

@@ -4,8 +4,8 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
@@ -94,9 +94,9 @@ class PlayerJoinListener : Listener {
                 }
             }
         } catch (e: Exception) {
-            Utils.logger.warning(
-                "Unable to get player nether portal coords from " + player.name + ", "
-                        + e.message
+            Log.war(
+                "Unable to get player nether portal coords from ${player.name}, "
+                    + e.message
             )
         }
     }

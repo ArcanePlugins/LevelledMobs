@@ -14,11 +14,6 @@ object MiscUtils {
         livingEntity: LivingEntity
     ): String {
         val def = LevelledMobs.instance.definitions
-        val ver: ServerVersionInfo = LevelledMobs.instance.ver
-
-        if (ver.minecraftVersion < 1.17) {
-            return getNBTDump116(livingEntity)
-        }
 
         try {
             //final Method method_getHandle = def.clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
@@ -38,30 +33,6 @@ object MiscUtils {
             return compoundTag.toString()
         } catch (ex: Exception) {
             ex.printStackTrace()
-        }
-
-        return ""
-    }
-
-    private fun getNBTDump116(livingEntity: LivingEntity): String {
-        try {
-            val clazzCraftLivingEntity = Class.forName(
-            "org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity")
-            val methodGetHandle = clazzCraftLivingEntity.getDeclaredMethod("getHandle")
-
-            // net.minecraft.server.v1_16_R3.EntityLiving
-            val internalLivingEntity = methodGetHandle.invoke(livingEntity)
-
-            val compoundTagClazz = Class.forName("net.minecraft.server.v1_16_R3.NBTTagCompound")
-            val compoundTag = compoundTagClazz.getConstructor().newInstance()
-
-            val clazzEntity = Class.forName("net.minecraft.server.v1_16_R3.Entity")
-            val saveWithoutId = clazzEntity.getDeclaredMethod("save", compoundTagClazz)
-            saveWithoutId.invoke(internalLivingEntity, compoundTag)
-
-            return compoundTag.toString()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
 
         return ""

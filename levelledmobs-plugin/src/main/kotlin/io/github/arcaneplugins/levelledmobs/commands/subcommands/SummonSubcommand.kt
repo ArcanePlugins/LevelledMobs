@@ -368,7 +368,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                 "command.levelledmobs.summon.level-limited.min"
             )
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(messages, "%minLevel%", java.lang.String.valueOf(levels.min))
+            messages = Utils.replaceAllInList(messages, "%minLevel%", levels.min.toString())
             messages = Utils.colorizeAllInList(messages)
             messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
         }
@@ -383,7 +383,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                 "command.levelledmobs.summon.level-limited.max"
             )
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(messages, "%maxLevel%", java.lang.String.valueOf(levels.max))
+            messages = Utils.replaceAllInList(messages, "%maxLevel%", levels.max.toString())
             messages = Utils.colorizeAllInList(messages)
             messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
         }
@@ -457,7 +457,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                         "command.levelledmobs.summon.here.success",
                         arrayOf("%amount%", "%level%", "%entity%"),
                         arrayOf(
-                            java.lang.String.valueOf(options.amount), options.requestedLevel.toString(),
+                            options.amount.toString(), options.requestedLevel.toString(),
                             options.lmPlaceholder.typeName
                         )
                     )
@@ -669,7 +669,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                     val addition: Double
                     try {
                         addition = xStr.substring(1).toDouble()
-                    } catch (ex: java.lang.NumberFormatException) {
+                    } catch (ex: NumberFormatException) {
                         return null
                     }
                     x += addition
@@ -688,7 +688,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                     val addition: Double
                     try {
                         addition = yStr.substring(1).toDouble()
-                    } catch (ex: java.lang.NumberFormatException) {
+                    } catch (ex: NumberFormatException) {
                         return null
                     }
 
@@ -708,7 +708,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                     val addition: Double
                     try {
                         addition = zStr.substring(1).toDouble()
-                    } catch (ex: java.lang.NumberFormatException) {
+                    } catch (ex: NumberFormatException) {
                         return null
                     }
                     z += addition
@@ -721,21 +721,21 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         if (!xRelative) {
             try {
                 x = xStr.toDouble()
-            } catch (ex: java.lang.NumberFormatException) {
+            } catch (ex: NumberFormatException) {
                 return null
             }
         }
         if (!yRelative) {
             try {
                 y = yStr.toDouble()
-            } catch (ex: java.lang.NumberFormatException) {
+            } catch (ex: NumberFormatException) {
                 return null
             }
         }
         if (!zRelative) {
             try {
                 z = zStr.toDouble()
-            } catch (ex: java.lang.NumberFormatException) {
+            } catch (ex: NumberFormatException) {
                 return null
             }
         }

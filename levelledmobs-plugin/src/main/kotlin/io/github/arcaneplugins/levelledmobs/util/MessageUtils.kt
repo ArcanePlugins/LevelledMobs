@@ -40,13 +40,12 @@ object MessageUtils {
     /**
      * This defaults the 'startTag' to '&#' and endTag to '' (nothing) to colorizeHexCodes.
      *
-     * @param msg message to translate
+     * @param message message to translate
      * @return the translated string
      * @author lokka30
      * @see MessageUtils#colorizeHexCodes(String, String, String)
      * @since unknown
      */
-
     private fun colorizeHexCodes(
         message: String
     ): String {

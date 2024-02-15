@@ -101,7 +101,7 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
         }
 
         val mobInfo = mobsByPlayerTracking[player.uniqueId]
-        return if (mobInfo!!.entityLevel == null) "" else java.lang.String.valueOf(mobInfo.entityLevel)
+        return if (mobInfo!!.entityLevel == null) "" else mobInfo.entityLevel.toString()
     }
 
     private fun getDisplaynameFromPlayer(player: Player): String {

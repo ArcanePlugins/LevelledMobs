@@ -11,7 +11,7 @@ import org.bukkit.entity.EntityType
  */
 class ExternalCustomDropsImpl : ExternalCustomDrops {
     val customDropsitems = mutableMapOf<EntityType, CustomDropInstance>()
-    val customDropIDs: MutableMap<String, CustomDropInstance> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
+    val customDropIDs: MutableMap<String, CustomDropInstance> = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
     override fun addCustomDrop(customDropInstance: CustomDropInstance) {
         customDropsitems[customDropInstance.associatedMob!!] = customDropInstance

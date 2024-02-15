@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.result.MultiplierResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.Collections
@@ -227,7 +228,7 @@ class MobDataManager {
                 )
                 try{ multiplierValue = evaluateExpression(formulaStr).toFloat() }
                 catch (e: Exception){
-                    Utils.logger.warning("Error evaluating formula: '$formulaStr', ${e.message}")
+                    Log.war("Error evaluating formula: '$formulaStr', ${e.message}")
                 }
                 DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                     "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
