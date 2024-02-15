@@ -6,7 +6,6 @@ import java.util.Objects
 import java.util.Optional
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.nametag.ComponentUtils.appendComponents
-import io.github.arcaneplugins.levelledmobs.nametag.ComponentUtils.getEmptyComponent
 import io.github.arcaneplugins.levelledmobs.nametag.ComponentUtils.getTextComponent
 import io.github.arcaneplugins.levelledmobs.nametag.ComponentUtils.getTranslatableComponent
 import io.github.arcaneplugins.levelledmobs.nametag.KyoriNametags.generateComponent
@@ -62,6 +61,7 @@ class NmsNametagSender : NametagSender {
             //final Object entityData = entityDataPreClone;
             val optionalComponent =
                 def.fieldOPTIONALCOMPONENT!![def.clazzDataWatcherRegistry]
+            // https://wiki.vg/Entity_metadata#Entity_Metadata_Format
 
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
             //     //new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
@@ -114,12 +114,6 @@ class NmsNametagSender : NametagSender {
         entityDataPreClone: Any,
         internalLivingEntity: Any
     ): Any? {
-        // 1.18 and older uses the legacy function
-
-        if (LevelledMobs.instance.ver.minorVersion <= 18) {
-            return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity)
-        }
-
         // constructor:
         // public net.minecraft.network.syncher.DataWatcher(net.minecraft.world.entity.Entity)
         val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
@@ -138,28 +132,6 @@ class NmsNametagSender : NametagSender {
             return entityData
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-
-        return entityData
-    }
-
-    @Throws(InvocationTargetException::class, InstantiationException::class, IllegalAccessException::class)
-    private fun cloneEntityDataLegacy(
-        entityDataPreClone: Any,
-        internalLivingEntity: Any
-    ): Any {
-        val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
-        if (def.methodGetAll!!.invoke(entityDataPreClone) == null) {
-            return entityData
-        }
-
-        // SynchedEntityData.DataItem
-        // List<DataItem<?>> getAll()
-        for (dataItem in def.methodGetAll!!.invoke(entityDataPreClone) as List<*>) {
-            // entityData.define(dataItem.getAccessor(), dataItem.getValue());
-            val accessor = def.methodGetAccessor!!.invoke(dataItem)
-            val value = def.methodGetValue!!.invoke(dataItem)
-            def.methodDefine!!.invoke(entityData, accessor, value)
         }
 
         return entityData
@@ -201,7 +173,7 @@ class NmsNametagSender : NametagSender {
         nametag: NametagResult
     ): Optional<Any> {
         if (nametag.isNullOrEmpty) {
-            return Optional.of(getEmptyComponent())
+            return Optional.empty()
         }
 
         if (def.hasKiori) {

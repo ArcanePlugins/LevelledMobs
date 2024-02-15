@@ -326,7 +326,6 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         }
 
         var showOnConsole = sender is ConsoleCommandSender
-
         var foundRule: String? = null
         val allRuleNames: MutableMap<String, RuleInfo> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
@@ -362,20 +361,19 @@ class RulesSubcommand : MessagesBase(), Subcommand {
 
         val rule = allRuleNames[foundRule]
 
-        val sb = java.lang.StringBuilder()
+        val sb = StringBuilder()
         sb.append(
             getMessage(
                 "command.levelledmobs.rules.showing-rules", "%rulename%",
                 rule!!.ruleName
             )
         )
-        //sb.append("\n")
 
         sb.append(rule.formatRulesVisually(false, mutableListOf("id")))
         if (showOnConsole) {
             Utils.logger.info(sb.toString())
         } else {
-            sender.sendMessage(sb.toString())
+            sender.sendMessage(colorizeAll(sb.toString()))
         }
     }
 
@@ -387,19 +385,15 @@ class RulesSubcommand : MessagesBase(), Subcommand {
         val lmEntity: LivingEntityWrapper = getMobBeingLookedAt(player, findNearbyEntities, this.commandSender!!)
             ?: return
 
-        var entityName: String = lmEntity.typeName
+        var entityName = lmEntity.typeName
         if (ExternalCompatibilityManager.hasMythicMobsInstalled
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
         }
 
-        val locationStr = java.lang.String.format(
-            "%s, %s, %s",
-            lmEntity.location.blockX,
-            lmEntity.location.blockY,
-            lmEntity.location.blockZ
-        )
+        val locationStr =
+            "${lmEntity.location.blockX}, ${lmEntity.location.blockY}, ${lmEntity.location.blockZ}"
         val mobLevel: String = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
         val messages = getMessage(
             "command.levelledmobs.rules.effective-rules",
