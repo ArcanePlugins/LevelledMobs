@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.15.1 b826</version>
+  <version>3.15.2 b827</version>
 
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Solution</description>
@@ -20,8 +20,8 @@
 
     <bstats.version>3.0.2</bstats.version>
     <paper.version>1.20.4-R0.1-SNAPSHOT</paper.version>
-    <folia.version>1.20.1-R0.1-SNAPSHOT</folia.version>
-    <shade.version>3.5.0</shade.version>
+    <folia.version>1.20.4-R0.1-SNAPSHOT</folia.version>
+    <shade.version>3.5.1</shade.version>
     <essentialsx.version>2.20.1</essentialsx.version>
     <placeholderapi.version>2.11.3</placeholderapi.version>
     <worldguard.version>7.1.0-SNAPSHOT</worldguard.version>
