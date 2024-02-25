@@ -1,13 +1,14 @@
 package io.github.arcaneplugins.levelledmobs
 
-import io.github.arcaneplugins.levelledmobs.commands.LevelledMobsCommand
+import dev.jorel.commandapi.CommandAPI
+import io.github.arcaneplugins.levelledmobs.commands.CommandHandler
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsHandler
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.listeners.BlockPlaceListener
 import io.github.arcaneplugins.levelledmobs.listeners.ChunkLoadListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDamageDebugListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerInteractEventListener
-import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
@@ -38,6 +39,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 
+
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and
  * onDisable on shutdown.
@@ -61,7 +63,7 @@ class LevelledMobs : JavaPlugin() {
     val nametagQueueManager = NametagQueueManager()
     val nametagTimerChecker = NametagTimerChecker()
     val attributeSyncObject = Any()
-    val levelledMobsCommand = LevelledMobsCommand()
+    //val levelledMobsCommand = LevelledMobsCommand()
     val random = Random()
     var placeholderApiIntegration: PlaceholderApiIntegration? = null
         internal set
@@ -96,11 +98,22 @@ class LevelledMobs : JavaPlugin() {
 
     override fun onLoad() {
         instance = this
+
+//        CommandAPI.onLoad(CommandAPIBukkitConfig(this).verboseOutput(true)) // Load with verbose output
+//
+//        CommandAPICommand("LevelledMobs")
+//            .executes(CommandExecutor { sender: CommandSender, _: CommandArguments? ->
+//                sender.sendMessage("meow")
+//            })
+//            .register()
+        CommandHandler.load(CommandHandler.LoadingStage.ON_LOAD)
     }
 
     override fun onEnable() {
         val timer = QuickTimer()
 
+        //CommandAPI.onEnable()
+        CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
         this.ver.load()
         if (ver.minecraftVersion <= 1.18){
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
@@ -143,6 +156,7 @@ class LevelledMobs : JavaPlugin() {
         val disableTimer = QuickTimer()
         disableTimer.start()
 
+        CommandHandler.load(CommandHandler.LoadingStage.ON_DISABLE)
         levelManager.stopNametagAutoUpdateTask()
         mainCompanion.shutDownAsyncTasks()
 

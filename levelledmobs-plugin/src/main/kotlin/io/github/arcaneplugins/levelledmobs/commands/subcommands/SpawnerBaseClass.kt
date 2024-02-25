@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
+import dev.jorel.commandapi.SuggestionInfo
 import java.lang.reflect.Modifier
 import java.util.TreeSet
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -8,11 +9,16 @@ import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
+import java.util.Locale
+import java.util.regex.Pattern
+import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.ItemMeta
@@ -30,7 +36,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
 
     fun getArgValue(
         key: String,
-        args: Array<String>,
+        args: MutableList<String>,
         mustBeNumber: Boolean
     ): String? {
         var keyFlag = -1
@@ -74,7 +80,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
     private fun parseFlagValue(
         keyName: String,
         argNumber: Int,
-        args: Array<String>,
+        args: MutableList<String>,
         mustBeNumber: Boolean
     ): String? {
         if (argNumber + 1 >= args.size || args[argNumber + 1].startsWith("/")) {
@@ -195,9 +201,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
         }
     }
 
-    class CustomSpawnerInfo(
-        @DoNotMerge val label: String?
-    ) {
+    class CustomSpawnerInfo {
         @DoNotMerge
         var player: Player? = null
         var minLevel = -1
@@ -223,35 +227,78 @@ abstract class SpawnerBaseClass : MessagesBase() {
         var lore: String? = null
     }
 
-    fun checkTabCompletion(
+    // taken from:
+    // https://stackoverflow.com/questions/2817646/javascript-split-string-on-space-or-on-quotes-to-array
+    fun splitStringWithQuotes(myString: String): MutableList<String>{
+        val results = mutableListOf<String>()
+        val pattern = Pattern.compile("[^\\s\"]+|\"([^\"]*)\"")
+        val match = pattern.matcher(myString)
+        while (match.find()){
+            var temp = match.group(0)
+            if (temp.startsWith("\"") && temp.endsWith("\""))
+                temp = temp.substring(1, temp.length - 1)
+            results.add(temp)
+        }
+
+        return results
+    }
+
+    protected fun buildTabSuggestions(
+        allOptions: MutableList<String>,
+        info: SuggestionInfo<CommandSender>
+    ): MutableList<String>{
+        val args = splitStringWithQuotes(info.currentArg)
+        val hasEndingSpace = info.currentInput.toString().endsWith(" ")
+        if (args.isEmpty())
+            return checkTabCompletion(allOptions, args)
+
+        var doCheckArg = false
+        var checkArg = args[args.size - 1]
+        if (checkArg.startsWith("/")) doCheckArg = true
+        else if (!hasEndingSpace && args.size >= 2 && args[args.size - 2].startsWith("/")){
+            checkArg = args[args.size - 2]
+            doCheckArg = true
+        }
+        //Log.inf("doCheckArg: $doCheckArg, checkArg: '$checkArg'")
+
+        if (doCheckArg) {
+            when (checkArg.lowercase(Locale.getDefault())) {
+                "/entity" -> {
+                    val entityNames = mutableListOf<String>()
+                    for (entityType in EntityType.entries) {
+                        if (entityType == EntityType.PLAYER || entityType == EntityType.ARMOR_STAND) continue
+                        entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
+                    }
+                    return entityNames
+                }
+
+                "/giveplayer" -> {
+                    val players = mutableListOf<String>()
+                    for (player in Bukkit.getOnlinePlayers()) {
+                        players.add(player.name)
+                    }
+                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
+                    return players
+                }
+            }
+        }
+
+        return checkTabCompletion(allOptions, args)
+    }
+
+    private fun checkTabCompletion(
         options: MutableList<String>,
-        args: Array<String>
+        args: MutableList<String>
     ): MutableList<String> {
         val commandsList: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
         commandsList.addAll(options)
+        if (args.isEmpty()) return commandsList.toMutableList()
 
-        var inQuotes = false
-
-        for (i in 1 until args.size) {
-            val arg = args[i]
-
-            if (arg.startsWith("\"") && !arg.endsWith("\"")) {
-                inQuotes = true
-            } else if (inQuotes && arg.endsWith("\"")) {
-                inQuotes = false
-            }
-
-            commandsList.remove(arg)
+        for (arg in args){
+            if (commandsList.contains(arg))
+                commandsList.remove(arg)
         }
 
-        val lastArg = args[args.size - 1]
-
-        if (inQuotes || lastArg.isNotEmpty() && lastArg[lastArg.length - 1] == '\"') {
-            return mutableListOf()
-        }
-
-        val result: MutableList<String> = ArrayList(commandsList.size)
-        result.addAll(commandsList)
-        return result
+        return commandsList.toMutableList()
     }
 }

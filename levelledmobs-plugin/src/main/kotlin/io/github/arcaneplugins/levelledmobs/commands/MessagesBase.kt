@@ -21,18 +21,51 @@ open class MessagesBase{
             throw NullPointerException("CommandSender must be set before calling showMessage")
         }
 
-        showMessage(path, commandSender!!)
+        showMessage(path, commandSender!!, messageLabel!!)
     }
 
-    protected fun showMessage(
-        path: String,
-        sender: CommandSender
-    ) {
-        var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
-        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
-        messages = replaceAllInList(messages, "%label%", messageLabel)
-        messages = colorizeAllInList(messages)
-        messages.forEach(Consumer { s: String -> sender.sendMessage(s) })
+    companion object{
+        @JvmStatic
+        protected fun showMessage(
+            path: String,
+            sender: CommandSender,
+            messageLabel: String
+        ) {
+            var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
+            messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
+            messages = replaceAllInList(messages, "%label%", messageLabel)
+            messages = colorizeAllInList(messages)
+            messages.forEach(Consumer { s: String -> sender.sendMessage(s) })
+        }
+
+        @JvmStatic
+        protected fun getMessage(
+            path: String,
+            replaceWhat: Array<String>,
+            replaceWith: Array<String>
+        ): MutableList<String> {
+            if (replaceWhat.size != replaceWith.size) {
+                throw ArrayIndexOutOfBoundsException(
+                    "replaceWhat must be the same size as replaceWith"
+                )
+            }
+
+            var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
+            messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
+            messages = replaceAllInList(
+                messages, "%label%", ""
+            )
+
+            for (i in replaceWhat.indices) {
+                messages = replaceAllInList(
+                    messages, replaceWhat[i],
+                    replaceWith[i]
+                )
+            }
+
+            messages = colorizeAllInList(messages)
+            return messages
+        }
     }
 
     protected fun showMessage(
@@ -98,34 +131,5 @@ open class MessagesBase{
             arrayOf(replaceWhat),
             arrayOf(replaceWith)
         )
-    }
-
-    protected fun getMessage(
-        path: String,
-        replaceWhat: Array<String>,
-        replaceWith: Array<String>
-    ): MutableList<String> {
-        if (replaceWhat.size != replaceWith.size) {
-            throw ArrayIndexOutOfBoundsException(
-                "replaceWhat must be the same size as replaceWith"
-            )
-        }
-
-        var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
-        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
-        messages = replaceAllInList(
-            messages, "%label%",
-            if (messageLabel != null) messageLabel else ""
-        )
-
-        for (i in replaceWhat.indices) {
-            messages = replaceAllInList(
-                messages, replaceWhat[i],
-                replaceWith[i]
-            )
-        }
-
-        messages = colorizeAllInList(messages)
-        return messages
     }
 }

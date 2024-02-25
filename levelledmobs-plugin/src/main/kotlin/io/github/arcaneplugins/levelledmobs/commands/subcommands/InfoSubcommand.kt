@@ -1,7 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
+import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.executors.CommandArguments
+import dev.jorel.commandapi.executors.CommandExecutor
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
+import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import org.bukkit.command.CommandSender
 
 /**
@@ -10,52 +13,34 @@ import org.bukkit.command.CommandSender
  * @author lokka30
  * @since v2.0.0
  */
-class InfoSubcommand : MessagesBase(), Subcommand {
-    @Suppress("DEPRECATION")
-    override fun parseSubcommand(
-        sender: CommandSender,
-        label: String,
-        args: Array<String>
-    ) {
-        commandSender = sender
-        messageLabel = label
-
-        val main = LevelledMobs.instance
-        if (!sender.hasPermission("levelledmobs.command.info")) {
-            main.configUtils.sendNoPermissionMsg(sender)
-            return
-        }
-
-        if (args.size == 1) {
-            val listSeparator = main.messagesCfg.getString("command.levelledmobs.info.listSeparator", "&7, &f")!!
-
-            showMessage(
-                "command.levelledmobs.info.about",
-                arrayOf(
-                    "%version%",
-                    "%description%",
-                    "%supportedVersions%",
-                    "%maintainers%",
-                    "%contributors%"
-                ),
-                arrayOf(
-                    main.description.version,
-                    main.description.description ?: "",
-                    "1.19 - 1.20",
-                    main.description.authors.joinToString(listSeparator),
-                    "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
+object InfoSubcommand {
+    fun createInstance(): CommandAPICommand? {
+        @Suppress("DEPRECATION")
+        return CommandAPICommand("info")
+            .withPermission("levelledmobs.command.info")
+            .withShortDescription("View info about the installed version of the plugin.")
+            .withFullDescription("View info about the installed version of the plugin.")
+            .executes(CommandExecutor { sender: CommandSender, _: CommandArguments ->
+                val main = LevelledMobs.instance
+                val listSeparator = main.messagesCfg.getString("command.levelledmobs.info.listSeparator", "&7, &f")!!
+                MessagesHelper.showMessage(
+                    sender,
+                    "command.levelledmobs.info.about",
+                    arrayOf(
+                        "%version%",
+                        "%description%",
+                        "%supportedVersions%",
+                        "%maintainers%",
+                        "%contributors%"
+                    ),
+                    arrayOf(
+                        main.description.version,
+                        main.description.description ?: "",
+                        "1.19 - 1.20",
+                        main.description.authors.joinToString(listSeparator),
+                        "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
+                    )
                 )
-            )
-        } else {
-            showMessage("command.levelledmobs.info.usage")
-        }
-    }
-
-    override fun parseTabCompletions(
-        sender: CommandSender,
-        args: Array<String>
-    ): List<String> {
-        // This subcommand has no tab completions.
-        return emptyList()
+            })
     }
 }

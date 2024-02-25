@@ -1,10 +1,17 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
+import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.arguments.ArgumentSuggestions
+import dev.jorel.commandapi.arguments.ListArgumentBuilder
+import dev.jorel.commandapi.arguments.StringArgument
+import dev.jorel.commandapi.executors.CommandArguments
+import dev.jorel.commandapi.executors.CommandExecutor
 import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
+import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
@@ -24,9 +31,132 @@ import org.bukkit.persistence.PersistentDataType
  * @author stumper66
  * @since 3.0.0
  */
-class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
-    init {
-        startingArgNum = 2
+object SpawnerSubcommand : SpawnerBaseClass() {
+    fun createInstance(): CommandAPICommand{
+        return CommandAPICommand("spawner")
+            .withPermission("levelledmobs.command.spawner")
+            .withShortDescription("Various commands for creating spawner cubes.")
+            .withFullDescription("Various commands for creating spawner cubes.")
+            .executes(CommandExecutor { sender, args ->
+                MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.usage")
+            })
+            .withSubcommands(
+                CommandAPICommand("create")
+                .executes(CommandExecutor { sender, args ->
+                    processResults(sender, args, OperationEnum.CREATE)
+                })
+                .withOptionalArguments(
+                    ListArgumentBuilder<String>("values")
+                        .skipListValidation(true)
+                        .withList { info -> buildTabSuggestions(allSpawnerOptions, info) }
+                        .withStringMapper()
+                        .buildGreedy()
+                )
+            )
+            .withSubcommands(
+                CommandAPICommand("copy")
+                    .executes(CommandExecutor { sender, args ->
+                        if (sender !is Player)
+                            MessagesHelper.showMessage(sender, "common.players-only")
+                        else
+                            processResults(sender, args, OperationEnum.COPY)
+                    })
+                    .withOptionalArguments(StringArgument("value")
+                        .replaceSuggestions(ArgumentSuggestions.strings("on", "off"))
+                    )
+            )
+            .withSubcommands(
+                CommandAPICommand("info")
+                    .executes(CommandExecutor { sender, args ->
+                        if (sender !is Player)
+                            MessagesHelper.showMessage(sender, "common.players-only")
+                        else
+                            processResults(sender, args, OperationEnum.INFO)
+                    })
+                    .withOptionalArguments(StringArgument("value")
+                        .replaceSuggestions(ArgumentSuggestions.strings("on", "off"))
+                    )
+            )
+    }
+
+    private fun processResults(
+        sender: CommandSender,
+        input: CommandArguments,
+        operation: OperationEnum
+    ) {
+        if (input.rawArgs.isEmpty()){
+            when (operation){
+                OperationEnum.CREATE -> {
+                    MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.usage")
+                }
+                OperationEnum.COPY -> {
+                    val playerId = (sender as Player).uniqueId
+                    MessagesHelper.showMessage(sender,
+                        if (LevelledMobs.instance.mainCompanion.spawnerCopyIds.contains(playerId))
+                            "command.levelledmobs.spawner.copy.status-enabled"
+                        else
+                            "command.levelledmobs.spawner.copy.status-not-enabled"
+                    )
+                }
+                OperationEnum.INFO -> {
+                    val playerId = (sender as Player).uniqueId
+                    MessagesHelper.showMessage(sender,
+                        if (LevelledMobs.instance.mainCompanion.spawnerInfoIds.contains(playerId))
+                            "command.levelledmobs.spawner.info.status-enabled"
+                        else
+                            "command.levelledmobs.spawner.info.status-not-enabled"
+                    )
+                }
+            }
+            return
+        }
+
+        val args = splitStringWithQuotes(input.rawArgs[0])
+        var hasGivePlayer = false
+        for (i in 0 until args.size) {
+            if ("/giveplayer".equals(args[i], ignoreCase = true)) {
+                hasGivePlayer = true
+                break
+            }
+        }
+
+        if ((!hasGivePlayer || operation != OperationEnum.CREATE)
+            && sender !is Player
+        ) {
+            val messageName =
+                if (operation != OperationEnum.CREATE)
+                    "common.players-only" else "command.levelledmobs.spawner.no-player"
+
+            MessagesHelper.showMessage(sender, messageName)
+            return
+        }
+
+        when (operation) {
+            OperationEnum.CREATE -> parseCreateCommand(sender, args)
+            OperationEnum.COPY -> parseCopyCommand(sender, input)
+            OperationEnum.INFO -> parseInfoCommand(sender, input)
+        }
+    }
+
+    private fun parseInfoCommand(
+        sender: CommandSender,
+        input: CommandArguments
+    ) {
+        val playerId = (sender as Player).uniqueId
+        val main = LevelledMobs.instance
+        val value = input.get("value") as String
+
+        if ("on".equals(value, ignoreCase = true)) {
+            if (main.mainCompanion.spawnerCopyIds.contains(playerId)) {
+                // can't have both enabled.  We'll disable copy first
+                copyGotDisabled(sender, playerId)
+            }
+
+            main.mainCompanion.spawnerInfoIds.add(playerId)
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.info.enabled")
+        } else if ("off".equals(value, ignoreCase = true)) {
+            infoGotDisabled(sender, playerId)
+        }
     }
 
     private val allSpawnerOptions = mutableListOf(
@@ -36,132 +166,46 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         "/spawncount", "/spawnrange", "/nolore"
     )
 
-    override fun parseSubcommand(
-        sender: CommandSender,
-        label: String,
-        args: Array<String>
-    ) {
-        commandSender = sender
-        messageLabel = label
-
-        if (!sender.hasPermission("levelledmobs.command.spawner")) {
-            LevelledMobs.instance.configUtils.sendNoPermissionMsg(sender)
-            return
-        }
-
-        if (args.size < 2) {
-            showMessage("command.levelledmobs.spawner.usage")
-            return
-        }
-
-        val operationEnum: OperationEnum =
-            when (args[1].lowercase(Locale.getDefault())) {
-                "copy" -> OperationEnum.COPY
-                "info" -> OperationEnum.INFO
-                else -> OperationEnum.CREATE
-            }
-
-        var hasGivePlayer = false
-        for (i in 2 until args.size) {
-            if ("/giveplayer".equals(args[i], ignoreCase = true)) {
-                hasGivePlayer = true
-                break
-            }
-        }
-
-        if ((!hasGivePlayer || operationEnum != OperationEnum.CREATE)
-            && sender !is Player
-        ) {
-            val messageName =
-                if (operationEnum != OperationEnum.CREATE)
-                    "common.players-only" else "command.levelledmobs.spawner.no-player"
-
-            showMessage(messageName)
-            return
-        }
-
-        when (args[1].lowercase(Locale.getDefault())) {
-            "create" -> parseCreateCommand(args)
-            "copy" -> parseCopyCommand(args)
-            "info" -> parseInfoCommand(args)
-        }
-    }
-
-    private fun parseInfoCommand(
-        args: Array<String>
-    ) {
-        val playerId = (commandSender as Player).uniqueId
-        val main = LevelledMobs.instance
-
-        if (args.size == 2) {
-            showMessage(
-                if (main.mainCompanion.spawnerInfoIds.contains(playerId)) "command.levelledmobs.spawner.info.status-enabled"
-                else "command.levelledmobs.spawner.info.status-not-enabled"
-            )
-            return
-        }
-
-        if ("on".equals(args[2], ignoreCase = true)) {
-            if (main.mainCompanion.spawnerCopyIds.contains(playerId)) {
-                // can't have both enabled.  We'll disable copy first
-                copyGotDisabled(playerId)
-            }
-
-            main.mainCompanion.spawnerInfoIds.add(playerId)
-            showMessage("command.levelledmobs.spawner.info.enabled")
-        } else if ("off".equals(args[2], ignoreCase = true)) {
-            infoGotDisabled(playerId)
-        }
-    }
-
     private fun parseCopyCommand(
-        args: Array<String>
+        sender: CommandSender,
+        input: CommandArguments
     ) {
         val main = LevelledMobs.instance
-        if (!commandSender!!.hasPermission("levelledmobs.command.spawner.copy")) {
-            main.configUtils.sendNoPermissionMsg(commandSender!!)
-            return
-        }
+        val playerId = (sender as Player).uniqueId
+        val value = input.get("value") as String
 
-        val playerId = (commandSender as Player).uniqueId
-
-        if (args.size == 2) {
-            showMessage(
-                if (main.mainCompanion.spawnerCopyIds.contains(playerId)) "command.levelledmobs.spawner.copy.status-enabled"
-                else "command.levelledmobs.spawner.copy.status-not-enabled"
-            )
-            return
-        }
-
-        if ("on".equals(args[2], ignoreCase = true)) {
+        if ("on".equals(value, ignoreCase = true)) {
             if (main.mainCompanion.spawnerInfoIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable info first
-                infoGotDisabled(playerId)
+                infoGotDisabled(sender, playerId)
             }
 
             main.mainCompanion.spawnerCopyIds.add(playerId)
-            showMessage("command.levelledmobs.spawner.copy.enabled")
-        } else if ("off".equals(args[2], ignoreCase = true)) {
-            copyGotDisabled(playerId)
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.copy.enabled")
+        } else if ("off".equals(value, ignoreCase = true)) {
+            copyGotDisabled(sender, playerId)
         }
     }
 
-    private fun copyGotDisabled(playerId: UUID) {
+    private fun copyGotDisabled(sender: CommandSender, playerId: UUID) {
         MainCompanion.instance.spawnerCopyIds.remove(playerId)
-        showMessage("command.levelledmobs.spawner.copy.disabled")
+        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.copy.disabled")
     }
 
-    private fun infoGotDisabled(playerId: UUID) {
+    private fun infoGotDisabled(sender: CommandSender, playerId: UUID) {
         MainCompanion.instance.spawnerInfoIds.remove(playerId)
-        showMessage("command.levelledmobs.spawner.info.disabled")
+        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.info.disabled")
     }
 
-    private fun parseCreateCommand(args: Array<String>) {
+    private fun parseCreateCommand(
+        sender: CommandSender,
+        args: MutableList<String>
+    ) {
         hadInvalidArg = false
 
-        val info = CustomSpawnerInfo(messageLabel!!)
-        if (commandSender is Player) {
-            info.player = commandSender as Player
+        val info = CustomSpawnerInfo()
+        if (sender is Player) {
+            info.player = sender
         }
 
         // arguments with no values go here:
@@ -192,7 +236,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
                     try {
                         info.spawnType = EntityType.valueOf(foundValue.uppercase(Locale.getDefault()))
                     } catch (ignored: Exception) {
-                        commandSender!!.sendMessage("Invalid spawn type: $foundValue")
+                        sender.sendMessage("Invalid spawn type: $foundValue")
                         return
                     }
                 }
@@ -208,17 +252,17 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
                 "/spawnrange" -> info.spawnRange = foundValue.toInt()
                 "/giveplayer" -> {
                     if (foundValue.isEmpty()) {
-                        showMessage("command.levelledmobs.spawner.no-player-specified")
+                        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.no-player-specified")
                         return
                     }
                     try {
                         info.player = Bukkit.getPlayer(foundValue)
                     } catch (e: Exception) {
-                        showMessage("common.player-offline", "%player%", foundValue)
+                        MessagesHelper.showMessage(sender, "common.player-offline", "%player%", foundValue)
                         return
                     }
                     if (info.player == null) {
-                        showMessage("common.player-offline", "%player%", foundValue)
+                        MessagesHelper.showMessage(sender, "common.player-offline", "%player%", foundValue)
                         return
                     }
                 }
@@ -226,19 +270,20 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         }
 
         if (info.minLevel == -1 && info.maxLevel == -1) {
-            showMessage("command.levelledmobs.spawner.no-level-specified")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.no-level-specified")
             return
         }
 
         if (info.player == null) {
-            showMessage("command.levelledmobs.spawner.no-player-specified")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.no-player-specified")
             return
         }
 
-        generateSpawner(info)
+        generateSpawner(sender, info)
     }
 
     fun generateSpawner(
+        sender: CommandSender,
         info: CustomSpawnerInfo
     ) {
         if (info.customName != null) {
@@ -351,7 +396,7 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
         }
 
         if (useInvSlotNum == -1) {
-            showMessage("command.levelledmobs.spawner.inventory-full", info.player!!)
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.inventory-full", info.player!!.name, "")
             return
         }
 
@@ -369,78 +414,79 @@ class SpawnerSubcommand : SpawnerBaseClass(), Subcommand {
             Log.inf(message[0].replace(LevelledMobs.instance.configUtils.prefix + " ", ""))
         }
 
-        showMessage("command.levelledmobs.spawner.spawner-give-message", info.player!!)
+        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.spawner-give-message", info.player!!.name, "")
     }
 
-    override fun parseTabCompletions(
-        sender: CommandSender,
-        args: Array<String>
-    ): MutableList<String> {
-        if (!sender.hasPermission("levelledmobs.command.spawner")) {
-            return mutableListOf()
-        }
-
-        if (args.size <= 2) {
-            return mutableListOf("copy", "create", "info")
-        }
-
-        if ("create".equals(args[1], ignoreCase = true)) {
-            return tabCompletionsCreate(args)
-        } else if (("info".equals(args[1], ignoreCase = true) || "copy".equals(args[1], ignoreCase = true))
-            && args.size == 3
-        ) {
-            return mutableListOf("on", "off")
-        }
-
-        return mutableListOf()
-    }
-
-    private fun tabCompletionsCreate(
-        args: Array<String>
-    ): MutableList<String> {
-        if (args[args.size - 2].isNotEmpty()) {
-            when (args[args.size - 2].lowercase(Locale.getDefault())) {
-                "/spawntype" -> {
-                    val entityNames: MutableList<String> = LinkedList()
-                    for (entityType in EntityType.entries) {
-                        entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
-                    }
-                    return entityNames
-                }
-
-                "/delay" -> {
-                    return mutableListOf("0")
-                }
-
-                "/minspawndelay" -> {
-                    return mutableListOf("200")
-                }
-
-                "/maxspawndelay" -> {
-                    return mutableListOf("800")
-                }
-
-                "/maxnearbyentities", "/requiredplayerrange" -> {
-                    return mutableListOf("16")
-                }
-
-                "/spawncount", "/spawnrange" -> {
-                    return mutableListOf("4")
-                }
-
-                "/giveplayer" -> {
-                    val players: MutableList<String> = LinkedList()
-                    for (player in Bukkit.getOnlinePlayers()) {
-                        players.add(player.name)
-                    }
-                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
-                    return players
-                }
-            }
-        }
-
-        return checkTabCompletion(allSpawnerOptions, args)
-    }
+//    override fun parseTabCompletions(
+//        sender: CommandSender,
+//        args: Array<String>
+//    ): MutableList<String> {
+//        if (!sender.hasPermission("levelledmobs.command.spawner")) {
+//            return mutableListOf()
+//        }
+//
+//        if (args.size <= 2) {
+//            return mutableListOf("copy", "create", "info")
+//        }
+//
+//        if ("create".equals(args[1], ignoreCase = true)) {
+//            return tabCompletionsCreate(args)
+//        } else if (("info".equals(args[1], ignoreCase = true) || "copy".equals(args[1], ignoreCase = true))
+//            && args.size == 3
+//        ) {
+//            return mutableListOf("on", "off")
+//        }
+//
+//        return mutableListOf()
+//    }
+//
+//    private fun tabCompletionsCreate(
+//        args: Array<String>
+//    ): MutableList<String> {
+//        if (args[args.size - 2].isNotEmpty()) {
+//            when (args[args.size - 2].lowercase(Locale.getDefault())) {
+//                "/spawntype" -> {
+//                    val entityNames: MutableList<String> = LinkedList()
+//                    for (entityType in EntityType.entries) {
+//                        entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
+//                    }
+//                    return entityNames
+//                }
+//
+//                "/delay" -> {
+//                    return mutableListOf("0")
+//                }
+//
+//                "/minspawndelay" -> {
+//                    return mutableListOf("200")
+//                }
+//
+//                "/maxspawndelay" -> {
+//                    return mutableListOf("800")
+//                }
+//
+//                "/maxnearbyentities", "/requiredplayerrange" -> {
+//                    return mutableListOf("16")
+//                }
+//
+//                "/spawncount", "/spawnrange" -> {
+//                    return mutableListOf("4")
+//                }
+//
+//                "/giveplayer" -> {
+//                    val players: MutableList<String> = LinkedList()
+//                    for (player in Bukkit.getOnlinePlayers()) {
+//                        players.add(player.name)
+//                    }
+//                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
+//                    return players
+//                }
+//            }
+//        }
+//
+//        //return checkTabCompletion(allSpawnerOptions, args)
+//        return mutableListOf()
+//    }
 
     private enum class OperationEnum {
         CREATE,

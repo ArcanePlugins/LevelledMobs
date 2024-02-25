@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerBaseClass.CustomSpawnerInfo
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerSubcommand
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.misc.Cooldown
@@ -178,7 +179,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         }
 
         if (event.clickedBlock!!.blockData.material == Material.SPAWNER) {
-            val info = CustomSpawnerInfo(null)
+            val info = CustomSpawnerInfo()
             info.minLevel = minLevel
             info.maxLevel = maxLevel
             info.spawnType = spawnType
@@ -309,7 +310,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
     }
 
     private fun copySpawner(player: Player, cs: CreatureSpawner) {
-        val info = CustomSpawnerInfo("lm")
+        val info = CustomSpawnerInfo()
         info.player = player
         val pdc = cs.persistentDataContainer
         val main = LevelledMobs.instance
@@ -362,7 +363,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         info.spawnCount = cs.spawnCount
         info.spawnRange = cs.spawnRange
 
-        main.levelledMobsCommand.spawnerSubCommand.generateSpawner(info)
+        SpawnerSubcommand.generateSpawner(player, info)
     }
 
     private fun showInfo(

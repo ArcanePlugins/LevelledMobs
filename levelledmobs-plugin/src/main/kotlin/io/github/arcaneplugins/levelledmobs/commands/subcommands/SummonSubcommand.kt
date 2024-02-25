@@ -1,27 +1,36 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
-import java.util.LinkedList
+import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.SuggestionInfo
+import dev.jorel.commandapi.arguments.ArgumentSuggestions
+import dev.jorel.commandapi.arguments.IntegerArgument
+import dev.jorel.commandapi.arguments.ListArgumentBuilder
+import dev.jorel.commandapi.arguments.StringArgument
+import dev.jorel.commandapi.executors.CommandArguments
+import dev.jorel.commandapi.executors.CommandExecutor
 import java.util.Locale
-import java.util.Random
-import java.util.concurrent.ThreadLocalRandom
-import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
-import io.github.arcaneplugins.levelledmobs.managers.LevelManager
-import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerEggCommand.splitStringWithQuotes
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
+import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.misc.LivingEntityPlaceholder
-import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.Random
+import java.util.concurrent.ThreadLocalRandom
+import java.util.function.Consumer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.CommandBlock
 import org.bukkit.command.BlockCommandSender
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
@@ -38,250 +47,236 @@ import kotlin.math.min
  * @author lokka30
  * @since v2.0.0
  */
-class SummonSubcommand : MessagesBase(), Subcommand {
-    override fun parseSubcommand(
-        sender: CommandSender,
-        label: String,
-        args: Array<String>
-    ) {
-        commandSender = sender
-        messageLabel = label
-
-        if (!sender.hasPermission("levelledmobs.command.summon")) {
-            LevelledMobs.instance.configUtils.sendNoPermissionMsg(sender)
-            return
-        }
-
-        var useOverride = false
-        val useArgs: MutableList<String> = LinkedList()
-        var startOfNbt = -1
-        var endOfNbt = -1
-
-        for (i in args.indices) {
-            val arg = args[i]
-            if ("/override".equals(arg, ignoreCase = true)) {
-                useOverride = true
-            } else {
-                useArgs.add(arg)
-            }
-
-            if (startOfNbt == -1 && arg.startsWith("{")) {
-                startOfNbt = i
-                if (arg.endsWith("}")) {
-                    endOfNbt = i
-                }
-            } else if (startOfNbt >= 0 && endOfNbt == -1 && arg.endsWith("}")) {
-                endOfNbt = i
-            }
-        }
-
-        var nbtData: String? = null
-        if (startOfNbt >= 0 && endOfNbt >= 0 && endOfNbt >= startOfNbt) {
-            nbtData = useArgs.subList(startOfNbt, endOfNbt + 1).toString()
-            nbtData = nbtData.substring(1, nbtData.length - 1)
-            useArgs.subList(startOfNbt, endOfNbt + 1).clear()
-        }
-
-        parseSubcommand2(useArgs.toMutableList(), useOverride, nbtData)
+object SummonSubcommand {
+    fun createInstance(): CommandAPICommand {
+        return CommandAPICommand("summon")
+            .withPermission("levelledmobs.command.summon")
+            .withShortDescription("Various commands for summoning mobs.")
+            .withFullDescription("Various commands for summoning mobs.")
+            .executes(CommandExecutor { sender, args -> processCmd(sender, args) })
+            .withOptionalArguments(IntegerArgument("number")
+                .replaceSuggestions(ArgumentSuggestions.strings(Utils.oneToNine)))
+            .withOptionalArguments(StringArgument("mobtype")
+                .replaceSuggestions(ArgumentSuggestions.strings(getEntityNames())))
+            .withOptionalArguments(IntegerArgument("moblevel")
+            .replaceSuggestions(ArgumentSuggestions.strings(Utils.oneToNine)))
+            .withOptionalArguments(StringArgument("designator")
+                .replaceSuggestions(ArgumentSuggestions.strings("here", "at-player", "at-location")))
+            .withOptionalArguments(
+                ListArgumentBuilder<String>("values")
+                    .skipListValidation(true)
+                    .withList { info -> buildTabSuggestions(info) }
+                    .withStringMapper()
+                    .buildGreedy()
+            )
     }
 
-    private fun parseSubcommand2(
-        args: MutableList<String>,
-        override: Boolean,
-        nbtData: String?
-    ) {
-        if (args.size < 4) {
-            showMessage("command.levelledmobs.summon.usage")
-            return
-        }
+    private fun processCmd(
+        sender: CommandSender,
+        args: CommandArguments
+    ){
+        val amount = args.get("number") as? Int
+        val mobLevel = args.get("moblevel") as? Int
+        val mobType = args.get("mobtype") as? String
+        val designator = args.get("designator") as? String?: "here"
+        val values = args.rawArgsMap["values"]
 
-        val amount: Int
-        try {
-            amount = args[1].toInt()
-        } catch (ex: NumberFormatException) {
-            showMessage("command.levelledmobs.summon.invalid-amount", "%amount%", args[1])
-            // messages = Utils.replaceAllInList(messages, "%amount%", args[1]); // This is after colorize so that args[1] is not colorized.
+        if (amount == null || mobLevel == null || mobType == null) {
+            MessagesHelper.showMessage(sender, "command.levelledmobs.summon.usage")
             return
         }
 
         val entityType: EntityType
         try {
-            entityType = EntityType.valueOf(args[2].uppercase(Locale.getDefault()))
+            entityType = EntityType.valueOf(mobType.uppercase(Locale.getDefault()))
         } catch (ex: IllegalArgumentException) {
-            showMessage("command.levelledmobs.summon.invalid-entity-type", "%entityType%", args[2])
-            // messages = Utils.replaceAllInList(messages, "%entityType%", args[2]); // This is after colorize so that args[2] is not colorized.
+            MessagesHelper.showMessage(sender, "command.levelledmobs.summon.invalid-entity-type", "%entityType%", mobType)
             return
         }
 
         val requestedLevel = RequestedLevel()
-        if (!requestedLevel.setLevelFromString(args[3])) {
-            showMessage("command.levelledmobs.summon.invalid-level", "%level%", args[3])
-            //messages = Utils.replaceAllInList(messages, "%level%", args[3]); // This is after colorize so that args[3] is not colorized.
-            return
+        requestedLevel.level = mobLevel
+        var location = when (sender) {
+            is Player -> sender.location
+            is CommandBlock -> sender.location
+            else -> null
+        }
+        var nbtData: String? = null
+
+        val miscArgs = if (values != null) splitStringWithQuotes(values) else mutableListOf()
+        // 0           1   2   3   4
+        // <nbtdata>
+        // at-player   <player>
+        // at-location <x> <y> <z> <world>
+        for (i in 0..<miscArgs.size){
+            val arg = miscArgs[i]
+            if (arg.startsWith("{") && arg.endsWith("}"))
+                nbtData = arg
         }
 
-        var summonType: SummonType = SummonType.HERE
-        if (args.size > 4) {
-            when (args[4].lowercase(Locale.getDefault())) {
-                "here" -> {
-                }
-
-                "atplayer" -> summonType = SummonType.AT_PLAYER
-                "atlocation" -> summonType = SummonType.AT_LOCATION
-                else -> {
-                    showMessage(
-                        "command.levelledmobs.summon.invalid-level", "%summonType%",
-                        args[4]
-                    )
-                    return
-                }
-            }
-        }
-
-        if (summonType == SummonType.HERE) {
-            if (commandSender !is Player
-                && commandSender !is BlockCommandSender
-            ) {
-                showMessage("command.levelledmobs.summon.invalid-summon-type-console")
-                return
-            }
-
-            if (args.size == 4 || args.size == 5) {
-                var player: Player? = null
-                if (commandSender is Player) {
-                    player = commandSender as Player?
-                }
-                val location = if ((player != null)) (commandSender as Player).location
-                else (commandSender as BlockCommandSender).block.location
-
-                if (location.world == null) {
-                    val playerName: String =
-                        if (LevelledMobs.instance.ver.isRunningPaper) PaperUtils.getPlayerDisplayName(player)
-                        else SpigotUtils.getPlayerDisplayName(player)
-                    showMessage("common.player-offline", "%player%", playerName)
+        when (designator.lowercase()){
+            "here" -> {
+                if (location == null){
+                    MessagesHelper.showMessage(sender, "command.levelledmobs.summon.here.usage")
                     return
                 }
 
                 val lmPlaceHolder = LivingEntityPlaceholder.getInstance(
                     entityType, location
                 )
-
-                val options = SummonMobOptions(lmPlaceHolder, commandSender!!)
+                val options = SummonMobOptions(lmPlaceHolder, sender)
                 options.amount = amount
                 options.requestedLevel = requestedLevel
-                options.summonType = summonType
-                options.player = player
-                options.override = override
+                options.summonType = SummonType.HERE
+                options.override = true
                 options.nbtData = nbtData
-
                 summonMobs(options)
                 lmPlaceHolder.free()
-            } else {
-                showMessage("command.levelledmobs.summon.here.usage")
             }
-        } else if (summonType == SummonType.AT_PLAYER) {
-            if (args.size == 6) {
-                var offline = false
-                var location: Location? = null
+            "at-location" -> {
+                var xStr = ""
+                var yStr = ""
+                var zStr = ""
                 var world: World? = null
-
-                val target = Bukkit.getPlayer(args[5])
-                if (target == null) {
-                    offline = true
-                } else if (commandSender is Player) {
-                    // Vanished player compatibility.
-                    if (!(commandSender as Player).canSee(target) && !(commandSender as Player).isOp) {
-                        offline = true
+                for (i in 0..<miscArgs.size){
+                    val arg = miscArgs[i]
+                    if (arg.startsWith("{")) continue
+                    when (i){
+                        0 -> { xStr = arg }
+                        1 -> { yStr = arg }
+                        2 -> { zStr = arg }
+                        3 -> {
+                            world = Bukkit.getWorld(arg)
+                            if (world == null){
+                                MessagesHelper.showMessage(sender,
+                            "command.levelledmobs.summon.atLocation.invalid-world","%world%", arg)
+                                return
+                            }
+                        }
                     }
-                    location = (target.location)
-                    world = location.world
-                } else {
-                    location = target.location
-                    world = target.world
                 }
-
-                if (offline || world == null) {
-                    showMessage("common.player-offline", "%player%", args[5])
-                    // messages = Utils.replaceAllInList(messages, "%player%", args[5]); // This is after colorize so that args[5] is not colorized.
+                if (world == null){
+                    MessagesHelper.showMessage(sender,
+                        "command.levelledmobs.summon.atLocation.usage-console")
                     return
                 }
 
-                val lmPlaceHolder: LivingEntityPlaceholder = LivingEntityPlaceholder.getInstance(
-                    entityType, location!!
+                location = getRelativeLocation(sender, xStr, yStr, zStr, world)
+                if (location == null){
+                    sender.sendMessage("Invalid location")
+                    return
+                }
+
+                val lmPlaceHolder = LivingEntityPlaceholder.getInstance(
+                    entityType, location
                 )
-                val options = SummonMobOptions(lmPlaceHolder, commandSender!!)
+                val options = SummonMobOptions(lmPlaceHolder, sender)
                 options.amount = amount
                 options.requestedLevel = requestedLevel
-                options.summonType = summonType
-                options.player = target
-                options.override = override
+                options.summonType = SummonType.AT_LOCATION
+                options.override = true
                 options.nbtData = nbtData
-
                 summonMobs(options)
                 lmPlaceHolder.free()
-            } else {
-                showMessage("command.levelledmobs.summon.atPlayer.usage")
             }
-        } else { // At Location
-            if (args.size == 8 || args.size == 9) {
-                val worldName = if (args.size == 8) {
-                    when (commandSender) {
-                        is Player -> {
-                            (commandSender as Player).world.name
-                        }
+            "at-player" -> {
+                var didSummon = false
+                for (i in 0..<miscArgs.size){
+                    val arg = miscArgs[i]
+                    if (arg.startsWith("{")) continue
+                    var offline = false
+                    var world: World? = null
 
-                        is BlockCommandSender -> {
-                            (commandSender as BlockCommandSender).block.world
-                                .name
+                    val target = Bukkit.getPlayer(arg)
+                    if (target == null) {
+                        offline = true
+                    } else if (sender is Player) {
+                        // Vanished player compatibility.
+                        if (!sender.canSee(target) && !sender.isOp) {
+                            offline = true
                         }
-
-                        else -> {
-                            showMessage("command.levelledmobs.summon.atLocation.usage-console")
-                            return
-                        }
-                    }
-                } else { //args.length==9
-                    val world = Bukkit.getWorld(args[8])
-
-                    if (world == null) {
-                        showMessage(
-                            "command.levelledmobs.summon.atLocation.usage-console",
-                            "%world%", args[8]
-                        )
-                        // messages = Utils.replaceAllInList(messages, "%world%", args[8]); //This is after colorize so that args[8] is not colorized.
-                        return
+                        location = (target.location)
+                        world = location.world
                     } else {
-                        world.name
+                        location = target.location
+                        world = target.world
                     }
-                }
 
-                val location = getRelativeLocation(
-                    commandSender!!, args[5], args[6],
-                    args[7], worldName
-                )
+                    if (offline || world == null) {
+                        MessagesHelper.showMessage(sender, "common.player-offline", "%player%", arg)
+                        return
+                    }
 
-                if (location?.world == null) {
-                    showMessage("command.levelledmobs.summon.atLocation.invalid-location")
-                } else {
-                    val lmPlaceHolder = LivingEntityPlaceholder.getInstance(
-                        entityType, location
+                    val lmPlaceHolder: LivingEntityPlaceholder = LivingEntityPlaceholder.getInstance(
+                        entityType, location!!
                     )
-                    val options = SummonMobOptions(
-                        lmPlaceHolder,
-                        commandSender!!
-                    )
+                    val options = SummonMobOptions(lmPlaceHolder, sender)
                     options.amount = amount
                     options.requestedLevel = requestedLevel
-                    options.summonType = summonType
-                    options.override = override
+                    options.summonType = SummonType.AT_PLAYER
+                    options.player = target
+                    options.override = true
                     options.nbtData = nbtData
+
                     summonMobs(options)
                     lmPlaceHolder.free()
+                    didSummon = true
+                    break
                 }
-            } else {
-                showMessage("command.levelledmobs.summon.atLocation.usage")
+
+                if (!didSummon){
+                    MessagesHelper.showMessage(sender, "command.levelledmobs.summon.atPlayer.usage")
+                }
+            }
+            else -> {
+                MessagesHelper.showMessage(sender, "command.levelledmobs.summon.usage")
             }
         }
+    }
+
+    private fun buildTabSuggestions(
+        info: SuggestionInfo<CommandSender>
+    ): MutableList<String>{
+        val args = splitStringWithQuotes(info.currentInput)
+
+        // 0  1      2  3      4 5           6   7   8   9
+        // lm summon 10 zombie 9 here
+        //                       at-player   <player>
+        //                       at-location <x> <y> <z> <world>
+
+        when (args[5].lowercase()){
+            "here" -> { return mutableListOf() }
+            "at-player" -> {
+                val suggestions = mutableListOf<String>()
+                for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                    if (info.sender is Player) {
+                        val player = info.sender as Player
+                        if (player.canSee(onlinePlayer) || player.isOp) {
+                            suggestions.add(onlinePlayer.name)
+                        }
+                    } else {
+                        suggestions.add(onlinePlayer.name)
+                    }
+                }
+                return suggestions
+            }
+            "at-location" -> {
+                if (args.size in 6..8) {
+                    return Utils.oneToNine
+                }
+                else if (args.size == 9){
+                    val worlds = mutableListOf<String>()
+                    for (world in Bukkit.getWorlds()){
+                        worlds.add(world.name)
+                    }
+                    return worlds
+                }
+                // TODO: add NBT suggestions
+            }
+            else -> { return mutableListOf() }
+        }
+
+        return mutableListOf()
     }
 
     enum class SummonType {
@@ -293,9 +288,9 @@ class SummonSubcommand : MessagesBase(), Subcommand {
     private fun summonMobs(
         options: SummonMobOptions
     ) {
-        val sender: CommandSender = options.sender
+        val sender = options.sender
         val main = LevelledMobs.instance
-        val target: Player? = options.player
+        val target = options.player
         var location = options.lmPlaceholder.location
 
         if (main.levelManager.forcedBlockedEntityTypes.contains(
@@ -453,7 +448,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         when (options.summonType) {
             SummonType.HERE -> {
                 if (printResults) {
-                    showMessage(
+                    MessagesHelper.showMessage(sender,
                         "command.levelledmobs.summon.here.success",
                         arrayOf("%amount%", "%level%", "%entity%"),
                         arrayOf(
@@ -466,7 +461,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
 
             SummonType.AT_LOCATION -> {
                 if (printResults) {
-                    showMessage(
+                    MessagesHelper.showMessage(sender,
                         "command.levelledmobs.summon.atLocation.success",
                         arrayOf("%amount%", "%level%", "%entity%", "%x%", "%y%", "%z%", "%world%"),
                         arrayOf(
@@ -487,7 +482,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
                     val playerName: String =
                         if (main.ver.isRunningPaper) PaperUtils.getPlayerDisplayName(target)
                         else SpigotUtils.getPlayerDisplayName(target)
-                    showMessage(
+                    MessagesHelper.showMessage(sender,
                         "command.levelledmobs.summon.atPlayer.success",
                         arrayOf(
                             "%amount%", "%level%", "%entity%", "%targetUsername%",
@@ -647,7 +642,7 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         xStr: String,
         yStr: String,
         zStr: String,
-        worldName: String
+        world: World
     ): Location? {
         var x = 0.0
         var y = 0.0
@@ -740,8 +735,6 @@ class SummonSubcommand : MessagesBase(), Subcommand {
             }
         }
 
-        val world = Bukkit.getWorld(worldName) ?: return null
-
         return Location(world, x, y, z)
     }
 
@@ -773,118 +766,12 @@ class SummonSubcommand : MessagesBase(), Subcommand {
         return oldLocation
     }
 
-    override fun parseTabCompletions(
-        sender: CommandSender,
-        args: Array<String>
-    ): MutableList<String>? {
-        if (!sender.hasPermission("levelledmobs.command.summon")) {
-            return null
+    private fun getEntityNames(): MutableList<String>{
+        val entityNames = mutableListOf<String>()
+
+        for (entityType in EntityType.entries) {
+            entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
         }
-
-        // len:    1      2        3        4       5          6            7   8     9     10
-        // arg:    0      1        2        3       4          5            6   7     8     9
-        // lvlmobs summon <amount> <entity> <level> here       /override
-        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername> /override
-        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world] /override
-
-        // <amount>
-        if (args.size == 2) {
-            return Utils.oneToNine
-        }
-
-        // <entity>
-        if (args.size == 3) {
-            val entityNames: MutableList<String> = LinkedList()
-            for (entityType in EntityType.entries) {
-                entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
-            }
-            return entityNames
-        }
-
-        // <level>
-        if (args.size == 4) {
-            return Utils.oneToNine
-        }
-
-        // here, atPlayer, atLocation
-        if (args.size == 5) {
-            return mutableListOf("here", "atPlayer", "atLocation", "/override")
-        }
-
-        var skipOverride = false
-        for (i in 5 until args.size) {
-            val arg = args[i]
-            if (arg.startsWith("{") && !arg.endsWith("}")) {
-                skipOverride = true
-            }
-            if (skipOverride && arg.endsWith("}")) {
-                skipOverride = false
-            }
-        }
-        if (args[args.size - 1].endsWith("}")) {
-            skipOverride = true
-        }
-
-        // no suggestions for 'here' since it is the last argument for itself
-        // these are for atPlayer and atLocation
-        if (args.size > 5) {
-            when (args[4].lowercase(Locale.getDefault())) {
-                "atplayer" -> {
-                    if (args.size == 6) {
-                        val suggestions: MutableList<String> = LinkedList()
-                        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-                            if (sender is Player) {
-                                if (sender.canSee(onlinePlayer) || sender.isOp()) {
-                                    suggestions.add(onlinePlayer.name)
-                                }
-                            } else {
-                                suggestions.add(onlinePlayer.name)
-                            }
-                        }
-                        return suggestions
-                    } else if (args.size == 7) {
-                        return if (!skipOverride) {
-                            mutableListOf("/override")
-                        } else {
-                            mutableListOf()
-                        }
-                    }
-                }
-
-                "atlocation" -> {
-                    if (args.size < 9) { // args 6, 7 and 8 = x, y and z
-                        return mutableListOf("~")
-                    } else if (args.size == 9) {
-                        val worlds: MutableList<String> = LinkedList()
-                        Bukkit.getWorlds().forEach(Consumer { world: World ->
-                            worlds.add(
-                                world.name
-                            )
-                        })
-                        return worlds
-                    } else if (args.size == 10) {
-                        return if (!skipOverride) {
-                            mutableListOf("/override")
-                        } else {
-                            mutableListOf()
-                        }
-                    }
-                }
-
-                "here" -> {
-                    return if (!skipOverride) {
-                        mutableListOf("/override")
-                    } else {
-                        mutableListOf()
-                    }
-                }
-
-                else -> {
-                    return mutableListOf()
-                }
-            }
-        }
-
-        return mutableListOf()
+        return entityNames
     }
 }

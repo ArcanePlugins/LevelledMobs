@@ -1,8 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
-import java.util.LinkedList
+import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.arguments.ListArgumentBuilder
+import dev.jorel.commandapi.executors.CommandExecutor
 import java.util.Locale
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
@@ -22,38 +25,48 @@ import org.bukkit.persistence.PersistentDataType
  * @author stumper66
  * @since 3.3.0
  */
-class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
-    init {
-        startingArgNum = 1
-    }
-
-    private val allEggOptions = mutableListOf(
-        "/name", "/customdropid", "/entity", "/giveplayer", "/lore",
-        "/minlevel", "/maxlevel","/nolore"
-    )
-
-    override fun parseSubcommand(
-        sender: CommandSender,
-        label: String,
-        args: Array<String>
-    ) {
-        commandSender = sender
-        messageLabel = label
-
-        if (!sender.hasPermission("levelledmobs.command.spawneregg")) {
-            LevelledMobs.instance.configUtils.sendNoPermissionMsg(sender)
-            return
-        }
+object SpawnerEggCommand : SpawnerBaseClass() {
+    fun createInstance(): CommandAPICommand{
+        val commandName = "spawner-egg"
+        val commandPermission = "levelledmobs.command.spawner-egg"
+        val commandDescription = "Various commands for creating spawner egg."
 
         if (!LevelledMobs.instance.ver.isRunningPaper) {
-            showMessage("command.levelledmobs.spawn_egg.no-paper")
-            return
+            return CommandAPICommand(commandName)
+                .withPermission(commandPermission)
+                .withShortDescription(commandDescription)
+                .withFullDescription(commandPermission)
+                .executes(CommandExecutor { sender, _ ->
+                    MessagesHelper.showMessage(sender, "command.levelledmobs.spawn_egg.no-paper")
+                })
         }
 
-        if (args.size < 2) {
-            showMessage("command.levelledmobs.spawn_egg.usage")
-            return
-        }
+        return CommandAPICommand(commandName)
+            .withPermission(commandPermission)
+            .withShortDescription(commandDescription)
+            .withFullDescription(commandPermission)
+            .executes(CommandExecutor { sender, args ->
+                if (args.argsMap.isEmpty()) {
+                    MessagesHelper.showMessage(sender, "command.levelledmobs.spawn_egg.usage")
+                }
+                else {
+                    processResults(sender, args.rawArgs[0])
+                }
+            })
+            .withOptionalArguments(
+                ListArgumentBuilder<String>("values")
+                    .skipListValidation(true)
+                    .withList { info -> buildTabSuggestions(allEggOptions, info) }
+                    .withStringMapper()
+                    .buildGreedy()
+            )
+    }
+
+    private fun processResults(
+        sender: CommandSender,
+        input: String
+    ){
+        val args = splitStringWithQuotes(input)
 
         var hasGivePlayer = false
         for (i in 2 until args.size) {
@@ -64,23 +77,19 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
         }
 
         if (!hasGivePlayer && sender !is Player) {
-            showMessage("command.levelledmobs.spawn_egg.no-player")
+            MessagesHelper.showMessage(sender,"command.levelledmobs.spawn_egg.no-player")
             return
         }
 
-        parseEggCommand(args)
-    }
-
-    private fun parseEggCommand(args: Array<String>) {
         hadInvalidArg = false
 
-        val info = CustomSpawnerInfo(messageLabel)
-        if (commandSender is Player) {
-            info.player = commandSender as Player
+        val info = CustomSpawnerInfo()
+        if (sender is Player) {
+            info.player = sender
         }
 
         // arguments with no values go here:
-        for (i in 1 until args.size) {
+        for (i in 0 until args.size) {
             val arg = args[i]
             if ("/nolore".equals(arg, ignoreCase = true)) {
                 info.noLore = true
@@ -116,17 +125,17 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
                 "/maxlevel" -> info.maxLevel = foundValue.toInt()
                 "/giveplayer" -> {
                     if (foundValue.isEmpty()) {
-                        showMessage("command.levelledmobs.spawn_egg.no-player-specified")
+                        MessagesHelper.showMessage(sender,"command.levelledmobs.spawn_egg.no-player-specified")
                         return
                     }
                     try {
                         info.player = Bukkit.getPlayer(foundValue)
                     } catch (e: Exception) {
-                        showMessage("common.player-offline", "%player%", foundValue)
+                        MessagesHelper.showMessage(sender,"common.player-offline", "%player%", foundValue)
                         return
                     }
                     if (info.player == null) {
-                        showMessage("common.player-offline", "%player%", foundValue)
+                        MessagesHelper.showMessage(sender, "common.player-offline", "%player%", foundValue)
                         return
                     }
                 }
@@ -134,19 +143,25 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
         }
 
         if (info.minLevel == -1 || info.maxLevel == -1 || info.spawnType === EntityType.UNKNOWN) {
-            showMessage("command.levelledmobs.spawn_egg.no-level-specified")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawn_egg.no-level-specified")
             return
         }
 
         if (info.player == null) {
-            showMessage("command.levelledmobs.spawn_egg.no-player")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawn_egg.no-player")
             return
         }
 
-        generateEgg(info)
+        generateEgg(sender, info)
     }
 
+    private val allEggOptions = mutableListOf(
+        "/name", "/customdropid", "/entity", "/giveplayer", "/lore",
+        "/minlevel", "/maxlevel","/nolore"
+    )
+
     private fun generateEgg(
+        sender: CommandSender,
         info: CustomSpawnerInfo
     ) {
         if (info.customName != null) {
@@ -217,7 +232,7 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
         }
 
         if (useInvSlotNum == -1) {
-            showMessage("command.levelledmobs.spawner.inventory-full", info.player!!)
+            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.inventory-full", info.player!!.name, "")
             return
         }
 
@@ -250,33 +265,5 @@ class SpawnerEggCommand : SpawnerBaseClass(), Subcommand {
             ),
             info.player!!
         )
-    }
-
-    override fun parseTabCompletions(
-        sender: CommandSender,
-        args: Array<String>
-    ): MutableList<String> {
-        if (args[args.size - 2].isNotEmpty()) {
-            when (args[args.size - 2].lowercase(Locale.getDefault())) {
-                "/entity" -> {
-                    val entityNames: MutableList<String> = LinkedList()
-                    for (entityType in EntityType.entries) {
-                        entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
-                    }
-                    return entityNames
-                }
-
-                "/giveplayer" -> {
-                    val players: MutableList<String> = LinkedList()
-                    for (player in Bukkit.getOnlinePlayers()) {
-                        players.add(player.name)
-                    }
-                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
-                    return players
-                }
-            }
-        }
-
-        return checkTabCompletion(allEggOptions, args)
     }
 }

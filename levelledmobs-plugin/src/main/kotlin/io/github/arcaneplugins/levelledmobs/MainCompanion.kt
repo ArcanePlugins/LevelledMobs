@@ -266,16 +266,16 @@ class MainCompanion{
     }
 
     fun registerCommands(){
-        Log.inf("&fCommands: &7Registering commands...")
-
-        val levelledMobsCommand = LevelledMobs.instance.getCommand("levelledmobs")
-        if (levelledMobsCommand == null) {
-            Log.sev(
-                "Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?"
-            )
-        } else {
-            levelledMobsCommand.setExecutor(LevelledMobs.instance.levelledMobsCommand)
-        }
+//        Log.inf("&fCommands: &7Registering commands...")
+//
+//        val levelledMobsCommand = LevelledMobs.instance.getCommand("levelledmobs")
+//        if (levelledMobsCommand == null) {
+//            Log.sev(
+//                "Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?"
+//            )
+//        } else {
+//            levelledMobsCommand.setExecutor(LevelledMobs.instance.levelledMobsCommand)
+//        }
     }
 
     fun setupMetrics() {
