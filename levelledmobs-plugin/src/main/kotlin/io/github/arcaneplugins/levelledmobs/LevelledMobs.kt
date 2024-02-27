@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs
 
-import dev.jorel.commandapi.CommandAPI
 import io.github.arcaneplugins.levelledmobs.commands.CommandHandler
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsHandler
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager

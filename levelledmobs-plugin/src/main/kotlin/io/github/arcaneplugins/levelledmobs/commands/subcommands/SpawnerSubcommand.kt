@@ -6,7 +6,6 @@ import dev.jorel.commandapi.arguments.ListArgumentBuilder
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
-import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -17,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
+import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
@@ -111,7 +111,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
             return
         }
 
-        val args = splitStringWithQuotes(input.rawArgs[0])
+        val args = Utils.splitStringWithQuotes(input.rawArgs[0])
         var hasGivePlayer = false
         for (i in 0 until args.size) {
             if ("/giveplayer".equals(args[i], ignoreCase = true)) {

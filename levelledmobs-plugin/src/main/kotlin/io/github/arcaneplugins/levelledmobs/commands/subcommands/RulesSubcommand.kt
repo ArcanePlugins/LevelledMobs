@@ -3,7 +3,6 @@ package io.github.arcaneplugins.levelledmobs.commands.subcommands
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.ListArgumentBuilder
-import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor

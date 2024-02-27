@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
+import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
@@ -66,7 +67,7 @@ object SpawnerEggCommand : SpawnerBaseClass() {
         sender: CommandSender,
         input: String
     ){
-        val args = splitStringWithQuotes(input)
+        val args = Utils.splitStringWithQuotes(input)
 
         var hasGivePlayer = false
         for (i in 2 until args.size) {

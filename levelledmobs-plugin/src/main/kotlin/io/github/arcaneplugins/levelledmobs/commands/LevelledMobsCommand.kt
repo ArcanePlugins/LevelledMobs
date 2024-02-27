@@ -6,6 +6,7 @@ import dev.jorel.commandapi.executors.CommandExecutor
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.DebugSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.InfoSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.KillSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.ReloadSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.RulesSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerEggCommand
@@ -28,6 +29,7 @@ object LevelledMobsCommand {
             .withSubcommands(
                 DebugSubcommand.createInstance(),
                 InfoSubcommand.createInstance(),
+                KillSubcommand.createInstance(),
                 ReloadSubcommand.createInstance(),
                 RulesSubcommand.createInstance(),
                 SpawnerEggCommand.createInstance(),

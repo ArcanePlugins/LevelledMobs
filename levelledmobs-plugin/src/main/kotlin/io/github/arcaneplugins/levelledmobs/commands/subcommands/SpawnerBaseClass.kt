@@ -9,14 +9,12 @@ import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
-import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import java.util.Locale
-import java.util.regex.Pattern
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
@@ -32,7 +30,7 @@ import org.bukkit.persistence.PersistentDataType
  */
 abstract class SpawnerBaseClass : MessagesBase() {
     var hadInvalidArg = false
-    var startingArgNum = 0
+    private var startingArgNum = 0
 
     fun getArgValue(
         key: String,
@@ -227,27 +225,11 @@ abstract class SpawnerBaseClass : MessagesBase() {
         var lore: String? = null
     }
 
-    // taken from:
-    // https://stackoverflow.com/questions/2817646/javascript-split-string-on-space-or-on-quotes-to-array
-    fun splitStringWithQuotes(myString: String): MutableList<String>{
-        val results = mutableListOf<String>()
-        val pattern = Pattern.compile("[^\\s\"]+|\"([^\"]*)\"")
-        val match = pattern.matcher(myString)
-        while (match.find()){
-            var temp = match.group(0)
-            if (temp.startsWith("\"") && temp.endsWith("\""))
-                temp = temp.substring(1, temp.length - 1)
-            results.add(temp)
-        }
-
-        return results
-    }
-
     protected fun buildTabSuggestions(
         allOptions: MutableList<String>,
         info: SuggestionInfo<CommandSender>
     ): MutableList<String>{
-        val args = splitStringWithQuotes(info.currentArg)
+        val args = Utils.splitStringWithQuotes(info.currentArg)
         val hasEndingSpace = info.currentInput.toString().endsWith(" ")
         if (args.isEmpty())
             return checkTabCompletion(allOptions, args)

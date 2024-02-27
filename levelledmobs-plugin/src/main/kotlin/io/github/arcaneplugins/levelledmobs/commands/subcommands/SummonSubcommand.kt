@@ -11,7 +11,6 @@ import dev.jorel.commandapi.executors.CommandExecutor
 import java.util.Locale
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
-import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerEggCommand.splitStringWithQuotes
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.misc.LivingEntityPlaceholder
@@ -103,7 +102,7 @@ object SummonSubcommand {
         }
         var nbtData: String? = null
 
-        val miscArgs = if (values != null) splitStringWithQuotes(values) else mutableListOf()
+        val miscArgs = if (values != null) Utils.splitStringWithQuotes(values) else mutableListOf()
         // 0           1   2   3   4
         // <nbtdata>
         // at-player   <player>
@@ -237,7 +236,7 @@ object SummonSubcommand {
     private fun buildTabSuggestions(
         info: SuggestionInfo<CommandSender>
     ): MutableList<String>{
-        val args = splitStringWithQuotes(info.currentInput)
+        val args = Utils.splitStringWithQuotes(info.currentInput)
 
         // 0  1      2  3      4 5           6   7   8   9
         // lm summon 10 zombie 9 here
