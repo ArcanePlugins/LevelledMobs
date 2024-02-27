@@ -254,20 +254,15 @@ public class EntitySpawnListener implements Listener {
             return;
         }
 
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    for (int i = 0; i < count; i++) {
-                        world.spawnParticle(particle, location, 20, 0, 0, 0, 0.1);
-                        Thread.sleep(50);
-                    }
-                } catch (final InterruptedException ignored) {
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+            try {
+                for (int i = 0; i < count; i++) {
+                    world.spawnParticle(particle, location, 20, 0, 0, 0, 0.1);
+                    Thread.sleep(50);
                 }
-            }
-        };
-
-        runnable.runTaskAsynchronously(main);
+            } catch (final InterruptedException ignored) {}
+        });
+        scheduler.run();
     }
 
     @SuppressWarnings("ConstantConditions")

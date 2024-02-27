@@ -51,6 +51,12 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
+        //TODO: make this work in Folia
+        if (main.getVerInfo().getIsRunningFolia()){
+            sender.sendMessage("Sorry this command doesn't work in Folia");
+            return;
+        }
+
         if (args.length <= 1) {
             showMessage("command.levelledmobs.kill.usage");
             return;
