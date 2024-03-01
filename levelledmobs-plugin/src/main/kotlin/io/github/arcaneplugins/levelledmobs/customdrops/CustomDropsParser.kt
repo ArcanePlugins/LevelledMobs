@@ -1033,19 +1033,9 @@ class CustomDropsParser(
                 }
             } else {
                 if (ExternalCompatibilityManager.hasLMItemsInstalled) {
-                    Log.war(
-                        String.format(
-                            "Custom drop '%s' requires plugin LM_Items but it is an old version",
-                            useMaterialName
-                        )
-                    )
+                    Log.war("Custom drop '$useMaterialName' requires plugin LM_Items but it is an old version")
                 } else {
-                    Log.war(
-                        String.format(
-                            "Custom drop '%s' requires plugin LM_Items but it is not installed",
-                            useMaterialName
-                        )
-                    )
+                    Log.war("Custom drop '$useMaterialName' requires plugin LM_Items but it is not installed")
                 }
                 return false
             }

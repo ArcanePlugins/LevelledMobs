@@ -129,13 +129,13 @@ object DebugSubcommand {
             .withSubcommands(
                 CommandAPICommand("output-debug")
                     .withOptionalArguments(StringArgument("output")
-                        .includeSuggestions(ArgumentSuggestions.strings(getDebugTypes())))
+                        .includeSuggestions(ArgumentSuggestions.strings{ _ -> getOutputToTypes() }))
                     .executes(CommandExecutor { sender, args -> parseOutputTo(sender, args) })
             )
             .withSubcommands(
                 CommandAPICommand("view-debug-status")
                     .executes(CommandExecutor { sender, _ ->
-                        LevelledMobs.instance.configUtils.sendNoPermissionMsg(sender) })
+                        sender.sendMessage(LevelledMobs.instance.debugManager.getDebugStatus()) })
             )
     }
 
@@ -325,8 +325,8 @@ object DebugSubcommand {
 
         val locationStr =
             "${lmEntity.livingEntity.location.blockX}, " +
-                    "${lmEntity.livingEntity.location.blockX}, " +
-                    "${lmEntity.livingEntity.location.blockX}"
+                    "${lmEntity.livingEntity.location.blockY}, " +
+                    "${lmEntity.livingEntity.location.blockZ}"
 
         val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
 
@@ -789,6 +789,17 @@ object DebugSubcommand {
             list.add(debugType.toString().lowercase(Locale.getDefault()))
         }
         return list
+    }
+
+    private fun getOutputToTypes(): Array<String>{
+        val values = mutableListOf<String>()
+        Log.inf("current output type: ${LevelledMobs.instance.debugManager.outputType}")
+        for (outputType in DebugManager.OutputTypes.entries) {
+            Log.inf("checking: $outputType")
+            if (LevelledMobs.instance.debugManager.outputType != outputType)
+                values.add(outputType.name.replace("_", "-").lowercase())
+        }
+        return values.toTypedArray()
     }
 
     private fun getUnusedListTypes(

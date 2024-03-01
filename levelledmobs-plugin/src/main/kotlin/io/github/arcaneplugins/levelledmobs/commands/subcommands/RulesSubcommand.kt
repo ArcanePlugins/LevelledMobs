@@ -362,9 +362,7 @@ object RulesSubcommand {
             return
         }
 
-        var foundRule: String? = null
         var rule: RuleInfo? = null
-        val allRuleNames: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
             val checkName = ruleInfo.ruleName.replace(" ", "_")
             if (ruleName.equals(checkName, ignoreCase = true)){
@@ -416,7 +414,7 @@ object RulesSubcommand {
                     findNearbyEntities = false
             }
         }
-        val lmEntity: LivingEntityWrapper = getMobBeingLookedAt(player, findNearbyEntities, player, "")
+        val lmEntity: LivingEntityWrapper = getMobBeingLookedAt(player, findNearbyEntities, player)
             ?: return
 
         var entityName = lmEntity.typeName
@@ -471,8 +469,7 @@ object RulesSubcommand {
     fun getMobBeingLookedAt(
         player: Player,
         findNearbyEntities: Boolean,
-        sender: CommandSender,
-        messageLabel: String
+        sender: CommandSender
     ): LivingEntityWrapper? {
         var livingEntity: LivingEntity? = null
         var lmEntity: LivingEntityWrapper? = null

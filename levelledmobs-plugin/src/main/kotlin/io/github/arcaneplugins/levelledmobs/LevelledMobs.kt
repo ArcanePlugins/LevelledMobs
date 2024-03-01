@@ -163,21 +163,9 @@ class LevelledMobs : JavaPlugin() {
     }
 
     private fun prepareToLoadCustomDrops(){
-        if (Bukkit.getPluginManager().getPlugin("LM_Items") != null) {
-            val mainInstance = this
-            val wrapper = SchedulerWrapper {
-                customDropsHandler.customDropsParser.loadDrops(
-                    FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-                )
-                mainCompanion.hasFinishedLoading = true
-                if (mainCompanion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
-            }
-            wrapper.runDelayed(10L)
-        } else {
-            customDropsHandler.customDropsParser.loadDrops(
-                FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-            )
-            if (mainCompanion.showCustomDrops) customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
+        if (Bukkit.getPluginManager().getPlugin("LM_Items") == null &&
+            mainCompanion.showCustomDrops) {
+            customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
         }
     }
 

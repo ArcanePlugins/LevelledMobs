@@ -4,10 +4,12 @@ import io.github.stumper66.lm_items.ExternalItemRequest
 import io.github.stumper66.lm_items.LM_Items
 import java.util.Hashtable
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.util.Log
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -18,27 +20,35 @@ import org.bukkit.inventory.ItemStack
  * @since 3.5.0
  */
 class LMItemsParser {
+    private val pendingItems = mutableMapOf<CustomDropItem, String>()
+
+    fun processPendingItems(){
+        Log.inf("processPendingItems() items: ${pendingItems.size}")
+        for (item in pendingItems){
+            parseExternalItemAttributes(item.value, item.key)
+        }
+        pendingItems.clear()
+    }
+
     fun parseExternalItemAttributes(
         materialName: String,
         item: CustomDropItem
     ): Boolean {
         if (!ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
             if (ExternalCompatibilityManager.hasLMItemsInstalled) {
-                Log.war(
-                    String.format(
-                        "customdrops.yml references external item '%s' but LM_Items is an old version",
-                        materialName
-                    )
-                )
+                Log.war("customdrops.yml references external item '$materialName' but LM_Items is an old version")
             } else {
-                Log.war(
-                    String.format(
-                        "customdrops.yml references external item '%s' but LM_Items is not installed",
-                        materialName
-                    )
-                )
+                Log.war("customdrops.yml references external item '$materialName' but LM_Items is not installed")
             }
             return false
+        }
+
+        if (!MainCompanion.instance.hasFinishedLoading){
+            pendingItems[item] = materialName
+
+            // this is a placeholder item for now
+            item.itemStack = ItemStack(Material.STICK)
+            return true
         }
 
         val colon = materialName.indexOf(":")
@@ -47,12 +57,8 @@ class LMItemsParser {
         val lmitems = LM_Items.plugin
 
         if (!lmitems.doesSupportPlugin(item.externalPluginName!!)) {
-            Log.war(
-                String.format(
-                    "customdrops.yml references item from plugin '%s' but LM_Items does not support that plugin",
-                    item.externalPluginName
-                )
-            )
+            Log.war("customdrops.yml references item from plugin '${item.externalPluginName}' " +
+                    "but LM_Items does not support that plugin")
             return false
         }
 
@@ -64,9 +70,7 @@ class LMItemsParser {
         val itemsAPI = LM_Items.plugin.getItemAPIForPlugin(item.externalPluginName!!)
 
         if (itemsAPI == null) {
-            Log.war(
-                "Unable to get ItemsAPI from LM_Items for plugin " + item.externalPluginName
-            )
+            Log.war("Unable to get ItemsAPI from LM_Items for plugin ${item.externalPluginName}")
             return false
         }
 
@@ -105,12 +109,7 @@ class LMItemsParser {
         val result = itemsAPI.getItem(itemRequest)
 
         if (!result.pluginIsInstalled) {
-            Log.war(
-                String.format(
-                    "custom item references plugin '%s' but that plugin is not installed",
-                    item.externalPluginName
-                )
-            )
+            Log.war("custom item references plugin '${item.externalPluginName}' but that plugin is not installed")
             return false
         }
 

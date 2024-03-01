@@ -37,7 +37,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
             .withPermission("levelledmobs.command.spawner")
             .withShortDescription("Various commands for creating spawner cubes.")
             .withFullDescription("Various commands for creating spawner cubes.")
-            .executes(CommandExecutor { sender, args ->
+            .executes(CommandExecutor { sender, _ ->
                 MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.usage")
             })
             .withSubcommands(

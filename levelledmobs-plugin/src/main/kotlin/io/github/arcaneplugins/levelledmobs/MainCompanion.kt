@@ -23,6 +23,7 @@ import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManage
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
 import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.listeners.ServerLoadEvent
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
 import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
@@ -139,29 +140,11 @@ class MainCompanion{
         main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled()
         main.customDropsHandler.load()
 
-        if (!isReload) {
-            // remove legacy files if they exist
-            val legacyFile = arrayOf("attributes.yml", "drops.yml")
-            for (lFile in legacyFile) {
-                val delFile = File(main.dataFolder, lFile)
-                try {
-                    if (delFile.exists()) {
-                        delFile.delete()
-                    }
-                } catch (e: Exception) {
-                    Log.war("Unable to delete file " + lFile + ", " + e.message)
-                }
-            }
+        parseDebugsEnabled()
 
-            parseDebugsEnabled()
-        } else {
-            // if not reloading then it is called from the server load event to make sure any dependent
-            // plugins are already loaded
-            parseDebugsEnabled()
-            main.customDropsHandler.customDropsParser.loadDrops(
-                loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-            )
-        }
+        main.customDropsHandler.customDropsParser.loadDrops(
+            loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+        )
 
         main.configUtils.load()
         main.playerLevellingMinRelevelTime = main.helperSettings.getIntTimeUnitMS(
@@ -248,6 +231,7 @@ class MainCompanion{
         pluginManager.registerEvents(main.blockPlaceListener, main)
         pluginManager.registerEvents(PlayerPortalEventListener(), main)
         pluginManager.registerEvents(EntityPickupItemListener(), main)
+        pluginManager.registerEvents(ServerLoadEvent(), main)
         main.chunkLoadListener = ChunkLoadListener()
         main.playerInteractEventListener = PlayerInteractEventListener()
         pluginManager.registerEvents(main.playerInteractEventListener, main)

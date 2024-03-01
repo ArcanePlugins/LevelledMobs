@@ -313,7 +313,6 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         val info = CustomSpawnerInfo()
         info.player = player
         val pdc = cs.persistentDataContainer
-        val main = LevelledMobs.instance
 
         if (!pdc.has(NamespacedKeys.keySpawner, PersistentDataType.INTEGER)) {
             showMessage("command.levelledmobs.spawner.copy.vanilla-spawner")
