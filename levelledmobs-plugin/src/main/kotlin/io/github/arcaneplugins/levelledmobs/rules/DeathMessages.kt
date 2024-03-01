@@ -33,6 +33,6 @@ class DeathMessages {
         if (!this.isEnabled) return "DeathMessages (disabled)"
         if (this.isEmpty) return "DeathMessages"
 
-        return String.format("DeathMessages (%s defined)", messages.size)
+        return "DeathMessages (${messages.size} defined)"
     }
 }

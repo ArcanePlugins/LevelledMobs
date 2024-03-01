@@ -1018,12 +1018,7 @@ class RulesParsingManager {
                 val value = YmlParsingHelper.getString(cs, key)
 
                 if (!mdr.parseAxis(value, axis, isStart)) {
-                    Log.war(
-                        String.format(
-                            "rule: %s, invalid value for %s: %s",
-                            parsingInfo.ruleName, key, value
-                        )
-                    )
+                    Log.war("rule: ${parsingInfo.ruleName}, invalid value for $key: $value")
                 }
             }
         }
@@ -1561,7 +1556,7 @@ class RulesParsingManager {
         }
 
         if (rls == null || !rls.autoGenerate || rls.weightedRandom.isNotEmpty()) return
-        for (i in minLevel..maxLevel) rls.weightedRandom[String.format("%s-%s", i, i)] = maxLevel - i + 1
+        for (i in minLevel..maxLevel) rls.weightedRandom["$i-$i"] = maxLevel - i + 1
 
         rls.populateWeightedRandom(minLevel, maxLevel)
     }

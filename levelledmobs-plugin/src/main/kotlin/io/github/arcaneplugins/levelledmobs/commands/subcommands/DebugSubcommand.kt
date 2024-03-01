@@ -309,7 +309,7 @@ object DebugSubcommand {
 
         val usePlayer = optionalTarget ?: sender as Player
         val lmEntity = RulesSubcommand.getMobBeingLookedAt(
-            usePlayer, true, sender, ""
+            usePlayer, true, sender
         )
         if (lmEntity == null) {
             sender.sendMessage("Could not locate any mobs near player: " + usePlayer.name)
@@ -737,7 +737,7 @@ object DebugSubcommand {
 
         val usePlayer = optionalTarget ?: sender as Player
         val lmEntity = RulesSubcommand.getMobBeingLookedAt(
-            usePlayer, true, sender, ""
+            usePlayer, true, sender
         )
 
         if (lmEntity == null) {

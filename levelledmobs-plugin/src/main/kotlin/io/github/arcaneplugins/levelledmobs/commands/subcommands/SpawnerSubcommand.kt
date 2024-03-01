@@ -92,7 +92,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
                 OperationEnum.COPY -> {
                     val playerId = (sender as Player).uniqueId
                     MessagesHelper.showMessage(sender,
-                        if (LevelledMobs.instance.mainCompanion.spawnerCopyIds.contains(playerId))
+                        if (MainCompanion.instance.spawnerCopyIds.contains(playerId))
                             "command.levelledmobs.spawner.copy.status-enabled"
                         else
                             "command.levelledmobs.spawner.copy.status-not-enabled"
@@ -101,7 +101,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
                 OperationEnum.INFO -> {
                     val playerId = (sender as Player).uniqueId
                     MessagesHelper.showMessage(sender,
-                        if (LevelledMobs.instance.mainCompanion.spawnerInfoIds.contains(playerId))
+                        if (MainCompanion.instance.spawnerInfoIds.contains(playerId))
                             "command.levelledmobs.spawner.info.status-enabled"
                         else
                             "command.levelledmobs.spawner.info.status-not-enabled"

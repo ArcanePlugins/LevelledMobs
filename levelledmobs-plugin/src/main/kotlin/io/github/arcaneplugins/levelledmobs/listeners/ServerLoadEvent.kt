@@ -18,12 +18,12 @@ class ServerLoadEvent : Listener {
         if (lmItemsParser != null){
             val scheduler = SchedulerWrapper {
                 lmItemsParser.processPendingItems()
-                if (LevelledMobs.instance.mainCompanion.showCustomDrops)
+                if (MainCompanion.instance.showCustomDrops)
                     LevelledMobs.instance.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
             }
             scheduler.runDelayed(10L)
         }
-        else if (LevelledMobs.instance.mainCompanion.showCustomDrops){
+        else if (MainCompanion.instance.showCustomDrops){
             LevelledMobs.instance.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
         }
     }

@@ -91,7 +91,7 @@ object RulesSubcommand {
                 CommandAPICommand("help-discord")
                     .executes(CommandExecutor { sender, _ ->
                         val message = MessagesHelper.getMessage("command.levelledmobs.rules.discord-invite")
-                        showHyperlink(sender, message, "https://www.discord.io/arcaneplugins")
+                        showHyperlink(sender, message, "https://discord.gg/arcaneplugins-752310043214479462")
                     })
             )
             .withSubcommands(

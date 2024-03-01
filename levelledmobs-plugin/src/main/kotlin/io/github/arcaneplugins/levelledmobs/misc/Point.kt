@@ -48,7 +48,7 @@ class Point {
         get() = mutableListOf(x, y, z)
 
     override fun toString(): String {
-        return String.format("%s, %s, %s, %s", worldName, x, y, z)
+        return "$worldName, $x, $y, $z"
     }
 
     fun matches(point1: Point, point2: Point): Boolean {

@@ -422,13 +422,8 @@ object Utils {
     }
 
     private fun showLocation(location: Location): String {
-        return String.format(
-            "%s at %s,%s,%s",
-            location.world.name,
-            location.blockX,
-            location.blockY,
-            location.blockZ
-        )
+            return "${location.world.name} at " +
+                    "${location.blockX},${location.blockY},${location.blockZ}"
     }
 
     fun checkIfMobHashChanged(
@@ -451,17 +446,11 @@ object Utils {
         if (hashChanged) {
             if (hadHash) {
                 DebugManager.log(DebugType.MOB_HASH, lmEntity, false) {
-                    String.format(
-                        "Invalid hash for %s %s",
-                        lmEntity.nameIfBaby, showLocation(lmEntity.location)
-                    )
+                    "Invalid hash for ${lmEntity.nameIfBaby} ${showLocation(lmEntity.location)}"
                 }
             } else {
                 DebugManager.log(DebugType.MOB_HASH, lmEntity, false) {
-                    String.format(
-                        "Hash missing for %s %s",
-                        lmEntity.nameIfBaby, showLocation(lmEntity.location)
-                    )
+                    "Hash missing for ${lmEntity.nameIfBaby} ${showLocation(lmEntity.location)}"
                 }
             }
 
@@ -471,10 +460,7 @@ object Utils {
                 .set(NamespacedKeys.mobHash, PersistentDataType.STRING, main.rulesManager.currentRulesHash)
         } else {
             DebugManager.log(DebugType.MOB_HASH, lmEntity, true) {
-                String.format(
-                    "Hash missing for %s %s",
-                    lmEntity.nameIfBaby, showLocation(lmEntity.location)
-                )
+                "Hash missing for ${lmEntity.nameIfBaby} ${showLocation(lmEntity.location)}"
             }
         }
 

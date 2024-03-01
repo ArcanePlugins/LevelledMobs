@@ -151,7 +151,7 @@ abstract class SpawnerBaseClass : MessagesBase() {
                     if (loreLine.isNotEmpty()) {
                         loreLine.append(", ")
                     }
-                    loreLine.append(String.format("&7%s: &b%s&7", name, f[info]))
+                    loreLine.append("&7${name}: &b${f[info]}&7")
                     itemsCount++
                 }
                 if (itemsCount > 0) {

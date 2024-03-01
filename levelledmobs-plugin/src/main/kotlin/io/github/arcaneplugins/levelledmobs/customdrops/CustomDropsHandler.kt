@@ -229,10 +229,7 @@ class CustomDropsHandler {
             if (buildResult == DropInstanceBuildResult.DID_NOT_MAKE_CHANCE) {
                 processingInfo.addDebugMessage(
                     DebugType.CUSTOM_DROPS,
-                    String.format(
-                        "&7%s (%s) - didn't make overall chance",
-                        lmEntity.typeName, lmEntity.getMobLevel
-                    )
+                    "&7${lmEntity.typeName} (${lmEntity.getMobLevel}) - didn't make overall chance"
                 )
             } else {
                 processingInfo.addDebugMessage(
@@ -259,14 +256,11 @@ class CustomDropsHandler {
             if (equippedOnly && drops.isNotEmpty() && showCustomEquips) {
                 if (lmEntity.getMobLevel > -1) {
                     processingInfo.addDebugMessage(
-                        String.format(
-                            "&7Custom equipment for &b%s &r(%s)", lmEntity.typeName,
-                            lmEntity.getMobLevel
-                        )
+                        "&7Custom equipment for &b${lmEntity.typeName} &r(${lmEntity.getMobLevel})"
                     )
                 } else {
                     processingInfo.addDebugMessage(
-                        "&7Custom equipment for &b" + lmEntity.typeName + "&r"
+                        "&7Custom equipment for &b${lmEntity.typeName}&r"
                     )
                 }
                 val sb = StringBuilder()
@@ -279,7 +273,7 @@ class CustomDropsHandler {
                 processingInfo.addDebugMessage("   $sb")
             } else if (!equippedOnly && showCustomDrops) {
                 processingInfo.addDebugMessage(
-                    String.format("&8 --- &7Custom items added: &b%s&7.", postCount)
+                    "&8 --- &7Custom items added: &b$postCount&7."
                 )
             }
 

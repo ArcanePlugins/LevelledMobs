@@ -189,7 +189,7 @@ class PlayerLevellingOptions : Cloneable {
             // ensure the min value is not higher than the max value
             results.min = min(results.min.toDouble(), results.max.toDouble()).toInt()
 
-            varianceDebug = String.format(", var: %s", playerLevelSourceResult.randomVarianceResult)
+            varianceDebug = ", var: ${playerLevelSourceResult.randomVarianceResult}"
         } else {
             varianceDebug = ""
         }

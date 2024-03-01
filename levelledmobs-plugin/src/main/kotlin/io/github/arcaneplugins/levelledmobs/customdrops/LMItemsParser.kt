@@ -118,10 +118,7 @@ class LMItemsParser {
             if (result.typeIsNotSupported) {
                 if (item.externalType == null) {
                     Log.war(
-                        String.format(
-                            "custom item '%s:%s' doesn't support type (null)",
-                            item.externalPluginName, item.externalItemId
-                        )
+                        "custom item '${item.externalPluginName}:${item.externalItemId}' doesn't support type (null)"
                     )
                 } else {
                     Log.war(

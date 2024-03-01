@@ -896,7 +896,7 @@ object FileMigrator {
                     val temp = origKey.substring(1).trim { it <= ' ' }
                     var tempKey: String
                     for (i in 0..99) {
-                        tempKey = String.format("%s[%s]", temp, i)
+                        tempKey = "$temp[$i]"
                         val checkKey = getKeyFromList(currentKey, tempKey)
                         if (!configMap.containsKey(checkKey)) {
                             currentKey.add(tempKey)

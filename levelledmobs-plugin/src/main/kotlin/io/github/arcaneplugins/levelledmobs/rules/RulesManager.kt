@@ -1099,12 +1099,7 @@ class RulesManager {
 
             DebugManager.log(
                 DebugType.SCOREBOARD_TAGS, ri, lmEntity, madeCriteria
-            ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7",
-                    ri.ruleName, lmEntity.nameIfBaby
-                )
-            }
+            ) { "&b${ri.ruleName}&7, mob: &b${lmEntity.nameIfBaby}&7" }
 
             if (!madeCriteria) return false
         }
@@ -1254,10 +1249,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_WG_REGION, ri, lmInterface, isInList
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
-                    ri.ruleName, lmInterface.typeName, wgRegions
-                )
+                "&b${ri.ruleName}&7, mob: &b${lmInterface.typeName}&7, wg_regions: &b$wgRegions&7"
             }
             if (!isInList) return RuleCheckResult(false)
         }
@@ -1498,7 +1490,7 @@ class RulesManager {
             if (rulesCooldown.isEmpty()) {
                 val message = "No rules are currently temporarily disabled"
                 return if (isFromConsole) {
-                    String.format("%s %s", LevelledMobs.instance.configUtils.prefix, message)
+                    "${LevelledMobs.instance.configUtils.prefix} $message"
                 } else {
                     message
                 }
