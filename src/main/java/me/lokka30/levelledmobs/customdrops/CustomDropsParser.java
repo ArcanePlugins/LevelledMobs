@@ -402,12 +402,6 @@ public class CustomDropsParser {
                         continue;
                     }
 
-                    if (item.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
-                        //if (!handler.lmItemsParser.getExternalItem(item, null)) {
-                            continue;
-                        //}
-                    }
-
                     dropBase = item;
                 }
 
