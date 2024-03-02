@@ -703,8 +703,6 @@ public class CustomDropsHandler {
             Utils.logger.warning("Could not get external custom item - LM_Items is not installed");
         }
 
-        processEnchantmentChances(dropItem);
-
         if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()){
             lmItemsParser.getExternalItem(dropItem, info);
         }
@@ -716,11 +714,13 @@ public class CustomDropsHandler {
 
             newItem = newItem.clone();
 
+            processEnchantmentChances(dropItem, newItem);
+
             if (info.deathByFire) {
                 newItem = getCookedVariantOfMeat(dropItem.getItemStack());
             }
 
-            newItem.setAmount(newDropAmount);
+            if (newDropAmount > 1) newItem.setAmount(newDropAmount);
 
             if (!dropItem.noMultiplier && !info.doNotMultiplyDrops) {
                 main.levelManager.multiplyDrop(info.lmEntity, newItem, info.addition, true);
@@ -858,7 +858,8 @@ public class CustomDropsHandler {
         return true;
     }
 
-    private void processEnchantmentChances(final @NotNull CustomDropItem dropItem){
+    private void processEnchantmentChances(final @NotNull CustomDropItem dropItem,
+                                           final @NotNull ItemStack itemStack){
         if (dropItem.enchantmentChances == null || dropItem.enchantmentChances.isEmpty()) return;
 
         final StringBuilder debug = new StringBuilder();
@@ -900,22 +901,31 @@ public class CustomDropsHandler {
                     debug.append(String.format("%s: &2%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue));
                 }
 
-                if (dropItem.getMaterial() == Material.ENCHANTED_BOOK){
-                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) dropItem.getItemStack().getItemMeta();
+                if (itemStack.getType() == Material.ENCHANTED_BOOK){
+                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) itemStack.getItemMeta();
                     if (meta != null) {
                         meta.addStoredEnchant(enchantment, enchantLevel, true);
-                        dropItem.getItemStack().setItemMeta(meta);
+                        itemStack.setItemMeta(meta);
                     }
                 }
                 else{
-                    dropItem.getItemStack().addUnsafeEnchantment(enchantment, enchantLevel);
+                    itemStack.addUnsafeEnchantment(enchantment, enchantLevel);
                 }
                 madeAnyChance = true;
                 break;
             }
 
-            if (!madeAnyChance && opts != null && opts.defaultLevel != null){
-                dropItem.getItemStack().addUnsafeEnchantment(enchantment, opts.defaultLevel);
+            if (!madeAnyChance && opts != null && opts.defaultLevel != null && opts.defaultLevel > 0){
+                if (itemStack.getType() == Material.ENCHANTED_BOOK){
+                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) itemStack.getItemMeta();
+                    if (meta != null) {
+                        meta.addStoredEnchant(enchantment, opts.defaultLevel, true);
+                        itemStack.setItemMeta(meta);
+                    }
+                }
+                else{
+                    itemStack.addUnsafeEnchantment(enchantment, opts.defaultLevel);
+                }
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS))
                     debug.append(", used dflt: &2").append(opts.defaultLevel).append("&r");
             }

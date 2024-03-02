@@ -314,7 +314,7 @@ presets:
     name: 'Nametag - No Level Tag'
     apply-settings:
       nametag: '&8&l༺ &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
-      creature-death-nametag: '&f%displayname% &tiered%%heart_symbol%'
+      creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
 
 
 # +-------------------------------------------------------------------------------------------LM3

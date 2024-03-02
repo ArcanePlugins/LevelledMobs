@@ -151,6 +151,12 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
     }
 
     private void forceRelevel(final CommandSender sender) {
+        //TODO: make this work in Folia
+        if (main.getVerInfo().getIsRunningFolia()){
+            sender.sendMessage("Sorry this command doesn't work in Folia");
+            return;
+        }
+
         int worldCount = 0;
         int entityCount = 0;
 

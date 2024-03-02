@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -108,6 +109,7 @@ public class LevelManager implements LevelInterface {
         this.main = main;
         this.randomLevellingCache = new TreeMap<>();
         this.summonedOrSpawnEggs = new WeakHashMap<>();
+        this.entitiesPerPlayer = new LinkedHashMap<>();
 
         this.vehicleNoMultiplierItems = List.of(
             Material.SADDLE,
@@ -151,6 +153,9 @@ public class LevelManager implements LevelInterface {
     private final Map<String, RandomLevellingStrategy> randomLevellingCache;
     private Instant lastLEWCacheClearing;
     public EntitySpawnListener entitySpawnListener;
+    private final AtomicInteger asyncRunningCount = new AtomicInteger();
+    private final Map<Player, List<Entity>> entitiesPerPlayer;
+    private final static Object entitiesPerPlayerLock = new Object();
 
     /**
      * The following entity types *MUST NOT* be levellable.
@@ -766,6 +771,7 @@ public class LevelManager implements LevelInterface {
         text.replace("%mob-lvl%", lmEntity.getMobLevel());
         text.replace("%entity-name%",
             Utils.capitalize(lmEntity.getNameIfBaby().replace("_", " ")));
+        text.replace("%entity-name-raw%", lmEntity.getLivingEntity().getName());
         text.replace("%entity-health%", Utils.round(entityHealth));
         text.replace("%entity-health-rounded%", entityHealthRounded);
         text.replace("%entity-max-health%", roundedMaxHealth);
@@ -860,41 +866,16 @@ public class LevelManager implements LevelInterface {
             6); // run every ? seconds.
         this.doCheckMobHash = main.helperSettings.getBoolean(main.settingsCfg, "check-mob-hash", true);
 
+        final Runnable runnable = () -> {
+            checkLEWCache();
+            enumerateNearbyEntities();
+        };
+
         if (main.getVerInfo().getIsRunningFolia()){
-           final Consumer<ScheduledTask> bgThread = scheduledTask -> {
-               if (Bukkit.getOnlinePlayers().isEmpty()) return;
-               Player firstPlayer = null;
-               for (final Player player : Bukkit.getOnlinePlayers()){
-                   firstPlayer = player;
-                   break;
-               }
-               if (firstPlayer == null) return;
-
-               final Consumer<ScheduledTask> task = scheduledTask1 -> {
-                   checkLEWCache();
-                   final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
-                   if (entitiesPerPlayer != null) {
-                       runNametagCheck_aSync(entitiesPerPlayer);
-                   }
-               };
-
-               firstPlayer.getScheduler().run(main, task, null);
-            };
-
-            nametagTimerTask = new SchedulerResult(org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, period, TimeUnit.SECONDS));
+            final Consumer<ScheduledTask> task = scheduledTask -> runnable.run();
+            nametagTimerTask = new SchedulerResult(org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, task, 0, period, TimeUnit.SECONDS));
         }
         else{
-            final Runnable runnable = () -> {
-                final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
-
-                if (entitiesPerPlayer != null) {
-                    final Runnable runnable2 = () -> {
-                        checkLEWCache();
-                        runNametagCheck_aSync(entitiesPerPlayer);
-                    };
-                    Bukkit.getScheduler().runTaskAsynchronously(main, runnable2);
-                }
-            };
             nametagTimerTask = new SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period));
         }
     }
@@ -921,21 +902,39 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    private @Nullable Map<Player, List<Entity>> enumerateNearbyEntities(){
-        final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+    private void enumerateNearbyEntities(){
+        this.entitiesPerPlayer.clear();
+        asyncRunningCount.set(0);
         final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
                 "async-task-max-blocks-from-player", 100);
 
         for (final Player player : Bukkit.getOnlinePlayers()) {
-            final List<Entity> entities = player.getNearbyEntities(checkDistance,
-                    checkDistance, checkDistance);
-            entitiesPerPlayer.put(player, entities);
-        }
-        if (entitiesPerPlayer.isEmpty()) {
-            return null;
-        }
-        else{
-            return entitiesPerPlayer;
+            if (main.getVerInfo().getIsRunningFolia()){
+                final Runnable test = () -> {
+                    if (asyncRunningCount.get() == 0)
+                        runNametagCheck_aSync();
+                };
+
+                asyncRunningCount.getAndIncrement();
+                final Consumer<ScheduledTask> task = scheduledTask ->{
+                    final List<Entity> entities = player.getNearbyEntities(checkDistance,
+                            checkDistance, checkDistance);
+                    synchronized (entitiesPerPlayerLock) {
+                        entitiesPerPlayer.put(player, entities);
+                    }
+
+                    asyncRunningCount.getAndDecrement();
+                    if (asyncRunningCount.get() == 0)
+                        runNametagCheck_aSync();
+                };
+                player.getScheduler().run(main, task, test);
+            }
+            else{
+                final List<Entity> entities = player.getNearbyEntities(checkDistance,
+                        checkDistance, checkDistance);
+                entitiesPerPlayer.put(player, entities);
+                runNametagCheck_aSync();
+            }
         }
     }
 
@@ -945,31 +944,25 @@ public class LevelManager implements LevelInterface {
         scheduler.runTaskTimerAsynchronously(0, 1000);
     }
 
-    private void runNametagCheck_aSync(final @NotNull Map<Player, List<Entity>> entitiesPerPlayer) {
+    private void runNametagCheck_aSync() {
         final Map<LivingEntityWrapper, List<Player>> entityToPlayer = new LinkedHashMap<>();
 
-        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+        if (main.getVerInfo().getIsRunningFolia()){
+            for (final Player player : entitiesPerPlayer.keySet()) {
+                for (final Entity entity : entitiesPerPlayer.get(player)) {
+                    final Consumer<ScheduledTask> task = scheduledTask -> checkEntity(entity, player, entityToPlayer);
+                    entity.getScheduler().run(main, task, null);
+                }
+            }
+        }
+        else{
             for (final Player player : entitiesPerPlayer.keySet()) {
                 for (final Entity entity : entitiesPerPlayer.get(player)) {
                     checkEntity(entity, player, entityToPlayer);
                 }
             }
-        });
-
-        if (main.getVerInfo().getIsRunningFolia()){
-            Entity firstEntity = null;
-            for (final Player player : entitiesPerPlayer.keySet()) {
-                for (final Entity entity : entitiesPerPlayer.get(player)) {
-                    firstEntity = entity;
-                    break;
-                }
-                if (firstEntity != null) break;
-            }
-            scheduler.entity = firstEntity;
         }
 
-        scheduler.runDirectlyInBukkit = true;
-        scheduler.run();
 
         for (final Map.Entry<LivingEntityWrapper, List<Player>> entry : entityToPlayer.entrySet()) {
             final LivingEntityWrapper lmEntity = entry.getKey();
@@ -979,6 +972,8 @@ public class LevelManager implements LevelInterface {
 
             lmEntity.free();
         }
+
+        entitiesPerPlayer.clear();
     }
 
     private void checkEntity(final @NotNull Entity entity, final @NotNull Player player,

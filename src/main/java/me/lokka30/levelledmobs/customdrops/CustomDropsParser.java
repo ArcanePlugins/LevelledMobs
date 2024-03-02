@@ -32,6 +32,7 @@ import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -401,12 +402,6 @@ public class CustomDropsParser {
                         continue;
                     }
 
-                    if (item.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
-                        if (!handler.lmItemsParser.getExternalItem(item, null)) {
-                            continue;
-                        }
-                    }
-
                     dropBase = item;
                 }
 
@@ -747,7 +742,7 @@ public class CustomDropsParser {
             if (value instanceof LinkedHashMap){
                 // contains enchantment chances
 
-                final Enchantment en = Enchantment.getByKey(
+                final Enchantment en = Registry.ENCHANTMENT.get(
                         NamespacedKey.minecraft(enchantName.toLowerCase()));
 
                 if (en == null){
@@ -765,7 +760,7 @@ public class CustomDropsParser {
                 enchantLevel = Integer.parseInt(value.toString());
             }
 
-            final Enchantment en = Enchantment.getByKey(
+            final Enchantment en = Registry.ENCHANTMENT.get(
                 NamespacedKey.minecraft(enchantName.toLowerCase()));
             if (en != null) {
                 if (item.getMaterial() == Material.ENCHANTED_BOOK) {
