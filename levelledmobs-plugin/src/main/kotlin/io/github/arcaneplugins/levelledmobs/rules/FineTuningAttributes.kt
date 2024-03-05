@@ -153,12 +153,15 @@ class FineTuningAttributes : MergableRule, Cloneable {
 
         if (this.getUseStacked()) sb.append("(all stk)")
 
-        for ((addition, useStacked1, value) in multipliers.values) {
+        for (multiplier in multipliers.values) {
             if (sb.isNotEmpty()) sb.append(", ")
 
-            sb.append(getShortName(addition))
-            sb.append(": ").append(value)
-            if (useStacked1) {
+            sb.append(getShortName(multiplier.addition))
+            sb.append(": ").append(multiplier.value)
+            if (multiplier.hasFormula){
+                sb.append(multiplier.formula)
+            }
+            else if (multiplier.useStacked) {
                 sb.append(" (stk)")
             }
         }

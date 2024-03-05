@@ -65,6 +65,12 @@ object KillSubcommand {
         input: CommandArguments,
         isAll: Boolean
     ){
+        //TODO: make this work in Folia
+        if (LevelledMobs.instance.ver.isRunningFolia) {
+            sender.sendMessage("Sorry this command doesn't work in Folia")
+            return
+        }
+
         val values = input.rawArgsMap["values"]
         if (values == null) {
             if (sender is Player) {

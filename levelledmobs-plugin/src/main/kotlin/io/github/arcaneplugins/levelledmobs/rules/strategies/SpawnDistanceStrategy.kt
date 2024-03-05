@@ -94,11 +94,9 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         return sb.toString()
     }
 
-    override fun generateLevel(
-        lmEntity: LivingEntityWrapper?, minLevel: Int,
-        maxLevel: Int
+    override fun generateNumber(
+        lmEntity: LivingEntityWrapper
     ): Int {
-        if (lmEntity == null) return minLevel
 
         var spawnLocation = lmEntity.world.spawnLocation
 
@@ -133,20 +131,20 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         }
 
         //Get the level thats meant to be at a given distance
-        val spawnDistanceAssignment = min(
-            ((levelDistance / increaseLevelDistance) + minLevel + varianceAdded).toDouble(), maxLevel.toDouble()
-        )
+        val spawnDistanceAssignment =
+            ((levelDistance / increaseLevelDistance) + varianceAdded).toDouble()
             .toInt()
+
         if (this.blendedLevellingEnabled == null || !blendedLevellingEnabled!!) {
             return spawnDistanceAssignment
         }
 
-        return generateBlendedLevel(lmEntity, spawnDistanceAssignment, minLevel, maxLevel)
+        return generateBlendedLevel(lmEntity, spawnDistanceAssignment)
     }
 
     private fun generateBlendedLevel(
         lmEntity: LivingEntityWrapper,
-        spawnDistanceLevelAssignment: Int, minLevel: Int, maxLevel: Int
+        spawnDistanceLevelAssignment: Int
     ): Int {
         val currentYPos = lmEntity.location.blockY
 
@@ -174,12 +172,6 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         )
         if (variance != null && variance > 0) {
             result += ThreadLocalRandom.current().nextInt(0, variance + 1).toDouble()
-        }
-
-        if (result < minLevel) {
-            result = minLevel.toDouble()
-        } else if (result > maxLevel) {
-            result = maxLevel.toDouble()
         }
 
         return result.toInt()

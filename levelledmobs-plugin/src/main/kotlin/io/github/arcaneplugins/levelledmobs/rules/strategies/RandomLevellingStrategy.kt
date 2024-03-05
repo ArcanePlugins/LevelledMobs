@@ -28,7 +28,12 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         return generateLevel(null, minLevel, maxLevel)
     }
 
-    override fun generateLevel(
+    override fun generateNumber(lmEntity: LivingEntityWrapper): Int {
+        // TODO implement this
+        return 1
+    }
+
+    fun generateLevel(
         lmEntity: LivingEntityWrapper?,
         minLevel: Int,
         maxLevel: Int

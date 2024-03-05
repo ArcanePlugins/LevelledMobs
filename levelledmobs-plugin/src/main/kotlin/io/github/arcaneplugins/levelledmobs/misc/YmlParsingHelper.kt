@@ -201,7 +201,7 @@ class YmlParsingHelper(
             if (cs == null) return defaultValue
             val useName = getKeyNameFromConfig(cs, name)
 
-            return if (cs[useName] != null) {
+            return if (cs[useName] is Float || cs[useName] is Double || cs[useName] is Int) {
                 cs.getDouble(useName).toFloat()
             } else {
                 defaultValue

@@ -175,6 +175,12 @@ object RulesSubcommand {
     }
 
     private fun forceRelevel(sender: CommandSender) {
+        //TODO: make this work in Folia
+        if (LevelledMobs.instance.ver.isRunningFolia) {
+            sender.sendMessage("Sorry this command doesn't work in Folia")
+            return
+        }
+
         var worldCount = 0
         var entityCount = 0
         val main = LevelledMobs.instance

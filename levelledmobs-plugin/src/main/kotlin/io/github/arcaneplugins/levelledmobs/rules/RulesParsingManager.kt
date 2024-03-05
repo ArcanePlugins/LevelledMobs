@@ -669,7 +669,7 @@ class RulesParsingManager {
         if (cs == null) return
 
         val ymlHelper = YmlParsingHelper(cs)
-        parseFineTuning(YmlParsingHelper.objToCS(cs, "multipliers"))
+        parseFineTuning(YmlParsingHelper.objToCS(cs, "attribute-modifier"))
         parseEntityNameOverride(YmlParsingHelper.objToCS(cs, "entity-name-override"))
         parseTieredColoring(YmlParsingHelper.objToCS(cs, "tiered-coloring"))
         parseHealthIndicator(YmlParsingHelper.objToCS(cs, "health-indicator"))
@@ -1055,10 +1055,10 @@ class RulesParsingManager {
                 if (parsingInfo.levellingStrategy is YDistanceStrategy) parsingInfo.levellingStrategy as YDistanceStrategy? else YDistanceStrategy()
 
             yDistanceStrategy!!.startingYLevel = ymlHelper2.getInt2(
-                 "start", yDistanceStrategy.startingYLevel
+                 "start-height", yDistanceStrategy.startingYLevel
             )
             yDistanceStrategy.endingYLevel = ymlHelper2.getInt2(
-                 "end", yDistanceStrategy.endingYLevel
+                 "end-height", yDistanceStrategy.endingYLevel
             )
             yDistanceStrategy.yPeriod = ymlHelper2.getInt2(
                  "period", yDistanceStrategy.yPeriod
@@ -1073,7 +1073,7 @@ class RulesParsingManager {
             }
         }
 
-        val csSpawnDistance = YmlParsingHelper.objToCS(cs, "distance-from-spawn")
+        val csSpawnDistance = YmlParsingHelper.objToCS(cs, "distance-from-origin")
         if (csSpawnDistance != null) {
             val ymlHelper2 = YmlParsingHelper(csSpawnDistance)
             val spawnDistanceStrategy =
@@ -1081,10 +1081,10 @@ class RulesParsingManager {
                 else SpawnDistanceStrategy()
 
             spawnDistanceStrategy!!.increaseLevelDistance = ymlHelper2.getInt2(
-                "increase-level-distance", spawnDistanceStrategy.increaseLevelDistance
+                "ringed-tiers", spawnDistanceStrategy.increaseLevelDistance
             )
             spawnDistanceStrategy.startDistance = ymlHelper2.getInt2(
-                "start-distance", spawnDistanceStrategy.startDistance
+                "buffer-distance", spawnDistanceStrategy.startDistance
             )
 
             parseOptionalSpawnCoordinate(csSpawnDistance, spawnDistanceStrategy)
@@ -1106,7 +1106,7 @@ class RulesParsingManager {
         }
 
         parseWeightedRandom(cs)
-        parsePlayerLevellingOptions(YmlParsingHelper.objToCS(cs, "player-levelling"))
+        parsePlayerLevellingOptions(YmlParsingHelper.objToCS(cs, "player-variable-mod"))
     }
 
     private fun parseWeightedRandom(cs: ConfigurationSection) {
@@ -1291,24 +1291,24 @@ class RulesParsingManager {
         val ymlHelper = YmlParsingHelper(cs)
         val options = PlayerLevellingOptions()
         options.matchPlayerLevel = ymlHelper.getBoolean2(
-             "match-level", options.matchPlayerLevel
+             "match-variable", options.matchPlayerLevel
         )
         options.usePlayerMaxLevel = ymlHelper.getBoolean2(
-             "use-player-max-level", options.usePlayerMaxLevel
+             "use-variable-as-max", options.usePlayerMaxLevel
         )
         options.playerLevelScale = ymlHelper.getDouble2(
-             "player-level-scale", options.playerLevelScale
+             "player-variable-scale", options.playerLevelScale
         )
         options.levelCap = ymlHelper.getInt2( "level-cap", options.levelCap)
         options.enabled = ymlHelper.getBoolean2( "enabled", options.enabled)
         options.doMerge = ymlHelper.getBoolean( "merge", options.doMerge)
-        options.variable = ymlHelper.getString( "variable", options.variable)
+        options.variable = ymlHelper.getString( "player-variable", options.variable)
         options.decreaseLevel = ymlHelper.getBoolean( "decrease-level", true)
         options.recheckPlayers = ymlHelper.getBoolean2( "recheck-players", options.recheckPlayers)
         options.preserveEntityTime = ymlHelper.getIntTimeUnitMS( "preserve-entity", options.preserveEntityTime)
         parsingInfo.playerLevellingOptions = options
 
-        val csTiers = YmlParsingHelper.objToCS(cs, "tiers") ?: return
+        val csTiers = YmlParsingHelper.objToCS(cs, "player-variable-tiers") ?: return
         val levelTiers = mutableListOf<LevelTierMatching>()
 
         for (name in csTiers.getKeys(false)) {
@@ -1361,13 +1361,13 @@ class RulesParsingManager {
              "transition-y-height", spawnDistanceStrategy.transitionYheight
         )
         spawnDistanceStrategy.lvlMultiplier = ymlHelper.getDouble2(
-             "lvl-multiplier", spawnDistanceStrategy.lvlMultiplier
+             "level-multiplier", spawnDistanceStrategy.lvlMultiplier
         )
         spawnDistanceStrategy.multiplierPeriod = ymlHelper.getInt2(
-             "multiplier-period", spawnDistanceStrategy.multiplierPeriod
+             "y-height-period", spawnDistanceStrategy.multiplierPeriod
         )
         spawnDistanceStrategy.scaleDownward = ymlHelper.getBoolean2(
-             "scale-downward", spawnDistanceStrategy.scaleDownward
+             "scale-increase-downward", spawnDistanceStrategy.scaleDownward
         )
     }
 
@@ -1375,7 +1375,7 @@ class RulesParsingManager {
         cs: ConfigurationSection,
         sds: SpawnDistanceStrategy
     ) {
-        val spawnLocation = YmlParsingHelper.objToCS(cs, "spawn-location") ?: return
+        val spawnLocation = YmlParsingHelper.objToCS(cs, "origin-coordinates") ?: return
 
         if (!"default".equals(spawnLocation.getString("x"), ignoreCase = true)) {
             sds.spawnLocationX = spawnLocation.getInt("x")
@@ -1395,7 +1395,7 @@ class RulesParsingManager {
         ) as CachedModalList<VanillaBonusEnum>?
         parsingInfo.allMobMultipliers = parseFineTuningValues(cs, parsingInfo.allMobMultipliers)
 
-        val csCustom = YmlParsingHelper.objToCS(cs, "custom-mob-level") ?: return
+        val csCustom = YmlParsingHelper.objToCS(cs, "custom-attribute-modifier") ?: return
         val fineTuning: MutableMap<String, FineTuningAttributes> = TreeMap(
             String.CASE_INSENSITIVE_ORDER
         )
@@ -1485,9 +1485,12 @@ class RulesParsingManager {
     ): Multiplier? {
         val values = cs.getList(item)
         if (values == null) {
+            val formula = YmlParsingHelper.getString(cs, item)
             val value = YmlParsingHelper.getFloat2(cs, item, null)
             return if (value != null)
                 Multiplier(addition, false, value, null, false)
+            else if (formula != null)
+                Multiplier(addition, false, 0f, formula, true)
             else
                 null
         }
@@ -1523,6 +1526,7 @@ class RulesParsingManager {
                     }
 
                     valueStr = obj
+                    customFormula = obj
                 }
             }
 
@@ -1556,6 +1560,7 @@ class RulesParsingManager {
         }
 
         if (rls == null || !rls.autoGenerate || rls.weightedRandom.isNotEmpty()) return
+        // TODO: next line probably shouldn't have i-i
         for (i in minLevel..maxLevel) rls.weightedRandom["$i-$i"] = maxLevel - i + 1
 
         rls.populateWeightedRandom(minLevel, maxLevel)

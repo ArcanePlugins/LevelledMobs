@@ -16,38 +16,23 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 class CustomStrategy : LevellingStrategy, Cloneable {
     var formula: String? = null
 
-    override fun generateLevel(
-        lmEntity: LivingEntityWrapper?,
-        minLevel: Int,
-        maxLevel: Int
+    override fun generateNumber(
+        lmEntity: LivingEntityWrapper
     ): Int {
         if (formula.isNullOrEmpty()){
-            if (lmEntity != null)
-                DebugManager.log(DebugType.CUSTOM_STRATEGY, lmEntity) { "no formula supplied, generating random level, min: $minLevel, max: $maxLevel" }
-            else
-                DebugManager.log(DebugType.CUSTOM_STRATEGY) { "no formula supplied, generating random level, min: $minLevel, max: $maxLevel" }
-            return RandomLevellingStrategy().generateLevel(minLevel, maxLevel)
+            DebugManager.log(DebugType.CUSTOM_STRATEGY) { "no formula supplied, using 1" }
+            return 1
         }
 
-        var useFormula = formula!!
+        val useFormula = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
+            formula!!, lmEntity, true, lmEntity.associatedPlayer, true
+        )
 
-        if (lmEntity != null) {
-            useFormula = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
-                formula!!, lmEntity, true, lmEntity.associatedPlayer, true
-            )
-        }
-
-        var result = MobDataManager.evaluateExpression(useFormula)
-        result = result.coerceAtLeast(minLevel.toDouble())
-        result = result.coerceAtMost(maxLevel.toDouble())
+        val result = MobDataManager.evaluateExpression(useFormula)
         val finalResult = Math.round(result).toInt()
 
-        if (lmEntity != null)
-            DebugManager.log(DebugType.CUSTOM_STRATEGY, lmEntity) {
-                "formulaPre: '$formula', formulaPost: '$useFormula', maxlvl: $maxLevel, result: $finalResult" }
-        else
-            DebugManager.log(DebugType.CUSTOM_STRATEGY) {
-                "formulaPre: '$formula', formulaPost: '$useFormula', maxlvl: $maxLevel, result: $finalResult" }
+        DebugManager.log(DebugType.CUSTOM_STRATEGY) {
+            "formulaPre: '$formula', formulaPost: '$useFormula', result: $finalResult" }
 
         return finalResult
     }

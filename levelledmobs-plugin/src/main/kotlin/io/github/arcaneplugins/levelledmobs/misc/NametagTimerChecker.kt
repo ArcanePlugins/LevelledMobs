@@ -1,14 +1,14 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.time.Duration
 import java.time.Instant
 import java.util.LinkedList
 import java.util.Queue
 import java.util.WeakHashMap
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
-import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
@@ -38,14 +38,13 @@ class NametagTimerChecker {
 
     fun checkNametags() {
         // in folia this is using the bukkit async scheduler context
-
         synchronized(nametagTimer_Lock) {
             synchronized(playerQueue_Lock) {
                 while (!playersQueue.isEmpty()) {
                     val item = playersQueue.poll() ?: continue
 
                     if (item.isPlayerJoin) {
-                        nametagCooldownQueue[item.player] = WeakHashMap<LivingEntity, Instant>()
+                        nametagCooldownQueue[item.player] = WeakHashMap()
                     } else {
                         nametagCooldownQueue.remove(item.player)
                     }
@@ -54,20 +53,7 @@ class NametagTimerChecker {
             if (nametagCooldownQueue.isEmpty()) return
             for (coolDown in nametagCooldownQueue.entries) {
                 val player = coolDown.key
-
-                if (LevelledMobs.instance.ver.isRunningFolia) {
-                    player.scheduler.run(
-                        LevelledMobs.instance,
-                        {
-                            processCooldownQueue(
-                                player,
-                                coolDown
-                            )
-                        }, null
-                    )
-                } else {
-                    processCooldownQueue(player, coolDown)
-                }
+                processCooldownQueue(player, coolDown)
             }
         }
     }
@@ -76,60 +62,77 @@ class NametagTimerChecker {
         player: Player,
         coolDown: Map.Entry<Player, WeakHashMap<LivingEntity, Instant>>
     ) {
-        val entitiesToRemove = mutableListOf<LivingEntity>()
+        val entitiesToRemove: MutableList<LivingEntity> = LinkedList()
+        val isRunningFolia = LevelledMobs.instance.ver.isRunningFolia
 
         for (livingEntity in coolDown.value.keys) {
-            if (!livingEntity.isValid) {
-                continue
+            if (isRunningFolia) {
+                livingEntity.scheduler.run(
+                    LevelledMobs.instance, {
+                        processCoolDownEntity(
+                            livingEntity,
+                            entitiesToRemove,
+                            player,
+                            coolDown
+                        )},
+                    null
+                )
             }
-
-            val startInclusive = coolDown.value[livingEntity]
-            if (startInclusive == null) {
-                entitiesToRemove.add(livingEntity)
-                continue
-            }
-
-            if (player.world.name != livingEntity.world.name) {
-                entitiesToRemove.add(livingEntity)
-                continue
-            }
-
-            val timeDuration = Duration.between(
-                startInclusive, Instant.now()
-            )
-            val cooldownTime = cooldownTimes[livingEntity]!!
-            if (timeDuration.toMillis() >= cooldownTime) {
-                // if using LoS targeting check if it's still within LoS and don't remove if so.
-                val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
-
-                val usesLoS: Boolean = LevelledMobs.instance.rulesManager.getRuleCreatureNametagVisbility(
-                    lmEntity
-                ).contains(NametagVisibilityEnum.TARGETED)
-
-                val scheduler = SchedulerWrapper(livingEntity) {
-                    if (usesLoS && livingEntity.hasLineOfSight(player)) {
-                        coolDown.value[livingEntity] = Instant.now()
-                    } else {
-                        entitiesToRemove.add(livingEntity)
-                    }
-                    lmEntity.free()
-                }
-                scheduler.runDirectlyInBukkit = true
-                scheduler.run()
-            }
+            else
+                processCoolDownEntity(livingEntity, entitiesToRemove, player, coolDown)
         }
 
         for (livingEntity in entitiesToRemove) {
             coolDown.value.remove(livingEntity)
 
-            val wrapper = SchedulerWrapper(
-                livingEntity
-            ) { updateNametag(livingEntity, player) }
+            val wrapper = SchedulerWrapper(livingEntity) { updateNametag(livingEntity, player) }
             wrapper.runDirectlyInBukkit = true
             wrapper.run()
         }
 
         entitiesToRemove.clear()
+    }
+
+    private fun processCoolDownEntity(
+        livingEntity: LivingEntity,
+        entitiesToRemove: MutableList<LivingEntity>,
+        player: Player,
+        coolDown: Map.Entry<Player, WeakHashMap<LivingEntity, Instant>>
+    ) {
+        if (!livingEntity.isValid) {
+            return
+        }
+
+        val startInclusive = coolDown.value[livingEntity]
+        if (startInclusive == null) {
+            entitiesToRemove.add(livingEntity)
+            return
+        }
+
+        if (player.world.name != livingEntity.world.name) {
+            entitiesToRemove.add(livingEntity)
+            return
+        }
+
+        val timeDuration = Duration.between(
+            startInclusive, Instant.now()
+        )
+        val cooldownTime = cooldownTimes[livingEntity]!!
+        if (timeDuration.toMillis() >= cooldownTime) {
+            // if using LoS targeting check if it's still within LoS and don't remove if so.
+            val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
+            val usesLoS: Boolean = LevelledMobs.instance.rulesManager.getRuleCreatureNametagVisbility(
+                lmEntity
+            ).contains(NametagVisibilityEnum.TARGETED)
+
+            if (usesLoS && livingEntity.hasLineOfSight(player)) {
+                coolDown.value[livingEntity] = Instant.now()
+            } else {
+                entitiesToRemove.add(livingEntity)
+            }
+
+            lmEntity.free()
+        }
     }
 
     private fun updateNametag(livingEntity: LivingEntity, player: Player) {

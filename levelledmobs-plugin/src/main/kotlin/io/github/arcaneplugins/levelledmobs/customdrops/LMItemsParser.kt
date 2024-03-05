@@ -23,7 +23,6 @@ class LMItemsParser {
     private val pendingItems = mutableMapOf<CustomDropItem, String>()
 
     fun processPendingItems(){
-        Log.inf("processPendingItems() items: ${pendingItems.size}")
         for (item in pendingItems){
             parseExternalItemAttributes(item.value, item.key)
         }

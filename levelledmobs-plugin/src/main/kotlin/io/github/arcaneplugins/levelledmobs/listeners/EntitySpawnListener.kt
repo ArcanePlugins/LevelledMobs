@@ -3,22 +3,22 @@ package io.github.arcaneplugins.levelledmobs.listeners
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
-import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.managers.LevelManager
-import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
-import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
-import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
+import io.github.arcaneplugins.levelledmobs.managers.LevelManager
+import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
+import io.github.arcaneplugins.levelledmobs.misc.QueueItem
+import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
-import org.bukkit.block.CreatureSpawner
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.block.CreatureSpawner
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -269,7 +269,7 @@ class EntitySpawnListener : Listener{
                     world.spawnParticle(particle, location, 20, 0.0, 0.0, 0.0, 0.1)
                     Thread.sleep(50)
                 }
-            } catch (ignored: InterruptedException) {}
+            } catch (ignored: InterruptedException) { }
         }
         scheduler.run()
     }

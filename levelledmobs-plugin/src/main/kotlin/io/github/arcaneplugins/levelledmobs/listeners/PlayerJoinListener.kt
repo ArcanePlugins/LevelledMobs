@@ -4,6 +4,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
+import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -43,7 +44,8 @@ class PlayerJoinListener : Listener {
         main.nametagTimerChecker.addPlayerToQueue(PlayerQueueItem(event.player, true))
         parseUpdateChecker(event.player)
 
-        updateNametagsInWorldAsync(event.player, event.player.world.entities)
+        if (!LevelledMobs.instance.ver.isRunningFolia)
+            updateNametagsInWorldAsync(event.player, event.player.world.entities)
 
         if (event.player.isOp) {
             if (main.mainCompanion.hadRulesLoadError) {

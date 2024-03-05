@@ -51,37 +51,29 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         )
     }
 
-    override fun generateLevel(
-        lmEntity: LivingEntityWrapper?,
-        minLevel: Int,
-        maxLevel: Int
+    override fun generateNumber(
+        lmEntity: LivingEntityWrapper
     ): Int {
-        if (lmEntity == null) return minLevel
-
         val mobYLocation = lmEntity.livingEntity.location.blockY
         val yStart = if (this.startingYLevel == null) 0 else startingYLevel!!
         val yEnd = if (this.endingYLevel == null) 0 else endingYLevel!!
         val yPeriod = if (this.yPeriod == null) 0.0 else yPeriod!!.toDouble()
         var useLevel: Int
         val diff = (yEnd - yStart).toDouble()
+        // TODO: fix this
 
-        if (yPeriod != 0.0) {
-            val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)
-            useLevel = floor(
-                minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
-            ).toInt()
-        } else {
-            val useMobYLocation = (mobYLocation - yStart).toDouble()
-            val percent = useMobYLocation / diff
-            useLevel = minLevel + ceil((maxLevel - minLevel) * percent).toInt()
-        }
+//        if (yPeriod != 0.0) {
+//            val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)
+//            useLevel = floor(
+//                minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
+//            ).toInt()
+//        } else {
+//            val useMobYLocation = (mobYLocation - yStart).toDouble()
+//            val percent = useMobYLocation / diff
+//            useLevel = minLevel + ceil((maxLevel - minLevel) * percent).toInt()
+//        }
 
-        useLevel += getVariance(lmEntity, useLevel >= maxLevel)
-
-        useLevel = max(useLevel.toDouble(), minLevel.toDouble()).toInt()
-        useLevel = min(useLevel.toDouble(), maxLevel.toDouble()).toInt()
-
-        return useLevel
+        return 1 //useLevel
     }
 
     private fun getVariance(

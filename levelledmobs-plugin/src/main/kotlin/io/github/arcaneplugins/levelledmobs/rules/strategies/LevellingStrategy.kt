@@ -9,7 +9,7 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
  * @since 3.0.0
  */
 interface LevellingStrategy {
-    fun generateLevel(lmEntity: LivingEntityWrapper?, minLevel: Int, maxLevel: Int): Int
+    fun generateNumber(lmEntity: LivingEntityWrapper): Int
 
     fun mergeRule(levellingStrategy: LevellingStrategy)
 

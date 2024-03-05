@@ -46,6 +46,7 @@ import java.util.LinkedList
 import java.util.WeakHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -68,6 +69,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
+
 /**
  * Generates levels and manages other functions related to levelling mobs
  *
@@ -88,6 +90,9 @@ class LevelManager : LevelInterface2 {
     val entitySpawnListener = EntitySpawnListener()
     private var nametagAutoUpdateTask: SchedulerResult? = null
     private var nametagTimerTask: SchedulerResult? = null
+    private val asyncRunningCount = AtomicInteger()
+    private val entitiesPerPlayer = mutableMapOf<Player, MutableList<Entity>>()
+    private val entitiesPerPlayerLock = Any()
     /**
      * The following entity types *MUST NOT* be levellable.
      */
@@ -178,7 +183,7 @@ class LevelManager : LevelInterface2 {
         )
 
         if (levellingStrategy != null && levellingStrategy !is RandomLevellingStrategy) {
-            return levellingStrategy.generateLevel(lmEntity, useMinLevel, useMaxLevel)
+            return levellingStrategy.generateNumber(lmEntity)
         }
 
         // if no levelling strategy was selected then we just use a random number between min and max
@@ -773,6 +778,49 @@ class LevelManager : LevelInterface2 {
         }
     }
 
+    private fun getAttributeValue(
+        lmEntity: LivingEntityWrapper,
+        attribute: Attribute
+    ): String{
+        val instance = lmEntity.livingEntity.getAttribute(attribute) ?: return "0"
+        return instance.value.toString()
+    }
+
+    fun replaceStringPlaceholdersForFormulas(
+        text: String,
+        lmEntity: LivingEntityWrapper
+    ): String{
+        val str = StringReplacer(text)
+
+        str.replaceIfExists("%level-ratio%"){
+            val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity)
+            if (lmEntity.getMobLevel == 0 || maxLevel == 0) "0"
+            else (lmEntity.getMobLevel / maxLevel).toString()
+        }
+        str.replaceIfExists("%distance-from-spawn%"){ lmEntity.distanceFromSpawn.toString() }
+        str.replaceIfExists("%max-health%"){ getAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH) }
+        str.replaceIfExists("%movement-speed%"){ getAttributeValue(lmEntity, Attribute.GENERIC_MOVEMENT_SPEED) }
+        str.replaceIfExists("%attack-damage%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ATTACK_DAMAGE) }
+        str.replaceIfExists("%creeper-blast-damage%"){
+            val creeper = lmEntity.livingEntity as? Creeper
+            return@replaceIfExists creeper?.explosionRadius?.toString() ?: "0"
+        }
+        str.replaceIfExists("%follow-range%"){ getAttributeValue(lmEntity, Attribute.GENERIC_FOLLOW_RANGE) }
+        str.replaceIfExists("%item-drop%"){ "1" }
+        str.replaceIfExists("%xp-drop%"){ "1" }
+        str.replaceIfExists("%armor-bonus%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ARMOR) }
+        str.replaceIfExists("%armor-toughness%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ARMOR_TOUGHNESS) }
+        str.replaceIfExists("%attack-knockback%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ATTACK_KNOCKBACK) }
+        str.replaceIfExists("%knockback-resistance%"){ getAttributeValue(lmEntity, Attribute.GENERIC_KNOCKBACK_RESISTANCE) }
+        str.replaceIfExists("%zombie-spawn-reinforcements%"){ getAttributeValue(lmEntity, Attribute.ZOMBIE_SPAWN_REINFORCEMENTS) }
+
+        if (!str.text.contains("%")) return str.text
+
+        return replaceStringPlaceholders(
+            str, lmEntity, true, null, true
+        )
+    }
+
     fun replaceStringPlaceholders(
         text: String,
         lmEntity: LivingEntityWrapper,
@@ -841,7 +889,6 @@ class LevelManager : LevelInterface2 {
         text.replace("%x%", lmEntity.livingEntity.location.blockX)
         text.replace("%y%", lmEntity.livingEntity.location.blockY)
         text.replace("%z%", lmEntity.livingEntity.location.blockZ)
-        text.replaceIfExists("%distance-from-spawn%"){ lmEntity.distanceFromSpawn.toString() }
         text.replace("%player-uuid%", playerId)
         text.replace("%player%", playerName)
         text.replaceIfExists("%displayname%") {
@@ -928,41 +975,16 @@ class LevelManager : LevelInterface2 {
         ).toLong() // run every ? seconds.
         this.doCheckMobHash = main.helperSettings.getBoolean("check-mob-hash", true)
 
+        val runnable = Runnable {
+            checkLEWCache()
+            enumerateNearbyEntities()
+        }
+
         if (main.ver.isRunningFolia) {
-            val bgThread =
-                Consumer<ScheduledTask> { _: ScheduledTask? ->
-                    if (Bukkit.getOnlinePlayers().isEmpty()) return@Consumer
-                    var firstPlayer: Player? = null
-                    for (player in Bukkit.getOnlinePlayers()) {
-                        firstPlayer = player
-                        break
-                    }
-                    if (firstPlayer == null) return@Consumer
-
-                    val task =
-                        Consumer<ScheduledTask> { _: ScheduledTask? ->
-                            checkLEWCache()
-                            val entitiesPerPlayer = enumerateNearbyEntities()
-                            if (entitiesPerPlayer != null) {
-                                runNametagCheckaSync(entitiesPerPlayer)
-                            }
-                        }
-                    firstPlayer.scheduler.run(main, task, null)
-                }
-
+            val task = Consumer { _: ScheduledTask? -> runnable.run() }
             nametagTimerTask =
-                SchedulerResult(Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, period, TimeUnit.SECONDS))
+                SchedulerResult(Bukkit.getAsyncScheduler().runAtFixedRate(main, task, 0, period, TimeUnit.SECONDS))
         } else {
-            val runnable = Runnable {
-                val entitiesPerPlayer = enumerateNearbyEntities()
-                if (entitiesPerPlayer != null) {
-                    val runnable2 = Runnable {
-                        checkLEWCache()
-                        runNametagCheckaSync(entitiesPerPlayer)
-                    }
-                    Bukkit.getScheduler().runTaskAsynchronously(main, runnable2)
-                }
-            }
             nametagTimerTask = SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period))
         }
     }
@@ -988,23 +1010,42 @@ class LevelManager : LevelInterface2 {
         }
     }
 
-    private fun enumerateNearbyEntities(): MutableMap<Player, MutableList<Entity>>? {
-        val entitiesPerPlayer = mutableMapOf<Player, MutableList<Entity>>()
+    private fun enumerateNearbyEntities() {
+        entitiesPerPlayer.clear()
+        asyncRunningCount.set(0)
         val checkDistance = LevelledMobs.instance.helperSettings.getInt(
             "async-task-max-blocks-from-player", 100
         )
 
         for (player in Bukkit.getOnlinePlayers()) {
-            val entities = player.getNearbyEntities(
-                checkDistance.toDouble(),
-                checkDistance.toDouble(), checkDistance.toDouble()
-            )
-            entitiesPerPlayer[player] = entities
-        }
-        return if (entitiesPerPlayer.isEmpty()) {
-            null
-        } else {
-            entitiesPerPlayer
+            if (LevelledMobs.instance.ver.isRunningFolia) {
+                val test = Runnable {
+                    if (asyncRunningCount.get() == 0) runNametagCheckASync()
+                }
+
+                asyncRunningCount.getAndIncrement()
+                val task =
+                    Consumer<ScheduledTask> { _: ScheduledTask? ->
+                        val entities = player.getNearbyEntities(
+                            checkDistance.toDouble(),
+                            checkDistance.toDouble(), checkDistance.toDouble()
+                        )
+                        synchronized(entitiesPerPlayerLock) {
+                            entitiesPerPlayer.put(player, entities)
+                        }
+
+                        asyncRunningCount.getAndDecrement()
+                        if (asyncRunningCount.get() == 0) runNametagCheckASync()
+                    }
+                player.scheduler.run(LevelledMobs.instance, task, test)
+            } else {
+                val entities = player.getNearbyEntities(
+                    checkDistance.toDouble(),
+                    checkDistance.toDouble(), checkDistance.toDouble()
+                )
+                entitiesPerPlayer[player] = entities
+                runNametagCheckASync()
+            }
         }
     }
 
@@ -1013,33 +1054,30 @@ class LevelManager : LevelInterface2 {
         scheduler.runTaskTimerAsynchronously(0, 1000)
     }
 
-    private fun runNametagCheckaSync(
-        entitiesPerPlayer: MutableMap<Player, MutableList<Entity>>
-    ) {
+    private fun runNametagCheckASync() {
         val entityToPlayer = mutableMapOf<LivingEntityWrapper, MutableList<Player>>()
 
-        val scheduler = SchedulerWrapper {
+        if (LevelledMobs.instance.ver.isRunningFolia) {
+            for (player in entitiesPerPlayer.keys) {
+                for (entity in entitiesPerPlayer[player]!!) {
+                    val task =
+                        Consumer { _: ScheduledTask? ->
+                            checkEntity(
+                                entity,
+                                player,
+                                entityToPlayer
+                            )
+                        }
+                    entity.scheduler.run(LevelledMobs.instance, task, null)
+                }
+            }
+        } else {
             for (player in entitiesPerPlayer.keys) {
                 for (entity in entitiesPerPlayer[player]!!) {
                     checkEntity(entity, player, entityToPlayer)
                 }
             }
         }
-
-        if (LevelledMobs.instance.ver.isRunningFolia) {
-            var firstEntity: Entity? = null
-            for (player in entitiesPerPlayer.keys) {
-                for (entity in entitiesPerPlayer[player]!!) {
-                    firstEntity = entity
-                    break
-                }
-                if (firstEntity != null) break
-            }
-            scheduler.entity = firstEntity
-        }
-
-        scheduler.runDirectlyInBukkit = true
-        scheduler.run()
 
         for ((lmEntity, value) in entityToPlayer) {
             if (entityToPlayer.containsKey(lmEntity)) {
@@ -1048,6 +1086,8 @@ class LevelManager : LevelInterface2 {
 
             lmEntity.free()
         }
+
+        entitiesPerPlayer.clear()
     }
 
     private fun checkEntity(
