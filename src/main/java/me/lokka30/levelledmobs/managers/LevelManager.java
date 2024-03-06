@@ -802,12 +802,12 @@ public class LevelManager implements LevelInterface {
 
             if (preserveMobName)
                 useDisplayname =  "{DisplayName}";
+            else if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
+                useDisplayname = lmEntity.getLivingEntity().getCustomName();
+            }
             else if (!hasOverridenName)
                 useDisplayname = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
 
-            if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
-                useDisplayname = lmEntity.getLivingEntity().getCustomName();
-            }
             return useDisplayname;
         });
 
