@@ -26,6 +26,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.listeners.ServerLoadEvent
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
+import io.github.arcaneplugins.levelledmobs.misc.KillSkipConditions
 import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
@@ -66,6 +67,7 @@ class MainCompanion{
     val aquaticMobsGroup = mutableSetOf<EntityType>()
     val passiveMobsGroup = mutableSetOf<EntityType>()
     var updateResult = mutableListOf<String>()
+    var killSkipConditions = KillSkipConditions()
     var hadRulesLoadError = false
         private set
     var useAdventure = false
@@ -152,6 +154,7 @@ class MainCompanion{
         )!!
         this.useAdventure = main.helperSettings.getBoolean( "use-adventure", true)
         this.excludePlayersInCreative = main.helperSettings.getBoolean("exclude-players-in-creative")
+        this.killSkipConditions = KillSkipConditions.parseConditions(main.helperSettings)
 
         return true
     }
@@ -247,19 +250,6 @@ class MainCompanion{
         ) {
             pluginManager.registerEvents(main.chunkLoadListener, main)
         }
-    }
-
-    fun registerCommands(){
-//        Log.inf("&fCommands: &7Registering commands...")
-//
-//        val levelledMobsCommand = LevelledMobs.instance.getCommand("levelledmobs")
-//        if (levelledMobsCommand == null) {
-//            Log.sev(
-//                "Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?"
-//            )
-//        } else {
-//            levelledMobsCommand.setExecutor(LevelledMobs.instance.levelledMobsCommand)
-//        }
     }
 
     fun setupMetrics() {

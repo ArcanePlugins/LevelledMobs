@@ -194,7 +194,7 @@ object Utils {
         lmEntity: LivingEntityWrapper,
         checkBabyMobs: Boolean
     ): Boolean {
-        if (list.allowAll) {
+        if (list.includeAll) {
             return true
         }
         if (list.excludeAll) {
@@ -221,12 +221,12 @@ object Utils {
         }
 
         for (group in lmEntity.getApplicableGroups()) {
-            if (list.allowedGroups.contains(group)) {
+            if (list.includedGroups.contains(group)) {
                 return true
             }
         }
 
-        return list.isBlacklist || list.allowedList.contains(checkName) || lmEntity.isBabyMob && list.allowedList.contains(
+        return list.isBlacklist || list.includedList.contains(checkName) || lmEntity.isBabyMob && list.includedList.contains(
             "baby_"
         )
     }
@@ -235,7 +235,7 @@ object Utils {
         list: CachedModalList<MinAndMax>,
         checkNum: Int
     ): Boolean {
-        if (list.allowAll) {
+        if (list.includeAll) {
             return true
         }
         if (list.excludeAll) {
@@ -255,7 +255,7 @@ object Utils {
             return true
         }
 
-        for (include in list.allowedList) {
+        for (include in list.includedList) {
             if (checkNum >= include.min && checkNum <= include.max) {
                 return true
             }
@@ -269,7 +269,7 @@ object Utils {
         biome: Biome,
         rulesManager: RulesManager
     ): Boolean {
-        if (list.allowAll) {
+        if (list.includeAll) {
             return true
         }
         if (list.excludeAll) {
@@ -291,7 +291,7 @@ object Utils {
             return false
         }
 
-        for (group in list.allowedGroups) {
+        for (group in list.includedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
                 rulesManager.biomeGroupMappings[group]!!.contains(biome.toString())
             ) {
@@ -299,14 +299,14 @@ object Utils {
             }
         }
 
-        return list.isBlacklist || list.allowedList.contains(biome)
+        return list.isBlacklist || list.includedList.contains(biome)
     }
 
     fun isDamageCauseInModalList(
         list: CachedModalList<DeathCause>,
         cause: DeathCause
     ): Boolean {
-        if (list.allowAll) {
+        if (list.includeAll) {
             return true
         }
         if (list.excludeAll) {
@@ -321,7 +321,7 @@ object Utils {
             return false
         }
 
-        return list.isBlacklist || list.allowedList.contains(cause)
+        return list.isBlacklist || list.includedList.contains(cause)
     }
 
     fun getMillisecondsFromInstant(instant: Instant): Long {

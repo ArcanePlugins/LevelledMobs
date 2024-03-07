@@ -351,7 +351,7 @@ class RuleInfo(
                 if (value.toString().equals("false", ignoreCase = true)) continue
 
                 if (value is CachedModalList<*>) {
-                    if (value.isEmpty() && !value.allowAll && !value.excludeAll) {
+                    if (value.isEmpty() && !value.includeAll && !value.excludeAll) {
                         continue
                     }
                 }

@@ -137,10 +137,14 @@ nametag-placeholder-maxblocks: 30
 # ||  What conditions should a mob have in order for the
 # ||  LevelledMobs kill command to 'skip' it (not kill the mob)?
 kill-skip-conditions:
-  nametagged: true
-  tamed: true
-  leashed: true
-  convertingZombieVillager: true
+  is-nametagged: true
+  is-tamed: true
+  is-leashed: true
+  is-transforming: true
+  is-villager: true
+  entitytype:
+    included-groups: ['all_passive_mobs']
+    included-list: ['']
 
 # ||  Should mob heads be multiplied by LevelledMobs'
 # ||  drop multiplier? A considerable amount of servers

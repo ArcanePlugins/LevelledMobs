@@ -256,7 +256,7 @@ class ExternalCompatibilityManager {
             if (externalPlugins == null) return LevellableState.ALLOWED
 
             for (pluginName in instance.externalPluginDefinitions.keys){
-                if (!externalPlugins.isEnabledInList(pluginName, lmEntity)){
+                if (!externalPlugins.isIncludedInList(pluginName, lmEntity)){
                     val mobPlugin = instance.externalPluginDefinitions[pluginName]!!
                     val result = evaluateExternalPluginMob(mobPlugin, lmEntity)
                     if (result != LevellableState.ALLOWED) return result

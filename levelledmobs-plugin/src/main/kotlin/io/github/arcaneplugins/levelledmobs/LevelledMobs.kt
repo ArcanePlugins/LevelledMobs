@@ -60,7 +60,6 @@ class LevelledMobs : JavaPlugin() {
     val nametagQueueManager = NametagQueueManager()
     val nametagTimerChecker = NametagTimerChecker()
     val attributeSyncObject = Any()
-    //val levelledMobsCommand = LevelledMobsCommand()
     val random = Random()
     var placeholderApiIntegration: PlaceholderApiIntegration? = null
         internal set
@@ -95,21 +94,12 @@ class LevelledMobs : JavaPlugin() {
 
     override fun onLoad() {
         instance = this
-
-//        CommandAPI.onLoad(CommandAPIBukkitConfig(this).verboseOutput(true)) // Load with verbose output
-//
-//        CommandAPICommand("LevelledMobs")
-//            .executes(CommandExecutor { sender: CommandSender, _: CommandArguments? ->
-//                sender.sendMessage("meow")
-//            })
-//            .register()
         CommandHandler.load(CommandHandler.LoadingStage.ON_LOAD)
     }
 
     override fun onEnable() {
         val timer = QuickTimer()
 
-        //CommandAPI.onEnable()
         CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
         this.ver.load()
         if (ver.minecraftVersion <= 1.18){
@@ -132,7 +122,6 @@ class LevelledMobs : JavaPlugin() {
         )
         nametagQueueManager.nametagSenderHandler.refresh()
         mainCompanion.registerListeners()
-        mainCompanion.registerCommands()
 
         Log.inf("Running misc procedures")
         if (nametagQueueManager.hasNametagSupport) {

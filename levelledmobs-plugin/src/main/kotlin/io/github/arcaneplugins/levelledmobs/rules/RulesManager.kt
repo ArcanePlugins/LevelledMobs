@@ -63,7 +63,7 @@ class RulesManager {
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
             if (!ruleInfo.ruleIsEnabled) continue
 
-            if (ruleInfo.conditionsWorlds != null && ruleInfo.conditionsWorlds!!.isEnabledInList(
+            if (ruleInfo.conditionsWorlds != null && ruleInfo.conditionsWorlds!!.isIncludedInList(
                     world.name, null
                 )
             ) {
@@ -134,7 +134,7 @@ class RulesManager {
             }
         }
 
-        return entitiesList != null && entitiesList.isEnabledInList(
+        return entitiesList != null && entitiesList.isIncludedInList(
             lmEntity.nameIfBaby,
             lmEntity
         )
@@ -207,7 +207,7 @@ class RulesManager {
                         babyMobsInheritAdultSetting
                     )
         } else {
-            allowedEntitiesList == null || allowedEntitiesList.isEnabledInList(
+            allowedEntitiesList == null || allowedEntitiesList.isIncludedInList(
                 lmInterface.typeName, null
             )
         }
@@ -810,7 +810,7 @@ class RulesManager {
         var hasWorldListSpecified = false
         for (ri in applicableRules.allApplicableRules) {
             if (ri.conditionsWorlds != null && (!ri.conditionsWorlds!!.isEmpty()
-                        || ri.conditionsWorlds!!.allowAll)
+                        || ri.conditionsWorlds!!.includeAll)
             ) {
                 hasWorldListSpecified = true
                 break
@@ -899,7 +899,7 @@ class RulesManager {
             val customName = if (lmEntity.livingEntity.customName != null) lmEntity.livingEntity.customName!!
                 .replace("§", "&") else "(none)"
 
-            val result = ri.conditionsCustomNames!!.isEnabledInList(customName, lmEntity)
+            val result = ri.conditionsCustomNames!!.isIncludedInList(customName, lmEntity)
 
             DebugManager.log(
                 DebugType.CONDITION_CUSTOM_NAME, ri, lmEntity, result
@@ -914,7 +914,7 @@ class RulesManager {
         }
 
         if (ri.conditionsSpawnReasons != null) {
-            val result = ri.conditionsSpawnReasons!!.isEnabledInList(
+            val result = ri.conditionsSpawnReasons!!.isIncludedInList(
                 lmEntity.spawnReason, lmEntity
             )
             DebugManager.log(
@@ -935,7 +935,7 @@ class RulesManager {
 
             var madeIt = false
             for (compat in mobCompats) {
-                if (ri.conditionsExternalPlugins!!.isEnabledInList(compat, lmEntity)) {
+                if (ri.conditionsExternalPlugins!!.isIncludedInList(compat, lmEntity)) {
                     madeIt = true
                     break
                 }
@@ -953,7 +953,7 @@ class RulesManager {
                 mmName = "(none)"
             }
 
-            val result = ri.conditionsMMnames!!.isEnabledInList(mmName, lmEntity)
+            val result = ri.conditionsMMnames!!.isIncludedInList(mmName, lmEntity)
             val mmNameFinal = mmName
             DebugManager.log(
                 DebugType.CONDITION_MYTHICMOBS_INTERNAL_NAME, ri, lmEntity, result
@@ -970,7 +970,7 @@ class RulesManager {
         if (ri.conditionsSpawnerNames != null) {
             val checkName = if (lmEntity.sourceSpawnerName != null) lmEntity.sourceSpawnerName else "(none)"
 
-            val result = ri.conditionsSpawnerNames!!.isEnabledInList(checkName!!, lmEntity)
+            val result = ri.conditionsSpawnerNames!!.isIncludedInList(checkName!!, lmEntity)
             DebugManager.log(
                 DebugType.CONDITION_SPAWNER_NAME, ri, lmEntity, result
             ) {
@@ -986,7 +986,7 @@ class RulesManager {
         if (ri.conditionsSpawnegEggNames != null) {
             val checkName = if (lmEntity.sourceSpawnEggName != null) lmEntity.sourceSpawnEggName else "(none)"
 
-            val result = ri.conditionsSpawnegEggNames!!.isEnabledInList(checkName!!, lmEntity)
+            val result = ri.conditionsSpawnegEggNames!!.isIncludedInList(checkName!!, lmEntity)
             DebugManager.log(
                 DebugType.CONDITION_SPAWNER_NAME, ri, lmEntity, result
             ) {
@@ -1108,7 +1108,7 @@ class RulesManager {
 
             var madeCriteria = false
             for (tag in tags) {
-                if (ri.conditionsScoreboardTags!!.isEnabledInList(tag, lmEntity)) {
+                if (ri.conditionsScoreboardTags!!.isIncludedInList(tag, lmEntity)) {
                     madeCriteria = true
                 }
             }
@@ -1201,7 +1201,7 @@ class RulesManager {
                 if (!result) return RuleCheckResult(false)
             } else {
                 // can't check groups if not a living entity wrapper
-                val result = ri.conditionsEntities!!.isEnabledInList(
+                val result = ri.conditionsEntities!!.isIncludedInList(
                     lmInterface.typeName, null
                 )
 
@@ -1215,7 +1215,7 @@ class RulesManager {
 
         if (ri.conditionsWorlds != null) {
             val result = (lmInterface.wasSummoned ||
-                    ri.conditionsWorlds!!.isEnabledInList(lmInterface.world!!.name, null))
+                    ri.conditionsWorlds!!.isIncludedInList(lmInterface.world!!.name, null))
             DebugManager.log(
                 DebugType.CONDITION_WORLD_LIST, ri, lmInterface, result
             ) {
@@ -1256,7 +1256,7 @@ class RulesManager {
             }
 
             for (regionName in wgRegions) {
-                if (ri.conditionsWGregions!!.isEnabledInList(regionName, null)) {
+                if (ri.conditionsWGregions!!.isIncludedInList(regionName, null)) {
                     isInList = true
                     break
                 }
@@ -1282,7 +1282,7 @@ class RulesManager {
             }
 
             for (ownerName in wgRegionOwners) {
-                if (ri.conditionsWGregionOwners!!.isEnabledInList(ownerName, null)) {
+                if (ri.conditionsWGregionOwners!!.isIncludedInList(ownerName, null)) {
                     isInList = true
                     break
                 }
@@ -1412,7 +1412,7 @@ class RulesManager {
         perms: CachedModalList<String>,
         player: Player
     ): Boolean {
-        if (perms.allowAll) {
+        if (perms.includeAll) {
             return true
         }
         if (perms.excludeAll) {
@@ -1429,7 +1429,7 @@ class RulesManager {
             }
         }
 
-        for (perm in perms.allowedList) {
+        for (perm in perms.includedList) {
             val permCheck = "levelledmobs.permission.$perm"
             if (player.hasPermission(permCheck)) {
                 return true

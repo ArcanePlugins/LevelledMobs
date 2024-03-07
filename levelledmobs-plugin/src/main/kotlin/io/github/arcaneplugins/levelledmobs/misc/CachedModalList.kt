@@ -10,26 +10,26 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
  * @since 3.0.0
  */
 class CachedModalList<T> : Cloneable {
-    var allowedList = mutableSetOf<T>()
-    var allowedGroups: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+    var includedList = mutableSetOf<T>()
+    var includedGroups: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     var excludedList = mutableSetOf<T>()
     var excludedGroups: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     var doMerge: Boolean = false
-    var allowAll: Boolean = false
+    var includeAll: Boolean = false
     var excludeAll: Boolean = false
 
     constructor()
 
     constructor(
-        allowedList: MutableSet<T>,
+        includedList: MutableSet<T>,
         excludedList: MutableSet<T>
     ){
-        this.allowedList = allowedList
+        this.includedList = includedList
         this.excludedList = excludedList
     }
 
-    fun isEnabledInList(item: T, lmEntity: LivingEntityWrapper?): Boolean {
-        if (this.allowAll) {
+    fun isIncludedInList(item: T, lmEntity: LivingEntityWrapper?): Boolean {
+        if (this.includeAll) {
             return true
         }
         if (this.excludeAll) {
@@ -51,7 +51,7 @@ class CachedModalList<T> : Cloneable {
             }
 
             for (group in lmEntity.getApplicableGroups()) {
-                if (allowedGroups.contains(group)) {
+                if (includedGroups.contains(group)) {
                     return true
                 }
             }
@@ -61,38 +61,38 @@ class CachedModalList<T> : Cloneable {
             return false
         }
 
-        return this.isBlacklist || allowedList.contains(item)
+        return this.isBlacklist || includedList.contains(item)
     }
 
     fun isEmpty(): Boolean {
-        return allowedList.isEmpty() &&
-                allowedGroups.isEmpty() &&
+        return includedList.isEmpty() &&
+                includedGroups.isEmpty() &&
                 excludedList.isEmpty() &&
                 excludedGroups.isEmpty()
     }
 
     override fun toString(): String {
         val sb = StringBuilder()
-        if (allowedList.isNotEmpty()) {
+        if (includedList.isNotEmpty()) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }
             sb.append("lst: ")
-            sb.append(this.allowedList)
+            sb.append(this.includedList)
         }
-        if (this.allowAll) {
+        if (this.includeAll) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }
-            sb.append("all allowed")
+            sb.append("all included")
         }
 
-        if (allowedGroups.isNotEmpty()) {
+        if (includedGroups.isNotEmpty()) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }
             sb.append("grps: ")
-            sb.append(this.allowedGroups)
+            sb.append(this.includedGroups)
         }
 
         if (this.excludeAll) {
@@ -122,13 +122,13 @@ class CachedModalList<T> : Cloneable {
 
     val isWhitelist: Boolean
         get() {
-        return (allowedList.isNotEmpty() || allowedGroups.isNotEmpty()) &&
+        return (includedList.isNotEmpty() || includedGroups.isNotEmpty()) &&
                 (excludedList.isEmpty() && excludedGroups.isEmpty())
         }
 
     val isBlacklist: Boolean
         get() {
-        return (allowedList.isEmpty() && allowedGroups.isEmpty()) &&
+        return (includedList.isEmpty() && includedGroups.isEmpty()) &&
                 (excludedList.isNotEmpty() || excludedGroups.isNotEmpty())
         }
 
@@ -137,8 +137,8 @@ class CachedModalList<T> : Cloneable {
         var copy: CachedModalList<T>? = null
         try {
             copy = super.clone() as CachedModalList<T>
-            copy.allowedList = ((allowedList as TreeSet<T>).clone() as TreeSet<T>)
-            copy.allowedGroups = (allowedGroups as TreeSet<String>).clone() as TreeSet<String>
+            copy.includedList = ((includedList as TreeSet<T>).clone() as TreeSet<T>)
+            copy.includedGroups = (includedGroups as TreeSet<String>).clone() as TreeSet<String>
             copy.excludedList = ((excludedList as TreeSet<T>).clone() as TreeSet<T>)
             copy.excludedGroups = (excludedGroups as TreeSet<String>).clone() as TreeSet<String>
         } catch (e: CloneNotSupportedException) {
@@ -150,14 +150,14 @@ class CachedModalList<T> : Cloneable {
 
     @Suppress("UNCHECKED_CAST")
     fun mergeCachedModal(cachedModalList: CachedModalList<*>) {
-        allowedList.addAll(cachedModalList.allowedList as Collection<T>)
+        includedList.addAll(cachedModalList.includedList as Collection<T>)
         excludedList.addAll(cachedModalList.excludedList as Collection<T>)
 
-        allowedGroups.addAll(cachedModalList.allowedGroups)
+        includedGroups.addAll(cachedModalList.includedGroups)
         excludedGroups.addAll(cachedModalList.excludedGroups)
 
-        if (cachedModalList.allowAll) {
-            this.allowAll = true
+        if (cachedModalList.includeAll) {
+            this.includeAll = true
         }
         if (cachedModalList.excludeAll) {
             this.excludeAll = true

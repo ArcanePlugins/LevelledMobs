@@ -153,7 +153,7 @@ class MobDataManager {
             val existingMod = existingMods.nextElement()
             val vanillaBonusEnum = vanillaMultiplierNames[existingMod.name]
             if (vanillaBonusEnum != null) {
-                if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isEnabledInList(
+                if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isIncludedInList(
                         vanillaBonusEnum,
                         lmEntity
                     )

@@ -681,12 +681,12 @@ class CustomDropsParser(
                 continue
             }
             if ("*" == item.trim { it <= ' ' }) {
-                cachedModalList.allowAll = true
+                cachedModalList.includeAll = true
                 continue
             }
             try {
                 val cause = DeathCause.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
-                cachedModalList.allowedList.add(cause)
+                cachedModalList.includedList.add(cause)
             } catch (ignored: IllegalArgumentException) {
                 Log.war("Invalid damage cause: $item")
             }
@@ -711,7 +711,7 @@ class CustomDropsParser(
             }
         }
 
-        if (cachedModalList.isEmpty() && !cachedModalList.allowAll && !cachedModalList.excludeAll) {
+        if (cachedModalList.isEmpty() && !cachedModalList.includeAll && !cachedModalList.excludeAll) {
             return defaultValue
         }
 

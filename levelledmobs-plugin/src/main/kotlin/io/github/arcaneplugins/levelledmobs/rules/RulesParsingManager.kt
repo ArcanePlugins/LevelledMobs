@@ -43,19 +43,304 @@ import org.bukkit.entity.EntityType
  * @since 3.0.0
  */
 class RulesParsingManager {
-    //private val ymlHelper = YmlParsingHelper(YamlConfiguration())
     private var parsingInfo = RuleInfo()
     val rulePresets: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     var customRules = mutableListOf<RuleInfo>()
     var defaultRule: RuleInfo? = null
     private var customBiomeGroups: MutableMap<String, MutableSet<String>>? = null
-    private val emptyArrayPattern = Pattern.compile("\\[\\s+?]|\\[]")
 
     companion object{
-        private const val MLALLOWEDLIST = "allowed-list"
-        private const val MLALLOWEDGROUPS = "allowed-groups"
+        private const val MLINCLUDEDLIST = "included-list"
+        private const val MLINCLUDEDGROUPS = "included-groups"
         private const val MLEXCLUDEDITEMS = "excluded-list"
         private const val MLEXCLUDEDGROUPS = "excluded-groups"
+        private val emptyArrayPattern = Pattern.compile("\\[\\s+?]|\\[]")
+
+        fun buildCachedModalListOfString(
+            cs: ConfigurationSection?,
+            name: String,
+            defaultValue: CachedModalList<String>?
+        ): CachedModalList<String>? {
+            if (cs == null) return defaultValue
+
+            val cachedModalList = CachedModalList(
+                TreeSet(String.CASE_INSENSITIVE_ORDER),
+                TreeSet(String.CASE_INSENSITIVE_ORDER)
+            )
+            val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, name)
+            val simpleStringOrArray = cs[useKeyName]
+            var cs2: ConfigurationSection? = null
+            var useList: MutableList<String>? = null
+
+            if (simpleStringOrArray is java.util.ArrayList<*>) {
+                useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
+            } else if (simpleStringOrArray is String) {
+                useList = mutableListOf(simpleStringOrArray)
+            }
+
+            if (useList == null) {
+                cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
+            }
+            if (cs2 == null && useList == null) {
+                return defaultValue
+            }
+
+            cachedModalList.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
+
+            if (cs2 != null) {
+                val allowedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLINCLUDEDLIST)
+                useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList)
+            }
+
+            for (item in useList!!) {
+                if (item.trim { it <= ' ' }.isEmpty()) {
+                    continue
+                }
+                if ("*" == item.trim { it <= ' ' }) {
+                    cachedModalList.includeAll = true
+                    continue
+                }
+                if (emptyArrayPattern.matcher(item).matches()) {
+                    continue
+                }
+                cachedModalList.includedList.add(item)
+            }
+            if (cs2 == null) {
+                return cachedModalList
+            }
+
+            val allowedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLINCLUDEDGROUPS)
+            val excludedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDITEMS)
+            val excludedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDGROUPS)
+            cachedModalList.includedGroups = getSetOfGroups(cs2, allowedGroups)
+
+            for (item in YmlParsingHelper.getListFromConfigItem(cs2, excludedList)) {
+                if (item.trim { it <= ' ' }.isEmpty()) {
+                    continue
+                }
+                if ("*" == item.trim { it <= ' ' }) {
+                    cachedModalList.excludeAll = true
+                    continue
+                }
+                cachedModalList.excludedList.add(item)
+            }
+            cachedModalList.excludedGroups = getSetOfGroups(cs2, excludedGroups)
+
+            if (cachedModalList.isEmpty() && !cachedModalList.includeAll && !cachedModalList.excludeAll) {
+                return defaultValue
+            }
+
+            return cachedModalList
+        }
+
+        private fun getSetOfGroups(
+            cs: ConfigurationSection,
+            key: String
+        ): MutableSet<String> {
+            var foundKeyName: String? = null
+            for (enumeratedKey in cs.getKeys(false)) {
+                if (key.equals(enumeratedKey, ignoreCase = true)) {
+                    foundKeyName = enumeratedKey
+                    break
+                }
+            }
+
+            val results: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+            if (foundKeyName == null) {
+                return results
+            }
+
+            val groups = cs.getStringList(foundKeyName)
+            if (groups.isEmpty() && cs.getString(foundKeyName) != null) {
+                groups.add(cs.getString(foundKeyName))
+            }
+
+            for (group in groups) {
+                if (group!!.trim { it <= ' ' }.isEmpty()) {
+                    continue
+                }
+                var invalidGroup = false
+                if (group.lowercase(Locale.getDefault()).startsWith("all_")) {
+                    try {
+                        val customGroup = CustomUniversalGroups.valueOf(
+                            group.uppercase(Locale.getDefault())
+                        )
+                        results.add(customGroup.toString())
+                        continue
+                    } catch (e: IllegalArgumentException) {
+                        invalidGroup = true
+                    }
+                }
+                if (LevelledMobs.instance.customMobGroups.containsKey(group)) {
+                    results.add(group)
+                } else {
+                    invalidGroup = true
+                }
+
+                if (invalidGroup) {
+                    Log.war("Invalid group: $group")
+                }
+            }
+
+            return results
+        }
+
+        private fun buildCachedModalOfType(
+            cs: ConfigurationSection?,
+            defaultValue: CachedModalList<*>?,
+            type: ModalListParsingTypes
+        ): CachedModalList<*>? {
+            if (cs == null) {
+                return defaultValue
+            }
+
+            val mlpi = ModalListParsingInfo(type)
+
+            when (type) {
+                ModalListParsingTypes.BIOME -> {
+                    mlpi.configurationKey = "biomes"
+                    mlpi.itemName = "Biome"
+                    mlpi.supportsGroups = true
+                    mlpi.groupMapping =  LevelledMobs.instance.rulesManager.biomeGroupMappings
+                    mlpi.cachedModalList = CachedModalList<Biome?>()
+                }
+
+                ModalListParsingTypes.SPAWN_REASON -> {
+                    mlpi.configurationKey = "spawn-reasons"
+                    mlpi.itemName = "spawn reason"
+                    mlpi.cachedModalList = CachedModalList<LevelledMobSpawnReason?>()
+                }
+
+                ModalListParsingTypes.VANILLA_BONUSES -> {
+                    mlpi.configurationKey = "vanilla-bonus"
+                    mlpi.itemName = "vanilla bonus"
+                    mlpi.cachedModalList = CachedModalList<VanillaBonusEnum?>()
+                }
+            }
+            return buildCachedModal(cs, defaultValue, mlpi)
+        }
+
+        private fun buildCachedModal(
+            cs: ConfigurationSection?,
+            defaultValue: CachedModalList<*>?,
+            mlpi: ModalListParsingInfo
+        ): CachedModalList<*>? {
+            if (cs == null) return defaultValue
+
+            //TODO: test changes here
+            val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, mlpi.configurationKey!!)
+
+            val cachedModalList = mlpi.cachedModalList
+            val simpleStringOrArray = cs[useKeyName]
+            var cs2: ConfigurationSection? = null
+            var useList: MutableList<String>? = null
+
+            if (simpleStringOrArray is ArrayList<*>) {
+                useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
+            } else if (simpleStringOrArray is String) {
+                useList = mutableListOf(simpleStringOrArray)
+            }
+
+            if (useList == null) {
+                cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
+            }
+            if (cs2 == null && useList == null) {
+                return defaultValue
+            }
+
+            cachedModalList!!.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
+
+            if (cs2 != null && mlpi.supportsGroups) {
+                cachedModalList.includedGroups = TreeSet(String.CASE_INSENSITIVE_ORDER)
+                cachedModalList.excludedGroups = TreeSet(String.CASE_INSENSITIVE_ORDER)
+
+                for (group in YmlParsingHelper.getListFromConfigItem(
+                    cs2, MLINCLUDEDGROUPS)
+                ) {
+                    if (group.trim { it <= ' ' }.isEmpty()) {
+                        continue
+                    }
+                    if (mlpi.groupMapping == null || !mlpi.groupMapping!!.containsKey(group)) {
+                        Log.war("invalid ${mlpi.itemName} group: $group")
+                    } else {
+                        cachedModalList.includedGroups.add(group)
+                    }
+                }
+
+                for (group in YmlParsingHelper.getListFromConfigItem(
+                    cs2, MLEXCLUDEDGROUPS)
+                ){
+                    if (group.trim { it <= ' ' }.isEmpty()) {
+                        continue
+                    }
+                    if (!LevelledMobs.instance.rulesManager.biomeGroupMappings.containsKey(group)) {
+                        Log.war("invalid ${mlpi.itemName} group: $group")
+                    } else {
+                        cachedModalList.excludedGroups.add(group)
+                    }
+                }
+            }
+
+            for (i in 0..1) {
+                // 0 is included list, 1 is excluded list
+                val invalidWord = if (i == 0) "included" else "excluded"
+                val configKeyname: String =
+                    if (i == 0) MLINCLUDEDLIST else MLEXCLUDEDITEMS
+                if (i == 1 && cs2 == null) break
+
+                if (cs2 != null) {
+                    useList = YmlParsingHelper.getListFromConfigItem(cs2, configKeyname)
+                }
+
+                for (item in useList!!) {
+                    if (item.trim { it <= ' ' }.isEmpty()) {
+                        continue
+                    }
+                    if ("*" == item.trim { it <= ' ' }) {
+                        if (i == 0) cachedModalList.includeAll = true
+                        else cachedModalList.excludeAll = true
+
+                        continue
+                    }
+                    if (emptyArrayPattern.matcher(item).matches()) {
+                        continue
+                    }
+                    try {
+                        when (mlpi.type) {
+                            ModalListParsingTypes.BIOME -> {
+                                val biomeModalList = cachedModalList as CachedModalList<Biome>
+                                val modalList = if (i == 0) biomeModalList.includedList else biomeModalList.excludedList
+
+                                val biome = Biome.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                                modalList.add(biome)
+                            }
+                            ModalListParsingTypes.SPAWN_REASON -> {
+                                val spawnReasonModalList = cachedModalList as CachedModalList<LevelledMobSpawnReason>
+                                val modalList =
+                                    if (i == 0) spawnReasonModalList.includedList else spawnReasonModalList.excludedList
+
+                                val spawnReason =
+                                    LevelledMobSpawnReason.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                                modalList.add(spawnReason)
+                            }
+                            ModalListParsingTypes.VANILLA_BONUSES -> {
+                                val vanillaBonusModalList = cachedModalList as CachedModalList<VanillaBonusEnum>
+                                val modalList =
+                                    if (i == 0) vanillaBonusModalList.includedList else vanillaBonusModalList.excludedList
+
+                                val vanillaBonus =
+                                    VanillaBonusEnum.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                                modalList.add(vanillaBonus)
+                            }
+                        }
+                    } catch (e: IllegalArgumentException) {
+                        Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
+                    }
+                }
+            }
+
+            return cachedModalList
+        }
     }
 
     fun parseRulesMain(config: YamlConfiguration?) {
@@ -65,7 +350,6 @@ class RulesParsingManager {
         }
 
         val main = LevelledMobs.instance
-        //ymlHelper.cs = config
         rulePresets.clear()
         main.rulesManager.rulesInEffect.clear()
         main.customMobGroups.clear()
@@ -197,292 +481,6 @@ class RulesParsingManager {
             parsingInfo.presetName = key
             parseValues(YmlParsingHelper(csKey))
             results.add(this.parsingInfo)
-        }
-
-        return results
-    }
-
-    private fun buildCachedModalOfType(
-        cs: ConfigurationSection?,
-        defaultValue: CachedModalList<*>?,
-        type: ModalListParsingTypes
-    ): CachedModalList<*>? {
-        if (cs == null) {
-            return defaultValue
-        }
-
-        val mlpi = ModalListParsingInfo(type)
-
-        when (type) {
-            ModalListParsingTypes.BIOME -> {
-                mlpi.configurationKey = "biomes"
-                mlpi.itemName = "Biome"
-                mlpi.supportsGroups = true
-                mlpi.groupMapping =  LevelledMobs.instance.rulesManager.biomeGroupMappings
-                mlpi.cachedModalList = CachedModalList<Biome?>()
-            }
-
-            ModalListParsingTypes.SPAWN_REASON -> {
-                mlpi.configurationKey = "allowed-spawn-reasons"
-                mlpi.itemName = "spawn reason"
-                mlpi.cachedModalList = CachedModalList<LevelledMobSpawnReason?>()
-            }
-
-            ModalListParsingTypes.VANILLA_BONUSES -> {
-                mlpi.configurationKey = "vanilla-bonus"
-                mlpi.itemName = "vanilla bonus"
-                mlpi.cachedModalList = CachedModalList<VanillaBonusEnum?>()
-            }
-        }
-        return buildCachedModal(cs, defaultValue, mlpi)
-    }
-
-    private fun buildCachedModal(
-        cs: ConfigurationSection?,
-        defaultValue: CachedModalList<*>?,
-        mlpi: ModalListParsingInfo
-    ): CachedModalList<*>? {
-        if (cs == null) return defaultValue
-
-        //TODO: test changes here
-        val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, mlpi.configurationKey!!)
-
-        val cachedModalList = mlpi.cachedModalList
-        val simpleStringOrArray = cs[useKeyName]
-        var cs2: ConfigurationSection? = null
-        var useList: MutableList<String>? = null
-
-        if (simpleStringOrArray is ArrayList<*>) {
-            useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
-        } else if (simpleStringOrArray is String) {
-            useList = mutableListOf(simpleStringOrArray)
-        }
-
-        if (useList == null) {
-            cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
-        }
-        if (cs2 == null && useList == null) {
-            return defaultValue
-        }
-
-        cachedModalList!!.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
-
-        if (cs2 != null && mlpi.supportsGroups) {
-            cachedModalList.allowedGroups = TreeSet(String.CASE_INSENSITIVE_ORDER)
-            cachedModalList.excludedGroups = TreeSet(String.CASE_INSENSITIVE_ORDER)
-
-            for (group in YmlParsingHelper.getListFromConfigItem(
-                cs2, MLALLOWEDGROUPS)
-            ) {
-                if (group.trim { it <= ' ' }.isEmpty()) {
-                    continue
-                }
-                if (mlpi.groupMapping == null || !mlpi.groupMapping!!.containsKey(group)) {
-                    Log.war("invalid ${mlpi.itemName} group: $group")
-                } else {
-                    cachedModalList.allowedGroups.add(group)
-                }
-            }
-
-            for (group in YmlParsingHelper.getListFromConfigItem(
-                cs2, MLEXCLUDEDGROUPS)
-            ){
-                if (group.trim { it <= ' ' }.isEmpty()) {
-                    continue
-                }
-                if (!LevelledMobs.instance.rulesManager.biomeGroupMappings.containsKey(group)) {
-                    Log.war("invalid ${mlpi.itemName} group: $group")
-                } else {
-                    cachedModalList.excludedGroups.add(group)
-                }
-            }
-        }
-
-        for (i in 0..1) {
-            // 0 is allowed list, 1 is excluded list
-            val invalidWord = if (i == 0) "allowed" else "excluded"
-            val configKeyname: String =
-                if (i == 0) MLALLOWEDLIST else MLEXCLUDEDITEMS
-            if (i == 1 && cs2 == null) break
-
-            if (cs2 != null) {
-                useList = YmlParsingHelper.getListFromConfigItem(cs2, configKeyname)
-            }
-
-            for (item in useList!!) {
-                if (item.trim { it <= ' ' }.isEmpty()) {
-                    continue
-                }
-                if ("*" == item.trim { it <= ' ' }) {
-                    if (i == 0) cachedModalList.allowAll = true
-                    else cachedModalList.excludeAll = true
-
-                    continue
-                }
-                if (emptyArrayPattern.matcher(item).matches()) {
-                    continue
-                }
-                try {
-                    when (mlpi.type) {
-                        ModalListParsingTypes.BIOME -> {
-                            val biomeModalList = cachedModalList as CachedModalList<Biome>
-                            val modalList = if (i == 0) biomeModalList.allowedList else biomeModalList.excludedList
-
-                            val biome = Biome.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
-                            modalList.add(biome)
-                        }
-                        ModalListParsingTypes.SPAWN_REASON -> {
-                            val spawnReasonModalList = cachedModalList as CachedModalList<LevelledMobSpawnReason>
-                            val modalList =
-                                if (i == 0) spawnReasonModalList.allowedList else spawnReasonModalList.excludedList
-
-                            val spawnReason =
-                                LevelledMobSpawnReason.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
-                            modalList.add(spawnReason)
-                        }
-                        ModalListParsingTypes.VANILLA_BONUSES -> {
-                            val vanillaBonusModalList = cachedModalList as CachedModalList<VanillaBonusEnum>
-                            val modalList =
-                                if (i == 0) vanillaBonusModalList.allowedList else vanillaBonusModalList.excludedList
-
-                            val vanillaBonus =
-                                VanillaBonusEnum.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
-                            modalList.add(vanillaBonus)
-                        }
-                    }
-                } catch (e: IllegalArgumentException) {
-                    Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
-                }
-            }
-        }
-
-        return cachedModalList
-    }
-
-    private fun buildCachedModalListOfString(
-        cs: ConfigurationSection?,
-        name: String,
-        defaultValue: CachedModalList<String>?
-    ): CachedModalList<String>? {
-        if (cs == null) return defaultValue
-
-        val cachedModalList = CachedModalList(
-            TreeSet(String.CASE_INSENSITIVE_ORDER),
-            TreeSet(String.CASE_INSENSITIVE_ORDER)
-        )
-        val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, name)
-        val simpleStringOrArray = cs[useKeyName]
-        var cs2: ConfigurationSection? = null
-        var useList: MutableList<String>? = null
-
-        if (simpleStringOrArray is java.util.ArrayList<*>) {
-            useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
-        } else if (simpleStringOrArray is String) {
-            useList = mutableListOf(simpleStringOrArray)
-        }
-
-        if (useList == null) {
-            cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
-        }
-        if (cs2 == null && useList == null) {
-            return defaultValue
-        }
-
-        cachedModalList.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
-
-        if (cs2 != null) {
-            val allowedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLALLOWEDLIST)
-            useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList)
-        }
-
-        for (item in useList!!) {
-            if (item.trim { it <= ' ' }.isEmpty()) {
-                continue
-            }
-            if ("*" == item.trim { it <= ' ' }) {
-                cachedModalList.allowAll = true
-                continue
-            }
-            if (emptyArrayPattern.matcher(item).matches()) {
-                continue
-            }
-            cachedModalList.allowedList.add(item)
-        }
-        if (cs2 == null) {
-            return cachedModalList
-        }
-
-        val allowedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLALLOWEDGROUPS)
-        val excludedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDITEMS)
-        val excludedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDGROUPS)
-        cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups)
-
-        for (item in YmlParsingHelper.getListFromConfigItem(cs2, excludedList)) {
-            if (item.trim { it <= ' ' }.isEmpty()) {
-                continue
-            }
-            if ("*" == item.trim { it <= ' ' }) {
-                cachedModalList.excludeAll = true
-                continue
-            }
-            cachedModalList.excludedList.add(item)
-        }
-        cachedModalList.excludedGroups = getSetOfGroups(cs2, excludedGroups)
-
-        if (cachedModalList.isEmpty() && !cachedModalList.allowAll && !cachedModalList.excludeAll) {
-            return defaultValue
-        }
-
-        return cachedModalList
-    }
-
-    private fun getSetOfGroups(
-        cs: ConfigurationSection,
-        key: String
-    ): MutableSet<String> {
-        var foundKeyName: String? = null
-        for (enumeratedKey in cs.getKeys(false)) {
-            if (key.equals(enumeratedKey, ignoreCase = true)) {
-                foundKeyName = enumeratedKey
-                break
-            }
-        }
-
-        val results: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-        if (foundKeyName == null) {
-            return results
-        }
-
-        val groups = cs.getStringList(foundKeyName)
-        if (groups.isEmpty() && cs.getString(foundKeyName) != null) {
-            groups.add(cs.getString(foundKeyName))
-        }
-
-        for (group in groups) {
-            if (group!!.trim { it <= ' ' }.isEmpty()) {
-                continue
-            }
-            var invalidGroup = false
-            if (group.lowercase(Locale.getDefault()).startsWith("all_")) {
-                try {
-                    val customGroup = CustomUniversalGroups.valueOf(
-                        group.uppercase(Locale.getDefault())
-                    )
-                    results.add(customGroup.toString())
-                    continue
-                } catch (e: IllegalArgumentException) {
-                    invalidGroup = true
-                }
-            }
-            if (LevelledMobs.instance.customMobGroups.containsKey(group)) {
-                results.add(group)
-            } else {
-                invalidGroup = true
-            }
-
-            if (invalidGroup) {
-                Log.war("Invalid group: $group")
-            }
         }
 
         return results
@@ -928,11 +926,11 @@ class RulesParsingManager {
 
         parsingInfo.conditionsWGregions = buildCachedModalListOfString(
             cs,
-            "allowed-worldguard-regions", parsingInfo.conditionsWGregions
+            "worldguard-regions", parsingInfo.conditionsWGregions
         )
         parsingInfo.conditionsWGregionOwners = buildCachedModalListOfString(
             cs,
-            "allowed-worldguard-region-owners", parsingInfo.conditionsWGregionOwners
+            "worldguard-region-owners", parsingInfo.conditionsWGregionOwners
         )
         parsingInfo.conditionsSpawnReasons = buildCachedModalOfType(
             cs,
@@ -991,7 +989,7 @@ class RulesParsingManager {
         if (compats == null || compats.isEmpty())
             return
 
-        for (pluginName in compats.allowedList){
+        for (pluginName in compats.includedList){
             val checkName = pluginName.replace("_", "-")
             if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
                 Log.war("no external plugin definition found for: '$checkName'")
@@ -1152,10 +1150,10 @@ class RulesParsingManager {
         val configName = "world-time-tick"
         val temp = buildCachedModalListOfString(cs, configName, null) ?: return existingList
         val result = CachedModalList<MinAndMax>()
-        result.allowAll = temp.allowAll
+        result.includeAll = temp.includeAll
         result.excludeAll = temp.excludeAll
         result.excludedList.addAll(parseMinMaxValue(temp.excludedList, configName))
-        result.allowedList.addAll(parseMinMaxValue(temp.allowedList, configName))
+        result.includedList.addAll(parseMinMaxValue(temp.includedList, configName))
 
         return result
     }

@@ -280,7 +280,7 @@ presets:
     name: 'External Plugin Mobs'
     conditions:
       external-plugins:
-        allowed-list: ['dangerous-caves', 'eco-bosses', 'mythic-mobs', 'elite-mobs', 'infernal-mobs', 'citizens', 'shop-keepers', 'simple-pets', 'elite-bosses', 'blood-night']
+        included-list: ['dangerous-caves', 'eco-bosses', 'mythic-mobs', 'elite-mobs', 'infernal-mobs', 'citizens', 'shop-keepers', 'simple-pets', 'elite-bosses', 'blood-night']
         #excluded-list: ['*']
 
 
@@ -414,8 +414,8 @@ custom-rules:
     use-preset: challenge-vanilla, nametag-no-level
     conditions:
       entities:
-        allowed-groups: [ 'all_passive_mobs' ]
-        allowed-list: [ 'BABY_', 'WANDERING_TRADER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'BAT' ]
+        included-groups: [ 'all_passive_mobs' ]
+        included-list: [ 'BABY_', 'WANDERING_TRADER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'BAT' ]
 
   - enabled: true
     name: 'No Stat Change for External Plugins'
@@ -493,7 +493,7 @@ custom-rules:
     name: 'Spawner Cube Entities'
     use-preset: challenge-bronze
     conditions:
-      allowed-spawn-reasons: ['SPAWNER']
+      spawn-reasons: ['SPAWNER']
     strategies:
       weighted-random: true
     apply-settings:

@@ -6,13 +6,16 @@ import dev.jorel.commandapi.arguments.ListArgumentBuilder
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
 import io.github.arcaneplugins.levelledmobs.util.Utils
+import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.BlockCommandSender
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.AbstractVillager
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -388,43 +391,52 @@ object KillSubcommand {
         livingEntity: LivingEntity,
         rl: RequestedLevel?
     ): Boolean {
-        val main = LevelledMobs.instance
+        val skc = MainCompanion.instance.killSkipConditions
         @Suppress("DEPRECATION")
-        if (livingEntity.customName != null && main.helperSettings.getBoolean(
-                "kill-skip-conditions.nametagged"
-            )
+        if (livingEntity.customName != null && skc.isNametagged
         ) {
             return true
         }
 
         if (rl != null) {
-            val mobLevel: Int = main.levelInterface.getLevelOfMob(livingEntity)
+            val mobLevel = LevelledMobs.instance.levelInterface.getLevelOfMob(livingEntity)
             if (mobLevel < rl.levelMin || mobLevel > rl.levelMax) {
                 return true
             }
         }
 
         // Tamed
-        if (livingEntity is Tameable && livingEntity.isTamed
-            && main.helperSettings.getBoolean( "kill-skip-conditions.tamed")
-        ) {
+        if (livingEntity is Tameable && skc.isTamed) {
             return true
         }
 
         // Leashed
-        if (livingEntity.isLeashed && main.helperSettings.getBoolean(
-                "kill-skip-conditions.leashed"
-            )
-        ) {
+        if (livingEntity.isLeashed && skc.isLeashed) {
             return true
+        }
+
+        if (livingEntity is AbstractVillager && skc.isVillager)
+            return true
+
+        if (skc.entityTypes != null && !skc.entityTypes!!.isEmpty()){
+            val et = skc.entityTypes!!
+            if (et.includeAll) return false
+            if (et.excludeAll) return true
+            val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
+            try{
+                if (et.isIncludedInList(lmEntity.nameIfBaby, lmEntity) ||
+                    et.includedList.contains("baby_") && lmEntity.isBabyMob)
+                    return true
+            }
+            finally {
+                lmEntity.free()
+            }
         }
 
         // Converting zombie villager
         return livingEntity.type == EntityType.ZOMBIE_VILLAGER &&
                 (livingEntity as ZombieVillager).isConverting &&
-                main.helperSettings.getBoolean(
-                    "kill-skip-conditions.convertingZombieVillager"
-                )
+                skc.isTransforming
     }
 
     private class Options(
