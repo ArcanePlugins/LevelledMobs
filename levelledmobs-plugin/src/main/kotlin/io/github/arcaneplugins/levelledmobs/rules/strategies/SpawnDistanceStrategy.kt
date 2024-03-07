@@ -7,8 +7,6 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Location
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -18,15 +16,64 @@ import kotlin.math.min
  * @since 3.0.0
  */
 class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
-    var startDistance: Int? = null
-    var increaseLevelDistance: Int? = null
-    var spawnLocationX: Int? = null
-    var spawnLocationZ: Int? = null
+    var startDistance: Float? = null
+    var increaseLevelDistance: Float? = null
+    var spawnLocationX: Float? = null
+    var spawnLocationZ: Float? = null
     var blendedLevellingEnabled: Boolean? = null
-    var transitionYheight: Int? = null
-    var multiplierPeriod: Int? = null
-    var lvlMultiplier: Double? = null
+    var transitionYheight: Float? = null
+    var multiplierPeriod: Float? = null
+    var lvlMultiplier: Float? = null
     var scaleDownward: Boolean? = null
+
+    override val strategyType = StrategyType.SPAWN_DISTANCE
+
+    override fun generateNumber(
+        lmEntity: LivingEntityWrapper,
+        minLevel: Int,
+        maxLevel: Int
+    ): Float {
+        var spawnLocation = lmEntity.world.spawnLocation
+
+        if (this.spawnLocationZ != null || this.spawnLocationX != null) {
+            val useX =
+                if (this.spawnLocationX == null) spawnLocation.x else spawnLocationX!!.toDouble()
+            val useZ =
+                if (this.spawnLocationZ == null) spawnLocation.x else spawnLocationZ!!.toDouble()
+
+            spawnLocation = Location(
+                lmEntity.livingEntity.world,
+                useX,
+                spawnLocation.y,
+                useZ
+            )
+        }
+
+        val startDistance = if (this.startDistance == null) 0f else startDistance!!
+        val distanceFromSpawn = spawnLocation.distance(lmEntity.location).toFloat()
+        val levelDistance = ((distanceFromSpawn - startDistance)).coerceAtLeast(0f)
+        val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(lmEntity)
+        var varianceAdded = 0
+        if (variance != null) {
+            varianceAdded = ThreadLocalRandom.current().nextInt(0, variance + 1)
+        }
+
+        var increaseLevelDistance =
+            if (this.increaseLevelDistance == null) 1f else increaseLevelDistance!!
+        if (increaseLevelDistance == 0f) {
+            increaseLevelDistance = 1f
+        }
+
+        //Get the level thats meant to be at a given distance
+        val spawnDistanceAssignment =
+            ((levelDistance / increaseLevelDistance) + varianceAdded)
+
+        if (this.blendedLevellingEnabled == null || !blendedLevellingEnabled!!) {
+            return spawnDistanceAssignment
+        }
+
+        return generateBlendedLevel(lmEntity, spawnDistanceAssignment)
+    }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy) {
         if (levellingStrategy is SpawnDistanceStrategy) {
@@ -94,75 +141,25 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         return sb.toString()
     }
 
-    override fun generateNumber(
-        lmEntity: LivingEntityWrapper
-    ): Int {
-
-        var spawnLocation = lmEntity.world.spawnLocation
-
-        if (this.spawnLocationZ != null || this.spawnLocationX != null) {
-            val useX =
-                if (this.spawnLocationX == null) spawnLocation.x else spawnLocationX!!.toDouble()
-            val useZ =
-                if (this.spawnLocationZ == null) spawnLocation.x else spawnLocationZ!!.toDouble()
-
-            spawnLocation = Location(
-                lmEntity.livingEntity.world,
-                useX,
-                spawnLocation.y,
-                useZ
-            )
-        }
-
-        val startDistance = if (this.startDistance == null) 0 else startDistance!!
-        val distanceFromSpawn = spawnLocation.distance(lmEntity.location).toInt()
-        val levelDistance = max((distanceFromSpawn - startDistance).toDouble(), 0.0).toInt()
-
-        val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(lmEntity)
-        var varianceAdded = 0
-        if (variance != null) {
-            varianceAdded = ThreadLocalRandom.current().nextInt(0, variance + 1)
-        }
-
-        var increaseLevelDistance =
-            if (this.increaseLevelDistance == null) 1 else increaseLevelDistance!!
-        if (increaseLevelDistance == 0) {
-            increaseLevelDistance = 1
-        }
-
-        //Get the level thats meant to be at a given distance
-        val spawnDistanceAssignment =
-            ((levelDistance / increaseLevelDistance) + varianceAdded).toDouble()
-            .toInt()
-
-        if (this.blendedLevellingEnabled == null || !blendedLevellingEnabled!!) {
-            return spawnDistanceAssignment
-        }
-
-        return generateBlendedLevel(lmEntity, spawnDistanceAssignment)
-    }
-
     private fun generateBlendedLevel(
         lmEntity: LivingEntityWrapper,
-        spawnDistanceLevelAssignment: Int
-    ): Int {
-        val currentYPos = lmEntity.location.blockY
-
-        var result: Double
-
+        spawnDistanceLevelAssignment: Float
+    ): Float {
+        val currentYPos = lmEntity.location.blockY.toFloat()
+        var result: Float
         val transitionYHeight =
-            if (this.transitionYheight == null) 0.0 else transitionYheight!!.toDouble()
-        val multiplierPeriod = if (this.multiplierPeriod == null) 0.0 else multiplierPeriod!!.toDouble()
-        val lvlMultiplier = if (this.lvlMultiplier == null) 0.0 else lvlMultiplier!!
+            if (this.transitionYheight == null) 0f else transitionYheight!!.toFloat()
+        val multiplierPeriod = if (this.multiplierPeriod == null) 0f else multiplierPeriod!!.toFloat()
+        val lvlMultiplier = if (this.lvlMultiplier == null) 0f else lvlMultiplier!!
 
         result = if (this.scaleDownward == null || scaleDownward!!) {
-            ((((transitionYHeight - currentYPos.toDouble()) /
+            ((((transitionYHeight - currentYPos) /
                     multiplierPeriod) * lvlMultiplier)
-                    * spawnDistanceLevelAssignment.toDouble())
+                    * spawnDistanceLevelAssignment)
         } else {
-            ((((transitionYHeight - currentYPos.toDouble()) /
-                    multiplierPeriod) * (lvlMultiplier * -1.0))
-                    * spawnDistanceLevelAssignment.toDouble())
+            ((((transitionYHeight - currentYPos) /
+                    multiplierPeriod) * (lvlMultiplier * -1f))
+                    * spawnDistanceLevelAssignment)
         }
 
         result =
@@ -170,14 +167,14 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(
             lmEntity
         )
-        if (variance != null && variance > 0) {
-            result += ThreadLocalRandom.current().nextInt(0, variance + 1).toDouble()
+        if (variance != null && variance > 0f) {
+            result += ThreadLocalRandom.current().nextInt(0, variance + 1).toFloat()
         }
 
-        return result.toInt()
+        return result
     }
 
-    override fun cloneItem(): SpawnDistanceStrategy? {
+    override fun cloneItem(): SpawnDistanceStrategy {
         var copy: SpawnDistanceStrategy? = null
         try {
             copy = super.clone() as SpawnDistanceStrategy
@@ -185,6 +182,6 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             e.printStackTrace()
         }
 
-        return copy
+        return copy!!
     }
 }

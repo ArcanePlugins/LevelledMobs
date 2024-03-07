@@ -15,6 +15,8 @@ import io.github.arcaneplugins.levelledmobs.rules.ApplicableRulesResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
+import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import org.bukkit.World
 import org.bukkit.command.CommandSender
@@ -65,6 +67,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private val pdcLock = ReentrantLock()
 
     // publics:
+    val strategyResults = mutableMapOf<StrategyType, Float>()
     var reEvaluateLevel = false
     var wasPreviouslyLevelled = false
     var isRulesForceAll = false
@@ -159,6 +162,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     override fun clearEntityData() {
         this._livingEntity = null
+        this.strategyResults.clear()
         this.libsDisguiseCache = null
         this.chunkKillcount = 0
         applicableGroups.clear()

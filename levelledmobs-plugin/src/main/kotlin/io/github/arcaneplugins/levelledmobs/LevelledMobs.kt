@@ -13,7 +13,6 @@ import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
 import io.github.arcaneplugins.levelledmobs.managers.NametagQueueManager
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
-import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.nametag.Definitions
@@ -25,7 +24,6 @@ import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.QuickTimer
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.time.Instant
 import java.util.Random
 import java.util.Stack
@@ -121,7 +119,7 @@ class LevelledMobs : JavaPlugin() {
         this.nametagQueueManager.load()
         this.mainCompanion.load()
         (this.levelInterface as LevelManager).load()
-        if (!mainCompanion.loadFiles(false)) {
+        if (!mainCompanion.loadFiles()) {
             // had fatal error reading required files
             Bukkit.getPluginManager().disablePlugin(this)
             return
@@ -187,7 +185,7 @@ class LevelledMobs : JavaPlugin() {
         })
 
         mainCompanion.reloadSender = sender
-        mainCompanion.loadFiles(true)
+        mainCompanion.loadFiles()
 
         var reloadFinishedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.finished"
@@ -226,7 +224,6 @@ class LevelledMobs : JavaPlugin() {
             "level-mobs-upon-spawn", true
         )
 
-        levelManager.clearRandomLevellingCache()
         configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled()
         rulesManager.clearTempDisabledRulesCounts()
         definitions.useTranslationComponents = helperSettings.getBoolean(

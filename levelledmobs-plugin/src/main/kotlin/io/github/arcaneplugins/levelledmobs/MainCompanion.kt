@@ -114,7 +114,7 @@ class MainCompanion{
     }
 
     // Note: also called by the reload subcommand.
-    fun loadFiles(isReload: Boolean): Boolean {
+    fun loadFiles(): Boolean {
         Log.inf("&fFile Loader: &7Loading files...")
         val main = LevelledMobs.instance
         val configLoad = loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION)

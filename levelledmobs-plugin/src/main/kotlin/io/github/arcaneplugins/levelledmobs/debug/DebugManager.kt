@@ -12,6 +12,7 @@ import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
@@ -102,6 +103,8 @@ class DebugManager {
 
     companion object{
         private lateinit var instance: DebugManager
+        private val longMessagesMap = mutableMapOf<UUID, MutableList<Supplier<String>>>()
+        private val lock = Any()
 
         fun log(
             debugType: DebugType,
@@ -165,6 +168,38 @@ class DebugManager {
          */
         fun log(debugType: DebugType, msg: Supplier<String?>) {
             instance.logInstance(debugType, null, null, null, null, msg.get()!!)
+        }
+
+        fun startLongDebugMessage(): UUID{
+            val id = UUID.randomUUID()
+            synchronized (lock){
+                longMessagesMap[id] = mutableListOf()
+            }
+
+            return id
+        }
+
+        fun logLongMessage(id: UUID, message: Supplier<String>){
+            if (!instance.isEnabled) return
+
+            synchronized(lock) {
+                longMessagesMap[id]?.add(message)
+            }
+        }
+
+        fun endLongMessage(id: UUID, debugType: DebugType){
+            val messages: MutableList<Supplier<String>>?
+
+            synchronized(lock){
+                messages = longMessagesMap.remove(id)
+            }
+
+            if (messages == null) return
+            val sb = StringBuilder()
+            for (message in messages)
+                sb.append(message.get())
+
+            log(debugType){ sb.toString() }
         }
     }
 

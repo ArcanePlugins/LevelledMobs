@@ -15,13 +15,16 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
  */
 class CustomStrategy : LevellingStrategy, Cloneable {
     var formula: String? = null
+    override val strategyType = StrategyType.CUSTOM
 
     override fun generateNumber(
-        lmEntity: LivingEntityWrapper
-    ): Int {
+        lmEntity: LivingEntityWrapper,
+        minLevel: Int,
+        maxLevel: Int
+    ): Float {
         if (formula.isNullOrEmpty()){
             DebugManager.log(DebugType.CUSTOM_STRATEGY) { "no formula supplied, using 1" }
-            return 1
+            return 1f
         }
 
         val useFormula = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
@@ -29,12 +32,11 @@ class CustomStrategy : LevellingStrategy, Cloneable {
         )
 
         val result = MobDataManager.evaluateExpression(useFormula)
-        val finalResult = Math.round(result).toInt()
 
         DebugManager.log(DebugType.CUSTOM_STRATEGY) {
-            "formulaPre: '$formula', formulaPost: '$useFormula', result: $finalResult" }
+            "formulaPre: '$formula', formulaPost: '$useFormula', result: $result" }
 
-        return finalResult
+        return result.toFloat()
     }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy) {

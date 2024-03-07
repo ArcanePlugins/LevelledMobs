@@ -28,7 +28,7 @@ import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
-import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
@@ -85,7 +85,6 @@ class LevelManager : LevelInterface2 {
 
     private var hasMentionedNBTAPIMissing = false
     var doCheckMobHash = false
-    private val randomLevellingCache = mutableMapOf<String, RandomLevellingStrategy>()
     private var lastLEWCacheClearing: Instant? = null
     val entitySpawnListener = EntitySpawnListener()
     private var nametagAutoUpdateTask: SchedulerResult? = null
@@ -128,10 +127,6 @@ class LevelManager : LevelInterface2 {
                 EntityType.WITHER_SKULL, EntityType.SHULKER_BULLET, EntityType.PLAYER
             )
         )
-    }
-
-    fun clearRandomLevellingCache() {
-        randomLevellingCache.clear()
     }
 
     /**
@@ -178,53 +173,51 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        val levellingStrategy = LevelledMobs.instance.rulesManager.getRuleLevellingStrategy(
+        val levellingStrategies = LevelledMobs.instance.rulesManager.getRuleLevellingStrategies(
             lmEntity
         )
 
-        if (levellingStrategy != null && levellingStrategy !is RandomLevellingStrategy) {
-            return levellingStrategy.generateNumber(lmEntity)
+        var numberResult = 0f
+        val debugId = DebugManager.startLongDebugMessage()
+
+        for ((count, strategy) in levellingStrategies.withIndex()){
+            val result = strategy.generateNumber(lmEntity, useMinLevel, useMaxLevel)
+            lmEntity.strategyResults[strategy.strategyType] = result
+            numberResult += result
+
+            DebugManager.logLongMessage(debugId){
+                if (count > 0) ", ${strategy.strategyType}: $result"
+                else "${strategy.strategyType}: $result"
+            }
         }
+
+        DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT)
 
         // if no levelling strategy was selected then we just use a random number between min and max
         if (useMinLevel == useMaxLevel) {
             return useMinLevel
         }
 
-        val randomLevelling =
-            if ((levellingStrategy is RandomLevellingStrategy))
-                levellingStrategy else null
+        val generatedLevel = constructLevel(numberResult, lmEntity)
+            .coerceAtMost(useMaxLevel)
+            .coerceAtLeast(useMinLevel)
 
-        return generateRandomLevel(randomLevelling, useMinLevel, useMaxLevel)
+        return generatedLevel
     }
 
-    private fun generateRandomLevel(
-        randomLevellingPre: RandomLevellingStrategy?,
-        minLevel: Int,
-        maxLevel: Int
-    ): Int {
-        var randomLevelling = randomLevellingPre
-        if (randomLevelling == null) {
-            // used the caches defaults if it exists, otherwise add it to the cache
-            if (randomLevellingCache.containsKey("default")) {
-                randomLevelling = randomLevellingCache["default"]
-            } else {
-                randomLevelling = RandomLevellingStrategy()
-                randomLevellingCache["default"] = randomLevelling
-            }
-        } else {
-            // used the caches one if it exists, otherwise add it to the cache
-            val checkName = "$minLevel-$maxLevel: $randomLevelling"
+    private fun constructLevel(
+        input: Float,
+        lmEntity: LivingEntityWrapper
+    ): Int{
+        val formulaPre = LevelledMobs.instance.rulesManager.getRuleConstructLevel(lmEntity) ?: return input.toInt()
+        val formula = replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
+        val result = MobDataManager.evaluateExpression(formula).toInt()
+        DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
+            "mob: ${lmEntity.nameIfBaby}, result $result\n" +
+                    "   formulaPre: '$formulaPre'\n" +
+                    "   formula: '$formula'" }
 
-            if (randomLevellingCache.containsKey(checkName)) {
-                randomLevelling = randomLevellingCache[checkName]
-            } else {
-                randomLevelling.populateWeightedRandom(minLevel, maxLevel)
-                randomLevellingCache[checkName] = randomLevelling
-            }
-        }
-
-        return randomLevelling!!.generateLevel(minLevel, maxLevel)
+        return result
     }
 
     fun getPlayerLevelSourceNumber(
@@ -786,7 +779,7 @@ class LevelManager : LevelInterface2 {
         return instance.value.toString()
     }
 
-    fun replaceStringPlaceholdersForFormulas(
+    private fun replaceStringPlaceholdersForFormulas(
         text: String,
         lmEntity: LivingEntityWrapper
     ): String{
@@ -797,10 +790,36 @@ class LevelManager : LevelInterface2 {
             if (lmEntity.getMobLevel == 0 || maxLevel == 0) "0"
             else (lmEntity.getMobLevel / maxLevel).toString()
         }
+
+        for (strategyType in StrategyType.entries){
+            when (strategyType){
+                StrategyType.RANDOM -> { str.replaceIfExists("%random%"){
+                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
+                }}
+                StrategyType.WEIGHTED_RANDOM -> { str.replaceIfExists("%weighted-random%"){
+                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
+                }}
+                StrategyType.CUSTOM -> { str.replaceIfExists("%custom-strategy%"){
+                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
+                }}
+                StrategyType.SPAWN_DISTANCE -> { str.replaceIfExists("%distance-from%"){
+                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
+                }}
+                StrategyType.Y_COORDINATE -> { str.replaceIfExists("%y-coordinate%"){
+                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
+                }}
+                StrategyType.PLAYER_VARIABLE -> { str.replaceIfExists("%player-variable-mod%"){
+                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
+                }}
+            }
+        }
+
         str.replaceIfExists("%distance-from-spawn%"){ lmEntity.distanceFromSpawn.toString() }
         str.replaceIfExists("%max-health%"){ getAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH) }
         str.replaceIfExists("%movement-speed%"){ getAttributeValue(lmEntity, Attribute.GENERIC_MOVEMENT_SPEED) }
         str.replaceIfExists("%attack-damage%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ATTACK_DAMAGE) }
+        str.replace("%hotspots-mod%", "0")
+        str.replace("%barricades-mod%", "0")
         str.replaceIfExists("%creeper-blast-damage%"){
             val creeper = lmEntity.livingEntity as? Creeper
             return@replaceIfExists creeper?.explosionRadius?.toString() ?: "0"
@@ -904,13 +923,14 @@ class LevelManager : LevelInterface2 {
             val hasOverridenName = !overridenName.isNullOrEmpty()
             var useDisplayname = overridenName
 
-            if (preserveMobName) useDisplayname = "{DisplayName}"
+            if (preserveMobName)
+                useDisplayname = "{DisplayName}"
+            else if (lmEntity.livingEntity.customName != null && !useCustomNameForNametags) {
+                useDisplayname = lmEntity.livingEntity.customName
+            }
             else if (!hasOverridenName) useDisplayname =
                 Utils.capitalize(lmEntity.typeName.replace("_".toRegex(), " "))
 
-            if (lmEntity.livingEntity.customName != null && !useCustomNameForNametags) {
-                useDisplayname = lmEntity.livingEntity.customName
-            }
             useDisplayname
         }
 

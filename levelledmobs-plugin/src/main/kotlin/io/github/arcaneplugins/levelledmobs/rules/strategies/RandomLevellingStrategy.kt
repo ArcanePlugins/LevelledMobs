@@ -6,7 +6,6 @@ import java.util.TreeMap
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import kotlin.math.max
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon random
@@ -24,51 +23,52 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     var autoGenerate = false
     var enabled = true
 
-    fun generateLevel(minLevel: Int, maxLevel: Int): Int {
-        return generateLevel(null, minLevel, maxLevel)
-    }
+    override var strategyType = StrategyType.WEIGHTED_RANDOM
 
-    override fun generateNumber(lmEntity: LivingEntityWrapper): Int {
-        // TODO implement this
-        return 1
-    }
-
-    fun generateLevel(
-        lmEntity: LivingEntityWrapper?,
+    override fun generateNumber(
+        lmEntity: LivingEntityWrapper,
         minLevel: Int,
         maxLevel: Int
-    ): Int {
+    ): Float {
         // this function only has lmEmtity to satify the interface requirement
         if (weightedRandom.isEmpty()) {
-            return getRandomLevel(minLevel, maxLevel)
+            return getRandomLevel(minLevel, maxLevel).toFloat()
         }
 
         if (this.randomArray == null || (minLevel != this.minLevel) || (maxLevel != this.maxLevel)) {
+            Log.inf("populating random")
             populateWeightedRandom(minLevel, maxLevel)
         }
 
         // populateWeightedRandom(..) should've populated randomArray but if weightedRandom
         // was empty then it won't do anything
         if (this.randomArray == null) {
-            return getRandomLevel(minLevel, maxLevel)
+            return getRandomLevel(minLevel, maxLevel).toFloat()
         }
 
         val useArrayNum = ThreadLocalRandom.current().nextInt(0, randomArray!!.size)
-        return randomArray!![useArrayNum]
+        Log.inf("used random array")
+        return randomArray!![useArrayNum].toFloat()
     }
 
     fun populateWeightedRandom(minLevel: Int, maxLevel: Int) {
         if (weightedRandom.isEmpty()) {
-            return
+            Log.inf("populateWeightedRandom weightedRandom was empty")
+            autoGenerate = true
+            for (i in minLevel..maxLevel){
+                val test = maxLevel - i + 1
+                //Log.inf("range: $i, value: $test")
+                weightedRandom["$i"] = test
+            }
         }
 
         this.minLevel = minLevel
         this.maxLevel = maxLevel
         var count = 0
-        val numbers: MutableList<IntArray> = LinkedList()
-        val values: MutableList<Int> = LinkedList()
-        val numbersUsed: MutableList<Int> = LinkedList()
-        val origOverallNumberRange: MutableList<Int> = LinkedList()
+        val numbers = mutableListOf<IntArray>()
+        val values = mutableListOf<Int>()
+        val numbersUsed = mutableListOf<Int>()
+        val origOverallNumberRange = mutableListOf<Int>()
 
         for (i in minLevel..maxLevel) {
             origOverallNumberRange.add(i)
@@ -165,10 +165,8 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     }
 
     private fun getRandomLevel(minLevel: Int, maxLevel: Int): Int {
-        var useMinLevel = minLevel
-        var useMaxLevel = maxLevel
-        useMinLevel = max(useMinLevel.toDouble(), 0.0).toInt()
-        useMaxLevel = max(useMinLevel.toDouble(), useMaxLevel.toDouble()).toInt()
+        val useMinLevel = minLevel.coerceAtLeast(0)
+        val useMaxLevel = maxLevel.coerceAtLeast(useMinLevel)
         return ThreadLocalRandom.current().nextInt(useMinLevel, useMaxLevel + 1)
     }
 
@@ -182,7 +180,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         }
     }
 
-    override fun cloneItem(): RandomLevellingStrategy? {
+    override fun cloneItem(): RandomLevellingStrategy {
         var copy: RandomLevellingStrategy? = null
         try {
             copy = super.clone() as RandomLevellingStrategy
@@ -190,7 +188,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
             e.printStackTrace()
         }
 
-        return copy
+        return copy!!
     }
 
     override fun toString(): String {

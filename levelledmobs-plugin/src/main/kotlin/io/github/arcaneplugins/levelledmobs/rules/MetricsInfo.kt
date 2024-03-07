@@ -87,23 +87,24 @@ class MetricsInfo {
         // Random, Weighted Random, Spawn Distance, Blended, Y-Levelling
         val defaultRule = LevelledMobs.instance.rulesParsingManager.defaultRule!!
 
-        if (defaultRule.levellingStrategy != null) {
-            if (defaultRule.levellingStrategy is SpawnDistanceStrategy) {
-                val sds = defaultRule.levellingStrategy as SpawnDistanceStrategy
-                return if (sds.blendedLevellingEnabled == null || !sds.blendedLevellingEnabled!!) {
-                    "Spawn Distance"
-                } else {
-                    "Blended"
-                }
-            } else if (defaultRule.levellingStrategy is YDistanceStrategy) {
-                return "Y-Levelling"
-            } else if (defaultRule.levellingStrategy is RandomLevellingStrategy) {
-                val random = defaultRule.levellingStrategy as RandomLevellingStrategy
-                if (random.weightedRandom.isNotEmpty()) {
-                    return "Weighted Random"
-                }
-            }
-        }
+        // TODO: fix this
+//        if (defaultRule.levellingStrategy != null) {
+//            if (defaultRule.levellingStrategy is SpawnDistanceStrategy) {
+//                val sds = defaultRule.levellingStrategy as SpawnDistanceStrategy
+//                return if (sds.blendedLevellingEnabled == null || !sds.blendedLevellingEnabled!!) {
+//                    "Spawn Distance"
+//                } else {
+//                    "Blended"
+//                }
+//            } else if (defaultRule.levellingStrategy is YDistanceStrategy) {
+//                return "Y-Levelling"
+//            } else if (defaultRule.levellingStrategy is RandomLevellingStrategy) {
+//                val random = defaultRule.levellingStrategy as RandomLevellingStrategy
+//                if (random.weightedRandom.isNotEmpty()) {
+//                    return "Weighted Random"
+//                }
+//            }
+//        }
 
         return "Random"
     }

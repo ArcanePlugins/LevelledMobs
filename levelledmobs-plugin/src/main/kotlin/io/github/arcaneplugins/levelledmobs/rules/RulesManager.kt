@@ -21,6 +21,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.result.RuleCheckResult
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.capitalize
 import io.github.arcaneplugins.levelledmobs.util.Utils.isBiomeInModalList
@@ -294,24 +295,39 @@ class RulesManager {
         return maxBlast
     }
 
-    fun getRuleLevellingStrategy(
+    fun getRuleLevellingStrategies(
         lmEntity: LivingEntityWrapper
-    ): LevellingStrategy? {
-        var levellingStrategy: LevellingStrategy? = null
+    ): MutableList<LevellingStrategy> {
+        val strategies = mutableMapOf<StrategyType, LevellingStrategy>()
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.levellingStrategy == null) continue
+            val theseStrategies = ruleInfo.levellingStrategy
 
-            if (levellingStrategy != null && (levellingStrategy.javaClass
-                        == ruleInfo.levellingStrategy!!.javaClass)
-            ) {
-                levellingStrategy.mergeRule(ruleInfo.levellingStrategy!!)
-            } else {
-                levellingStrategy = ruleInfo.levellingStrategy!!.cloneItem()
+            for (strategy in theseStrategies) {
+                val existingStrategy = strategies[strategy.key]
+                if (existingStrategy == null) {
+                    strategies[strategy.key] = strategy.value.cloneItem()
+                } else {
+                    strategies[strategy.key]!!.mergeRule(strategy.value)
+                }
             }
         }
 
-        return levellingStrategy
+        return strategies.values.toMutableList()
+    }
+
+    fun getRuleConstructLevel(
+        lmEntity: LivingEntityWrapper
+    ): String?{
+        var result: String? = null
+
+        for (ruleInfo in lmEntity.getApplicableRules()) {
+            if (ruleInfo.constructLevel == null) continue
+
+            result = ruleInfo.constructLevel
+        }
+
+        return result
     }
 
     fun getRuleMobLevelInheritance(lmEntity: LivingEntityWrapper): Boolean {

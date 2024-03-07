@@ -20,6 +20,8 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
     var endingYLevel: Int? = null
     var yPeriod: Int? = null
 
+    override val strategyType = StrategyType.Y_COORDINATE
+
     override fun mergeRule(levellingStrategy: LevellingStrategy) {
         if (levellingStrategy is YDistanceStrategy) {
             mergeYDistanceStrategy(levellingStrategy as YDistanceStrategy?)
@@ -52,28 +54,29 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
     }
 
     override fun generateNumber(
-        lmEntity: LivingEntityWrapper
-    ): Int {
+        lmEntity: LivingEntityWrapper,
+        minLevel: Int,
+        maxLevel: Int
+    ): Float {
         val mobYLocation = lmEntity.livingEntity.location.blockY
         val yStart = if (this.startingYLevel == null) 0 else startingYLevel!!
         val yEnd = if (this.endingYLevel == null) 0 else endingYLevel!!
         val yPeriod = if (this.yPeriod == null) 0.0 else yPeriod!!.toDouble()
-        var useLevel: Int
+        var useLevel: Float
         val diff = (yEnd - yStart).toDouble()
-        // TODO: fix this
 
-//        if (yPeriod != 0.0) {
-//            val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)
-//            useLevel = floor(
-//                minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
-//            ).toInt()
-//        } else {
-//            val useMobYLocation = (mobYLocation - yStart).toDouble()
-//            val percent = useMobYLocation / diff
-//            useLevel = minLevel + ceil((maxLevel - minLevel) * percent).toInt()
-//        }
+        if (yPeriod != 0.0) {
+            val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)
+            useLevel = floor(
+                minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
+            ).toFloat()
+        } else {
+            val useMobYLocation = (mobYLocation - yStart).toDouble()
+            val percent = useMobYLocation / diff
+            useLevel = minLevel + ceil((maxLevel - minLevel) * percent).toFloat()
+        }
 
-        return 1 //useLevel
+        return useLevel
     }
 
     private fun getVariance(
@@ -99,7 +102,7 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         }
     }
 
-    override fun cloneItem(): YDistanceStrategy? {
+    override fun cloneItem(): YDistanceStrategy {
         var copy: YDistanceStrategy? = null
         try {
             copy = super.clone() as YDistanceStrategy
@@ -107,6 +110,6 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
             e.printStackTrace()
         }
 
-        return copy
+        return copy!!
     }
 }

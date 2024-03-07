@@ -13,6 +13,7 @@ import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import org.bukkit.Particle
 import org.bukkit.block.Biome
 import kotlin.reflect.KMutableProperty
@@ -35,6 +36,8 @@ class RuleInfo(
 ) {
     @DoNotMerge @DoNotShow
     var ruleIsEnabled = true
+    @RuleFieldInfo("construct level", RuleType.APPLY_SETTING)
+    var constructLevel: String? = null
     @DoNotMerge @ExcludeFromHash @RuleFieldInfo("is temp disabled", RuleType.MISC)
     var isTempDisabled = false
     @ExcludeFromHash @RuleFieldInfo("use no spawner particles", RuleType.APPLY_SETTING)
@@ -110,7 +113,7 @@ class RuleInfo(
     @RuleFieldInfo("mob tamed status", RuleType.CONDITION)
     var conditionsMobTamedStatus = MobTamedStatus.NOT_SPECIFIED
     @RuleFieldInfo("levelling strategy", RuleType.STRATEGY)
-    var levellingStrategy: LevellingStrategy? = null
+    val levellingStrategy = mutableMapOf<StrategyType, LevellingStrategy>()
     @RuleFieldInfo("player mod options", RuleType.STRATEGY)
     var playerLevellingOptions: PlayerLevellingOptions? = null
     @ExcludeFromHash @RuleFieldInfo("entity name overrides with level", RuleType.APPLY_SETTING)
@@ -240,14 +243,16 @@ class RuleInfo(
 
                     skipSettingValue = true
                 }
-                if (presetValue is LevellingStrategy) {
-                    if (this.levellingStrategy != null && (levellingStrategy!!.javaClass
-                                == presetValue.javaClass)
-                    ) {
-                        levellingStrategy!!.mergeRule(presetValue)
-                    } else {
-                        this.levellingStrategy = presetValue
+                if (p.name == "levellingStrategy") {
+                    val mergingStrategies = presetValue as MutableMap<StrategyType, LevellingStrategy>
+
+                    for (strategy in mergingStrategies){
+                        if (this.levellingStrategy.containsKey(strategy.key))
+                            this.levellingStrategy[strategy.key]!!.mergeRule(strategy.value)
+                        else
+                            this.levellingStrategy[strategy.key] = strategy.value.cloneItem()
                     }
+
                     skipSettingValue = true
                 }
 

@@ -130,5 +130,9 @@ enum class DebugType {
 
     DEVELOPER_LEW_CACHE,
 
-    CUSTOM_STRATEGY
+    CUSTOM_STRATEGY,
+
+    CONSTRUCT_LEVEL,
+
+    STRATEGY_RESULT
 }

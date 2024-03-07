@@ -23,6 +23,7 @@ import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes.Multiplie
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
@@ -674,6 +675,8 @@ class RulesParsingManager {
         parseTieredColoring(YmlParsingHelper.objToCS(cs, "tiered-coloring"))
         parseHealthIndicator(YmlParsingHelper.objToCS(cs, "health-indicator"))
 
+        parsingInfo.constructLevel = ymlHelper.getString(
+            "construct-level", parsingInfo.constructLevel)
         parsingInfo.restrictionsMinLevel = ymlHelper.getInt2(
             "minlevel", parsingInfo.restrictionsMinLevel
         )
@@ -1036,7 +1039,7 @@ class RulesParsingManager {
              "max-random-variance", parsingInfo.maxRandomVariance
         )
         if (ymlHelper.getBoolean( "random"))
-            parsingInfo.levellingStrategy = RandomLevellingStrategy()
+            parsingInfo.levellingStrategy[StrategyType.RANDOM] = RandomLevellingStrategy()
 
         val csCustom = YmlParsingHelper.objToCS(cs, "custom")
         if (csCustom != null){
@@ -1044,17 +1047,16 @@ class RulesParsingManager {
             customStrategy.formula = csCustom.getString("formula")
 
             if (!customStrategy.formula.isNullOrEmpty()) {
-                parsingInfo.levellingStrategy = customStrategy
+                parsingInfo.levellingStrategy[StrategyType.CUSTOM] = customStrategy
             }
         }
 
         val csYDistance = YmlParsingHelper.objToCS(cs, "y-coordinate")
         if (csYDistance != null) {
             val ymlHelper2 = YmlParsingHelper(csYDistance)
-            val yDistanceStrategy =
-                if (parsingInfo.levellingStrategy is YDistanceStrategy) parsingInfo.levellingStrategy as YDistanceStrategy? else YDistanceStrategy()
+            val yDistanceStrategy = YDistanceStrategy()
 
-            yDistanceStrategy!!.startingYLevel = ymlHelper2.getInt2(
+            yDistanceStrategy.startingYLevel = ymlHelper2.getInt2(
                  "start-height", yDistanceStrategy.startingYLevel
             )
             yDistanceStrategy.endingYLevel = ymlHelper2.getInt2(
@@ -1064,26 +1066,21 @@ class RulesParsingManager {
                  "period", yDistanceStrategy.yPeriod
             )
 
-            if (parsingInfo.levellingStrategy != null
-                && parsingInfo.levellingStrategy is YDistanceStrategy
-            ) {
-                parsingInfo.levellingStrategy!!.mergeRule(yDistanceStrategy)
-            } else {
-                parsingInfo.levellingStrategy = yDistanceStrategy
-            }
+            if (parsingInfo.levellingStrategy.containsKey(StrategyType.Y_COORDINATE))
+                parsingInfo.levellingStrategy[StrategyType.Y_COORDINATE]!!.mergeRule(yDistanceStrategy)
+            else
+                parsingInfo.levellingStrategy[StrategyType.Y_COORDINATE] = yDistanceStrategy
         }
 
         val csSpawnDistance = YmlParsingHelper.objToCS(cs, "distance-from-origin")
         if (csSpawnDistance != null) {
             val ymlHelper2 = YmlParsingHelper(csSpawnDistance)
-            val spawnDistanceStrategy =
-                if (parsingInfo.levellingStrategy is SpawnDistanceStrategy) parsingInfo.levellingStrategy as SpawnDistanceStrategy?
-                else SpawnDistanceStrategy()
+            val spawnDistanceStrategy = SpawnDistanceStrategy()
 
-            spawnDistanceStrategy!!.increaseLevelDistance = ymlHelper2.getInt2(
+            spawnDistanceStrategy.increaseLevelDistance = ymlHelper2.getFloat2(
                 "ringed-tiers", spawnDistanceStrategy.increaseLevelDistance
             )
-            spawnDistanceStrategy.startDistance = ymlHelper2.getInt2(
+            spawnDistanceStrategy.startDistance = ymlHelper2.getFloat2(
                 "buffer-distance", spawnDistanceStrategy.startDistance
             )
 
@@ -1096,13 +1093,10 @@ class RulesParsingManager {
                 )
             }
 
-            if (parsingInfo.levellingStrategy != null
-                && parsingInfo.levellingStrategy is SpawnDistanceStrategy
-            ) {
-                parsingInfo.levellingStrategy!!.mergeRule(spawnDistanceStrategy)
-            } else {
-                parsingInfo.levellingStrategy = spawnDistanceStrategy
-            }
+            if (parsingInfo.levellingStrategy.containsKey(StrategyType.SPAWN_DISTANCE))
+                parsingInfo.levellingStrategy[StrategyType.SPAWN_DISTANCE]!!.mergeRule(spawnDistanceStrategy)
+            else
+                parsingInfo.levellingStrategy[StrategyType.SPAWN_DISTANCE] = spawnDistanceStrategy
         }
 
         parseWeightedRandom(cs)
@@ -1121,7 +1115,7 @@ class RulesParsingManager {
             } else {
                 randomLevelling.autoGenerate = true
             }
-            parsingInfo.levellingStrategy = randomLevelling
+            parsingInfo.levellingStrategy[StrategyType.RANDOM] = randomLevelling
 
             return
         }
@@ -1143,13 +1137,10 @@ class RulesParsingManager {
             randomLevelling.weightedRandom.putAll(randomMap)
         }
 
-        if (parsingInfo.levellingStrategy != null
-            && parsingInfo.levellingStrategy is RandomLevellingStrategy
-        ) {
-            parsingInfo.levellingStrategy!!.mergeRule(randomLevelling)
-        } else {
-            parsingInfo.levellingStrategy = randomLevelling
-        }
+        if (parsingInfo.levellingStrategy.containsKey(StrategyType.WEIGHTED_RANDOM))
+            parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM]!!.mergeRule(randomLevelling)
+        else
+            parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] = randomLevelling
     }
 
     private fun parseWorldTimeTicks(
@@ -1357,13 +1348,13 @@ class RulesParsingManager {
         spawnDistanceStrategy.blendedLevellingEnabled = ymlHelper.getBoolean2(
              "enabled", spawnDistanceStrategy.blendedLevellingEnabled
         )
-        spawnDistanceStrategy.transitionYheight = ymlHelper.getInt2(
+        spawnDistanceStrategy.transitionYheight = ymlHelper.getFloat2(
              "transition-y-height", spawnDistanceStrategy.transitionYheight
         )
-        spawnDistanceStrategy.lvlMultiplier = ymlHelper.getDouble2(
+        spawnDistanceStrategy.lvlMultiplier = ymlHelper.getFloat2(
              "level-multiplier", spawnDistanceStrategy.lvlMultiplier
         )
-        spawnDistanceStrategy.multiplierPeriod = ymlHelper.getInt2(
+        spawnDistanceStrategy.multiplierPeriod = ymlHelper.getFloat2(
              "y-height-period", spawnDistanceStrategy.multiplierPeriod
         )
         spawnDistanceStrategy.scaleDownward = ymlHelper.getBoolean2(
@@ -1377,12 +1368,12 @@ class RulesParsingManager {
     ) {
         val spawnLocation = YmlParsingHelper.objToCS(cs, "origin-coordinates") ?: return
 
-        if (!"default".equals(spawnLocation.getString("x"), ignoreCase = true)) {
-            sds.spawnLocationX = spawnLocation.getInt("x")
+        if (!"spawn".equals(spawnLocation.getString("x"), ignoreCase = true)) {
+            sds.spawnLocationX = spawnLocation.getDouble("x").toFloat()
         }
 
-        if (!"default".equals(spawnLocation.getString("z"), ignoreCase = true)) {
-            sds.spawnLocationZ = spawnLocation.getInt("z")
+        if (!"spawn".equals(spawnLocation.getString("z"), ignoreCase = true)) {
+            sds.spawnLocationZ = spawnLocation.getDouble("z").toFloat()
         }
     }
 
@@ -1550,8 +1541,8 @@ class RulesParsingManager {
         for (ruleInfo in LevelledMobs.instance.rulesManager.rulesInEffect) {
             if ("defaults" != ruleInfo.ruleName) continue
 
-            if (ruleInfo.levellingStrategy is RandomLevellingStrategy) {
-                if (rls == null) rls = ruleInfo.levellingStrategy as RandomLevellingStrategy
+            if (ruleInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] != null) {
+                if (rls == null) rls = ruleInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM]!!.cloneItem() as RandomLevellingStrategy
                 else rls.mergeRule(rls)
             }
 
