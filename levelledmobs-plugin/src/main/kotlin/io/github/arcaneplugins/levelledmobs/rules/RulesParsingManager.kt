@@ -21,6 +21,7 @@ import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes.Multiplier
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
@@ -520,6 +521,7 @@ class RulesParsingManager {
         parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
         parseConditions(YmlParsingHelper.objToCS(ymlHelper.cs, "conditions"))
         parseApplySettings(YmlParsingHelper.objToCS(ymlHelper.cs, "apply-settings"))
+        parseModifiers(YmlParsingHelper.objToCS(ymlHelper.cs, "modifiers"))
     }
 
     private fun mergePreset(ymlHelper: YmlParsingHelper) {
@@ -1033,9 +1035,7 @@ class RulesParsingManager {
         if (cs == null) return
 
         val ymlHelper = YmlParsingHelper(cs)
-        parsingInfo.maxRandomVariance = ymlHelper.getInt2(
-             "max-random-variance", parsingInfo.maxRandomVariance
-        )
+
         if (ymlHelper.getBoolean( "random"))
             parsingInfo.levellingStrategy[StrategyType.RANDOM] = RandomLevellingStrategy()
 
@@ -1098,6 +1098,15 @@ class RulesParsingManager {
         }
 
         parseWeightedRandom(cs)
+    }
+
+    private fun parseModifiers(cs: ConfigurationSection?){
+        if (cs == null) return
+
+        val ymlHelper = YmlParsingHelper(cs)
+        parsingInfo.maxRandomVariance = ymlHelper.getInt2(
+            "max-random-variance", parsingInfo.maxRandomVariance
+        )
         parsePlayerLevellingOptions(YmlParsingHelper.objToCS(cs, "player-variable-mod"))
     }
 
@@ -1278,51 +1287,49 @@ class RulesParsingManager {
         if (cs == null) return
 
         val ymlHelper = YmlParsingHelper(cs)
-        val options = PlayerLevellingOptions()
+        val options = PlayerLevellingStrategy()
         options.matchPlayerLevel = ymlHelper.getBoolean2(
              "match-variable", options.matchPlayerLevel
         )
         options.usePlayerMaxLevel = ymlHelper.getBoolean2(
              "use-variable-as-max", options.usePlayerMaxLevel
         )
-        options.playerLevelScale = ymlHelper.getDouble2(
+        options.playerLevelScale = ymlHelper.getFloat2(
              "player-variable-scale", options.playerLevelScale
         )
-        options.levelCap = ymlHelper.getInt2( "level-cap", options.levelCap)
+        options.assignmentCap = ymlHelper.getFloat2( "assignment-cap", options.assignmentCap)
         options.enabled = ymlHelper.getBoolean2( "enabled", options.enabled)
         options.doMerge = ymlHelper.getBoolean( "merge", options.doMerge)
         options.variable = ymlHelper.getString( "player-variable", options.variable)
         options.decreaseLevel = ymlHelper.getBoolean( "decrease-level", true)
         options.recheckPlayers = ymlHelper.getBoolean2( "recheck-players", options.recheckPlayers)
         options.preserveEntityTime = ymlHelper.getIntTimeUnitMS( "preserve-entity", options.preserveEntityTime)
-        parsingInfo.playerLevellingOptions = options
+        parsingInfo.levellingStrategy[options.strategyType] = options
 
         val csTiers = YmlParsingHelper.objToCS(cs, "player-variable-tiers") ?: return
         val levelTiers = mutableListOf<LevelTierMatching>()
 
-        for (name in csTiers.getKeys(false)) {
+        for (key in csTiers.getKeys(true)) {
+            if (!csTiers.isString(key)) continue
+            val value = csTiers.getString(key)
             val info = LevelTierMatching()
 
-            val value = csTiers.getString(name)
             if (value == null) {
-                Log.war("No value was specified for: $name")
+                Log.war("No value was specified for: $key")
                 continue
             }
 
-            if (!name.contains("-") && !isInteger(name)) {
+            if (!key.contains("-") && !isInteger(key)) {
                 // found a source tier name rather than number
-                info.sourceTierName = name
-            } else if (!info.setRangeFromString(name)) {
-                Log.war("Invalid number range: $name")
+                info.sourceTierName = key
+            } else if (!info.setRangeFromString(key)) {
+                Log.war("Invalid number range: $key")
                 continue
             }
 
-            val levelRange = LevelTierMatching.getRangeFromString(value)
-            if (levelRange.size < 2) {
-                Log.war("Invalid number range (len): $value")
-                continue
-            }
-            if (levelRange[0] == -1 && levelRange[1] == -1) {
+            val levelRange = MinAndMax.setAmountRangeFromString(value)
+
+            if (levelRange == null) {
                 Log.war("Invalid number range: $value")
                 continue
             }

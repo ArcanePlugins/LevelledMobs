@@ -39,7 +39,7 @@ class CustomStrategy : LevellingStrategy, Cloneable {
         return result.toFloat()
     }
 
-    override fun mergeRule(levellingStrategy: LevellingStrategy) {
+    override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy !is CustomStrategy) return
 
         this.formula = levellingStrategy.formula

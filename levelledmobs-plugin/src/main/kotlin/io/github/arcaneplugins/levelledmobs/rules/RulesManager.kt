@@ -21,6 +21,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.result.RuleCheckResult
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
+import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.capitalize
@@ -276,7 +277,8 @@ class RulesManager {
 
     fun isPlayerLevellingEnabled(): Boolean {
         for (ruleInfo in rulesInEffect) {
-            if (ruleInfo.ruleIsEnabled && ruleInfo.playerLevellingOptions != null) {
+            if (ruleInfo.ruleIsEnabled &&
+                ruleInfo.levellingStrategy.containsKey(StrategyType.PLAYER_VARIABLE)) {
                 return true
             }
         }
@@ -412,14 +414,16 @@ class RulesManager {
 
     fun getRulePlayerLevellingOptions(
         lmEntity: LivingEntityWrapper
-    ): PlayerLevellingOptions? {
-        var levellingOptions: PlayerLevellingOptions? = null
+    ): PlayerLevellingStrategy? {
+        var levellingOptions: PlayerLevellingStrategy? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.playerLevellingOptions != null) {
+            if (ruleInfo.levellingStrategy.containsKey(StrategyType.PLAYER_VARIABLE)) {
+                val thisPL = ruleInfo.levellingStrategy[StrategyType.PLAYER_VARIABLE]!!
                 if (levellingOptions == null || !levellingOptions.doMerge) levellingOptions =
-                    ruleInfo.playerLevellingOptions!!.cloneItem()
-                else levellingOptions.mergeRule(ruleInfo.playerLevellingOptions)
+                    thisPL.cloneItem() as PlayerLevellingStrategy
+                else
+                    levellingOptions.mergeRule(thisPL)
             }
         }
 

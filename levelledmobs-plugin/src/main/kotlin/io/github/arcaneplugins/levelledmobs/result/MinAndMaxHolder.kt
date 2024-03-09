@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.result
 
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.time.measureTime
 
 /**
  * Holds values used when a min and max value is needed
@@ -9,15 +10,47 @@ import kotlin.math.min
  * @author stumper66
  * @since 3.12.2
  */
-class MinAndMaxHolder(
-    var min: Int,
-    var max: Int
-) {
+class MinAndMaxHolder{
+    constructor(
+        min: Int,
+        max: Int
+    ){
+        this.min = min.toFloat()
+        this.max = max.toFloat()
+    }
+
+    constructor(
+        min: Float,
+        max: Float
+    ){
+        this.min = min
+        this.max = max
+        this.isUsingFloat = true
+    }
+
+    var min = 0f
+    var max = 0f
+
+    var minAsInt: Int
+        get() = min.toInt()
+        set(value) { this.min = value.toFloat() }
+
+    var maxAsInt: Int
+        get() = max.toInt()
+        set(value) { this.max = value.toFloat() }
+
+    var isUsingFloat: Boolean = false
+        private set
     var useMin: Boolean = true
 
+    fun ensureMinAndMax(float: Float, max: Float) {
+        this.min.coerceAtMost(min)
+        this.max.coerceAtMost(max)
+    }
+
     fun ensureMinAndMax(min: Int, max: Int) {
-        this.min = max(this.min.toDouble(), min.toDouble()).toInt()
-        this.max = min(this.max.toDouble(), max.toDouble()).toInt()
+        this.min.toInt().coerceAtMost(min)
+        this.max.toInt().coerceAtMost(max)
     }
 
     override fun toString(): String {

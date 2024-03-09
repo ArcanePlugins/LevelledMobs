@@ -356,7 +356,7 @@ object SummonSubcommand {
                 "levelledmobs.command.summon.bypass-level-limit"
             ) && !options.override
         ) {
-            options.requestedLevel!!.setMinAllowedLevel(levels.min)
+            options.requestedLevel!!.setMinAllowedLevel(levels.minAsInt)
 
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.level-limited.min"
@@ -371,7 +371,7 @@ object SummonSubcommand {
                 "levelledmobs.command.summon.bypass-level-limit"
             ) && !options.override
         ) {
-            options.requestedLevel!!.setMaxAllowedLevel(levels.max)
+            options.requestedLevel!!.setMaxAllowedLevel(levels.maxAsInt)
 
             var messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.level-limited.max"

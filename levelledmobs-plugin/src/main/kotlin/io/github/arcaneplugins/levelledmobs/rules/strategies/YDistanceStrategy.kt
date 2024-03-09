@@ -22,7 +22,7 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
 
     override val strategyType = StrategyType.Y_COORDINATE
 
-    override fun mergeRule(levellingStrategy: LevellingStrategy) {
+    override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy is YDistanceStrategy) {
             mergeYDistanceStrategy(levellingStrategy as YDistanceStrategy?)
         }

@@ -166,10 +166,10 @@ class LevelManager : LevelInterface2 {
         if (useMinLevel == -1 || useMaxLevel == -1) {
             val levels: MinAndMaxHolder = getMinAndMaxLevels(lmEntity)
             if (useMinLevel == -1) {
-                useMinLevel = levels.min
+                useMinLevel = levels.minAsInt
             }
             if (useMaxLevel == -1) {
-                useMaxLevel = levels.max
+                useMaxLevel = levels.maxAsInt
             }
         }
 
@@ -226,22 +226,22 @@ class LevelManager : LevelInterface2 {
         variableToUse: String
     ): PlayerLevelSourceResult {
         if (player == null) {
-            return PlayerLevelSourceResult(1)
+            return PlayerLevelSourceResult(1f)
         }
 
-        val origLevelSource: Double
+        val origLevelSource: Float
         var homeNameUsed = "spawn"
 
         if ("%level%".equals(variableToUse, ignoreCase = true)) {
-            origLevelSource = player.level.toDouble()
+            origLevelSource = player.level.toFloat()
         } else if ("%exp%".equals(variableToUse, ignoreCase = true)) {
-            origLevelSource = player.exp.toDouble()
+            origLevelSource = player.exp
         } else if ("%exp-to-level%".equals(variableToUse, ignoreCase = true)) {
-            origLevelSource = player.expToLevel.toDouble()
+            origLevelSource = player.expToLevel.toFloat()
         } else if ("%total-exp%".equals(variableToUse, ignoreCase = true)) {
-            origLevelSource = player.totalExperience.toDouble()
+            origLevelSource = player.totalExperience.toFloat()
         } else if ("%world_time_ticks%".equals(variableToUse, ignoreCase = true)) {
-            origLevelSource = player.world.time.toDouble()
+            origLevelSource = player.world.time.toFloat()
         } else if ("%home_distance%".equals(variableToUse, ignoreCase = true)
             || "%home_distance_with_bed%".equals(variableToUse, ignoreCase = true)
         ) {
@@ -271,7 +271,7 @@ class LevelManager : LevelInterface2 {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) { result.resultMessage }
             }
 
-            origLevelSource = useLocation!!.distance(player.location)
+            origLevelSource = useLocation!!.distance(player.location).toFloat()
         } else if ("%bed_distance%".equals(variableToUse, ignoreCase = true)) {
             var useLocation = player.respawnLocation
             homeNameUsed = "bed"
@@ -290,7 +290,7 @@ class LevelManager : LevelInterface2 {
                 }
             }
 
-            origLevelSource = useLocation!!.distance(player.location)
+            origLevelSource = useLocation!!.distance(player.location).toFloat()
         } else {
             var usePlayerLevel = false
             var papiResult: String? = null
@@ -316,11 +316,11 @@ class LevelManager : LevelInterface2 {
             }
 
             if (usePlayerLevel) {
-                origLevelSource = player.level.toDouble()
+                origLevelSource = player.level.toFloat()
             } else {
                 val l = player.location
                 if (papiResult.isNullOrEmpty()) {
-                    origLevelSource = player.level.toDouble()
+                    origLevelSource = player.level.toFloat()
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
                             "Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
@@ -331,9 +331,9 @@ class LevelManager : LevelInterface2 {
                 } else {
                     if (Utils.isDouble(papiResult)) {
                         origLevelSource = try {
-                            papiResult.toDouble()
+                            papiResult.toFloat()
                         } catch (ignored: Exception) {
-                            player.level.toDouble()
+                            player.level.toFloat()
                         }
                     } else {
                         val result = PlayerLevelSourceResult(papiResult)
@@ -344,11 +344,11 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        val sourceResult = PlayerLevelSourceResult(Math.round(origLevelSource).toInt())
+        val sourceResult = PlayerLevelSourceResult(origLevelSource)
         val maxRandomVariance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(lmEntity)
 
         if (maxRandomVariance != null) {
-            sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance + 1)
+            sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance.toInt() + 1).toFloat()
             if (ThreadLocalRandom.current().nextBoolean()) {
                 sourceResult.randomVarianceResult = sourceResult.randomVarianceResult!! * -1
             }
@@ -366,22 +366,22 @@ class LevelManager : LevelInterface2 {
         var minLevel: Int = main.rulesManager.getRuleMobMinLevel(lmInterface)
         var maxLevel: Int = main.rulesManager.getRuleMobMaxLevel(lmInterface)
 
-        if (main.configUtils.playerLevellingEnabled && lmInterface is LivingEntityWrapper && lmInterface.playerForLevelling != null) {
-            val options = main.rulesManager.getRulePlayerLevellingOptions(
-                lmInterface
-            )
-
-            var playerLevellingResults: MinAndMaxHolder? = null
-            if (options != null && options.getEnabled) {
-                playerLevellingResults = options.getPlayerLevels(lmInterface)
-            }
-
-            if (playerLevellingResults != null) {
-                // this will only be false if no tiers were met and there was a cap specified
-                if (playerLevellingResults.useMin) minLevel = playerLevellingResults.min
-                maxLevel = playerLevellingResults.max
-            }
-        }
+//        if (main.configUtils.playerLevellingEnabled && lmInterface is LivingEntityWrapper && lmInterface.playerForLevelling != null) {
+//            val options = main.rulesManager.getRulePlayerLevellingOptions(
+//                lmInterface
+//            )
+//
+//            var playerLevellingResults: MinAndMaxHolder? = null
+//            if (options != null && options.getEnabled) {
+//                playerLevellingResults = options.getPlayerLevels(lmInterface)
+//            }
+//
+//            if (playerLevellingResults != null) {
+//                // this will only be false if no tiers were met and there was a cap specified
+//                if (playerLevellingResults.useMin) minLevel = playerLevellingResults.minAsInt
+//                maxLevel = playerLevellingResults.maxAsInt
+//            }
+//        }
 
         // this will prevent an unhandled exception:
         minLevel = max(minLevel.toDouble(), 1.0).toInt()

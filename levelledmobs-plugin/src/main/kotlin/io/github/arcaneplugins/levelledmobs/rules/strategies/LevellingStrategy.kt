@@ -15,7 +15,7 @@ interface LevellingStrategy {
         maxLevel: Int
     ): Float
 
-    fun mergeRule(levellingStrategy: LevellingStrategy)
+    fun mergeRule(levellingStrategy: LevellingStrategy?)
 
     fun cloneItem(): LevellingStrategy
 

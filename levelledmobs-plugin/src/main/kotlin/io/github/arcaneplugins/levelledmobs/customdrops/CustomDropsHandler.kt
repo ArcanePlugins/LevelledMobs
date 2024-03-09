@@ -1279,7 +1279,7 @@ class CustomDropsHandler {
                 val result: PlayerLevelSourceResult = main.levelManager.getPlayerLevelSourceNumber(
                     info.mobKiller, info.lmEntity!!, variableToUse
                 )
-                levelToUse = if (result.isNumericResult) result.numericResult else 1
+                levelToUse = if (result.isNumericResult) result.numericResult.toInt() else 1
                 info.playerLevelVariableCache[variableToUse] = levelToUse
             }
 

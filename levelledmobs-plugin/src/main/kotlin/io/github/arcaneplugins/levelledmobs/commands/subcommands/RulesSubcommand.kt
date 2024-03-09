@@ -19,7 +19,7 @@ import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper.showMessage
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
-import io.github.arcaneplugins.levelledmobs.rules.PlayerLevellingOptions
+import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
@@ -581,7 +581,7 @@ object RulesSubcommand {
                     if (value is Map<*, *> && value.isEmpty()) continue
                     if (value is List<*> && value.isEmpty()) continue
 
-                    if (value is PlayerLevellingOptions) {
+                    if (value is PlayerLevellingStrategy) {
                         showValue = getPlayerLevellingFormatting(value, lmEntity)
                     }
 
@@ -689,7 +689,7 @@ object RulesSubcommand {
     }
 
     private fun getPlayerLevellingFormatting(
-        opts: PlayerLevellingOptions,
+        opts: PlayerLevellingStrategy,
         lmEntity: LivingEntityWrapper
     ): String {
         val sb = StringBuilder("value: ")

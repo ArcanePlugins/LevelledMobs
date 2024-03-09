@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
 import java.util.Objects
-import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 
 /**
  * Holds any rule information relating to leveled tiers
@@ -11,10 +10,10 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
  */
 class LevelTierMatching {
     var names: MutableList<String>? = null
-    var valueRanges: IntArray? = null
+    var valueRanges: MinAndMax? = null
     var sourceTierName: String? = null
-    var minLevel: Int? = null
-    var maxLevel: Int? = null
+    var minLevel: Float? = null
+    var maxLevel: Float? = null
     var mobName: String? = null
 
     private val hasLevelRestriction: Boolean
@@ -31,56 +30,23 @@ class LevelTierMatching {
         return meetsMin && meetsMax
     }
 
-    fun setRangeFromString(range: String?): Boolean {
-        val result: IntArray = getRangeFromString(range)
-
-        if (result[0] == -1 && result[1] == -1) {
-            return false
+    companion object{
+        fun withRangeFromString(range: String?): LevelTierMatching?{
+            val result = LevelTierMatching()
+            return if (result.setRangeFromString(range))
+                result
+            else
+                null
         }
-
-        if (result[0] >= 0) {
-            this.minLevel = result[0]
-        }
-        if (result[1] >= 0) {
-            this.maxLevel = result[1]
-        }
-
-        return true
     }
 
-    companion object{
-        fun getRangeFromString(range: String?): IntArray {
-            val result = intArrayOf(-1, -1)
+    fun setRangeFromString(range: String?): Boolean {
+        val result = MinAndMax.setAmountRangeFromString(range) ?: return false
 
-            if (range.isNullOrEmpty()) {
-                return result
-            }
+        this.minLevel = result.min
+        this.maxLevel = result.max
 
-            if (!range.contains("-")) {
-                if (!isInteger(range)) {
-                    return result
-                }
-
-                result[0] = range.toInt()
-                result[1] = result[0]
-                return result
-            }
-
-            val nums = range.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (nums.size != 2) {
-                return result
-            }
-
-            if (!isInteger(nums[0].trim { it <= ' ' }) || !isInteger(
-                    nums[1].trim { it <= ' ' })
-            ) {
-                return result
-            }
-            result[0] = nums[0].trim { it <= ' ' }.toInt()
-            result[1] = nums[1].trim { it <= ' ' }.toInt()
-
-            return result
-        }
+        return true
     }
 
     override fun toString(): String {
@@ -101,18 +67,18 @@ class LevelTierMatching {
         if (minLevel != null && maxLevel != null) {
             return String.format(
                 "%s-%s %s", minLevel, maxLevel,
-                if (names == null) valueRanges.contentToString() else names
+                if (names == null) valueRanges.toString() else names
             )
         }
         return if (minLevel != null) {
             String.format(
                 "%s- %s", minLevel,
-                if (names == null) valueRanges.contentToString() else names
+                if (names == null) valueRanges.toString() else names
             )
         } else {
             String.format(
                 "-%s %s", maxLevel,
-                if (names == null) valueRanges.contentToString() else names
+                if (names == null) valueRanges.toString() else names
             )
         }
     }

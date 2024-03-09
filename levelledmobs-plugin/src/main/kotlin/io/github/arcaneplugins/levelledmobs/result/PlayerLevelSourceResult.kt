@@ -7,15 +7,15 @@ package io.github.arcaneplugins.levelledmobs.result
  * @since 3.3.0
  */
 class PlayerLevelSourceResult {
-    var numericResult = 0
-    var randomVarianceResult: Int? = null
+    var numericResult = 0f
+    var randomVarianceResult: Float? = null
     var stringResult: String? = null
         private set
     var isNumericResult = false
         private set
     var homeNameUsed: String? = null
 
-    constructor(numericResult: Int){
+    constructor(numericResult: Float){
         this.numericResult = numericResult
         this.isNumericResult = true
     }

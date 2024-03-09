@@ -42,15 +42,12 @@ presets:
   lvlstrategy-weighted-random:
     name: 'LVL Strategy - Weighted Random'
     strategies:
-      weighted-random:
-        enabled: true
-        strategy-variable: weighted-random
+      weighted-random: true
 
   lvlstrategy-distance-from-origin:
     name: 'LVL Strategy - Distance-from-Origin'
     strategies:
       distance-from-origin:
-        strategy-variable: distance-from
         origin-coordinates:
           x: spawn
           z: spawn
@@ -67,7 +64,6 @@ presets:
     name: 'LVL Strategy - Y-Coordinate'
     strategies:
       y-coordinate:
-        strategy-variable: y-coordinate
         start-height: 100
         period: 0
         end-height: 20
@@ -82,7 +78,6 @@ presets:
     name: 'LVL Modifier - Player Variable'
     modifiers:
       player-variable-mod:
-        modifier-variable: player-variable-mod
         player-variable: '%exp%'
         player-variable-scale: 1.0`
         player-variable-tiers:
@@ -101,32 +96,7 @@ presets:
   lvlmodifier-random-variance:
     name: 'LVL Modifier - Random Level Variance'
     modifiers:
-      modifier-variable: random-variance-mod
       random-variance-mod: 0-2
-
-  lvlmodifier-hotspots:
-    name: 'LVL Modifier - Hotspots'
-    modifiers:
-      hotspots-mod:
-        modifier-variable: hotspots-mod
-        hotspots-penalty: 2.0
-        hotspots-multiplier: 1.25
-        hotspots-cap: 10
-        hotspots-cooldown: 10m
-        apply-to-nearby-chunks: 5
-
-
-  lvlmodifier-barricades:
-    name: 'LVL Modifier - Barricades'
-    modifiers:
-      barricades-mod:
-        modifier-variable: barricades-mod
-        barricades-penalty: 0.25
-        barricades-cap: 10
-        barricades-timer: 45s
-        barricades-cooldown: 5m
-        apply-to-nearby-chunks: 5
-
 
   #
   #   ---------------  -  ------------------------------
@@ -326,8 +296,6 @@ default-rule:
     #===== Choose Modifiers =====
     #- lvlmodifier-player-variable-mod
     #- lvlmodifier-random-variance-mod
-    #- lvlmodifier-hotspots-mod
-    #- lvlmodifier-barricades-mod
 
     #===== Choose Additional Options =====
     - nametag-using-numbers
@@ -360,7 +328,7 @@ default-rule:
     minLevel: 1
     maxLevel: 50
 
-    construct-level: '((%weighted-random% - 5) + (%y-coordinate% / 2) + (%home_distance_with_bed% / 150)) - %player-variable-mod% + (%hotspots-mod% + %barricades-mod%)'
+    construct-level: '(%weighted-random% - 5) + (%y-coordinate% / 2)'
 
     use-custom-item-drops-for-mobs: true
 

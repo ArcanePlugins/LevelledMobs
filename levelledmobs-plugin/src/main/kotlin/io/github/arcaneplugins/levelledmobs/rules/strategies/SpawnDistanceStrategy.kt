@@ -75,7 +75,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         return generateBlendedLevel(lmEntity, spawnDistanceAssignment)
     }
 
-    override fun mergeRule(levellingStrategy: LevellingStrategy) {
+    override fun mergeRule(levellingStrategy: LevellingStrategy?) {
+        if (levellingStrategy == null) return
         if (levellingStrategy is SpawnDistanceStrategy) {
             mergeSpawnDistanceStrategy(levellingStrategy as SpawnDistanceStrategy?)
         }

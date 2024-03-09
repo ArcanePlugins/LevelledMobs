@@ -170,7 +170,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         return ThreadLocalRandom.current().nextInt(useMinLevel, useMaxLevel + 1)
     }
 
-    override fun mergeRule(levellingStrategy: LevellingStrategy) {
+    override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy !is RandomLevellingStrategy) {
             return
         }
