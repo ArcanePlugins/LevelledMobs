@@ -26,18 +26,15 @@
 #   ---------------  -  ------------------------------
 #
 presets:
-  #
-  #   ---------------  -  ------------------------------
-  #    Section 01 - A  |  Presets / Levelling Strategies
-  #   ---------------  -  ------------------------------
-  #
+#
+#   ---------------  -  ------------------------------
+#    Section 01 - A  |  Presets / Levelling Strategies
+#   ---------------  -  ------------------------------
+#
   lvlstrategy-random:
     name: 'LVL Strategy - Random'
     strategies:
-      random:
-        enabled: true
-        strategy-variable: random
-
+      random: true
 
   lvlstrategy-weighted-random:
     name: 'LVL Strategy - Weighted Random'
@@ -53,12 +50,12 @@ presets:
           z: spawn
         buffer-distance: 250
         ringed-tiers: 150
+      # Y-Height Modifier
         enable-height-modifier: true
         transition-y-height: 62
         y-height-period: 10
         level-multiplier: 0.05
         scale-increase-downward: true
-
 
   lvlstrategy-y-coordinate:
     name: 'LVL Strategy - Y-Coordinate'
@@ -69,40 +66,41 @@ presets:
         end-height: 20
 
 
-  #
-  #   ---------------  -  ------------------------------
-  #    Section 01 - B  |  Presets / Level Modifiers
-  #   ---------------  -  ------------------------------
-  #
+#
+#   ---------------  -  ------------------------------
+#    Section 01 - B  |  Presets / Level Modifiers
+#   ---------------  -  ------------------------------
+#
   lvlmodifier-player-variable:
     name: 'LVL Modifier - Player Variable'
     modifiers:
       player-variable-mod:
-        player-variable: '%exp%'
+        player-variable: '%level%'
         player-variable-scale: 1.0`
         player-variable-tiers:
-          '0.00-0.20': 9-11
-          '0.21-0.40': 7-9
-          '0.41-0.60': 5-7
-          '0.61-0.80': 3-5
-          '0.81-1.00': 1-3
+          '32-45': 25-50
+          '24-31': 19-40
+          '16-23': 13-30
+          '8-15': 7-20
+          '0-7': 1-10
+          default: 1-50
         match-variable: false
         use-variable-as-max: false
         recheck-players: true
         decrease-level: true
-        level-cap: 30
-        preserve-entity: 15s
+        level-cap: 50
+        preserve-entity: 60s
 
   lvlmodifier-random-variance:
     name: 'LVL Modifier - Random Level Variance'
     modifiers:
       random-variance-mod: 0-2
 
-  #
-  #   ---------------  -  ------------------------------
-  #    Section 01 - C  |  Presets / Challenge Difficulties
-  #   ---------------  -  ------------------------------
-  #
+#
+#   ---------------  -  ------------------------------
+#    Section 01 - C  |  Presets / Challenge Difficulties
+#   ---------------  -  ------------------------------
+#
   challenge-vanilla:
     name: 'Vanilla Stat Challenge'
     apply-settings:
@@ -137,7 +135,7 @@ presets:
         creeper-blast-damage: 0.75
         item-drop: 3.0
         xp-drop: 5.0
-        #Special Multipliers (0.0 Min - 1.0 Max)
+      # Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.2
         armor-toughness: 0.15
 
@@ -154,7 +152,7 @@ presets:
         follow-range: 0.25
         item-drop: 3.0
         xp-drop: 5.0
-        #Special Multipliers (0.0 Min - 1.0 Max)
+      # Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.3
         armor-toughness: 0.3
         attack-knockback: 0.5
@@ -173,7 +171,7 @@ presets:
         follow-range: 0.5
         item-drop: 3.0
         xp-drop: 5.0
-        #Special Multipliers (0.0 Min - 1.0 Max)
+      # Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.5
         armor-toughness: 0.5
         attack-knockback: 0.5
@@ -193,7 +191,7 @@ presets:
         follow-range: '%follow-range% + (1.75 * %level%)'
         item-drop: '(%item-drop% * 2.5) / %level-ratio%'
         xp-drop: '(%xp-drop% * 3.5) / %level-ratio%'
-        #Special Multipliers (0.0 Min - 1.0 Max)
+      # Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: '(%level-ratio% * (15 - %armor-bonus%)) / (15 - %armor-bonus%)'
         armor-toughness: '(%level-ratio% * (7 - %armor-toughness%)) / (7 - %armor-toughness%)'
         attack-knockback: '(%level-ratio% * (2 - %attack-knockback%)) / (2 - %attack-knockback%)'
@@ -201,19 +199,19 @@ presets:
         zombie-spawn-reinforcements: '(%level-ratio% * (0.25 - %zombie-spawn-reinforcements%)) / (0.25 - %zombie-spawn-reinforcements%)'
 
 
-  #
-  #   ---------------  -  ------------------------------
-  #    Section 01 - D  |  Presets / Names and Nametags
-  #   ---------------  -  ------------------------------
-  #
+#
+#   ---------------  -  ------------------------------
+#    Section 01 - D  |  Presets / Names and Nametags
+#   ---------------  -  ------------------------------
+#
   nametag-using-numbers:
-    name: 'Nametag - Health Numerical'
+    name: 'Nametag - Health Displayed with Numbers'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%entity-name-raw%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
       creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
 
   nametag-using-indicator:
-    name: 'Nametag - Health Indicator'
+    name: 'Nametag - Health Displayed with Indicators'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
       creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
@@ -238,14 +236,36 @@ presets:
       nametag: '&8&l༺ &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
       creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
 
+  nametag-disabled:
+    name: 'Nametag - Disabled'
+    apply-settings:
+      nametag: disabled
+      nametag-visibility-method: ['DISABLED']
+      creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
+
   custom-entity-names:
     name: 'Custom Entity Names'
     apply-settings:
       entity-name-override:
-        HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-        SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
+        WITCH: ['Arcana']
+        HUSK: ['Dessicated Corpse', 'Dusty']
+        BLAZE: ['Diablo', 'Mephisto', 'Baal']
+        ENDERMAN: ['Slenderman']
+        ENDER_DRAGON: ['Smaug']
         PILLAGER: ['Raider', 'Barbarian']
+        SLIME: ['Gelatinous Cube']
+        WITHER: ['Lich']
 
+  custom-death-messages:
+    name: 'Custom Death Messages'
+    apply-settings:
+      death-messages:
+        5: ['%player% was killed by a %death_nametag%!']
+        4: ['A %death_nametag% wrecked %player%!']
+        3: ['A %death_nametag% slaughtered %player%!']
+        2: ['%player% never stood a chance against a %death_nametag%']
+        1: ['%player% Died | Brought to you by %death_nametag%']
+        
   external-plugins:
     name: 'External Plugin Mobs'
     conditions:
@@ -256,7 +276,7 @@ presets:
 
 #
 #   ---------------  -  ------------------------------
-#        Section 02  |  Custom Mob and Biome Groups
+#        Section 02  |  Custom Mob and Biome Group Creator
 #   ---------------  -  ------------------------------
 #
 mob-groups:
@@ -274,18 +294,18 @@ biome-groups:
 
 #
 #   ---------------  -  ------------------------------
-#        Section 03  |  Default Rule
+#        Section 03  |  Set the Default Rule
 #   ---------------  -  ------------------------------
 #
 default-rule:
   use-preset:
-    #===== Choose Strategy =====
+    #===== Choose Strategies =====
     #- lvlstrategy-random
     - lvlstrategy-weighted-random
     #- lvlstrategy-distance-from-origin
     - lvlstrategy-y-coordinate
 
-    #===== Choose Challenge =====
+    #===== Choose a Challenge =====
     #- challenge-vanilla
     #- challenge-bronze
     - challenge-silver
@@ -301,7 +321,9 @@ default-rule:
     - nametag-using-numbers
     #- nametag-using-indicator
     #- nametag-no-level
+    #- nametag-disabled
     #- custom-entity-names
+    #- custom-death-messages
     #- external-plugins
 
 
@@ -325,20 +347,30 @@ default-rule:
   #   ---------------  -  ------------------------------
   #
   apply-settings:
+  # Core LevelledMobs Settings
     minLevel: 1
     maxLevel: 50
 
     construct-level: '(%weighted-random% - 5) + (%y-coordinate% / 2)'
 
+  # Deaths in Chunk Settings
+  # Item / XP / Custom Drop Modifiers
     use-custom-item-drops-for-mobs: true
 
-    multipliers:
-      vanilla-bonus:
-        excluded-list: ['LEADER_ZOMBIE_BONUS', 'RANDOM_SPAWN_BONUS']
+    maximum-death-in-chunk-threshold: 0
+    max-adjacent-chunks: 3
+    chunk-max-cooldown-seconds: 300s
+    disable-vanilla-drops-on-chunk-max: false
+    disable-item-boost-on-chunk-max: true
+    disable-xp-boost-on-chunk-max: true
 
-    sunlight-intensity: 5
-    creeper-max-damage-radius: 3
-
+  # Additional Nametag Settings
+    nametag-placeholder-levelled: ''
+    nametag-placeholder-unlevelled: ''
+    nametag-visible-time: 1s
+    nametag-visibility-method: [ 'TARGETED', 'ATTACKED', 'TRACKING' ]
+    
+  # Adjusts the `%tiered%` placeholder
     tiered-coloring:
       1-09: '&#22E76B' #Green
       10-19: '&#528CFF' #Blue
@@ -348,32 +380,28 @@ default-rule:
       50-50: '&#FFD700' #Gold
       default: '&#FFFFFF' #White
 
-    death-messages:
-    #3: ['%player% was killed by a %death_nametag%!']
-    #1: ['A level %mob-lvl% %displayname% slaughtered %player%!']
-    nametag-placeholder-levelled: ''
-    nametag-placeholder-unlevelled: ''
-    nametag-visible-time: 1s
-    nametag-visibility-method: [ 'TARGETED', 'ATTACKED', 'TRACKING' ]
-
-    baby-mobs-inherit-adult-setting: true
-    level-inheritance: true
-    passenger-match-level: false
-
+  # LevelledMobs Spawner Cube Settings
+  # Use Command:  /lm spawner
     spawner-particles: 'SOUL'
     spawner-particles-count: 10
 
-    maximum-death-in-chunk-threshold: 0
-    max-adjacent-chunks: 3
-    chunk-max-cooldown-seconds: 300s
-    disable-vanilla-drops-on-chunk-max: false
-    disable-item-boost-on-chunk-max: true
-    disable-xp-boost-on-chunk-max: true
+  # Level Inheritace Settings
+    baby-mobs-inherit-adult-setting: true
+    transforming-mobs-inherit-level: true
+    riding-passengers-match-vehicle-level: false
+
+  # Miscellaneous Settings
+    multipliers:
+      vanilla-bonus:
+        excluded-list: ['LEADER_ZOMBIE_BONUS', 'RANDOM_SPAWN_BONUS']
+
+    sunlight-intensity: 5
+    creeper-max-damage-radius: 3
 
 
 #
 #   ---------------  -  ------------------------------
-#        Section 04  |  Custom Rules
+#        Section 04  |  Create Custom Rules
 #   ---------------  -  ------------------------------
 #
 custom-rules:
