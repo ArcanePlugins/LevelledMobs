@@ -911,27 +911,20 @@ class LevelManager : LevelInterface2 {
         text.replace("%player-uuid%", playerId)
         text.replace("%player%", playerName)
         text.replaceIfExists("%displayname%") {
-            val useCustomNameForNametags = LevelledMobs.instance.helperSettings.getBoolean(
-        "use-customname-for-mob-nametags"
-            )
-            val overridenName =
-                if (lmEntity.lockedOverrideName == null) LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(
-                    lmEntity,
-                    false
-                ) else lmEntity.lockedOverrideName
+            val overridenName = if (lmEntity.lockedOverrideName == null)
+                LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(lmEntity, false)
+            else
+                lmEntity.lockedOverrideName
 
-            val hasOverridenName = !overridenName.isNullOrEmpty()
-            var useDisplayname = overridenName
+            if (!overridenName.isNullOrEmpty())
+                return@replaceIfExists overridenName
 
-            if (preserveMobName)
-                useDisplayname = "{DisplayName}"
-            else if (lmEntity.livingEntity.customName != null && !useCustomNameForNametags) {
-                useDisplayname = lmEntity.livingEntity.customName
-            }
-            else if (!hasOverridenName) useDisplayname =
-                Utils.capitalize(lmEntity.typeName.replace("_".toRegex(), " "))
-
-            useDisplayname
+            if (lmEntity.livingEntity.customName != null)
+                return@replaceIfExists lmEntity.livingEntity.customName
+            return@replaceIfExists if (preserveMobName)
+                "{DisplayName}"
+            else
+                Utils.capitalize(lmEntity.typeName.replace("_", " "))
         }
 
         for (placeholder in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
