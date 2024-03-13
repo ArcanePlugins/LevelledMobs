@@ -6,6 +6,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
+import io.github.arcaneplugins.levelledmobs.result.EvaluationResult
 import io.github.arcaneplugins.levelledmobs.result.MultiplierResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -35,10 +36,22 @@ class MobDataManager {
 
         fun evaluateExpression(
             expression: String
-        ): Double {
-            return Crunch.compileExpression(
-                expression, crunchEvalEnv
-            ).evaluate()
+        ): EvaluationResult {
+            var numberResult = 0.0
+            var error: String? = null
+            try{
+                numberResult = Crunch.compileExpression(
+                    expression, crunchEvalEnv
+                ).evaluate()
+            }
+            catch (e: Exception){
+                error = e.message
+            }
+
+            return EvaluationResult(
+                numberResult,
+                error
+            )
         }
     }
 
@@ -226,10 +239,11 @@ class MobDataManager {
                     null,
                     true
                 )
-                try{ multiplierValue = evaluateExpression(formulaStr).toFloat() }
-                catch (e: Exception){
-                    Log.war("Error evaluating formula: '$formulaStr', ${e.message}")
-                }
+                val evalResult = evaluateExpression(formulaStr)
+                multiplierValue = evalResult.result.toFloat()
+                if (evalResult.hadError)
+                    Log.war("Error evaluating formula: '$formulaStr', ${evalResult.error}")
+
                 DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                     "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
             }

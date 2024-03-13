@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
@@ -58,6 +59,11 @@ class PlayerJoinListener : Listener {
                         "&b&lLevelledMobs: &cWARNING &7You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml"
                     )
                 )
+            }
+
+            if (NotifyManager.opHasMessage){
+                event.player.sendMessage(NotifyManager.pendingMessage!!)
+                NotifyManager.clearLastError()
             }
         }
     }

@@ -12,6 +12,7 @@ import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
 import io.github.arcaneplugins.levelledmobs.managers.NametagQueueManager
+import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
@@ -158,6 +159,7 @@ class LevelledMobs : JavaPlugin() {
 
     fun reloadLM(sender: CommandSender) {
         migratedFromPre30 = false
+        NotifyManager.clearLastError()
         customDropsHandler.customDropsParser.invalidExternalItems.clear()
         var reloadStartedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.started"

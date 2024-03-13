@@ -17,6 +17,7 @@ import io.github.arcaneplugins.levelledmobs.events.MobPostLevelEvent
 import io.github.arcaneplugins.levelledmobs.events.MobPreLevelEvent
 import io.github.arcaneplugins.levelledmobs.events.SummonedMobPreLevelEvent
 import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
+import io.github.arcaneplugins.levelledmobs.misc.EvaluationException
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PickedUpEquipment
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
@@ -211,7 +212,14 @@ class LevelManager : LevelInterface2 {
     ): Int{
         val formulaPre = LevelledMobs.instance.rulesManager.getRuleConstructLevel(lmEntity) ?: return input.toInt()
         val formula = replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
-        val result = MobDataManager.evaluateExpression(formula).toInt()
+        val evalResult = MobDataManager.evaluateExpression(formula)
+        if (evalResult.hadError){
+            NotifyManager.notifyOfError("Error evaluating formula for construct-level on mob: ${lmEntity.nameIfBaby}, ${evalResult.error}")
+            throw EvaluationException()
+        }
+
+        val result = evalResult.result.toInt()
+
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
             "mob: ${lmEntity.nameIfBaby}, result $result\n" +
                     "   formulaPre: '$formulaPre'\n" +

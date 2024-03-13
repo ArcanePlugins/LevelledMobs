@@ -31,7 +31,8 @@ class CustomStrategy : LevellingStrategy, Cloneable {
             formula!!, lmEntity, true, lmEntity.associatedPlayer, true
         )
 
-        val result = MobDataManager.evaluateExpression(useFormula)
+        val evalResult = MobDataManager.evaluateExpression(useFormula)
+        val result = evalResult.result
 
         DebugManager.log(DebugType.CUSTOM_STRATEGY) {
             "formulaPre: '$formula', formulaPost: '$useFormula', result: $result" }

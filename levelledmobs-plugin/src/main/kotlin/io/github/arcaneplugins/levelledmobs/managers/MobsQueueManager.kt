@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.managers
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.misc.EvaluationException
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -83,6 +84,10 @@ class MobsQueueManager {
         if (!item.lmEntity.shouldShowLMNametag) {
             return
         }
-        LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)
+        try{
+            LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)
+        }
+        // this exception is manually thrown after logging and notifying op users
+        catch (ignored: EvaluationException){}
     }
 }
