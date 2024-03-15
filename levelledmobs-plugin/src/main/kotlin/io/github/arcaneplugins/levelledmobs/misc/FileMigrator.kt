@@ -6,7 +6,6 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import java.util.LinkedList
 import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
@@ -61,7 +60,7 @@ object FileMigrator {
 
         fun addListValue(value: String?) {
             if (valueList == null) {
-                valueList = LinkedList()
+                valueList = mutableListOf()
             }
             valueList!!.add(value)
         }
@@ -407,7 +406,7 @@ object FileMigrator {
         val isCustomDrops = to.name.equals("customdrops.yml", ignoreCase = true)
         val isMessages = to.name.equals("messages.yml", ignoreCase = true)
         val showMessages = !isMessages
-        val processedKeys: MutableList<String?> = LinkedList()
+        val processedKeys = mutableListOf<String>()
 
         // version 20 = 1.34 - last version before 2.0
         val version20KeysToKeep: List<String?> = listOf(

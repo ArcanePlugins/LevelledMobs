@@ -13,7 +13,6 @@ import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
-import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import org.bukkit.Particle
 import org.bukkit.block.Biome

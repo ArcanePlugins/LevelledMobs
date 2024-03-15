@@ -1,9 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.result
 
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.time.measureTime
-
 /**
  * Holds values used when a min and max value is needed
  *

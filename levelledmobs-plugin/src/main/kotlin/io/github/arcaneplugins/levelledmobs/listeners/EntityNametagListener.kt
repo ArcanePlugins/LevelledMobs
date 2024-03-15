@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity

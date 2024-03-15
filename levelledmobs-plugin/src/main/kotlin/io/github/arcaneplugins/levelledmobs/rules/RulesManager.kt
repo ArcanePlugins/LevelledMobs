@@ -5,7 +5,6 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.time.Duration
 import java.time.Instant
-import java.util.LinkedList
 import java.util.TreeMap
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -839,7 +838,7 @@ class RulesManager {
 
         synchronized(ruleLocker) {
             if (!rulesCooldown.containsKey(ruleInfo.ruleName)) {
-                rulesCooldown[ruleInfo.ruleName] = LinkedList()
+                rulesCooldown[ruleInfo.ruleName] = mutableListOf()
             }
             val instants: MutableList<Instant>? = rulesCooldown[ruleInfo.ruleName]
             instants!!.add(Instant.now())

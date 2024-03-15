@@ -5,8 +5,6 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -62,7 +60,7 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         val yStart = if (this.startingYLevel == null) 0 else startingYLevel!!
         val yEnd = if (this.endingYLevel == null) 0 else endingYLevel!!
         val yPeriod = if (this.yPeriod == null) 0.0 else yPeriod!!.toDouble()
-        var useLevel: Float
+        val useLevel: Float
         val diff = (yEnd - yStart).toDouble()
 
         if (yPeriod != 0.0) {

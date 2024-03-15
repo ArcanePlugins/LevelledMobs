@@ -18,7 +18,6 @@ import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.LinkedList
 import java.util.Locale
 import java.util.TreeMap
 import java.util.UUID
@@ -417,7 +416,7 @@ class CustomDropsHandler {
         if (processingInfo.prioritizedDrops!!.containsKey(priority)) {
             processingInfo.prioritizedDrops!![priority]!!.add(baseItem)
         } else {
-            val items: MutableList<CustomDropBase> = LinkedList()
+            val items = mutableListOf<CustomDropBase>()
             items.add(baseItem)
             processingInfo.prioritizedDrops!![priority] = items
         }

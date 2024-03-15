@@ -19,7 +19,6 @@ import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils
-import java.util.LinkedList
 import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
@@ -905,7 +904,7 @@ class CustomDropsParser(
         if (item.itemFlagsStrings!!.isEmpty() && itemFlags.isNullOrEmpty()) {
             return
         }
-        val results: MutableList<ItemFlag> = LinkedList()
+        val results = mutableListOf<ItemFlag>()
 
         item.itemFlagsStrings = if (item.itemFlagsStrings!!.isEmpty())
             itemFlags!!.replace(",", ";").split(";") as MutableList

@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import java.lang.reflect.InvocationTargetException
-import java.util.LinkedList
 import java.util.Objects
 import java.util.Optional
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -140,7 +139,7 @@ class NmsNametagSender : NametagSender {
     private fun getNametagFields(
         entityData: Any
     ): List<Any> {
-        val results: MutableList<Any> = LinkedList()
+        val results = mutableListOf<Any>()
 
         try {
             val itemsById =

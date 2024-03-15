@@ -4,9 +4,6 @@ import java.util.Locale
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
-import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
-import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrategy
-import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
 
 /**
  * Holds function to generate metrics to be sent to bstats

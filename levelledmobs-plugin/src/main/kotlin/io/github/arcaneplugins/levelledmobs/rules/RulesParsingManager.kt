@@ -2,7 +2,6 @@
 
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.util.LinkedList
 import java.util.Locale
 import java.util.TreeMap
 import java.util.TreeSet
@@ -559,7 +558,7 @@ class RulesParsingManager {
 
                 if (coloringInfo != null) {
                     if (parsingInfo.tieredColoringInfos == null) {
-                        parsingInfo.tieredColoringInfos = LinkedList()
+                        parsingInfo.tieredColoringInfos = mutableListOf()
                     }
                     parsingInfo.tieredColoringInfos!!.add(coloringInfo)
                 }

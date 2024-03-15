@@ -62,7 +62,7 @@ class NametagTimerChecker {
         player: Player,
         coolDown: Map.Entry<Player, WeakHashMap<LivingEntity, Instant>>
     ) {
-        val entitiesToRemove: MutableList<LivingEntity> = LinkedList()
+        val entitiesToRemove = mutableListOf<LivingEntity>()
         val isRunningFolia = LevelledMobs.instance.ver.isRunningFolia
 
         for (livingEntity in coolDown.value.keys) {

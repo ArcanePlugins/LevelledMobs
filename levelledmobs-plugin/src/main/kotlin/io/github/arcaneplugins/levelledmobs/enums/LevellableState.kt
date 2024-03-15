@@ -26,16 +26,6 @@ enum class LevellableState {
     DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE,
 
     /**
-     * settings.yml has been configured to block DangerousCaves mobs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES,
-
-    /**
-     * A rule has been configured to block EcoBosses mobs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES,
-
-    /**
      * A rule has been configured to block MythicMobs mobs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS,
@@ -44,21 +34,6 @@ enum class LevellableState {
      * A rule has been configured to block EliteMobs mobs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS,
-
-    /**
-     * A rule has been configured to block Infernal Mobs mobs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS,
-
-    /**
-     * A rule has been configured to block Citizens NPCs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS,
-
-    /**
-     * A rule has been configured to block Shopkeepers NPCs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS,
 
     /**
      * A rule has been configured to block Simple Pets from being levelled
@@ -70,10 +45,6 @@ enum class LevellableState {
      */
     DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES,
 
-    /**
-     * A rule has been configured to block Blood Night from being levelled
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT,
 
     DENIED_EXTERNAL_PLUGIN,
 
@@ -81,11 +52,6 @@ enum class LevellableState {
      * A rule has been configured to block nametagged mobs from being levelled.
      */
     DENIED_CONFIGURATION_CONDITION_NAMETAGGED,
-
-    /**
-     * A rule has been configured to block tamed mobs from being levelled.
-     */
-    DENIED_CONFIGURATION_CONDITION_TAMED,
 
     /**
      * If no rules in the rule list applied to the mob then it will be denied

@@ -43,7 +43,6 @@ import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Collections
-import java.util.LinkedList
 import java.util.WeakHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
@@ -1153,7 +1152,7 @@ class LevelManager : LevelInterface2 {
             }
             if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
                 val hasKey = entityToPlayer.containsKey(lmEntity)
-                val players = if (hasKey) entityToPlayer[lmEntity]!! else LinkedList()
+                val players = if (hasKey) entityToPlayer[lmEntity]!! else mutableListOf()
                 players.add(player)
                 if (!hasKey) {
                     entityToPlayer[lmEntity] = players

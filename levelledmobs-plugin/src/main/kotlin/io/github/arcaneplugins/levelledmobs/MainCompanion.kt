@@ -40,7 +40,6 @@ import java.io.File
 import java.io.InvalidObjectException
 import java.time.Duration
 import java.time.Instant
-import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import java.util.WeakHashMap
@@ -296,7 +295,7 @@ class MainCompanion{
     }
 
     private fun chunkKillLimitCleanup() {
-        val chunkKeysToRemove: MutableList<Long> = LinkedList()
+        val chunkKeysToRemove = mutableListOf<Long>()
 
         for (chunkKey in entityDeathInChunkCounter.keys) {
             //                                 Cooldown time, entity counts

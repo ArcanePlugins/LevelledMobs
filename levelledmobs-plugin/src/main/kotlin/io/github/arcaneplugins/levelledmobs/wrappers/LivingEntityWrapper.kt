@@ -15,7 +15,6 @@ import io.github.arcaneplugins.levelledmobs.rules.ApplicableRulesResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
-import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import org.bukkit.World

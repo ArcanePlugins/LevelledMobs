@@ -5,7 +5,6 @@ import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
-import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper

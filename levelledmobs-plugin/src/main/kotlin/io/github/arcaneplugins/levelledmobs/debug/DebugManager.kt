@@ -2,7 +2,6 @@ package io.github.arcaneplugins.levelledmobs.debug
 
 import java.time.Duration
 import java.time.Instant
-import java.util.LinkedList
 import java.util.Locale
 import java.util.function.Supplier
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
@@ -286,7 +285,7 @@ class DebugManager {
 
     private fun getPlayers(): MutableList<Player>? {
         if (filterPlayerNames.isEmpty()) {
-            return LinkedList(Bukkit.getOnlinePlayers())
+            return Bukkit.getOnlinePlayers().toMutableList()
         }
 
         val players = mutableListOf<Player>()
