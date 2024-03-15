@@ -3,10 +3,14 @@ package io.github.arcaneplugins.levelledmobs.rules.strategies
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
+import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.rules.LevelTierMatching
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.concurrent.ThreadLocalRandom
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.roundToInt
 
 /**
  * Holds any rules relating to player levelling
@@ -16,6 +20,7 @@ import org.bukkit.persistence.PersistentDataType
  */
 class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
     val levelTiers = mutableListOf<LevelTierMatching>()
+    var defaultLevelTier: LevelTierMatching? = null
     var matchPlayerLevel: Boolean? = null
     var enabled: Boolean? = null
     var usePlayerMaxLevel: Boolean? = null
@@ -58,14 +63,15 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         applyValueToPdc(lmEntity, playerLevelSourceResult)
         val levelSource = origLevelSource * scale.coerceAtLeast(1f)
 
-        var results = 0f
+        val results = MinAndMaxHolder(0f, 0f)
         var tierMatched: String? = null
         val capDisplay = if (options.assignmentCap == null) "" else "cap: ${options.assignmentCap}, "
 
         if (options.getUsePlayerMaxLevel) {
-            results = levelSource
+            results.min = levelSource
+            results.max = results.min
         } else if (options.getMatchPlayerLevel) {
-            results = levelSource
+            results.max = levelSource
         } else {
             var foundMatch = false
             for (tier in options.levelTiers) {
@@ -84,10 +90,10 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
                 if (meetsMin && meetsMax || hasStringMatch) {
                     if (tier.valueRanges!!.min> 0f) {
-                        results = tier.valueRanges!!.min
+                        results.min = tier.valueRanges!!.min
                     }
                     if (tier.valueRanges!!.max > 0f) {
-                        results = tier.valueRanges!!.max
+                        results.max = tier.valueRanges!!.max
                     }
                     tierMatched = tier.toString()
                     foundMatch = true
@@ -95,11 +101,18 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 }
             }
 
+            if (!foundMatch && options.defaultLevelTier != null){
+                foundMatch = true
+                tierMatched = options.defaultLevelTier.toString()
+                results.min = options.defaultLevelTier!!.valueRanges!!.min
+                results.max = options.defaultLevelTier!!.valueRanges!!.max
+            }
+
             if (!foundMatch) {
                 if (playerLevelSourceResult.isNumericResult) {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
-                            "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
+                            "mob: %s, player: %s, input: %s, scale: %s, %sno tiers matched",
                             lmEntity.nameIfBaby, player.name, origLevelSource, levelSource,
                             capDisplay
                         )
@@ -107,30 +120,29 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 } else {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
-                            "mob: %s, player: %s, lvl-src: '%s', %sno tiers matched",
+                            "mob: %s, player: %s, input: '%s', %sno tiers matched",
                             lmEntity.nameIfBaby, player.name,
                             playerLevelSourceResult.stringResult, capDisplay
                         )
                     }
                 }
                 if (options.assignmentCap != null) {
-                    results = results.coerceAtMost(options.assignmentCap!!)
-                    return results
+                    results.max = results.max.coerceAtMost(options.assignmentCap!!)
+                    return calculateResult(results)
                 } else {
                     return 0f
                 }
             }
         }
 
-
         val varianceDebug: String
         if (playerLevelSourceResult.randomVarianceResult != null) {
             playerLevelSourceResult.randomVarianceResult =
                 playerLevelSourceResult.randomVarianceResult!! + playerLevelSourceResult.randomVarianceResult!!
             // ensure the min value is at least 1
-            results = results.coerceAtLeast(1f)
+            results.min = results.min.coerceAtLeast(1f)
             // ensure the min value is not higher than the max value
-            //results = results.coerceAtMost(results.max)
+            results.min = results.min.coerceAtMost(results.max)
 
             varianceDebug = ", var: ${playerLevelSourceResult.randomVarianceResult}"
         } else {
@@ -138,7 +150,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         }
 
         if (options.assignmentCap != null) {
-            results = results.coerceAtMost(options.assignmentCap!!)
+            results.max = results.max.coerceAtMost(options.assignmentCap!!)
         }
 
         val homeName = if (playerLevelSourceResult.homeNameUsed != null)
@@ -148,17 +160,18 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         if (tierMatched == null) {
             DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                 String.format(
-                    "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, %sresult: %s",
+                    "mob: %s, player: %s, input: %s%s%s, scale: %s, %sresult: %s",
                     lmEntity.nameIfBaby, player.name, origLevelSource, homeName,
                     varianceDebug, levelSource, capDisplay, results
                 )
             }
         } else {
+            Log.inf("isNum: ${playerLevelSourceResult.isNumericResult}, $tierMatched, source: $levelSource")
             val tierMatchedFinal: String = tierMatched
             if (playerLevelSourceResult.isNumericResult) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                     String.format(
-                        "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, tier: %s, %sresult: %s",
+                        "mob: %s, player: %s, input: %s%s%s, scale: %s, tier: %s, %sresult: %s",
                         lmEntity.nameIfBaby, player.name, origLevelSource, homeName,
                         varianceDebug, levelSource, tierMatchedFinal, capDisplay, results
                     )
@@ -166,7 +179,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             } else {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                     String.format(
-                        "mob: %s, player: %s, lvl-src: '%s'%s, tier: %s, %sresult: %s",
+                        "mob: %s, player: %s, input: '%s'%s, tier: %s, %sresult: %s",
                         lmEntity.nameIfBaby, player.name,
                         playerLevelSourceResult.stringResult, varianceDebug, tierMatchedFinal,
                         capDisplay, results
@@ -190,7 +203,17 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         }
         lmEntity.playerLevellingAllowDecrease = options.decreaseLevel
 
-        return results
+        return calculateResult(results)
+    }
+
+    private fun calculateResult(minAndMax: MinAndMaxHolder): Float{
+        if (minAndMax.min == minAndMax.max) return minAndMax.min
+
+        val useMin = minAndMax.min.roundToInt()
+        val useMax = minAndMax.max.roundToInt()
+        if (useMin == useMax) return useMin.toFloat()
+
+        return ThreadLocalRandom.current().nextInt(useMin, useMax + 1).toFloat()
     }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
@@ -232,7 +255,6 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
         return copy as LevellingStrategy
     }
-
 
     val getMatchPlayerLevel: Boolean
         get() = this.matchPlayerLevel != null && matchPlayerLevel!!

@@ -1308,9 +1308,16 @@ class RulesParsingManager {
 
         val csTiers = YmlParsingHelper.objToCS(cs, "player-variable-tiers") ?: return
         val levelTiers = mutableListOf<LevelTierMatching>()
+        var defaultTier: LevelTierMatching? = null
 
         for (key in csTiers.getKeys(true)) {
-            if (!csTiers.isString(key)) continue
+            var isDefault = false
+
+            if ("default".equals(key, ignoreCase = true))
+                isDefault = true
+            else if (!csTiers.isString(key))
+                continue
+
             val value = csTiers.getString(key)
             val info = LevelTierMatching()
 
@@ -1335,12 +1342,16 @@ class RulesParsingManager {
             }
 
             info.valueRanges = levelRange
-            levelTiers.add(info)
+            if (isDefault)
+                defaultTier = info
+            else
+                levelTiers.add(info)
         }
 
         if (levelTiers.isNotEmpty()) {
             options.levelTiers.addAll(levelTiers)
         }
+        options.defaultLevelTier = defaultTier
     }
 
     private fun parseBlendedLevelling(
