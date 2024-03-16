@@ -205,7 +205,7 @@ public class NmsNametagSender implements NametagSender {
         final @NotNull NametagResult nametag
     ) {
         if (nametag.isNullOrEmpty()) {
-            return Optional.of(ComponentUtils.getEmptyComponent());
+            return Optional.empty();
         }
 
         if (def.hasKiori()) {
