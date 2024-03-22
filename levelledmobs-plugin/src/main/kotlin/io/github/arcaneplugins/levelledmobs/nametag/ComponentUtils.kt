@@ -36,13 +36,7 @@ object ComponentUtils {
         text: String?
     ): Any? {
         try {
-            return if (text == null && ver.minecraftVersion >= 1.19) {
-                // #empty()
-                def.methodEmptyComponent!!.invoke(null)
-            } else {
-                // #nullToEmpty(text)
-                def.methodTextComponent!!.invoke(null, text)
-            }
+            return def.methodTextComponent!!.invoke(null, text)
         } catch (e: Exception) {
             e.printStackTrace()
             return null

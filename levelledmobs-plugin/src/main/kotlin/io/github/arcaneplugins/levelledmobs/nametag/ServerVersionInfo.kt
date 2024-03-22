@@ -15,7 +15,7 @@ import org.bukkit.Bukkit
  */
 class ServerVersionInfo {
     fun load(){
-        parseBukkitVersion()
+        parseServerVersion()
         parseNMSVersion()
     }
 
@@ -39,6 +39,30 @@ class ServerVersionInfo {
         private set
     private val versionPattern: Pattern = Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?")
     private val versionShortPattern: Pattern = Pattern.compile(".*\\.(v\\d+_\\d+)(?:.+)?")
+
+    private fun parseServerVersion(){
+        if (isRunningPaper)
+            parsePaperVersion()
+        else
+            parseBukkitVersion()
+    }
+
+    private fun parsePaperVersion(){
+        val minecraftVersion = Bukkit.getServer().minecraftVersion
+        // 1.20.4
+        val versions = minecraftVersion.split(".")
+        for (i in versions.indices) {
+            when (i) {
+                0 -> this.majorVersion = versions[i].toInt()
+                1 -> this.minorVersion = versions[i].toInt()
+                2 -> this.revision = versions[i].toInt()
+            }
+        }
+
+        this.majorVersionEnum =
+            MinecraftMajorVersion.valueOf("V${majorVersion}_$minorVersion")
+        this.minecraftVersion = "$majorVersion.$minorVersion".toDouble()
+    }
 
     private fun parseBukkitVersion() {
         val bukkitVersion = Bukkit.getBukkitVersion()
@@ -88,7 +112,7 @@ class ServerVersionInfo {
         // example: v1_18_R2
         if (nmsRegex.find()) {
             this.nmsVersion = nmsRegex.group(1)
-        } else {
+        } else if (!isRunningPaper) {
             Log.war(
                 "NMSHandler: Could not match regex for bukkit version: " + Bukkit.getServer()
                     .javaClass.canonicalName

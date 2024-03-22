@@ -1,13 +1,13 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo.MinecraftMajorVersion
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.Optional
 import java.util.UUID
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo.MinecraftMajorVersion
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -165,13 +165,16 @@ class Definitions {
         }
     }
 
+    private val craftbukkitPackage = Bukkit.getServer().javaClass.getPackage().name
+
     private fun getClassName(classSuffix: String): String {
         // suffix ------------------------->
         // "org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity"
         return if (LevelledMobs.instance.ver.isRunningFabric) {
             "org.bukkit.craftbukkit.$classSuffix"
         } else {
-            ("org.bukkit.craftbukkit." + LevelledMobs.instance.ver.nmsVersion) + "." + classSuffix
+            "$craftbukkitPackage.$classSuffix"
+            //("org.bukkit.craftbukkit." + LevelledMobs.instance.ver.nmsVersion) + "." + classSuffix
         }
     }
 
