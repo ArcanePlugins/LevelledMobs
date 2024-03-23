@@ -1456,7 +1456,7 @@ class RulesParsingManager {
                 "use-stacked" -> attribs!!.useStacked = ymlHelper.getBoolean2(item, attribs.useStacked)
                 "do-not-merge" -> attribs!!.doNotMerge = ymlHelper.getBoolean(item, false)
                 "merge" -> attribs!!.doNotMerge = !ymlHelper.getBoolean(item, true)
-                "vanilla-bonus", "custom-mob-level" -> {}
+                "vanilla-bonus", "custom-attribute-modifier" -> {}
                 else -> {
                     var lmMultiplier: LMMultiplier
                     try {

@@ -1,39 +1,35 @@
-#                _                   _ _          _ __  __       _
-#               | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
-#               | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
-#               | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
-#               |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
-#                         The Ultimate RPG Levelled Mobs Solution
+#   -------------------------------------------------------------------------------------
+#   ----------------------------------------  -  ----------------------------------------
+#    _                   _ _          _       |
+#   | |    _____   _____| | | ___  __| |      |   Developer: PenalBuffalo
+#   | |   / _ \ \ / / _ \ | |/ _ \/ _` |      |   ko-fi.com/penalbuffalo
+#   | |__|  __/\ V /  __/ | |  __/ (_| |      |
+#   |_____\___| \_/ \___|_|_|\___|\__,_|_     |   Original Author: Lokka30
+#            |  \/  | ___ | |__  ___| || |    |   ko-fi.com/lokka30
+#            | |\/| |/ _ \| '_ \/ __| || |_   |
+#            | |  | | (_) | |_) \__ \__   _|  |   Support & Wiki: UltimaOath
+#            |_|  |_|\___/|_.__/|___/  |_|    |   ko-fi.com/ultimaoath
 #
-# -------------------------------------------------------------------------------------------LM3
-# +                                  ++                                                     +LM3
-# +    Developers and Maintainers    ++ Documentation (on our Wiki)                         +LM3
-# +                                  ++ . Wiki: https://tinyurl.com/lm-git-wiki             +LM3
-# + PenalBuffalo (aka. stumper66)    ++ . FAQ: https://tinyurl.com/lm-git-faq               +LM3
-# + . Primary Developer; LM3+        ++ . Sample Rules: https://tinyurl.com/lm-sample-rules +LM3
-# + . https://ko-fi.com/penalbuffalo ++ . Sample Drops: https://tinyurl.com/lm-sample-drops +LM3
-# +                                  ++                                                     +LM3
-# + lokka30                          ++ Support Discord and Forum                           +LM3
-# + . Original Plugin Author; LM0+   ++ . Join our Discord for free, quality support.       +LM3
-# + . https://ko-fi.com/lokka30      ++ . https://discord.gg/RQ8M4A5                        +LM3
-# +                                  ++                                                     +LM3
-# + UltimaOath (aka. Oathkeeper)     ++ Please Review Our Plugin!                           +LM3
-# + . Docs, Configs, Tester; LM2+    ++ . Hangar - https://tinyurl.com/lm-hangar            +LM3
-# + . https://ko-fi.com/ultimaoath   ++ . SpigotMC - https://tinyurl.com/lm-spigotmc        +LM3
-# +                                  ++                                                     +LM3
-# -------------------------------------------------------------------------------------------LM3
-#                               _____     _   _   _ 
-#                              |   __|___| |_| |_|_|___ ___ ___
-#                              |__   | -_|  _|  _| |   | . |_ -|
-#                              |_____|___|_| |_| |_|_|_|_  |___|
-#                                                      |___|
+#   ----------------------   The Ultimate Mob Levelling Solution   ----------------------
 #
-# -------------------------------------------------------------------------------------------LM3
+#   Documentation                             |   Support
+#   . Wiki: tinyurl.com/lm-git-wiki           |   . Discord: discord.gg/RQ8M4A5
+#   . FAQ: tinyurl.com/lm-git-faq             |   Please review our plugin!
+#   . Ex. Rules: tinyurl.com/lm-sample-rules  |   . Hangar - tinyurl.com/lm-hangar
+#   . Ex. Drops: tinyurl.com/lm-sample-drops  |   . SpigotMC - tinyurl.com/lm-spigotmc
+#                                             |
+#   ----------------------------------------  -  ----------------------------------------
+#   -------------------------------------------------------------------------------------
+#
+#   ---------------  -  ------------------------------
+#        Section 01  |  Settings
+#   ---------------  -  ------------------------------
 
 # ||  ADVANCED USERS ONLY | DEBUG
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  These settings print a lot of 'behind the scenes'
 # ||  information about LevelledMobs' operations to the console.
+# ||  With LevelledMobs4, we suggest using the command: /lm debug
 debug-entity-damage: false
 debug-misc: [ ]
 
@@ -165,12 +161,13 @@ print-lm-summon-results: true
 # ||  the LEW (LivingEntityWrapper) cache is cleared.
 lew-cache-clear-period: 3m
 
+# ||  This setting will exclude players who are in creative
+# ||  mode when the Player Level Modifier is determining values.
 exclude-players-in-creative: false
 
-# ||  ADVANCED USERS ONLY
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  This value must not be modified, else your configuration
-# ||  may be corrupted by the migrator, since the migrator uses
-# ||  this value to check what changes the file requires to
-# ||  become updated to the latest file version.
+#
+#   ---------------  -  ------------------------------
+#        Section 02  |  Developer Settings / Do Not Edit Beyond This Point
+#   ---------------  -  ------------------------------
+#
 file-version: 35

@@ -166,7 +166,6 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 )
             }
         } else {
-            Log.inf("isNum: ${playerLevelSourceResult.isNumericResult}, $tierMatched, source: $levelSource")
             val tierMatchedFinal: String = tierMatched
             if (playerLevelSourceResult.isNumericResult) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
