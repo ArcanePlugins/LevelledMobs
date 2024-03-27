@@ -23,6 +23,7 @@ import io.github.arcaneplugins.levelledmobs.misc.PickedUpEquipment
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.result.AttributePreMod
 import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
@@ -778,13 +779,13 @@ class LevelManager : LevelInterface2 {
         }
     }
 
-    private fun getAttributeValue(
-        lmEntity: LivingEntityWrapper,
-        attribute: Attribute
-    ): String{
-        val instance = lmEntity.livingEntity.getAttribute(attribute) ?: return "0"
-        return instance.value.toString()
-    }
+//    private fun getAttributeValue(
+//        lmEntity: LivingEntityWrapper,
+//        attribute: Attribute
+//    ): String{
+//        val instance = lmEntity.livingEntity.getAttribute(attribute) ?: return "0"
+//        return instance.value.toString()
+//    }
 
     private fun replaceStringPlaceholdersForFormulas(
         text: String,
@@ -821,24 +822,27 @@ class LevelManager : LevelInterface2 {
             }
         }
 
+        if (lmEntity.attributeValuesCache == null)
+            MobDataManager.instance.getAllAttributeValues(lmEntity)
+
         str.replaceIfExists("%distance-from-spawn%"){ lmEntity.distanceFromSpawn.toString() }
-        str.replaceIfExists("%max-health%"){ getAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH) }
-        str.replaceIfExists("%movement-speed%"){ getAttributeValue(lmEntity, Attribute.GENERIC_MOVEMENT_SPEED) }
-        str.replaceIfExists("%attack-damage%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ATTACK_DAMAGE) }
+        str.replaceIfExists("%max-health%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_MAX_HEALTH).toString() }
+        str.replaceIfExists("%movement-speed%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_MOVEMENT_SPEED).toString() }
+        str.replaceIfExists("%attack-damage%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ATTACK_DAMAGE).toString() }
         str.replace("%hotspots-mod%", "0")
         str.replace("%barricades-mod%", "0")
         str.replaceIfExists("%creeper-blast-damage%"){
             val creeper = lmEntity.livingEntity as? Creeper
             return@replaceIfExists creeper?.explosionRadius?.toString() ?: "0"
         }
-        str.replaceIfExists("%follow-range%"){ getAttributeValue(lmEntity, Attribute.GENERIC_FOLLOW_RANGE) }
+        str.replaceIfExists("%follow-range%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_FOLLOW_RANGE).toString() }
         str.replaceIfExists("%item-drop%"){ "1" }
         str.replaceIfExists("%xp-drop%"){ "1" }
-        str.replaceIfExists("%armor-bonus%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ARMOR) }
-        str.replaceIfExists("%armor-toughness%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ARMOR_TOUGHNESS) }
-        str.replaceIfExists("%attack-knockback%"){ getAttributeValue(lmEntity, Attribute.GENERIC_ATTACK_KNOCKBACK) }
-        str.replaceIfExists("%knockback-resistance%"){ getAttributeValue(lmEntity, Attribute.GENERIC_KNOCKBACK_RESISTANCE) }
-        str.replaceIfExists("%zombie-spawn-reinforcements%"){ getAttributeValue(lmEntity, Attribute.ZOMBIE_SPAWN_REINFORCEMENTS) }
+        str.replaceIfExists("%armor-bonus%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ARMOR).toString() }
+        str.replaceIfExists("%armor-toughness%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ARMOR_TOUGHNESS).toString() }
+        str.replaceIfExists("%attack-knockback%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ATTACK_KNOCKBACK).toString() }
+        str.replaceIfExists("%knockback-resistance%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_KNOCKBACK_RESISTANCE).toString() }
+        str.replaceIfExists("%zombie-spawn-reinforcements%"){ lmEntity.attributeValuesCache?.get(Attribute.ZOMBIE_SPAWN_REINFORCEMENTS).toString() }
 
         if (!str.text.contains("%")) return str.text
 
@@ -1400,40 +1404,45 @@ class LevelManager : LevelInterface2 {
 
     private fun applyLevelledAttributes(
         lmEntity: LivingEntityWrapper,
-        addition: Addition
+        additions: MutableList<Addition>
     ) {
-        assert(lmEntity.isLevelled)
-        // This functionality should be added into the enum.
-        val attribute: Attribute
-        when (addition) {
-            Addition.ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH
-            Addition.ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE
-            Addition.ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED
-            Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.HORSE_JUMP_STRENGTH
-            Addition.ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR
-            Addition.ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS
-            Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE
-            Addition.ATTRIBUTE_FLYING_SPEED -> attribute = Attribute.GENERIC_FLYING_SPEED
-            Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK
-            Addition.ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE
-            Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
-                if (lmEntity.spawnReason == LevelledMobSpawnReason.REINFORCEMENTS) {
-                    return
+        if (!lmEntity.isLevelled) return
+        val modInfo = mutableListOf<AttributePreMod>()
+        if (lmEntity.attributeValuesCache == null)
+            MobDataManager.instance.getAllAttributeValues(lmEntity)
+
+        for (addition in additions){
+            val attribute: Attribute
+            when (addition) {
+                Addition.ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH
+                Addition.ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE
+                Addition.ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED
+                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.HORSE_JUMP_STRENGTH
+                Addition.ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR
+                Addition.ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS
+                Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE
+                Addition.ATTRIBUTE_FLYING_SPEED -> attribute = Attribute.GENERIC_FLYING_SPEED
+                Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK
+                Addition.ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE
+                Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
+                    if (lmEntity.spawnReason == LevelledMobSpawnReason.REINFORCEMENTS)
+                        continue
+
+                    attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
                 }
-                attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+                else -> throw IllegalStateException(
+                    "Addition must be an Attribute, if so, it has not been considered in this method"
+                )
             }
 
-            else -> throw IllegalStateException(
-                "Addition must be an Attribute, if so, it has not been considered in this method"
-            )
+            val result = MobDataManager.instance.prepareSetAttributes(lmEntity, attribute, addition)
+            if (result != null) modInfo.add(result)
         }
-        // Attr instance for the mob
-        if (lmEntity.livingEntity.getAttribute(attribute) == null) return
 
-        // Don't try to apply an addition to their attribute if they don't have it
-
-        // Apply additions
-        LevelledMobs.instance.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition)
+        val scheduler = SchedulerWrapper(lmEntity.livingEntity){
+            MobDataManager.instance.setAttributeMods(lmEntity, modInfo)
+        }
+        scheduler.run()
     }
 
     private fun applyCreeperBlastRadius(lmEntity: LivingEntityWrapper) {
@@ -1913,56 +1922,26 @@ class LevelManager : LevelInterface2 {
         nbtDatas: MutableList<String>
     ) {
         val main = LevelledMobs.instance
-        synchronized(main.attributeSyncObject) {
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_ATTACK_DAMAGE
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_MAX_HEALTH
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_MOVEMENT_SPEED
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_ARMOR_BONUS
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_ARMOR_TOUGHNESS
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_ATTACK_KNOCKBACK
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_FLYING_SPEED
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE
-            )
-            main.levelManager.applyLevelledAttributes(
-                lmEntity,
-                Addition.ATTRIBUTE_FOLLOW_RANGE
-            )
-            if (lmEntity.livingEntity is Zombie) {
-                main.levelManager.applyLevelledAttributes(
-                    lmEntity,
-                    Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS
-                )
-            } else if (lmEntity.livingEntity is Horse) {
-                main.levelManager.applyLevelledAttributes(
-                    lmEntity,
-                    Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH
-                )
-            }
-        }
+        val attribs = mutableListOf(
+            Addition.ATTRIBUTE_ATTACK_DAMAGE,
+            Addition.ATTRIBUTE_MAX_HEALTH,
+            Addition.ATTRIBUTE_MOVEMENT_SPEED,
+            Addition.ATTRIBUTE_ARMOR_BONUS,
+            Addition.ATTRIBUTE_ARMOR_TOUGHNESS,
+            Addition.ATTRIBUTE_ATTACK_KNOCKBACK,
+            Addition.ATTRIBUTE_FLYING_SPEED,
+            Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE,
+            Addition.ATTRIBUTE_FOLLOW_RANGE
+        )
 
+        if (lmEntity.livingEntity is Zombie)
+            attribs.add(Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS)
+        else if (lmEntity.livingEntity is Horse)
+            attribs.add(Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH)
+
+        main.levelManager.applyLevelledAttributes(lmEntity, attribs)
+
+        // TODO: move the rest of this function to a synchronous thread
         if (lmEntity.lockEntitySettings) {
             lmEntity.pdc
                 .set(NamespacedKeys.lockSettings, PersistentDataType.INTEGER, 1)
@@ -1982,44 +1961,51 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        if (nbtDatas.isNotEmpty()) {
-            var hadSuccess = false
-            val allResults = mutableListOf<NBTApplyResult>()
-
-            for (nbtData: String in nbtDatas) {
-                val result: NBTApplyResult = NBTManager.applyNBTDataMob(
-                    lmEntity,
-                    nbtData
-                )
-                if (result.hadException) {
-                    if (lmEntity.summonedSender == null) {
-                        Log.war(
-                            String.format(
-                                "Error applying NBT data '%s' to %s. Exception message: %s",
-                                nbtData, lmEntity.nameIfBaby, result.exceptionMessage
-                            )
-                        )
-                    } else {
-                        lmEntity.summonedSender!!.sendMessage(
-                            "Error applying NBT data to " + lmEntity.nameIfBaby
-                                    + ". Exception message: " + result.exceptionMessage
-                        )
-                    }
-                } else {
-                    hadSuccess = true
-                    allResults.add(result)
-                }
-            }
-            if (hadSuccess) {
-                DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
-                    ("Applied NBT data to '" + lmEntity.nameIfBaby +
-                            "'. " + getNBTDebugMessage(allResults))
-                }
-            }
-        }
+        applyNbtData(lmEntity, nbtDatas)
 
         if (lmEntity.livingEntity is Creeper) {
             main.levelManager.applyCreeperBlastRadius(lmEntity)
+        }
+    }
+
+    private fun applyNbtData(
+        lmEntity: LivingEntityWrapper,
+        nbtDatas: MutableList<String>
+    ){
+        if (nbtDatas.isEmpty()) return
+        var hadSuccess = false
+        val allResults = mutableListOf<NBTApplyResult>()
+
+        for (nbtData: String in nbtDatas) {
+            val result: NBTApplyResult = NBTManager.applyNBTDataMob(
+                lmEntity,
+                nbtData
+            )
+            if (result.hadException) {
+                if (lmEntity.summonedSender == null) {
+                    Log.war(
+                        String.format(
+                            "Error applying NBT data '%s' to %s. Exception message: %s",
+                            nbtData, lmEntity.nameIfBaby, result.exceptionMessage
+                        )
+                    )
+                } else {
+                    lmEntity.summonedSender!!.sendMessage(
+                        "Error applying NBT data to " + lmEntity.nameIfBaby
+                                + ". Exception message: " + result.exceptionMessage
+                    )
+                }
+            } else {
+                hadSuccess = true
+                allResults.add(result)
+            }
+        }
+
+        if (hadSuccess) {
+            DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
+                ("Applied NBT data to '" + lmEntity.nameIfBaby +
+                        "'. " + getNBTDebugMessage(allResults))
+            }
         }
     }
 

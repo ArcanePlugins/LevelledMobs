@@ -6,15 +6,20 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
+import io.github.arcaneplugins.levelledmobs.result.AttributePreMod
 import io.github.arcaneplugins.levelledmobs.result.EvaluationResult
 import io.github.arcaneplugins.levelledmobs.result.MultiplierResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.util.Collections
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeInstance
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.EntityType
 import redempt.crunch.Crunch
@@ -32,6 +37,9 @@ class MobDataManager {
     val vanillaMultiplierNames = mutableMapOf<String, VanillaBonusEnum>()
 
     companion object {
+        lateinit var instance: MobDataManager
+            private set
+
         private val crunchEvalEnv = EvaluationEnvironment()
 
         fun evaluateExpression(
@@ -56,6 +64,7 @@ class MobDataManager {
     }
 
     init {
+        instance = this
         this.vanillaMultiplierNames.putAll(mapOf(
             "Armor modifier" to VanillaBonusEnum.ARMOR_MODIFIER,
             "Armor toughness" to VanillaBonusEnum.ARMOR_TOUGHNESS,
@@ -121,17 +130,18 @@ class MobDataManager {
         return main.dropsCfg.getStringList(entityType.toString()).contains(material.toString())
     }
 
-    fun setAdditionsForLevel(
+    fun prepareSetAttributes(
         lmEntity: LivingEntityWrapper,
         attribute: Attribute,
         addition: Addition
-    ) {
-        val defaultValue = lmEntity.livingEntity
-                .getAttribute(attribute)!!.baseValue.toFloat()
+    ): AttributePreMod? {
+        val attribInstance = lmEntity.attributeValuesCache?.get(attribute) ?: return null
+
+        val defaultValue = attribInstance.baseValue.toFloat()
         val multiplierResult = getAdditionsForLevel(lmEntity, addition, defaultValue)
         val additionValue = multiplierResult.amount
         if (additionValue == 0.0f) {
-            return
+            return null
         }
 
         val modifierOperation = if (multiplierResult.isAddition)
@@ -142,78 +152,124 @@ class MobDataManager {
         val mod = AttributeModifier(
             attribute.name, additionValue.toDouble(), modifierOperation
         )
-        val attrib = lmEntity.livingEntity.getAttribute(attribute) ?: return
 
         // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
         if (attribute == Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
             && lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN
         ) {
-            return
+            return null
         }
 
-        var existingDamage = 0.0
-        if (attribute == Attribute.GENERIC_MAX_HEALTH
-            && lmEntity.livingEntity.getAttribute(attribute) != null
-        ) {
-            existingDamage =
-                lmEntity.livingEntity.getAttribute(attribute)!!.value - lmEntity.livingEntity.health
-        }
+        return AttributePreMod(
+            mod,
+            multiplierResult,
+            attribute
+        )
+    }
 
-        val allowedVanillaBonusEnums: CachedModalList<VanillaBonusEnum> =
-            LevelledMobs.instance.rulesManager.getAllowedVanillaBonuses(lmEntity)
-        val existingMods = Collections.enumeration(attrib.modifiers)
-        while (existingMods.hasMoreElements()) {
-            val existingMod = existingMods.nextElement()
-            val vanillaBonusEnum = vanillaMultiplierNames[existingMod.name]
-            if (vanillaBonusEnum != null) {
-                if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isIncludedInList(
-                        vanillaBonusEnum,
-                        lmEntity
-                    )
-                ) {
-                    continue
-                }
+    fun setAttributeMods(
+        lmEntity: LivingEntityWrapper,
+        attribInfos: MutableList<AttributePreMod>
+    ) {
+        for (info in attribInfos){
+            val additionValue = info.multiplierResult.amount
+            if (additionValue == 0.0f) return
+            val attrib = lmEntity.livingEntity.getAttribute(info.attribute) ?: return
+
+            // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
+            if (info.attribute == Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+                && lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN
+            ) {
+                return
             }
 
-            if (!existingMod.name.startsWith("GENERIC_")) {
-                DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
-                    String.format(
-                        "Removing %s from (lvl %s) %s at %s,%s,%s",
-                        existingMod.name,
-                        lmEntity.getMobLevel,
-                        lmEntity.nameIfBaby,
-                        lmEntity.location.blockX,
-                        lmEntity.location.blockY,
-                        lmEntity.location.blockZ
-                    )
-                }
+            var existingDamage = 0.0
+            if (info.attribute == Attribute.GENERIC_MAX_HEALTH
+                && lmEntity.livingEntity.getAttribute(info.attribute) != null
+            ) {
+                existingDamage =
+                    lmEntity.livingEntity.getAttribute(info.attribute)!!.value - lmEntity.livingEntity.health
             }
 
-            attrib.removeModifier(existingMod)
-        }
-        DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-            String.format(
-                "%s (%s): attrib: %s, base: %s, addtion: %s",
-                lmEntity.nameIfBaby,
-                lmEntity.getMobLevel,
-                attribute.name,
-                Utils.round(attrib.baseValue, 3),
-                Utils.round(additionValue.toDouble(), 3)
-            )
-        }
-        attrib.addModifier(mod)
+            val allowedVanillaBonusEnums: CachedModalList<VanillaBonusEnum> =
+                LevelledMobs.instance.rulesManager.getAllowedVanillaBonuses(lmEntity)
+            val existingMods = Collections.enumeration(attrib.modifiers)
+            while (existingMods.hasMoreElements()) {
+                val existingMod = existingMods.nextElement()
+                val vanillaBonusEnum = vanillaMultiplierNames[existingMod.name]
+                if (vanillaBonusEnum != null) {
+                    if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isIncludedInList(
+                            vanillaBonusEnum,
+                            lmEntity
+                        )
+                    ) {
+                        continue
+                    }
+                }
 
+                if (!existingMod.name.startsWith("GENERIC_")) {
+                    DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
+                        String.format(
+                            "Removing %s from (lvl %s) %s at %s,%s,%s",
+                            existingMod.name,
+                            lmEntity.getMobLevel,
+                            lmEntity.nameIfBaby,
+                            lmEntity.location.blockX,
+                            lmEntity.location.blockY,
+                            lmEntity.location.blockZ
+                        )
+                    }
+                }
 
-        // MAX_HEALTH specific: set health to max health
-        if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-            try {
-                if (lmEntity.livingEntity.health <= 0.0) return
-                lmEntity.livingEntity.health = max(
-                    1.0,
-                    attrib.value - existingDamage
+                attrib.removeModifier(existingMod)
+            }
+            DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
+                String.format(
+                    "%s (%s): attrib: %s, base: %s, addtion: %s",
+                    lmEntity.nameIfBaby,
+                    lmEntity.getMobLevel,
+                    info.attribute.name,
+                    Utils.round(attrib.baseValue, 3),
+                    Utils.round(additionValue.toDouble(), 3)
                 )
-            } catch (ignored: IllegalArgumentException) {}
+            }
+            attrib.addModifier(info.attributeModifier)
+
+            // MAX_HEALTH specific: set health to max health
+            if (info.attribute == Attribute.GENERIC_MAX_HEALTH) {
+                try {
+                    if (lmEntity.livingEntity.health <= 0.0) return
+                    lmEntity.livingEntity.health = max(
+                        1.0,
+                        attrib.value - existingDamage
+                    )
+                } catch (ignored: IllegalArgumentException) {}
+            }
         }
+
+
+    }
+
+    fun getAllAttributeValues(lmEntity: LivingEntityWrapper){
+        val completableFuture = CompletableFuture<MutableMap<Attribute, AttributeInstance>>()
+        val scheduler = SchedulerWrapper(lmEntity.livingEntity){
+            val result = mutableMapOf<Attribute, AttributeInstance>()
+
+            for (attribute in Attribute.entries){
+                val attribInstance = lmEntity.livingEntity.getAttribute(attribute)
+                if (attribInstance != null)
+                    result[attribute] = attribInstance
+            }
+
+            completableFuture.complete(result)
+            lmEntity.free()
+        }
+
+        lmEntity.inUseCount.getAndIncrement()
+        scheduler.entity = lmEntity.livingEntity
+        scheduler.run()
+
+        lmEntity.attributeValuesCache = completableFuture.get(5000L, TimeUnit.MILLISECONDS)
     }
 
     fun getAdditionsForLevel(

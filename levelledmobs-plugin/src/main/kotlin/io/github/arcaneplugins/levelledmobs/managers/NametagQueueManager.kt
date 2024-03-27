@@ -126,7 +126,6 @@ class NametagQueueManager {
     private fun processItem(item: QueueItem) {
         if (this.nametagSender == null) {
             // this would happen if the Minecraft version isn't supported directly by NMS
-            // and ProtocolLib is not installed
             return
         }
 

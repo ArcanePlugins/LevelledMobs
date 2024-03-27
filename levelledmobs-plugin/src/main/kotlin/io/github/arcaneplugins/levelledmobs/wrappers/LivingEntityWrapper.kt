@@ -18,10 +18,13 @@ import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import org.bukkit.World
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeInstance
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Ageable
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Boss
+import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Flying
 import org.bukkit.entity.Hoglin
@@ -66,6 +69,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private val pdcLock = ReentrantLock()
 
     // publics:
+    var attributeValuesCache: MutableMap<Attribute, AttributeInstance>? = null
     val strategyResults = mutableMapOf<StrategyType, Float>()
     var reEvaluateLevel = false
     var wasPreviouslyLevelled = false
@@ -90,6 +94,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         private val cachedLM_Wrappers_Lock = Any()
         private val cache = Stack<LivingEntityWrapper>()
         private const val LOCKMAXRETRYTIMES = 3
+        private val flyingMobNames = mutableListOf(
+            "ALLAY", "BEE", "BLAZE", "ENDER_DRAGON", "VEX", "WITHER", "PARROT", "BAT"
+        )
+        private val aquaticMobs = mutableListOf(
+            "AXOLOTL", "DROWNED", "ELDER_GUARDIAN", "GUARDIAN", "FROG", "TURTLE"
+        )
 
         fun getInstance(
             livingEntity: LivingEntity
@@ -161,6 +171,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     override fun clearEntityData() {
         this._livingEntity = null
+        this.attributeValuesCache = null
         this.strategyResults.clear()
         this.libsDisguiseCache = null
         this.chunkKillcount = 0
@@ -944,13 +955,13 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
         val eType = livingEntity.type
 
-        if (livingEntity is Monster || livingEntity is Boss
+        if (livingEntity is Monster || livingEntity is Enemy
             || main.mainCompanion.hostileMobsGroup.contains(eType)
         ) {
             groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS.toString())
         }
 
-        if (livingEntity is WaterMob || main.mainCompanion.aquaticMobsGroup.contains(eType)) {
+        if (livingEntity is WaterMob || flyingMobNames.contains(eType.name.uppercase())) {
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString())
         }
 
@@ -960,7 +971,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             groups.add(CustomUniversalGroups.ALL_NETHER_MOBS.toString())
         }
 
-        if (livingEntity is Flying || eType == EntityType.PARROT || eType == EntityType.BAT) {
+        if (livingEntity is Flying || flyingMobNames.contains(eType.name.uppercase())) {
             groups.add(CustomUniversalGroups.ALL_FLYING_MOBS.toString())
         }
 
@@ -969,10 +980,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                     && livingEntity !is Boss) && eType != EntityType.BAT
         ) {
             groups.add(CustomUniversalGroups.ALL_GROUND_MOBS.toString())
-        }
-
-        if (livingEntity is WaterMob || main.mainCompanion.aquaticMobsGroup.contains(eType)) {
-            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString())
         }
 
         if (livingEntity is Animals && livingEntity !is Hoglin || livingEntity is WaterMob

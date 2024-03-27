@@ -46,7 +46,7 @@ class SchedulerWrapper {
                 return
             }
 
-            val task = Consumer { _: ScheduledTask? -> runnable!!.run() }
+            val task = Consumer { _: ScheduledTask -> runnable!!.run() }
 
             if (entity != null) {
                 entity!!.scheduler.run(main, task, null)
@@ -79,7 +79,7 @@ class SchedulerWrapper {
     ): SchedulerResult {
         if (main.ver.isRunningFolia) {
             val task =
-                Consumer { _: ScheduledTask? -> runnable!!.run() }
+                Consumer { _: ScheduledTask -> runnable!!.run() }
             val scheduledTask = Bukkit.getAsyncScheduler().runAtFixedRate(
                 main, task, initialDelayMS, repeatPeriodMS, TimeUnit.MILLISECONDS
             )

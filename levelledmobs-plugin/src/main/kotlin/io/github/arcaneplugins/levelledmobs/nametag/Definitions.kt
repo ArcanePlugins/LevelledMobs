@@ -338,7 +338,7 @@ class Definitions {
         try {
             optionalResult = methodEntityTypeByString!!.invoke(
                 null,
-                livingEntity.type.name
+                livingEntity.type.name.lowercase()
             ) as Optional<*>
 
             if (optionalResult.isEmpty) {

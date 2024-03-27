@@ -187,12 +187,12 @@ class RuleInfo(
                 var presetValue = p.getter.call(preset) ?: continue
                 val ruleValue = p.getter.call(this)
                 var skipSettingValue = false
+                val mergableRule = presetValue as? MergableRule
 
                 if (p.name == "entityNameOverrides" && this.entityNameOverrides != null && presetValue is MutableMap<*, *>) {
                     entityNameOverrides!!.putAll(presetValue as MutableMap<String, LevelTierMatching>)
                     skipSettingValue = true
-                } else if (presetValue is MergableRule) {
-                    val mergableRule = presetValue
+                } else if (mergableRule != null) {
                     if (ruleValue != null && mergableRule.doMerge) {
                         (ruleValue as MergableRule).merge(mergableRule.cloneItem() as MergableRule)
                         skipSettingValue = true
@@ -258,10 +258,8 @@ class RuleInfo(
                     presetValue = presetValue.cloneItem()!!
                 }
 
-                if (presetValue == MobCustomNameStatus.NOT_SPECIFIED) {
-                    continue
-                }
-                if (presetValue === MobTamedStatus.NOT_SPECIFIED) {
+                if (presetValue == MobCustomNameStatus.NOT_SPECIFIED ||
+                    presetValue == MobTamedStatus.NOT_SPECIFIED) {
                     continue
                 }
 
@@ -294,7 +292,7 @@ class RuleInfo(
             property.setter.call(this, newValue)
     }
 
-    class RuleSortingInfo(
+    data class RuleSortingInfo(
         val ruleType: RuleType,
         val fieldName: String
     ){

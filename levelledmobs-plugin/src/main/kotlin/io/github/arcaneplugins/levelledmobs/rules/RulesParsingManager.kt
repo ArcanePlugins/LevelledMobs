@@ -519,7 +519,7 @@ class RulesParsingManager {
 
         parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
         parseConditions(YmlParsingHelper.objToCS(ymlHelper.cs, "conditions"))
-        parseApplySettings(YmlParsingHelper.objToCS(ymlHelper.cs, "apply-settings"))
+        parseApplySettings(YmlParsingHelper.objToCS(ymlHelper.cs, "settings"))
         parseModifiers(YmlParsingHelper.objToCS(ymlHelper.cs, "modifiers"))
     }
 
@@ -1443,19 +1443,22 @@ class RulesParsingManager {
         cs: ConfigurationSection?,
         defaults: FineTuningAttributes?
     ): FineTuningAttributes? {
+        //if (cs == null) return defaults?.cloneItem() as FineTuningAttributes
         if (cs == null) return defaults
 
         val ymlHelper = YmlParsingHelper(cs)
         val doMerge = ymlHelper.getBoolean( "merge", true)
         val attribs =
-            if (parsingInfo.allMobMultipliers != null && doMerge) parsingInfo.allMobMultipliers
-            else FineTuningAttributes()
+            if (parsingInfo.allMobMultipliers != null && doMerge)
+                parsingInfo.allMobMultipliers!!.cloneItem() as FineTuningAttributes
+            else
+                FineTuningAttributes()
 
         for (item in cs.getKeys(false)) {
             when (item.lowercase(Locale.getDefault())) {
-                "use-stacked" -> attribs!!.useStacked = ymlHelper.getBoolean2(item, attribs.useStacked)
-                "do-not-merge" -> attribs!!.doNotMerge = ymlHelper.getBoolean(item, false)
-                "merge" -> attribs!!.doNotMerge = !ymlHelper.getBoolean(item, true)
+                "use-stacked" -> attribs.useStacked = ymlHelper.getBoolean2(item, attribs.useStacked)
+                "do-not-merge" -> attribs.doNotMerge = ymlHelper.getBoolean(item, false)
+                "merge" -> attribs.doNotMerge = !ymlHelper.getBoolean(item, true)
                 "vanilla-bonus", "custom-attribute-modifier" -> {}
                 else -> {
                     var lmMultiplier: LMMultiplier
@@ -1470,7 +1473,7 @@ class RulesParsingManager {
                         continue
                     }
 
-                    val addition = attribs!!.getAdditionFromLMMultiplier(lmMultiplier)
+                    val addition = attribs.getAdditionFromLMMultiplier(lmMultiplier)
                     val multiplier = parseFineTuningValues2(cs, addition, item)
                     if (multiplier != null) {
                         attribs.addItem(addition, multiplier)
@@ -1479,7 +1482,7 @@ class RulesParsingManager {
             }
         }
 
-        if (attribs!!.isEmpty) return defaults
+        if (attribs.isEmpty) return defaults
 
         return attribs
     }

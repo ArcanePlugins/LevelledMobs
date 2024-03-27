@@ -540,7 +540,6 @@ object RulesSubcommand {
         mobHash: String?
     ) {
         val values = mutableMapOf<RuleInfo.RuleSortingInfo, String>()
-        val printedKeys = mutableListOf<String>()
         val effectiveRules = lmEntity.getApplicableRules()
         val sb = StringBuilder()
 
@@ -577,7 +576,6 @@ object RulesSubcommand {
                         ruleName = ruleTypeInfo.value
                     }
 
-                    if (printedKeys.contains(f.name)) continue
                     if (value is Map<*, *> && value.isEmpty()) continue
                     if (value is List<*> && value.isEmpty()) continue
 
@@ -600,7 +598,6 @@ object RulesSubcommand {
                         ruleName
                     )
                     values[ruleInfo] = showValue
-                    printedKeys.add(f.name)
                 }
             }
         } catch (e: Exception) {

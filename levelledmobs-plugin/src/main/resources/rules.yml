@@ -103,7 +103,7 @@ presets:
   #
   challenge-vanilla:
     name: 'Vanilla Stat Challenge'
-    apply-settings:
+    settings:
       attribute-modifier:
         merge: false
         max-health: 0.0
@@ -114,7 +114,7 @@ presets:
 
   challenge-bronze:
     name: 'Bronze Challenge'
-    apply-settings:
+    settings:
       attribute-modifier:
         merge: false
         max-health: 2.5
@@ -125,7 +125,7 @@ presets:
 
   challenge-silver:
     name: 'Silver Challenge'
-    apply-settings:
+    settings:
       attribute-modifier:
         merge: false
         max-health: 5.0
@@ -141,7 +141,7 @@ presets:
 
   challenge-gold:
     name: 'Gold Challenge'
-    apply-settings:
+    settings:
       attribute-modifier:
         merge: false
         max-health: 8.0
@@ -160,7 +160,7 @@ presets:
 
   challenge-platinum:
     name: 'Platinum Challenge'
-    apply-settings:
+    settings:
       attribute-modifier:
         merge: false
         max-health: 15.0
@@ -180,7 +180,7 @@ presets:
 
   challenge-formula:
     name: 'Custom Formula Challenge'
-    apply-settings:
+    settings:
       attribute-modifier:
         merge: false
         max-health: '%max-health% + (%level% * (%max-health% * 0.25))'
@@ -206,13 +206,13 @@ presets:
   #
   nametag-using-numbers:
     name: 'Nametag - Health Displayed with Numbers'
-    apply-settings:
+    settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
       creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
 
   nametag-using-indicator:
     name: 'Nametag - Health Displayed with Indicators'
-    apply-settings:
+    settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
       creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
       health-indicator:
@@ -232,20 +232,20 @@ presets:
 
   nametag-no-level:
     name: 'Nametag - No Level Tag'
-    apply-settings:
+    settings:
       nametag: '&8&l༺ &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
       creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
 
   nametag-disabled:
     name: 'Nametag - Disabled'
-    apply-settings:
+    settings:
       nametag: disabled
       nametag-visibility-method: ['DISABLED']
       creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
 
   custom-entity-names:
     name: 'Custom Entity Names'
-    apply-settings:
+    settings:
       entity-name-override:
         WITCH: ['Arcana']
         HUSK: ['Dessicated Corpse', 'Dusty']
@@ -258,7 +258,7 @@ presets:
 
   custom-death-messages:
     name: 'Custom Death Messages'
-    apply-settings:
+    settings:
       death-messages:
         5: ['%player% was killed by a %death_nametag%!']
         4: ['A %death_nametag% wrecked %player%!']
@@ -343,10 +343,10 @@ default-rule:
 
   #
   #   ---------------  -  ------------------------------
-  #    Section 03 - B  |  Default Rule / Apply-Settings
+  #    Section 03 - B  |  Default Rule / settings
   #   ---------------  -  ------------------------------
   #
-  apply-settings:
+  settings:
     # Core LevelledMobs Settings
     minLevel: 1
     maxLevel: 50
@@ -420,7 +420,7 @@ custom-rules:
       entities:
         included-groups: [ 'all_passive_mobs' ]
         included-list: [ 'BAT' ]
-    apply-settings:
+    settings:
       nametag-visibility-method: [ 'MELEE', 'ATTACKED' ]
 
   - enabled: true
@@ -436,7 +436,7 @@ custom-rules:
         start: 100
         end: 40
         period: 0
-    apply-settings:
+    settings:
       construct-level: '%y-coordinate%'
 
   - enabled: true
@@ -450,12 +450,12 @@ custom-rules:
         spawn-location:
           x: 0
           z: 0
-    apply-settings:
+    settings:
       construct-level: '%distance-from-origin%'
 
   - enabled: true
     name: 'Custom Attributes for Entities'
-    apply-settings:
+    settings:
       attribute-modifier:
         custom-mob-level:
           ENDERMAN:
@@ -477,7 +477,7 @@ custom-rules:
       entities: [ 'ZOMBIFIED_PIGLIN', 'SHULKER', 'VEX', 'RAVAGER', 'PHANTOM', 'PILLAGER', 'IRON_GOLEM' ]
     strategies:
       weighted-random: true
-    apply-settings:
+    settings:
       maxLevel: 5
       construct-level: '%weighted-random%'
 
@@ -488,7 +488,7 @@ custom-rules:
       entities: [ 'ENDER_DRAGON', 'ELDER_GUARDIAN', 'WITHER', 'WARDEN' ]
     strategies:
       weighted-random: true
-    apply-settings:
+    settings:
       maxLevel: 5
       construct-level: '%weighted-random%'
 
@@ -496,7 +496,7 @@ custom-rules:
     name: 'Armor and Weapons CustomDrop Table'
     conditions:
       entities: [ 'ZOMBIE', 'HUSK', 'PIGLIN', 'ZOMBIFIED_PIGLIN' ]
-    apply-settings:
+    settings:
       use-droptable-id: armor_and_weapons
 
   - enabled: true
@@ -506,7 +506,7 @@ custom-rules:
       spawn-reasons: [ 'SPAWNER' ]
     strategies:
       weighted-random: true
-    apply-settings:
+    settings:
       maxLevel: 5
       construct-level: '%weighted-random%'
       multipliers:
