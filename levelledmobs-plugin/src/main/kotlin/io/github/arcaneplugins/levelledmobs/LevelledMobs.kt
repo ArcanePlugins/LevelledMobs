@@ -19,7 +19,7 @@ import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.nametag.Definitions
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
-import io.github.arcaneplugins.levelledmobs.rules.RulesParsingManager
+import io.github.arcaneplugins.levelledmobs.rules.RulesParser
 import io.github.arcaneplugins.levelledmobs.util.ConfigUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.QuickTimer
@@ -55,7 +55,7 @@ class LevelledMobs : JavaPlugin() {
     var playerInteractEventListener = PlayerInteractEventListener()
     val entityDeathListener = EntityDeathListener()
     val mainCompanion = MainCompanion()
-    val rulesParsingManager = RulesParsingManager()
+    val rulesParsingManager = RulesParser()
     val rulesManager = RulesManager()
     val mobsQueueManager = MobsQueueManager()
     val nametagQueueManager = NametagQueueManager()

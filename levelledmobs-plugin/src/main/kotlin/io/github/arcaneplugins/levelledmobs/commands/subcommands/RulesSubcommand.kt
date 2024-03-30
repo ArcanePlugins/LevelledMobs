@@ -170,8 +170,7 @@ object RulesSubcommand {
     }
 
     private fun showTempDisabled(sender: CommandSender) {
-        val isConsoleSender = sender is ConsoleCommandSender
-        sender.sendMessage(LevelledMobs.instance.rulesManager.showTempDisabledRules(isConsoleSender))
+        LevelledMobs.instance.rulesManager.showTempDisabledRules(sender)
     }
 
     private fun forceRelevel(sender: CommandSender) {

@@ -28,13 +28,16 @@ import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
+import org.bukkit.NamespacedKey
 import org.bukkit.Particle
+import org.bukkit.Registry
 import org.bukkit.block.Biome
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
+import org.bukkit.generator.structure.Structure
 
 /**
  * Contains the logic that parses rules.yml and reads them into the corresponding java classes
@@ -42,7 +45,7 @@ import org.bukkit.entity.EntityType
  * @author stumper66
  * @since 3.0.0
  */
-class RulesParsingManager {
+class RulesParser {
     private var parsingInfo = RuleInfo()
     val rulePresets: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     var customRules = mutableListOf<RuleInfo>()
@@ -202,19 +205,25 @@ class RulesParsingManager {
                     mlpi.itemName = "Biome"
                     mlpi.supportsGroups = true
                     mlpi.groupMapping =  LevelledMobs.instance.rulesManager.biomeGroupMappings
-                    mlpi.cachedModalList = CachedModalList<Biome?>()
+                    mlpi.cachedModalList = CachedModalList<Biome>()
                 }
 
                 ModalListParsingTypes.SPAWN_REASON -> {
                     mlpi.configurationKey = "spawn-reasons"
                     mlpi.itemName = "spawn reason"
-                    mlpi.cachedModalList = CachedModalList<LevelledMobSpawnReason?>()
+                    mlpi.cachedModalList = CachedModalList<LevelledMobSpawnReason>()
                 }
 
                 ModalListParsingTypes.VANILLA_BONUSES -> {
                     mlpi.configurationKey = "vanilla-bonus"
                     mlpi.itemName = "vanilla bonus"
-                    mlpi.cachedModalList = CachedModalList<VanillaBonusEnum?>()
+                    mlpi.cachedModalList = CachedModalList<VanillaBonusEnum>()
+                }
+
+                ModalListParsingTypes.STRUCTURE -> {
+                    mlpi.configurationKey = "structures"
+                    mlpi.itemName = "Structures"
+                    mlpi.cachedModalList = CachedModalList<Structure>()
                 }
             }
             return buildCachedModal(cs, defaultValue, mlpi)
@@ -331,6 +340,22 @@ class RulesParsingManager {
                                 val vanillaBonus =
                                     VanillaBonusEnum.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                                 modalList.add(vanillaBonus)
+                            }
+                            ModalListParsingTypes.STRUCTURE -> {
+                                val structuresModalList = cachedModalList as CachedModalList<Structure>
+                                val modalList =
+                                    if (i == 0) structuresModalList.includedList else structuresModalList.excludedList
+
+                                val input = item.trim().split(":")
+                                if (input.isEmpty()) continue
+                                val namespace = if (input.size == 1) NamespacedKey.MINECRAFT_NAMESPACE else input[0]
+                                val key = if (input.size == 1) input[0].lowercase() else input[1].lowercase()
+                                val structure = Registry.STRUCTURE.get(NamespacedKey(namespace, key))
+
+                                if (structure == null)
+                                    Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
+                                else
+                                    modalList.add(structure)
                             }
                         }
                     } catch (e: IllegalArgumentException) {
@@ -882,6 +907,11 @@ class RulesParsingManager {
         parsingInfo.conditionsChance = ymlHelper.getFloat2(
              "chance", parsingInfo.conditionsChance
         )
+
+        parsingInfo.conditionsStructure = buildCachedModalOfType(
+            cs,
+            parsingInfo.conditionsStructure, ModalListParsingTypes.STRUCTURE
+        ) as CachedModalList<Structure>?
 
         val mobCustomNameStatus = ymlHelper.getString( "mob-customname-status")
         if (mobCustomNameStatus != null) {

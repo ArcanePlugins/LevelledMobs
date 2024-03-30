@@ -13,6 +13,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.misc.LivingEntityPlaceholder
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
@@ -430,14 +431,15 @@ object SummonSubcommand {
                     lmEntity.nbtData = mutableListOf(options.nbtData!!)
                 }
                 lmEntity.summonedSender = sender
-                main.levelInterface.applyLevelToMob(
-                    lmEntity, useLevel, true, options.override,
-                    mutableSetOf(AdditionalLevelInformation.NOT_APPLICABLE)
-                )
                 synchronized(lmEntity.livingEntity.persistentDataContainer) {
                     lmEntity.pdc
                         .set(NamespacedKeys.wasSummoned, PersistentDataType.INTEGER, 1)
                 }
+                MobDataManager.populateAttributeCache(lmEntity)
+                main.levelInterface.applyLevelToMob(
+                    lmEntity, useLevel, true, options.override,
+                    mutableSetOf(AdditionalLevelInformation.NOT_APPLICABLE)
+                )
                 lmEntity.free()
             }
         }

@@ -9,6 +9,8 @@ import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
+import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
@@ -44,7 +46,6 @@ class EntitySpawnListener : Listener{
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntitySpawn(event: EntitySpawnEvent) {
-        // Must be a LivingEntity.
         if (event.entity !is LivingEntity) {
             return
         }
@@ -53,6 +54,7 @@ class EntitySpawnListener : Listener{
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
         lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
+        MobDataManager.populateAttributeCache(lmEntity, null)
 
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason

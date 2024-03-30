@@ -17,10 +17,15 @@ import org.bukkit.command.BlockCommandSender
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.AbstractVillager
 import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
+import org.bukkit.entity.Hoglin
+import org.bukkit.entity.Husk
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.PigZombie
+import org.bukkit.entity.PiglinAbstract
 import org.bukkit.entity.Player
+import org.bukkit.entity.Skeleton
 import org.bukkit.entity.Tameable
+import org.bukkit.entity.Zombie
 import org.bukkit.entity.ZombieVillager
 import org.bukkit.metadata.FixedMetadataValue
 
@@ -78,7 +83,7 @@ object KillSubcommand {
         if (values == null) {
             if (sender is Player) {
                 if (isAll)
-                    parseKillAll(sender, mutableListOf(sender.world), false, null)
+                    processKillAll(sender, mutableListOf(sender.world), false, null)
                 else
                     MessagesHelper.showMessage(sender, "command.levelledmobs.kill.near.usage")
             } else {
@@ -132,13 +137,13 @@ object KillSubcommand {
 
         if (useArg.isEmpty()) {
             if (sender is Player) {
-                parseKillAll(sender, mutableListOf(sender.world), opts.useNoDrops, opts.requestedLevel)
+                processKillAll(sender, mutableListOf(sender.world), opts.useNoDrops, opts.requestedLevel)
             } else {
                 MessagesHelper.showMessage(sender, "command.levelledmobs.kill.all.usage-console")
             }
         } else {
             if (useArg == "*") {
-                parseKillAll(sender, Bukkit.getWorlds(), opts.useNoDrops, opts.requestedLevel)
+                processKillAll(sender, Bukkit.getWorlds(), opts.useNoDrops, opts.requestedLevel)
                 return
             }
 
@@ -150,7 +155,7 @@ object KillSubcommand {
                 )
                 return
             }
-            parseKillAll(sender, mutableListOf(world), opts.useNoDrops, opts.requestedLevel)
+            processKillAll(sender, mutableListOf(world), opts.useNoDrops, opts.requestedLevel)
         }
     }
 
@@ -342,12 +347,13 @@ object KillSubcommand {
         return rl
     }
 
-    private fun parseKillAll(
+    private fun processKillAll(
         sender: CommandSender,
         worlds: MutableList<World>,
         useNoDrops: Boolean,
         rl: RequestedLevel?
     ) {
+        LevelledMobs.instance.mobsQueueManager.clearQueue()
         var killed = 0
         var skipped = 0
 
@@ -433,10 +439,17 @@ object KillSubcommand {
             }
         }
 
-        // Converting zombie villager
-        return livingEntity.type == EntityType.ZOMBIE_VILLAGER &&
-                (livingEntity as ZombieVillager).isConverting &&
-                skc.isTransforming
+        return (skc.isTransforming && isMobConverting(livingEntity))
+    }
+
+    private fun isMobConverting(mob: LivingEntity): Boolean{
+        if (mob is Hoglin && mob.isConverting) return true
+        if (mob is Husk && mob.isConverting) return true
+        if (mob is PiglinAbstract && mob.isConverting) return true
+        if (mob is PigZombie && mob.isConverting) return true
+        if (mob is Skeleton && mob.isConverting) return true
+        if (mob is Zombie && mob.isConverting) return true
+        return (mob is ZombieVillager && mob.isConverting)
     }
 
     private class Options(

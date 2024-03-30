@@ -9,6 +9,7 @@ package io.github.arcaneplugins.levelledmobs.enums
  */
 enum class ModalListParsingTypes {
     BIOME,
+    STRUCTURE,
     SPAWN_REASON,
     VANILLA_BONUSES
 }

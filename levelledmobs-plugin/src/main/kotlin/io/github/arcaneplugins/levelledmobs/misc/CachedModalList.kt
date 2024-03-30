@@ -1,7 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.TreeSet
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import org.bukkit.generator.structure.Structure
 
 /**
  * A standardized list used for holding various rule lists
@@ -64,6 +66,27 @@ class CachedModalList<T> : Cloneable {
         return this.isBlacklist || includedList.contains(item)
     }
 
+    private fun applySpecialFormatting(
+        input: MutableSet<T>,
+        sb: StringBuilder
+    ){
+        // if certain types need special handling to format the output
+        // visually then define them here
+
+        var isFirst = true
+        for (item in input){
+            if (!isFirst) sb.append(", ")
+
+            if (item is Structure) {
+                sb.append(item.key().value())
+            }
+            else
+                sb.append(item)
+
+            isFirst = false
+        }
+    }
+
     fun isEmpty(): Boolean {
         return includedList.isEmpty() &&
                 includedGroups.isEmpty() &&
@@ -78,7 +101,7 @@ class CachedModalList<T> : Cloneable {
                 sb.append(", ")
             }
             sb.append("lst: ")
-            sb.append(this.includedList)
+            applySpecialFormatting(this.includedList, sb)
         }
         if (this.includeAll) {
             if (sb.isNotEmpty()) {
@@ -107,7 +130,7 @@ class CachedModalList<T> : Cloneable {
                 sb.append(", ")
             }
             sb.append("ex-lst: ")
-            sb.append(this.excludedList)
+            applySpecialFormatting(this.excludedList, sb)
         }
         if (excludedGroups.isNotEmpty()) {
             if (sb.isNotEmpty()) {

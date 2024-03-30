@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import org.bukkit.Particle
 import org.bukkit.block.Biome
+import org.bukkit.generator.structure.Structure
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility
@@ -164,6 +165,8 @@ class RuleInfo(
     var vanillaBonuses: CachedModalList<VanillaBonusEnum>? = null
     @RuleFieldInfo("spawn reasons", RuleType.CONDITION)
     var conditionsSpawnReasons: CachedModalList<LevelledMobSpawnReason>? = null
+    @RuleFieldInfo("structures", RuleType.CONDITION)
+    var conditionsStructure: CachedModalList<Structure>? = null
     @RuleFieldInfo("player permissions", RuleType.CONDITION)
     var conditionsPermission: CachedModalList<String>? = null
     @RuleFieldInfo("within coordinates", RuleType.CONDITION)

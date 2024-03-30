@@ -118,10 +118,10 @@ class FineTuningAttributes : MergableRule, Cloneable {
     }
 
     override fun cloneItem(): Any {
-        var copy: Any? = null
+        var copy: FineTuningAttributes? = null
         try {
-            copy = super.clone()
-            //copy.cloneMultipliers()
+            copy = super.clone() as FineTuningAttributes
+            copy.multipliers = copyMultipliers()
         } catch (e: Exception) {
             e.printStackTrace()
         }

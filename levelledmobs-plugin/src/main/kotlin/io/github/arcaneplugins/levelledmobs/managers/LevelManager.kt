@@ -93,12 +93,37 @@ class LevelManager : LevelInterface2 {
     private val asyncRunningCount = AtomicInteger()
     private val entitiesPerPlayer = mutableMapOf<Player, MutableList<Entity>>()
     private val entitiesPerPlayerLock = Any()
+    private val attributeStringList = mutableMapOf<String, Attribute>()
+    private val strategyPlaceholders = mutableMapOf<String, StrategyType>()
     /**
      * The following entity types *MUST NOT* be levellable.
      */
     var forcedBlockedEntityTypes = mutableSetOf<EntityType>()
 
+
     fun load(){
+        attributeStringList.putAll(mutableMapOf(
+            "%max-health%" to Attribute.GENERIC_MAX_HEALTH,
+            "%movement-speed%" to Attribute.GENERIC_MOVEMENT_SPEED,
+            "%attack-damage%" to Attribute.GENERIC_ATTACK_DAMAGE,
+            "%follow-range%" to Attribute.GENERIC_FOLLOW_RANGE,
+            "%armor-bonus%" to Attribute.GENERIC_ARMOR,
+            "%armor-toughness%" to Attribute.GENERIC_ARMOR_TOUGHNESS,
+            "%attack-knockback%" to Attribute.GENERIC_ATTACK_KNOCKBACK,
+            "%knockback-resistance%" to Attribute.GENERIC_KNOCKBACK_RESISTANCE,
+            "%zombie-spawn-reinforcements%" to Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+        ))
+
+        strategyPlaceholders.putAll(mutableMapOf(
+            "%random%" to StrategyType.RANDOM,
+            "%weighted-random%" to StrategyType.WEIGHTED_RANDOM,
+            "%random-variance-mod%" to StrategyType.RANDOM_VARIANCE,
+            "%custom-strategy%" to StrategyType.CUSTOM,
+            "%distance-from-origin%" to StrategyType.SPAWN_DISTANCE,
+            "%y-coordinate%" to StrategyType.Y_COORDINATE,
+            "%player-variable-mod%" to StrategyType.PLAYER_VARIABLE
+        ))
+
         this.vehicleNoMultiplierItems.addAll(mutableListOf(
             Material.SADDLE,
             Material.LEATHER_HORSE_ARMOR,
@@ -779,13 +804,17 @@ class LevelManager : LevelInterface2 {
         }
     }
 
-//    private fun getAttributeValue(
-//        lmEntity: LivingEntityWrapper,
-//        attribute: Attribute
-//    ): String{
-//        val instance = lmEntity.livingEntity.getAttribute(attribute) ?: return "0"
-//        return instance.value.toString()
-//    }
+    private fun getAttributesCache(lmEntity: LivingEntityWrapper, str: StringReplacer){
+        if (lmEntity.attributeValuesCache != null) return
+
+        val whichOnes = mutableListOf<Attribute>()
+        for (placeholder in attributeStringList){
+            if (str.text.contains(placeholder.key))
+                whichOnes.add(placeholder.value)
+        }
+
+        MobDataManager.instance.getAllAttributeValues(lmEntity, whichOnes)
+    }
 
     private fun replaceStringPlaceholdersForFormulas(
         text: String,
@@ -799,50 +828,28 @@ class LevelManager : LevelInterface2 {
             else (lmEntity.getMobLevel / maxLevel).toString()
         }
 
-        for (strategyType in StrategyType.entries){
-            when (strategyType){
-                StrategyType.RANDOM -> { str.replaceIfExists("%random%"){
-                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
-                }}
-                StrategyType.WEIGHTED_RANDOM -> { str.replaceIfExists("%weighted-random%"){
-                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
-                }}
-                StrategyType.CUSTOM -> { str.replaceIfExists("%custom-strategy%"){
-                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
-                }}
-                StrategyType.SPAWN_DISTANCE -> { str.replaceIfExists("%distance-from%"){
-                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
-                }}
-                StrategyType.Y_COORDINATE -> { str.replaceIfExists("%y-coordinate%"){
-                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
-                }}
-                StrategyType.PLAYER_VARIABLE -> { str.replaceIfExists("%player-variable-mod%"){
-                    lmEntity.strategyResults.getOrDefault(strategyType, 0f).toString()
-                }}
+        for (placeholder in strategyPlaceholders){
+            str.replaceIfExists(placeholder.key){
+                lmEntity.strategyResults.getOrDefault(placeholder.value, 0f).toString()
             }
         }
 
-        if (lmEntity.attributeValuesCache == null)
-            MobDataManager.instance.getAllAttributeValues(lmEntity)
+        getAttributesCache(lmEntity, str)
 
         str.replaceIfExists("%distance-from-spawn%"){ lmEntity.distanceFromSpawn.toString() }
-        str.replaceIfExists("%max-health%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_MAX_HEALTH).toString() }
-        str.replaceIfExists("%movement-speed%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_MOVEMENT_SPEED).toString() }
-        str.replaceIfExists("%attack-damage%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ATTACK_DAMAGE).toString() }
         str.replace("%hotspots-mod%", "0")
         str.replace("%barricades-mod%", "0")
         str.replaceIfExists("%creeper-blast-damage%"){
             val creeper = lmEntity.livingEntity as? Creeper
             return@replaceIfExists creeper?.explosionRadius?.toString() ?: "0"
         }
-        str.replaceIfExists("%follow-range%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_FOLLOW_RANGE).toString() }
+
+        for (placeholder in attributeStringList){
+            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value).toString() }
+        }
+
         str.replaceIfExists("%item-drop%"){ "1" }
         str.replaceIfExists("%xp-drop%"){ "1" }
-        str.replaceIfExists("%armor-bonus%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ARMOR).toString() }
-        str.replaceIfExists("%armor-toughness%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ARMOR_TOUGHNESS).toString() }
-        str.replaceIfExists("%attack-knockback%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_ATTACK_KNOCKBACK).toString() }
-        str.replaceIfExists("%knockback-resistance%"){ lmEntity.attributeValuesCache?.get(Attribute.GENERIC_KNOCKBACK_RESISTANCE).toString() }
-        str.replaceIfExists("%zombie-spawn-reinforcements%"){ lmEntity.attributeValuesCache?.get(Attribute.ZOMBIE_SPAWN_REINFORCEMENTS).toString() }
 
         if (!str.text.contains("%")) return str.text
 
@@ -891,10 +898,27 @@ class LevelManager : LevelInterface2 {
         }
 
         // replace them placeholders ;)
+        text.replaceIfExists("%displayname%") {
+            val overridenName = if (lmEntity.lockedOverrideName == null)
+                LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(lmEntity, false)
+            else
+                lmEntity.lockedOverrideName
+
+            if (!overridenName.isNullOrEmpty()) {
+                return@replaceIfExists overridenName
+            }
+
+            if (lmEntity.livingEntity.customName != null)
+                return@replaceIfExists lmEntity.livingEntity.customName
+            return@replaceIfExists if (preserveMobName)
+                "{DisplayName}"
+            else
+                Utils.capitalize(lmEntity.typeName.replace("_", " "))
+        }
         text.replace("%mob-lvl%", lmEntity.getMobLevel)
         text.replace(
             "%entity-name%",
-            Utils.capitalize(lmEntity.nameIfBaby.replace("_", " "))
+            Utils.capitalize(lmEntity.typeName.replace("_", " "))
         )
         text.replace("%entity-name-raw%", lmEntity.typeName)
         text.replace("%entity-health%", Utils.round(entityHealth))
@@ -921,22 +945,6 @@ class LevelManager : LevelInterface2 {
         text.replace("%z%", lmEntity.livingEntity.location.blockZ)
         text.replace("%player-uuid%", playerId)
         text.replace("%player%", playerName)
-        text.replaceIfExists("%displayname%") {
-            val overridenName = if (lmEntity.lockedOverrideName == null)
-                LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(lmEntity, false)
-            else
-                lmEntity.lockedOverrideName
-
-            if (!overridenName.isNullOrEmpty())
-                return@replaceIfExists overridenName
-
-            if (lmEntity.livingEntity.customName != null)
-                return@replaceIfExists lmEntity.livingEntity.customName
-            return@replaceIfExists if (preserveMobName)
-                "{DisplayName}"
-            else
-                Utils.capitalize(lmEntity.typeName.replace("_", " "))
-        }
 
         for (placeholder in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
             text.replaceIfExists(placeholder.key){ placeholder.value.getPlaceholder(lmEntity) }
@@ -1758,8 +1766,18 @@ class LevelManager : LevelInterface2 {
         additionalLevelInformation: MutableSet<AdditionalLevelInformation>?
     ) {
         // this thread runs in async.  if adding any functions make sure they can be run in this fashion
-
         val main = LevelledMobs.instance
+
+        if (!main.ver.isRunningFolia && Bukkit.isPrimaryThread()){
+            val scheduler = SchedulerWrapper{
+                applyLevelToMob(lmEntity, level, isSummoned, bypassLimits, additionalLevelInformation)
+                lmEntity.free()
+            }
+            lmEntity.inUseCount.getAndIncrement()
+            scheduler.run()
+            return
+        }
+
         var useLevel = level
         if (useLevel <= 0) {
             useLevel = generateLevel(lmEntity)
@@ -1869,39 +1887,49 @@ class LevelManager : LevelInterface2 {
 
         val doSkipLMNametag = skipLMNametag
 
-        val scheduler = SchedulerWrapper {
+        try{
             applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag)
-            lmEntity.free()
+
+            val levelCause =
+                if (isSummoned) MobPostLevelEvent.LevelCause.SUMMONED
+                else MobPostLevelEvent.LevelCause.NORMAL
+            Bukkit.getPluginManager()
+                .callEvent(MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation))
+
+            val sb = StringBuilder()
+            sb.append("entity: ")
+            sb.append(lmEntity.livingEntity.name)
+            if (lmEntity.isBabyMob) {
+                sb.append(" (baby)")
+            }
+            sb.append(", world: ")
+            sb.append(lmEntity.worldName)
+            sb.append(", level: ")
+            sb.append(useLevel)
+            if (isSummoned) {
+                sb.append(" (summoned)")
+            }
+            if (bypassLimits) {
+                sb.append(" (limit bypass)")
+            }
+
+            DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, true, sb::toString)
+        }
+        catch (e: java.util.concurrent.TimeoutException){
+            DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false){
+                "Timed out applying level to mob"
+            }
         }
 
-        lmEntity.inUseCount.getAndIncrement()
-        scheduler.entity = lmEntity.livingEntity
-        scheduler.run()
+//        val scheduler = SchedulerWrapper {
+//
+//
+//            lmEntity.free()
+//        }
 
-        val levelCause =
-            if (isSummoned) MobPostLevelEvent.LevelCause.SUMMONED
-            else MobPostLevelEvent.LevelCause.NORMAL
-        Bukkit.getPluginManager()
-            .callEvent(MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation))
-
-        val sb = StringBuilder()
-        sb.append("entity: ")
-        sb.append(lmEntity.livingEntity.name)
-        if (lmEntity.isBabyMob) {
-            sb.append(" (baby)")
-        }
-        sb.append(", world: ")
-        sb.append(lmEntity.worldName)
-        sb.append(", level: ")
-        sb.append(useLevel)
-        if (isSummoned) {
-            sb.append(" (summoned)")
-        }
-        if (bypassLimits) {
-            sb.append(" (limit bypass)")
-        }
-
-        DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, true, sb::toString)
+//        lmEntity.inUseCount.getAndIncrement()
+//        scheduler.entity = lmEntity.livingEntity
+//        scheduler.run()
     }
 
     private fun applyLevelToMob2(

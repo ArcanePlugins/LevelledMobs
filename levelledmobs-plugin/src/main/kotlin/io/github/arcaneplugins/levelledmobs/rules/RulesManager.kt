@@ -31,6 +31,7 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.round
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Particle
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 /**
@@ -484,7 +485,7 @@ class RulesManager {
 
     fun getRuleCreatureNametagVisbility(
         lmEntity: LivingEntityWrapper
-    ): List<NametagVisibilityEnum?> {
+    ): MutableList<NametagVisibilityEnum> {
         var result: MutableList<NametagVisibilityEnum>? = null
 
         try {
@@ -603,8 +604,8 @@ class RulesManager {
         } else if (entityNameOverrides != null) {
             if (entityNameOverrides.containsKey("all_entities")) {
                 namesInfo = entityNameOverrides["all_entities"]!!.names
-            } else if (entityNameOverrides.containsKey(lmEntity.nameIfBaby)) {
-                namesInfo = entityNameOverrides[lmEntity.nameIfBaby]!!.names
+            } else if (entityNameOverrides.containsKey(lmEntity.typeName)) {
+                namesInfo = entityNameOverrides[lmEntity.typeName]!!.names
             }
         }
 
@@ -614,15 +615,12 @@ class RulesManager {
             namesInfo.shuffle()
         }
 
-        val useCustomNameForNametags = LevelledMobs.instance.helperSettings.getBoolean(
-            "use-customname-for-mob-nametags"
-        )
-        val entityName = capitalize(lmEntity.nameIfBaby.replace("_".toRegex(), " "))
+        val entityName = capitalize(lmEntity.typeName.replace("_".toRegex(), " "))
         var result = namesInfo[0]
         result = result.replace("%entity-name%", entityName)
         result = result.replace(
             "%displayname%",
-            ((if (lmEntity.livingEntity.customName == null || forceCustomName || useCustomNameForNametags) entityName else lmEntity.livingEntity.customName)!!)
+            ((if (lmEntity.livingEntity.customName == null || forceCustomName) entityName else lmEntity.livingEntity.customName)!!)
         )
 
         if (namesInfo.size > 1) {
@@ -1123,6 +1121,23 @@ class RulesManager {
             if (!madeCriteria) return false
         }
 
+        if (ri.conditionsStructure != null){
+            val structures = lmEntity.location.chunk.structures
+            var madeCriteria = false
+            for (structure in structures){
+                if (ri.conditionsStructure!!.isIncludedInList(structure.structure, lmEntity)){
+                    madeCriteria = true
+                    break
+                }
+            }
+
+            DebugManager.log(
+                DebugType.CONDITION_STRUCTURES, ri, lmEntity, madeCriteria
+            ) { "&b${ri.ruleName}&7, mob: &b${lmEntity.nameIfBaby}&7" }
+
+            if (!madeCriteria) return false
+        }
+
         if (ri.conditionsSkyLightLevel != null) {
             val lightLevel = lmEntity.skylightLevel
             val result = (lightLevel >= ri.conditionsSkyLightLevel!!.min
@@ -1504,23 +1519,16 @@ class RulesManager {
         }
     }
 
-    fun showTempDisabledRules(isFromConsole: Boolean): String {
+    fun showTempDisabledRules(sender: CommandSender) {
         synchronized(ruleLocker) {
             if (rulesCooldown.isEmpty()) {
-                val message = "No rules are currently temporarily disabled"
-                return if (isFromConsole) {
-                    "${LevelledMobs.instance.configUtils.prefix} $message"
-                } else {
-                    message
-                }
+                sender.sendMessage("No rules are currently temporarily disabled")
+                return
             }
             checkTempDisabledRules()
 
             val sb = StringBuilder()
-            if (isFromConsole) {
-                sb.append(LevelledMobs.instance.configUtils.prefix)
-                sb.append(" ${rulesCooldown.size} rule(s) currently disabled:")
-            }
+            sb.append(" ${rulesCooldown.size} rule(s) currently disabled:")
 
             for (ruleName in rulesCooldown.keys) {
                 val rule = ruleNameMappings[ruleName]
@@ -1538,7 +1546,8 @@ class RulesManager {
                 )
                 sb.append(duration.toSeconds())
             }
-            return sb.toString()
+
+            sender.sendMessage(sb.toString())
         }
     }
 

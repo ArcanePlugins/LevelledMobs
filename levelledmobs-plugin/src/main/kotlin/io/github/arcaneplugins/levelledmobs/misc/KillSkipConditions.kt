@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
-import io.github.arcaneplugins.levelledmobs.rules.RulesParsingManager
+import io.github.arcaneplugins.levelledmobs.rules.RulesParser
 
 class KillSkipConditions {
     var isNametagged = false
@@ -25,7 +25,7 @@ class KillSkipConditions {
                     "is-transforming" -> result.isTransforming = cs.getBoolean(key)
                     "is-villager" -> result.isVillager = cs.getBoolean(key)
                     "entitytype" -> {
-                        result.entityTypes = RulesParsingManager.buildCachedModalListOfString(
+                        result.entityTypes = RulesParser.buildCachedModalListOfString(
                             cs, key, null)
                     }
                 }

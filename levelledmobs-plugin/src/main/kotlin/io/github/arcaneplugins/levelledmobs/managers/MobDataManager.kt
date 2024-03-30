@@ -61,6 +61,19 @@ class MobDataManager {
                 error
             )
         }
+
+        fun populateAttributeCache(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
+            val result = mutableMapOf<Attribute, AttributeInstance>()
+            val useList = whichOnes ?: Attribute.entries
+
+            for (attribute in useList){
+                val attribInstance = lmEntity.livingEntity.getAttribute(attribute)
+                if (attribInstance != null)
+                    result[attribute] = attribInstance
+            }
+
+            lmEntity.attributeValuesCache = result
+        }
     }
 
     init {
@@ -250,18 +263,11 @@ class MobDataManager {
 
     }
 
-    fun getAllAttributeValues(lmEntity: LivingEntityWrapper){
-        val completableFuture = CompletableFuture<MutableMap<Attribute, AttributeInstance>>()
+    fun getAllAttributeValues(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
+        val completableFuture = CompletableFuture<Boolean>()
         val scheduler = SchedulerWrapper(lmEntity.livingEntity){
-            val result = mutableMapOf<Attribute, AttributeInstance>()
-
-            for (attribute in Attribute.entries){
-                val attribInstance = lmEntity.livingEntity.getAttribute(attribute)
-                if (attribInstance != null)
-                    result[attribute] = attribInstance
-            }
-
-            completableFuture.complete(result)
+            populateAttributeCache(lmEntity, whichOnes)
+            completableFuture.complete(true)
             lmEntity.free()
         }
 
@@ -269,7 +275,7 @@ class MobDataManager {
         scheduler.entity = lmEntity.livingEntity
         scheduler.run()
 
-        lmEntity.attributeValuesCache = completableFuture.get(5000L, TimeUnit.MILLISECONDS)
+        completableFuture.get(5000L, TimeUnit.MILLISECONDS)
     }
 
     fun getAdditionsForLevel(

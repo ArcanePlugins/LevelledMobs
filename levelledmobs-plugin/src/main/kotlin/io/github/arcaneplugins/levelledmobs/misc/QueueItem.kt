@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.misc
 
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.UUID
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 
@@ -12,6 +13,8 @@ import org.bukkit.event.Event
  * @since 3.0.0
  */
 class QueueItem {
+    var entityId: UUID
+        private set
     var lmEntity: LivingEntityWrapper
         private set
     var event: Event? = null
@@ -25,6 +28,7 @@ class QueueItem {
     ){
         this.lmEntity = lmEntity
         this.event = event
+        this.entityId = lmEntity.livingEntity.uniqueId
     }
 
     constructor(
@@ -35,5 +39,6 @@ class QueueItem {
         this.lmEntity = lmEntity
         this.nametag = nametag
         this.players = players
+        this.entityId = lmEntity.livingEntity.uniqueId
     }
 }
