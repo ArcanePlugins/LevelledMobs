@@ -95,12 +95,19 @@ public class MobDataManager {
             return;
         }
 
-        double existingDamage = 0;
-        if (attribute == Attribute.GENERIC_MAX_HEALTH
+        boolean hadExistingDamage = false;
+        float existingDamagePercent = 0f;
+        if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.isLevelled()
             && lmEntity.getLivingEntity().getAttribute(attribute) != null) {
-            existingDamage =
-                Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute))
-                    .getValue() - lmEntity.getLivingEntity().getHealth();
+            final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(attribute);
+            if (maxHealth != null){
+                final double existingDamage = maxHealth.getValue() - lmEntity.getLivingEntity().getHealth();
+                if (existingDamage > 0d) {
+                    existingDamagePercent = ((float) maxHealth.getValue() - (float)existingDamage) / (float)maxHealth.getValue();
+                    hadExistingDamage = true;
+                }
+            }
+
         }
 
         final CachedModalList<VanillaBonusEnum> allowedVanillaBonusEnums = main.rulesManager.getAllowedVanillaBonuses(lmEntity);
@@ -131,13 +138,13 @@ public class MobDataManager {
 
         // MAX_HEALTH specific: set health to max health
         if (attribute == Attribute.GENERIC_MAX_HEALTH) {
+            if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
+            final float newHealth = hadExistingDamage ?
+                    ((float) attrib.getValue() * existingDamagePercent) :
+                    (float) attrib.getValue();
             try {
-                if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
                 lmEntity.getLivingEntity().setHealth(
-                    Math.max(
-                        1.0d,
-                        attrib.getValue() - existingDamage
-                    )
+                    Math.max(1.0d,newHealth)
                 );
             } catch (final IllegalArgumentException ignored) {}
         }
