@@ -515,7 +515,7 @@ public class LevelManager implements LevelInterface {
             final ItemStack[] chestItems = inv.getContents();
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (final ItemStack item : chestItems) {
-                if (item.getType() == Material.LEATHER) {
+                if (item != null && item.getType() == Material.LEATHER) {
                     return List.of(item);
                 }
             }
