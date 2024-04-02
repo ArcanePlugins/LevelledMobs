@@ -274,12 +274,12 @@ class LevelManager : LevelInterface2 {
             origLevelSource = player.expToLevel.toFloat()
         } else if ("%total-exp%".equals(variableToUse, ignoreCase = true)) {
             origLevelSource = player.totalExperience.toFloat()
-        } else if ("%world_time_ticks%".equals(variableToUse, ignoreCase = true)) {
+        } else if ("%world-time-ticks%".equals(variableToUse, ignoreCase = true)) {
             origLevelSource = player.world.time.toFloat()
-        } else if ("%home_distance%".equals(variableToUse, ignoreCase = true)
-            || "%home_distance_with_bed%".equals(variableToUse, ignoreCase = true)
+        } else if ("%home-distance%".equals(variableToUse, ignoreCase = true)
+            || "%home-distance-with-bed%".equals(variableToUse, ignoreCase = true)
         ) {
-            val allowBed = "%home_distance_with_bed%".equals(variableToUse, ignoreCase = true)
+            val allowBed = "%home-distance-with-bed%".equals(variableToUse, ignoreCase = true)
             val netherOrWorldSpawnResult: PlayerNetherOrWorldSpawnResult
             val result = ExternalCompatibilityManager.getPlayerHomeLocation(
                 player, allowBed
@@ -293,9 +293,9 @@ class LevelManager : LevelInterface2 {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(player)
                 useLocation = netherOrWorldSpawnResult.location
                 homeNameUsed = if (netherOrWorldSpawnResult.isWorldPortalLocation) {
-                    "world_portal"
+                    "world-portal"
                 } else if (netherOrWorldSpawnResult.isNetherPortalLocation) {
-                    "nether_portal"
+                    "nether-portal"
                 } else {
                     "spawn"
                 }
@@ -306,7 +306,7 @@ class LevelManager : LevelInterface2 {
             }
 
             origLevelSource = useLocation!!.distance(player.location).toFloat()
-        } else if ("%bed_distance%".equals(variableToUse, ignoreCase = true)) {
+        } else if ("%bed-distance%".equals(variableToUse, ignoreCase = true)) {
             var useLocation = player.respawnLocation
             homeNameUsed = "bed"
 
@@ -316,9 +316,9 @@ class LevelManager : LevelInterface2 {
                 )
                 useLocation = result.location
                 homeNameUsed = if (result.isWorldPortalLocation) {
-                    "world_portal"
+                    "world-portal"
                 } else if (result.isNetherPortalLocation) {
-                    "nether_portal"
+                    "nether-portal"
                 } else {
                     "spawn"
                 }
@@ -931,9 +931,9 @@ class LevelManager : LevelInterface2 {
             if (baseHealth != null) return@replaceIfExists baseHealth.toString()
             else return@replaceIfExists "0"
         }
-        text.replace("%heart_symbol%", "❤")
+        text.replace("%heart-symbol%", "❤")
         text.replace("%tiered%", tieredPlaceholder)
-        text.replace("%wg_region%", lmEntity.wgRegionName)
+        text.replace("%wg-region%", lmEntity.wgRegionName)
         text.replace("%world%", lmEntity.worldName)
         text.replaceIfExists("%location%") {
                 "${lmEntity.livingEntity.location.blockX} " +
@@ -1420,7 +1420,8 @@ class LevelManager : LevelInterface2 {
     ) {
         if (!lmEntity.isLevelled) return
         val modInfo = mutableListOf<AttributePreMod>()
-        if (lmEntity.attributeValuesCache == null)
+
+        if (lmEntity.attributeValuesCache.isNullOrEmpty())
             MobDataManager.instance.getAllAttributeValues(lmEntity)
 
         for (addition in additions){
@@ -1453,7 +1454,9 @@ class LevelManager : LevelInterface2 {
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity){
             MobDataManager.instance.setAttributeMods(lmEntity, modInfo)
+            lmEntity.free()
         }
+        lmEntity.inUseCount.getAndIncrement()
         scheduler.run()
     }
 

@@ -153,9 +153,8 @@ class MobDataManager {
         val defaultValue = attribInstance.baseValue.toFloat()
         val multiplierResult = getAdditionsForLevel(lmEntity, addition, defaultValue)
         val additionValue = multiplierResult.amount
-        if (additionValue == 0.0f) {
+        if (additionValue == 0.0f)
             return null
-        }
 
         val modifierOperation = if (multiplierResult.isAddition)
             AttributeModifier.Operation.ADD_NUMBER
@@ -209,38 +208,9 @@ class MobDataManager {
                 }
             }
 
-            val allowedVanillaBonusEnums: CachedModalList<VanillaBonusEnum> =
-                LevelledMobs.instance.rulesManager.getAllowedVanillaBonuses(lmEntity)
-            val existingMods = Collections.enumeration(attrib.modifiers)
-            while (existingMods.hasMoreElements()) {
-                val existingMod = existingMods.nextElement()
-                val vanillaBonusEnum = vanillaMultiplierNames[existingMod.name]
-                if (vanillaBonusEnum != null) {
-                    if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isIncludedInList(
-                            vanillaBonusEnum,
-                            lmEntity
-                        )
-                    ) {
-                        continue
-                    }
-                }
+            removeExistingMultipliers(lmEntity, attrib)
+            attrib.addModifier(info.attributeModifier)
 
-                if (!existingMod.name.startsWith("GENERIC_")) {
-                    DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
-                        String.format(
-                            "Removing %s from (lvl %s) %s at %s,%s,%s",
-                            existingMod.name,
-                            lmEntity.getMobLevel,
-                            lmEntity.nameIfBaby,
-                            lmEntity.location.blockX,
-                            lmEntity.location.blockY,
-                            lmEntity.location.blockZ
-                        )
-                    }
-                }
-
-                attrib.removeModifier(existingMod)
-            }
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                 String.format(
                     "%s (%s): attrib: %s, base: %s, addtion: %s",
@@ -251,7 +221,6 @@ class MobDataManager {
                     Utils.round(additionValue.toDouble(), 3)
                 )
             }
-            attrib.addModifier(info.attributeModifier)
 
             // MAX_HEALTH specific: set health to max health
             if (info.attribute == Attribute.GENERIC_MAX_HEALTH) {
@@ -269,8 +238,44 @@ class MobDataManager {
                 }
             }
         }
+    }
 
+    private fun removeExistingMultipliers(
+        lmEntity: LivingEntityWrapper,
+        attrib: AttributeInstance
+    ){
+        val allowedVanillaBonusEnums: CachedModalList<VanillaBonusEnum> =
+            LevelledMobs.instance.rulesManager.getAllowedVanillaBonuses(lmEntity)
+        val existingMods = Collections.enumeration(attrib.modifiers)
+        while (existingMods.hasMoreElements()) {
+            val existingMod = existingMods.nextElement()
+            val vanillaBonusEnum = vanillaMultiplierNames[existingMod.name]
+            if (vanillaBonusEnum != null) {
+                if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isIncludedInList(
+                        vanillaBonusEnum,
+                        lmEntity
+                    )
+                ) {
+                    continue
+                }
+            }
 
+            if (!existingMod.name.startsWith("GENERIC_")) {
+                DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
+                    String.format(
+                        "Removing %s from (lvl %s) %s at %s,%s,%s",
+                        existingMod.name,
+                        lmEntity.getMobLevel,
+                        lmEntity.nameIfBaby,
+                        lmEntity.location.blockX,
+                        lmEntity.location.blockY,
+                        lmEntity.location.blockZ
+                    )
+                }
+            }
+
+            attrib.removeModifier(existingMod)
+        }
     }
 
     fun getAllAttributeValues(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
