@@ -36,7 +36,6 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         }
 
         if (this.randomArray == null || (minLevel != this.minLevel) || (maxLevel != this.maxLevel)) {
-            Log.inf("populating random")
             populateWeightedRandom(minLevel, maxLevel)
         }
 
@@ -47,7 +46,6 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         }
 
         val useArrayNum = ThreadLocalRandom.current().nextInt(0, randomArray!!.size)
-        Log.inf("used random array")
         return randomArray!![useArrayNum].toFloat()
     }
 

@@ -262,6 +262,12 @@ class DebugManager {
             }
         } // end bypass all
 
+        if (lmInterface != null){
+            msg = if (lmInterface is LivingEntityWrapper)
+                "${lmInterface.nameIfBaby}, $msg"
+            else
+                "${lmInterface.typeName}, $msg"
+        }
 
         if (ruleResult != null) {
             msg += ", result: $ruleResult"

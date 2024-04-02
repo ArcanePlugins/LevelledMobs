@@ -19,6 +19,7 @@ import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper.showMessage
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
+import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
 import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -185,6 +186,7 @@ object RulesSubcommand {
         val main = LevelledMobs.instance
 
         main.reloadLM(sender)
+        val isUsingPlayerLevelling = main.rulesManager.isPlayerLevellingEnabled()
 
         for (world in Bukkit.getWorlds()) {
             worldCount++
@@ -210,6 +212,9 @@ object RulesSubcommand {
                 lmEntity.reEvaluateLevel = true
                 lmEntity.isRulesForceAll = true
                 lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled
+                if (isUsingPlayerLevelling)
+                    EntitySpawnListener.updateMobForPlayerLevelling(lmEntity)
+
                 main.mobsQueueManager.addToQueue(QueueItem(lmEntity, null))
                 lmEntity.free()
             }

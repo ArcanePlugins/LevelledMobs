@@ -215,7 +215,6 @@ class LevelledMobs : JavaPlugin() {
             "level-mobs-upon-spawn", true
         )
 
-        configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled()
         rulesManager.clearTempDisabledRulesCounts()
         definitions.useTranslationComponents = helperSettings.getBoolean(
             "use-translation-components", true

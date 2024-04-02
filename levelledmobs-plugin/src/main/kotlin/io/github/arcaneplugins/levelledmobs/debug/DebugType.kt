@@ -136,5 +136,7 @@ enum class DebugType {
 
     CONSTRUCT_LEVEL,
 
-    STRATEGY_RESULT
+    STRATEGY_RESULT,
+
+    RANDOM_NUMBER
 }

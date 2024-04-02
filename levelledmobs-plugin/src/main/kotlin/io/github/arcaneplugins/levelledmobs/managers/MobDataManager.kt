@@ -196,12 +196,17 @@ class MobDataManager {
                 return
             }
 
-            var existingDamage = 0.0
-            if (info.attribute == Attribute.GENERIC_MAX_HEALTH
-                && lmEntity.livingEntity.getAttribute(info.attribute) != null
-            ) {
-                existingDamage =
-                    lmEntity.livingEntity.getAttribute(info.attribute)!!.value - lmEntity.livingEntity.health
+            var hasExistingDamage = false
+            var existingDamagePercent = 0f
+            if (info.attribute == Attribute.GENERIC_MAX_HEALTH){
+                val maxHealth = lmEntity.livingEntity.getAttribute(info.attribute)
+                if (maxHealth != null){
+                    val existingDamage = maxHealth.value - lmEntity.livingEntity.health
+                    if (existingDamage > 0.0){
+                        existingDamagePercent = (maxHealth.value.toFloat() - existingDamage.toFloat()) / maxHealth.value.toFloat()
+                        hasExistingDamage = true
+                    }
+                }
             }
 
             val allowedVanillaBonusEnums: CachedModalList<VanillaBonusEnum> =
@@ -250,13 +255,18 @@ class MobDataManager {
 
             // MAX_HEALTH specific: set health to max health
             if (info.attribute == Attribute.GENERIC_MAX_HEALTH) {
+                val newHealth = if (hasExistingDamage)
+                    (attrib.value * existingDamagePercent).toFloat()
+                else
+                    attrib.value.toFloat()
                 try {
                     if (lmEntity.livingEntity.health <= 0.0) return
-                    lmEntity.livingEntity.health = max(
-                        1.0,
-                        attrib.value - existingDamage
-                    )
-                } catch (ignored: IllegalArgumentException) {}
+                    lmEntity.livingEntity.health = newHealth.toDouble().coerceAtLeast(1.0)
+                } catch (e: IllegalArgumentException) {
+                    DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity){
+                        "Error setting maxhealth = $newHealth, ${e.message}"
+                    }
+                }
             }
         }
 

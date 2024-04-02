@@ -30,6 +30,7 @@ import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
+import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomVarianceGenerator
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
@@ -551,7 +552,7 @@ class LevelManager : LevelInterface2 {
             val chestItems = inv.contents
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (item in chestItems) {
-                if (item!!.type == Material.LEATHER) {
+                if (item != null && item.type == Material.LEATHER) {
                     return mutableListOf(item)
                 }
             }
@@ -945,6 +946,9 @@ class LevelManager : LevelInterface2 {
         text.replace("%z%", lmEntity.livingEntity.location.blockZ)
         text.replace("%player-uuid%", playerId)
         text.replace("%player%", playerName)
+        if (text.contains("%rand_")){
+            RandomVarianceGenerator.generateVariance(lmEntity, text)
+        }
 
         for (placeholder in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
             text.replaceIfExists(placeholder.key){ placeholder.value.getPlaceholder(lmEntity) }
@@ -1156,13 +1160,13 @@ class LevelManager : LevelInterface2 {
             var skipLevelling = (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER ||
                     lmEntity.spawnReason == LevelledMobSpawnReason.LM_SUMMON
                     )
-            if (main.configUtils.playerLevellingEnabled && !lmEntity.isRulesForceAll && !checkIfReadyForRelevelling(
+            if (main.rulesManager.isPlayerLevellingEnabled() && !lmEntity.isRulesForceAll && !checkIfReadyForRelevelling(
                     lmEntity
                 )
             ) {
                 skipLevelling = true
             }
-            if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
+            if (main.rulesManager.isPlayerLevellingEnabled() && !skipLevelling) {
                 val hasKey = entityToPlayer.containsKey(lmEntity)
                 val players = if (hasKey) entityToPlayer[lmEntity]!! else mutableListOf()
                 players.add(player)

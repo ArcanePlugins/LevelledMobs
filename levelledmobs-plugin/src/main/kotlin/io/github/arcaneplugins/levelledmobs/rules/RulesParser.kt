@@ -540,7 +540,8 @@ class RulesParser {
 
         mergePreset(ymlHelper)
 
-        parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "enabled", true)
+        parsingInfo.ruleName = ymlHelper.getString( "custom-rule", parsingInfo.ruleName)!!
+        parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "is-enabled", true)
 
         parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
         parseConditions(YmlParsingHelper.objToCS(ymlHelper.cs, "conditions"))

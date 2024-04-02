@@ -138,7 +138,6 @@ class MainCompanion{
         val rulesFile = loadFile(main, "rules", FileLoader.RULES_FILE_VERSION)
         this.hadRulesLoadError = rulesFile == null
         main.rulesParsingManager.parseRulesMain(rulesFile)
-        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled()
         main.customDropsHandler.load()
 
         parseDebugsEnabled()

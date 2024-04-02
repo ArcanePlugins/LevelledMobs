@@ -10,7 +10,6 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
-import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
@@ -64,7 +63,7 @@ class EntitySpawnListener : Listener{
                         || spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) &&
                 !lmEntity.isLevelled
             ) {
-                if (main.configUtils.playerLevellingEnabled
+                if (main.rulesManager.isPlayerLevellingEnabled()
                     && lmEntity.playerForLevelling == null
                 ) {
                     updateMobForPlayerLevelling(lmEntity)
@@ -83,9 +82,8 @@ class EntitySpawnListener : Listener{
             return
         }
 
-        if (main.configUtils.playerLevellingEnabled && lmEntity.playerForLevelling == null) {
+        if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.playerForLevelling == null)
             updateMobForPlayerLevelling(lmEntity)
-        }
 
         val mobProcessDelay = main.helperSettings.getInt("mob-process-delay", 0)
 
@@ -96,87 +94,6 @@ class EntitySpawnListener : Listener{
         }
 
         lmEntity.free()
-    }
-
-    private fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
-        val main = LevelledMobs.instance
-        val onlinePlayerCount = lmEntity.world.players.size
-        val checkDistance = main.helperSettings.getInt(
-            "async-task-max-blocks-from-player", 100
-        )
-        val playerList: MutableList<Player> = if (onlinePlayerCount <= 10) getPlayersOnServerNearMob(
-            lmEntity.livingEntity,
-            checkDistance
-        ) else getPlayersNearMob(lmEntity.livingEntity, checkDistance)
-
-        var closestPlayer: Player? = null
-        for (player in playerList) {
-            if (ExternalCompatibilityManager.isMobOfCitizens(player)) {
-                continue
-            }
-
-            closestPlayer = player
-            break
-        }
-
-        if (closestPlayer == null) {
-            return
-        }
-        // if player has been logged in for less than 5 seconds then ignore
-        val logonTime = main.mainCompanion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
-        if (logonTime != null) {
-            if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) {
-                return
-            }
-            main.mainCompanion.removeRecentlyJoinedPlayer(closestPlayer)
-        }
-
-        synchronized(lmEntity.livingEntity.persistentDataContainer) {
-            lmEntity.pdc.set(
-                NamespacedKeys.playerLevellingId, PersistentDataType.STRING,
-                closestPlayer.uniqueId.toString()
-            )
-        }
-
-        lmEntity.playerForLevelling = closestPlayer
-        val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
-            lmEntity
-        )
-        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
-            lmEntity.livingEntity.hasLineOfSight(closestPlayer)
-        ) {
-            main.levelManager.updateNametag(lmEntity)
-        }
-    }
-
-    private fun getPlayersOnServerNearMob(
-        mob: LivingEntity,
-        checkDistance: Int
-    ): MutableList<Player> {
-        return Utils.filterPlayersList(
-            mob.world.players,
-            mob,
-            (checkDistance * 4).toDouble()
-        )
-    }
-
-    private fun getPlayersNearMob(
-        mob: LivingEntity,
-        checkDistance: Int
-    ): MutableList<Player> {
-        var temp = mob.getNearbyEntities(checkDistance.toDouble(), checkDistance.toDouble(), checkDistance.toDouble()
-            ).asSequence()
-            .filterIsInstance<Player>()
-            .filter { e: Entity -> (e as Player).gameMode != GameMode.SPECTATOR }
-            .map { e: Entity -> Pair(mob.location.distanceSquared(e.location), e as Player) }
-            .sortedBy { it.first }
-            .map { it.second }
-
-        if (MainCompanion.instance.excludePlayersInCreative){
-            temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
-        }
-
-        return temp.toMutableList()
     }
 
     private fun delayedAddToQueue(
@@ -335,7 +252,7 @@ class EntitySpawnListener : Listener{
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER
         }
 
-        if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled
+        if (lmEntity.reEvaluateLevel && main.rulesManager.isPlayerLevellingEnabled()
             && lmEntity.isRulesForceAll
         ) {
             synchronized(lmEntity.livingEntity.persistentDataContainer) {
@@ -345,7 +262,6 @@ class EntitySpawnListener : Listener{
                     lmEntity.pdc.remove(NamespacedKeys.playerLevellingId)
                 }
             }
-            lmEntity.playerForLevelling = null
         }
 
         val additionalLevelInfo = mutableSetOf(additionalInfo)
@@ -360,7 +276,7 @@ class EntitySpawnListener : Listener{
                     )
                 }
             } else {
-                if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
+                if (lmEntity.reEvaluateLevel && main.rulesManager.isPlayerLevellingEnabled()) {
                     val scheduler = SchedulerWrapper(lmEntity.livingEntity){
                         updateMobForPlayerLevelling(lmEntity)
                         lmEntity.free()
@@ -468,5 +384,88 @@ class EntitySpawnListener : Listener{
         }
 
         return LevellableState.ALLOWED
+    }
+
+    companion object{
+        fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
+            val main = LevelledMobs.instance
+            val onlinePlayerCount = lmEntity.world.players.size
+            val checkDistance = main.helperSettings.getInt(
+                "async-task-max-blocks-from-player", 100
+            )
+            val playerList: MutableList<Player> = if (onlinePlayerCount <= 10) getPlayersOnServerNearMob(
+                lmEntity.livingEntity,
+                checkDistance
+            ) else getPlayersNearMob(lmEntity.livingEntity, checkDistance)
+
+            var closestPlayer: Player? = null
+            for (player in playerList) {
+                if (ExternalCompatibilityManager.isMobOfCitizens(player)) {
+                    continue
+                }
+
+                closestPlayer = player
+                break
+            }
+
+            if (closestPlayer == null) {
+                return
+            }
+            // if player has been logged in for less than 5 seconds then ignore
+            val logonTime = main.mainCompanion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
+            if (logonTime != null) {
+                if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) {
+                    return
+                }
+                main.mainCompanion.removeRecentlyJoinedPlayer(closestPlayer)
+            }
+
+            synchronized(lmEntity.livingEntity.persistentDataContainer) {
+                lmEntity.pdc.set(
+                    NamespacedKeys.playerLevellingId, PersistentDataType.STRING,
+                    closestPlayer.uniqueId.toString()
+                )
+            }
+
+            lmEntity.playerForLevelling = closestPlayer
+            val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
+                lmEntity
+            )
+            if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
+                lmEntity.livingEntity.hasLineOfSight(closestPlayer)
+            ) {
+                main.levelManager.updateNametag(lmEntity)
+            }
+        }
+
+        private fun getPlayersOnServerNearMob(
+            mob: LivingEntity,
+            checkDistance: Int
+        ): MutableList<Player> {
+            return Utils.filterPlayersList(
+                mob.world.players,
+                mob,
+                (checkDistance * 4).toDouble()
+            )
+        }
+
+        private fun getPlayersNearMob(
+            mob: LivingEntity,
+            checkDistance: Int
+        ): MutableList<Player> {
+            var temp = mob.getNearbyEntities(checkDistance.toDouble(), checkDistance.toDouble(), checkDistance.toDouble()
+            ).asSequence()
+                .filterIsInstance<Player>()
+                .filter { e: Entity -> (e as Player).gameMode != GameMode.SPECTATOR }
+                .map { e: Entity -> Pair(mob.location.distanceSquared(e.location), e as Player) }
+                .sortedBy { it.first }
+                .map { it.second }
+
+            if (MainCompanion.instance.excludePlayersInCreative){
+                temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
+            }
+
+            return temp.toMutableList()
+        }
     }
 }
