@@ -4,7 +4,7 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("idea")
 }
@@ -22,7 +22,7 @@ idea {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = "1.9.22"))
+    implementation(kotlin("stdlib", version = "1.9.23"))
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.0.2") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
