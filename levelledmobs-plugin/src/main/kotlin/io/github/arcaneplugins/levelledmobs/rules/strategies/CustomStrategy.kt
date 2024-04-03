@@ -13,7 +13,9 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
  * @author stumper66
  * @since 4.0
  */
-class CustomStrategy : LevellingStrategy, Cloneable {
+class CustomStrategy(
+    val customName: String?
+) : LevellingStrategy, Cloneable {
     var formula: String? = null
     override val strategyType = StrategyType.CUSTOM
 
@@ -27,8 +29,8 @@ class CustomStrategy : LevellingStrategy, Cloneable {
             return 1f
         }
 
-        val useFormula = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
-            formula!!, lmEntity, true, lmEntity.associatedPlayer, true
+        val useFormula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(
+            formula!!, lmEntity
         )
 
         val evalResult = MobDataManager.evaluateExpression(useFormula)
@@ -39,6 +41,14 @@ class CustomStrategy : LevellingStrategy, Cloneable {
 
         return result.toFloat()
     }
+
+    val placeholderName: String
+        get() {
+            return if (customName.isNullOrEmpty())
+                "%custom%"
+            else
+                "%custom_$customName%"
+        }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy !is CustomStrategy) return
@@ -59,8 +69,8 @@ class CustomStrategy : LevellingStrategy, Cloneable {
 
     override fun toString(): String {
         return if (formula.isNullOrEmpty())
-            "Custom Strategy"
+            placeholderName
         else
-            "Custom Strategy: $formula"
+            "$placeholderName: '$formula'"
     }
 }

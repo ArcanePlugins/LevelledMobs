@@ -19,6 +19,7 @@ import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.result.RuleCheckResult
+import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
@@ -29,6 +30,7 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.isIntegerInModalList
 import io.github.arcaneplugins.levelledmobs.util.Utils.isLivingEntityInModalList
 import io.github.arcaneplugins.levelledmobs.util.Utils.round
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.TreeSet
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.command.CommandSender
@@ -46,6 +48,7 @@ class RulesManager {
     val ruleNameMappings: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     val biomeGroupMappings: MutableMap<String, MutableList<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     val rulesCooldown = mutableMapOf<String, MutableList<Instant>>()
+    val allCustomStrategyPlaceholders: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     var anyRuleHasChance = false
     var hasAnyWGCondition = false
     private var lastRulesCheck: Instant? = null
@@ -316,6 +319,19 @@ class RulesManager {
         }
 
         return strategies.values.toMutableList()
+    }
+
+    fun getRuleCustomStrategies(
+        lmEntity: LivingEntityWrapper
+    ): MutableList<CustomStrategy> {
+        var results = mutableListOf<CustomStrategy>()
+
+        for (ruleInfo in lmEntity.getApplicableRules()) {
+            if (ruleInfo.customStrategy.isNotEmpty())
+                results = ruleInfo.customStrategy
+        }
+
+        return results
     }
 
     fun getRuleConstructLevel(

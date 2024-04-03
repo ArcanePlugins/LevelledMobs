@@ -30,6 +30,8 @@ import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
+import io.github.arcaneplugins.levelledmobs.rules.RulesManager
+import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomVarianceGenerator
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -203,22 +205,39 @@ class LevelManager : LevelInterface2 {
         val levellingStrategies = LevelledMobs.instance.rulesManager.getRuleLevellingStrategies(
             lmEntity
         )
+        val customStrategies = LevelledMobs.instance.rulesManager.getRuleCustomStrategies(lmEntity)
 
         var numberResult = 0f
         val debugId = DebugManager.startLongDebugMessage()
 
-        for ((count, strategy) in levellingStrategies.withIndex()){
-            val result = strategy.generateNumber(lmEntity, useMinLevel, useMaxLevel)
-            lmEntity.strategyResults[strategy.strategyType] = result
-            numberResult += result
+        try{
+            for ((count, strategy) in levellingStrategies.withIndex()){
+                val result = strategy.generateNumber(lmEntity, useMinLevel, useMaxLevel)
+                lmEntity.strategyResults[strategy.strategyType] = result
 
-            DebugManager.logLongMessage(debugId){
-                if (count > 0) ", ${strategy.strategyType}: $result"
-                else "${strategy.strategyType}: $result"
+                DebugManager.logLongMessage(debugId){
+                    if (count > 0) ", ${strategy.strategyType}: $result"
+                    else "${strategy.strategyType}: $result"
+                }
+
+                numberResult += result
+            }
+
+            for ((count, strategy) in customStrategies.withIndex()){
+                val result = strategy.generateNumber(lmEntity, useMinLevel, useMaxLevel)
+                lmEntity.customStrategyResults[strategy.placeholderName] = result
+
+                DebugManager.logLongMessage(debugId){
+                    if (count > 0) ", ${strategy.placeholderName}: $result"
+                    else "${strategy.placeholderName}: $result"
+                }
+
+                numberResult += result
             }
         }
-
-        DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT)
+        finally {
+            DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT)
+        }
 
         // if no levelling strategy was selected then we just use a random number between min and max
         if (useMinLevel == useMaxLevel) {
@@ -817,7 +836,7 @@ class LevelManager : LevelInterface2 {
         MobDataManager.instance.getAllAttributeValues(lmEntity, whichOnes)
     }
 
-    private fun replaceStringPlaceholdersForFormulas(
+    fun replaceStringPlaceholdersForFormulas(
         text: String,
         lmEntity: LivingEntityWrapper
     ): String{
@@ -832,6 +851,12 @@ class LevelManager : LevelInterface2 {
         for (placeholder in strategyPlaceholders){
             str.replaceIfExists(placeholder.key){
                 lmEntity.strategyResults.getOrDefault(placeholder.value, 0f).toString()
+            }
+        }
+
+        for (placeholder in RulesManager.instance.allCustomStrategyPlaceholders){
+            str.replaceIfExists(placeholder){
+                lmEntity.customStrategyResults.getOrDefault(placeholder, 0f).toString()
             }
         }
 
@@ -1927,16 +1952,6 @@ class LevelManager : LevelInterface2 {
                 "Timed out applying level to mob"
             }
         }
-
-//        val scheduler = SchedulerWrapper {
-//
-//
-//            lmEntity.free()
-//        }
-
-//        lmEntity.inUseCount.getAndIncrement()
-//        scheduler.entity = lmEntity.livingEntity
-//        scheduler.run()
     }
 
     private fun applyLevelToMob2(

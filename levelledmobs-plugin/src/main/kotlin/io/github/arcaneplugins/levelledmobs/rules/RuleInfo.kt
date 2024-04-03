@@ -12,6 +12,7 @@ import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
+import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import org.bukkit.Particle
@@ -115,6 +116,8 @@ class RuleInfo(
     var conditionsMobTamedStatus = MobTamedStatus.NOT_SPECIFIED
     @RuleFieldInfo("levelling strategy", RuleType.STRATEGY)
     val levellingStrategy = mutableMapOf<StrategyType, LevellingStrategy>()
+    @RuleFieldInfo("custom strategy", RuleType.STRATEGY)
+    val customStrategy = mutableListOf<CustomStrategy>()
     @ExcludeFromHash @RuleFieldInfo("entity name overrides with level", RuleType.APPLY_SETTING)
     var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
     @ExcludeFromHash @RuleFieldInfo("entity name overrides", RuleType.APPLY_SETTING)

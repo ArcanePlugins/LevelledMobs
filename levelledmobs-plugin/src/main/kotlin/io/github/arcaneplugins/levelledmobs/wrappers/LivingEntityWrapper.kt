@@ -71,6 +71,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     // publics:
     var attributeValuesCache: MutableMap<Attribute, AttributeInstance>? = null
     val strategyResults = mutableMapOf<StrategyType, Float>()
+    var customStrategyResults = mutableMapOf<String, Float>()
     var reEvaluateLevel = false
     var wasPreviouslyLevelled = false
     var isRulesForceAll = false
@@ -173,6 +174,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this._livingEntity = null
         this.attributeValuesCache = null
         this.strategyResults.clear()
+        this.customStrategyResults.clear()
         this.libsDisguiseCache = null
         this.chunkKillcount = 0
         applicableGroups.clear()

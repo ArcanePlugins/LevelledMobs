@@ -236,7 +236,6 @@ class RulesParser {
         ): CachedModalList<*>? {
             if (cs == null) return defaultValue
 
-            //TODO: test changes here
             val useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, mlpi.configurationKey!!)
 
             val cachedModalList = mlpi.cachedModalList
@@ -378,6 +377,7 @@ class RulesParser {
         rulePresets.clear()
         main.rulesManager.rulesInEffect.clear()
         main.customMobGroups.clear()
+        main.rulesManager.allCustomStrategyPlaceholders.clear()
 
         parseCustomMobGroups(YmlParsingHelper.objToCS(config, "mob-groups"))
         parseCustomBiomeGroups(YmlParsingHelper.objToCS(config, "biome-groups"))
@@ -1069,16 +1069,6 @@ class RulesParser {
         if (ymlHelper.getBoolean( "random"))
             parsingInfo.levellingStrategy[StrategyType.RANDOM] = RandomLevellingStrategy()
 
-        val csCustom = YmlParsingHelper.objToCS(cs, "custom")
-        if (csCustom != null){
-            val customStrategy = CustomStrategy()
-            customStrategy.formula = csCustom.getString("formula")
-
-            if (!customStrategy.formula.isNullOrEmpty()) {
-                parsingInfo.levellingStrategy[StrategyType.CUSTOM] = customStrategy
-            }
-        }
-
         val csYDistance = YmlParsingHelper.objToCS(cs, "y-coordinate")
         if (csYDistance != null) {
             val ymlHelper2 = YmlParsingHelper(csYDistance)
@@ -1138,6 +1128,37 @@ class RulesParser {
             "max-random-variance", parsingInfo.maxRandomVariance
         )
         parsePlayerLevellingOptions(YmlParsingHelper.objToCS(cs, "player-variable-mod"))
+
+        for (key in cs.getKeys(false)) {
+            if (key.startsWith("custom", ignoreCase = true))
+                parseCustomStrategy(cs, key)
+        }
+    }
+
+    private fun parseCustomStrategy(cs: ConfigurationSection, keyName: String){
+        val underScore = keyName.indexOf("_")
+        val customName = if ("custom".equals(keyName, ignoreCase = true)) {
+            null
+        } else if (underScore <= 0 || underScore == keyName.length - 1 ||
+            "custom".equals(keyName, ignoreCase = true)){
+            Log.war("Modifier '$keyName' must have a unique name specified")
+            return
+        } else
+            keyName.substring(underScore + 1)
+
+        val csCustom = YmlParsingHelper.objToCS(cs, keyName) ?: return
+        val customStrategy = CustomStrategy(customName)
+        customStrategy.formula = csCustom.getString("formula")
+
+        if (!customStrategy.formula.isNullOrEmpty()) {
+            if (RulesManager.instance.allCustomStrategyPlaceholders.contains(customStrategy.placeholderName)){
+                Log.war("Duplicate placeholder name for custom strategy: ${customStrategy.placeholderName}")
+                return
+            }
+
+            parsingInfo.customStrategy.add(customStrategy)
+            RulesManager.instance.allCustomStrategyPlaceholders.add(customStrategy.placeholderName)
+        }
     }
 
     private fun parseWeightedRandom(cs: ConfigurationSection) {
