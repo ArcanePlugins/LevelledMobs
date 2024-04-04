@@ -871,7 +871,7 @@ class LevelManager : LevelInterface2 {
         }
 
         for (placeholder in attributeStringList){
-            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value).toString() }
+            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value)?.value.toString() }
         }
 
         str.replaceIfExists("%item-drop%"){ "1" }

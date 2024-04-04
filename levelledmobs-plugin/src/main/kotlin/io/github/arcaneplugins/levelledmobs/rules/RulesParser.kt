@@ -1151,12 +1151,7 @@ class RulesParser {
         customStrategy.formula = csCustom.getString("formula")
 
         if (!customStrategy.formula.isNullOrEmpty()) {
-            if (RulesManager.instance.allCustomStrategyPlaceholders.contains(customStrategy.placeholderName)){
-                Log.war("Duplicate placeholder name for custom strategy: ${customStrategy.placeholderName}")
-                return
-            }
-
-            parsingInfo.customStrategy.add(customStrategy)
+            parsingInfo.customStrategy[customStrategy.placeholderName] = customStrategy
             RulesManager.instance.allCustomStrategyPlaceholders.add(customStrategy.placeholderName)
         }
     }

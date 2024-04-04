@@ -324,13 +324,15 @@ class RulesManager {
     fun getRuleCustomStrategies(
         lmEntity: LivingEntityWrapper
     ): MutableList<CustomStrategy> {
-        var results = mutableListOf<CustomStrategy>()
+        val results = mutableListOf<CustomStrategy>()
+        var strategies: MutableMap<String, CustomStrategy>? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.customStrategy.isNotEmpty())
-                results = ruleInfo.customStrategy
+                strategies = ruleInfo.customStrategy
         }
 
+        if (strategies != null) results.addAll(strategies.values)
         return results
     }
 

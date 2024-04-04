@@ -69,8 +69,8 @@ class CustomStrategy(
 
     override fun toString(): String {
         return if (formula.isNullOrEmpty())
-            placeholderName
+            "(no formula)"
         else
-            "$placeholderName: '$formula'"
+            "'$formula'"
     }
 }

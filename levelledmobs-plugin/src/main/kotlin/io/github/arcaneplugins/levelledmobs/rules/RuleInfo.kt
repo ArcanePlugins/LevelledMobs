@@ -15,6 +15,7 @@ import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
+import java.util.TreeMap
 import org.bukkit.Particle
 import org.bukkit.block.Biome
 import org.bukkit.generator.structure.Structure
@@ -117,7 +118,7 @@ class RuleInfo(
     @RuleFieldInfo("levelling strategy", RuleType.STRATEGY)
     val levellingStrategy = mutableMapOf<StrategyType, LevellingStrategy>()
     @RuleFieldInfo("custom strategy", RuleType.STRATEGY)
-    val customStrategy = mutableListOf<CustomStrategy>()
+    val customStrategy: MutableMap<String, CustomStrategy> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     @ExcludeFromHash @RuleFieldInfo("entity name overrides with level", RuleType.APPLY_SETTING)
     var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
     @ExcludeFromHash @RuleFieldInfo("entity name overrides", RuleType.APPLY_SETTING)
@@ -255,6 +256,16 @@ class RuleInfo(
                             this.levellingStrategy[strategy.key]!!.mergeRule(strategy.value)
                         else
                             this.levellingStrategy[strategy.key] = strategy.value.cloneItem()
+                    }
+
+                    skipSettingValue = true
+                }
+                if (p.name == "customStrategy"){
+                    val mergingStrategies = presetValue as MutableMap<String, CustomStrategy>
+
+                    if (mergingStrategies.isNotEmpty()){
+                        this.customStrategy.clear()
+                        this.customStrategy.putAll(mergingStrategies)
                     }
 
                     skipSettingValue = true
