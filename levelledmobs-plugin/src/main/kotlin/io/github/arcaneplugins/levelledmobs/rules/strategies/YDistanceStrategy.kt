@@ -56,12 +56,19 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         minLevel: Int,
         maxLevel: Int
     ): Float {
-        val mobYLocation = lmEntity.livingEntity.location.blockY
+        var mobYLocation = lmEntity.livingEntity.location.blockY
         val yStart = if (this.startingYLevel == null) 0 else startingYLevel!!
         val yEnd = if (this.endingYLevel == null) 0 else endingYLevel!!
         val yPeriod = if (this.yPeriod == null) 0.0 else yPeriod!!.toDouble()
         val useLevel: Float
         val diff = (yEnd - yStart).toDouble()
+        val isDecending = (yStart > yEnd)
+
+        // make sure the mob location isn't past the end or start
+        if (isDecending && mobYLocation < yEnd)
+            mobYLocation = yEnd
+        else if (!isDecending && mobYLocation > yEnd)
+            mobYLocation = yStart
 
         if (yPeriod != 0.0) {
             val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)

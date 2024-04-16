@@ -215,7 +215,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
 
         var useLevel = minLevel
         if (minLevel != maxLevel) {
-            useLevel = ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1)
+            useLevel = ThreadLocalRandom.current().nextInt(minLevel,
+                maxLevel.coerceAtLeast(minLevel) + 1)
         }
 
         synchronized(lmEntity.livingEntity.persistentDataContainer) {

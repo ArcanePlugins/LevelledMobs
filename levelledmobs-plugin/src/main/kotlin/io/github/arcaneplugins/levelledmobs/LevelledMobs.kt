@@ -22,6 +22,7 @@ import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.RulesParser
 import io.github.arcaneplugins.levelledmobs.util.ConfigUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.QuickTimer
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -34,6 +35,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -209,6 +211,13 @@ class LevelledMobs : JavaPlugin() {
         ) {
             configUtils.chunkLoadListenerWasEnabled = false
             HandlerList.unregisterAll(chunkLoadListener)
+        }
+
+        if (customDropsHandler.customDropsParser.hadParsingError && sender is Player){
+            sender.sendMessage(MessageUtils.colorizeAll(
+                "&b&lLevelledMobs:&r &6There was an error parsing customdrops.yml&r\n" +
+                "Check the console log for more details"
+            ))
         }
 
         levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(

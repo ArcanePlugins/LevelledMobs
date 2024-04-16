@@ -1,11 +1,14 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsHandler
+import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsParser
 import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -63,6 +66,14 @@ class PlayerJoinListener : Listener {
             if (NotifyManager.opHasMessage){
                 event.player.sendMessage(NotifyManager.pendingMessage!!)
                 NotifyManager.clearLastError()
+            }
+
+            if (main.customDropsHandler.customDropsParser.hadParsingError){
+                event.player.sendMessage(
+                    MessageUtils.colorizeAll(
+                    "&b&lLevelledMobs:&r &6There was an error parsing customdrops.yml&r\n" +
+                            "Check the console log for more details"
+                ))
             }
         }
     }
