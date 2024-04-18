@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.debug
 
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
@@ -17,6 +18,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.HandlerList
 import kotlin.math.floor
 
 /**
@@ -48,6 +50,8 @@ class DebugManager {
     var maxYLevel: Int? = null
     var disableAfter: Long? = null
     var disableAfterStr: String? = null
+    var damageDebugOutputIsEnabled = false
+        private set
 
     init {
         instance = this
@@ -68,6 +72,7 @@ class DebugManager {
     fun disableDebug() {
         this.isEnabled = false
         this.isTimerEnabled = false
+        toggleDamageDebugOutput(false)
         disableTimer()
     }
 
@@ -449,6 +454,20 @@ class DebugManager {
         }
 
         return secondsLeft.toString()
+    }
+
+    fun toggleDamageDebugOutput(doEnable: Boolean){
+        if (doEnable) {
+            if (damageDebugOutputIsEnabled) return
+            // we'll load and unload this listener based on the above setting when reloading
+            damageDebugOutputIsEnabled = true
+            Bukkit.getPluginManager().registerEvents(LevelledMobs.instance.entityDamageDebugListener, LevelledMobs.instance)
+        }
+        else{
+            if (!damageDebugOutputIsEnabled) return
+            damageDebugOutputIsEnabled = false
+            HandlerList.unregisterAll(LevelledMobs.instance.entityDamageDebugListener)
+        }
     }
 
     private fun buildExcludedEntityTypes() {

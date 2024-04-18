@@ -11,8 +11,6 @@ import java.util.SortedMap
 import java.util.TreeMap
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.util.Utils
-import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.YamlConfiguration
 
 /**
  * Migrates older yml versions to the latest available
@@ -303,101 +301,6 @@ object FileMigrator {
         }
 
         return 0
-    }
-
-    fun migrateRules(to: File) {
-        try {
-            val newConfigLines = Files.readAllLines(
-                to.toPath(),
-                StandardCharsets.UTF_8
-            )
-
-            val enabledCompats = mutableListOf<String>()
-            val rulesCfg = YamlConfiguration.loadConfiguration(to)
-            val cs = rulesCfg.get("default-rule.conditions.level-plugins") as? ConfigurationSection
-            if (cs != null){
-                for (key in cs.getKeys(false)){
-                    val foundValue = cs.getString(key)
-                    if ("true".equals(foundValue, ignoreCase = true)){
-                        enabledCompats.add(key.toString().lowercase().replace("_", "-"))
-                    }
-                }
-            }
-            else
-                Log.war("cs was null")
-
-            val newText = mutableListOf(
-                "",
-                "  - enabled: true",
-                "    name: 'No Stat Change for External Plugins'",
-                "    use-preset: vanilla_challenge, nametag_no_level",
-                "    conditions:",
-                "      external-plugins: '*'"
-            )
-
-            var foundLine = -1
-            var madeUpdate = false
-            var i = -1
-            while (true) {
-                i++
-                if (i >= newConfigLines.size) break
-                val line = newConfigLines[i]
-                if (line.trim { it <= ' ' }.startsWith("#")) {
-                    continue
-                }
-
-                var lineText = line.indexOf("No Stat Change for Specific Entities", ignoreCase = true)
-                if (lineText <= 0){
-                    lineText = line.indexOf("NoLevel All Passive + EntityTypes", ignoreCase = true)
-                }
-
-                if (lineText > 0){
-                    foundLine = i
-                }
-                else if (!madeUpdate && foundLine > -1){
-                    if (!line.contains("- enabled: true")) continue
-
-                    i -= 1
-                    for (newTextLine in newText){
-                        var useNewTextLine = newTextLine
-                        var hadExternalCompats = false
-                        if (enabledCompats.isNotEmpty() && useNewTextLine.contains("external-plugins:")){
-                            var isFirst = true
-                            hadExternalCompats = true
-                            val sb = StringBuilder((useNewTextLine.replace(" '*'",
-                                "\n        excluded-list: [")))
-                            for (compat in enabledCompats){
-                                if (isFirst)
-                                    isFirst = false
-                                else
-                                    sb.append(", ")
-
-                                sb.append("'").append(compat).append("'")
-                            }
-                            sb.append("]")
-                            useNewTextLine = sb.toString()
-                        }
-
-                        newConfigLines.add(i, useNewTextLine)
-                        i++
-                        if (hadExternalCompats) i++
-                    }
-
-                    madeUpdate = true
-                }
-
-                if (line.startsWith("file-version")) {
-                    newConfigLines[i] = "file-version: 5"
-                }
-            }
-
-            Files.write(
-                to.toPath(), newConfigLines, StandardCharsets.UTF_8,
-                StandardOpenOption.TRUNCATE_EXISTING
-            )
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
     }
 
     fun copyYmlValues(from: File, to: File, oldVersion: Int) {

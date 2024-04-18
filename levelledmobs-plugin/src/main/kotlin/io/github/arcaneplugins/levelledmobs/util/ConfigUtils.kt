@@ -18,7 +18,6 @@ class ConfigUtils{
         private var SETTINGS_SPAWN_DISTANCE_FROM_PLAYER = 0
     }
 
-    var debugEntityDamageWasEnabled = false
     var chunkLoadListenerWasEnabled = false
 
     fun load() {

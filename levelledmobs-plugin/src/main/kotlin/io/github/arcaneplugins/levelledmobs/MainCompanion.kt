@@ -212,12 +212,6 @@ class MainCompanion{
         main.entityDamageDebugListener = EntityDamageDebugListener()
         main.blockPlaceListener = BlockPlaceListener()
 
-        if (main.helperSettings.getBoolean( "debug-entity-damage")) {
-            // we'll load and unload this listener based on the above setting when reloading
-            main.configUtils.debugEntityDamageWasEnabled = true
-            pluginManager.registerEvents(main.entityDamageDebugListener, main)
-        }
-
         pluginManager.registerEvents(main.levelManager.entitySpawnListener, main)
         pluginManager.registerEvents(EntityDamageListener(), main)
         pluginManager.registerEvents(main.entityDeathListener, main)

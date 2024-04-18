@@ -25,14 +25,6 @@
 #        Section 01  |  External Plugin Support
 #   ---------------  -  ------------------------------
 #
-dangerous-caves:
-  friendly-name: 'Dangerous-Caves'
-  plugin-name: 'DangerousCaves'
-  key-name: 'mob-type'
-  key-type: 'PDC'
-  requirement: 'exists'
-#  placeholder-name: '%dangerous-caves-name%'
-
 infernal-mobs:
   friendly-name: 'infernal-mobs'
   plugin-name: 'InfernalMobs'

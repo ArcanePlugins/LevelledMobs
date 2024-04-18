@@ -189,18 +189,6 @@ class LevelledMobs : JavaPlugin() {
         )
         reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg)
 
-        if (helperSettings.getBoolean( "debug-entity-damage")
-            && !configUtils.debugEntityDamageWasEnabled
-        ) {
-            configUtils.debugEntityDamageWasEnabled = true
-            Bukkit.getPluginManager().registerEvents(entityDamageDebugListener, this)
-        } else if (!helperSettings.getBoolean( "debug-entity-damage")
-            && configUtils.debugEntityDamageWasEnabled
-        ) {
-            configUtils.debugEntityDamageWasEnabled = false
-            HandlerList.unregisterAll(entityDamageDebugListener)
-        }
-
         if (helperSettings.getBoolean("ensure-mobs-are-levelled-on-chunk-load")
             && !configUtils.chunkLoadListenerWasEnabled
         ) {

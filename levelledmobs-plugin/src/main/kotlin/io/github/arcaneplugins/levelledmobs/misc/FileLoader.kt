@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.RulesSubcommand
 import io.github.arcaneplugins.levelledmobs.util.Log
 import java.io.File
 import java.io.FileInputStream
@@ -16,10 +17,10 @@ import org.yaml.snakeyaml.Yaml
  * @since 2.4.0
  */
 object FileLoader {
-    const val SETTINGS_FILE_VERSION: Int = 35 // Last changed: v3.12.0 b770
-    const val MESSAGES_FILE_VERSION: Int = 8 // Last changed: v3.4.0 b621
-    const val CUSTOMDROPS_FILE_VERSION: Int = 10 // Last changed: v3.1.0 b474
-    const val RULES_FILE_VERSION: Int = 4 // Last changed: v3.13.0 b789
+    const val SETTINGS_FILE_VERSION: Int = 36 // Last changed: v4.0.0 b1
+    const val MESSAGES_FILE_VERSION: Int = 8 // Last changed: v4.0.0 b1
+    const val CUSTOMDROPS_FILE_VERSION: Int = 11 // Last changed: v4.0.0 b1
+    const val RULES_FILE_VERSION: Int = 5 // Last changed: v4.0.0 b1
     const val EXTERNALPLUGINS_FILE_VERSION: Int = 1 // Last changed: v4.0.0
 
     fun loadFile(
@@ -82,17 +83,20 @@ object FileLoader {
             }
 
             // copy supported values from old file to new
-            Log.inf(
-                "&fFile Loader: &8(Migration) &7Migrating &b$useCfgName" +
-                        "&7 from old version to new version."
-            )
+            if (!isRules){
+                Log.inf(
+                    "&fFile Loader: &8(Migration) &7Migrating &b$useCfgName" +
+                            "&7 from old version to new version."
+                )
+            }
 
             if (isCustomDrops) {
                 FileMigrator.copyCustomDrops(backedupFile, file, fileVersion)
             } else if (!isRules) {
                 FileMigrator.copyYmlValues(backedupFile, file, fileVersion)
             } else {
-                FileMigrator.migrateRules(file)
+                Log.war("Your rules file is pre-4.0. A backup has been made and it will be reset to default.")
+                RulesSubcommand.resetRules(null, RulesSubcommand.ResetDifficulty.SILVER)
             }
 
             // reload cfg from the updated values

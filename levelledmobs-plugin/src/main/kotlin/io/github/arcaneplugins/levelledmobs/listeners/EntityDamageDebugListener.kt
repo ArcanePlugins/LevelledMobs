@@ -30,8 +30,7 @@ class EntityDamageDebugListener : Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         // Make sure debug entity damage is enabled
-        val main = LevelledMobs.instance
-        if (!main.helperSettings.getBoolean( "debug-entity-damage")) {
+        if (!LevelledMobs.instance.debugManager.damageDebugOutputIsEnabled) {
             return
         }
 

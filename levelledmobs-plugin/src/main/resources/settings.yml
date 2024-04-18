@@ -30,7 +30,6 @@
 # ||  These settings print a lot of 'behind the scenes'
 # ||  information about LevelledMobs' operations to the console.
 # ||  With LevelledMobs4, we suggest using the command: /lm debug
-debug-entity-damage: false
 debug-misc: [ ]
 
 # ||  This is a good update checker - it doesn't freeze
@@ -65,8 +64,8 @@ use-legacy-serializer: true
 # ||  This system acts as a garbage collection and verification
 # ||  mechanism, as well as a form of 'rechecking' entities to ensure
 # ||  they follow the rules of the system.
-async-task-update-period: 6
-async-task-max-blocks-from-player: 100
+async-task-update-period: 3
+async-task-max-blocks-from-player: 320
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
@@ -165,9 +164,10 @@ lew-cache-clear-period: 3m
 # ||  mode when the Player Level Modifier is determining values.
 exclude-players-in-creative: false
 
+
 #
 #   ---------------  -  ------------------------------
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point
 #   ---------------  -  ------------------------------
 #
-file-version: 35
+file-version: 36

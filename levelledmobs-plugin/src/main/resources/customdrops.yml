@@ -88,11 +88,11 @@ all_aquatic_mobs:
   -
 
 
-    #
-    #   ---------------  -  ------------------------------
-    #        Section 03  |  Entity CustomDrops
-    #   ---------------  -  ------------------------------
-  #
+#
+#   ---------------  -  ------------------------------
+#        Section 03  |  Entity CustomDrops
+#   ---------------  -  ------------------------------
+#
 ALLAY:
   -
 
@@ -330,11 +330,12 @@ ZOMBIE_VILLAGER:
 ZOMBIFIED_PIGLIN:
   -
 
-    #
-    #   ---------------  -  ------------------------------
-    #        Section 04  |  Drop Tables
-    #   ---------------  -  ------------------------------
-  #
+
+#
+#   ---------------  -  ------------------------------
+#        Section 04  |  Drop Tables
+#   ---------------  -  ------------------------------
+#
 drop-table:
   armor_and_weapons:
     - IRON_HELMET:
@@ -376,4 +377,4 @@ drop-table:
 #        Section 05  |  Developer Settings / Do Not Edit Beyond This Point
 #   ---------------  -  ------------------------------
 #
-file-version: 10
+file-version: 11

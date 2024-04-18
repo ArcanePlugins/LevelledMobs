@@ -106,7 +106,7 @@ object RulesSubcommand {
                 CommandAPICommand("reset")
                     .withOptionalArguments(StringArgument("difficulty")
                         .includeSuggestions(ArgumentSuggestions.strings(
-                            "vanilla", "basic", "average", "advanced", "extreme")))
+                            "vanilla", "bronze", "silver", "gold", "platium")))
                     .withOptionalArguments(StringArgument("confirm"))
                     .executes(CommandExecutor { sender, args -> resetRules(sender, args) })
             )
@@ -241,10 +241,10 @@ object RulesSubcommand {
 
         val difficulty: ResetDifficulty = when (difficultyStr.lowercase(Locale.getDefault())) {
             "vanilla" -> ResetDifficulty.VANILLA
-            "basic" -> ResetDifficulty.BASIC
-            "average" -> ResetDifficulty.AVERAGE
-            "advanced" -> ResetDifficulty.ADVANCED
-            "extreme" -> ResetDifficulty.EXTREME
+            "bronze" -> ResetDifficulty.BRONZE
+            "silver" -> ResetDifficulty.SILVER
+            "gold" -> ResetDifficulty.GOLD
+            "platium" -> ResetDifficulty.PLATIUM
             else -> ResetDifficulty.UNSPECIFIED
         }
 
@@ -253,7 +253,7 @@ object RulesSubcommand {
             return
         }
 
-        if (confirm == null) {
+        if (confirm == null || !"confirm".equals(confirm, ignoreCase = true)) {
             showMessage(sender, "command.levelledmobs.rules.reset-syntax", "%difficulty%", difficultyStr)
             return
         }
@@ -261,43 +261,45 @@ object RulesSubcommand {
         resetRules(sender, difficulty)
     }
 
-    private fun resetRules(
-        sender: CommandSender,
+    fun resetRules(
+        sender: CommandSender?,
         difficulty: ResetDifficulty
     ) {
         val main = LevelledMobs.instance
         val prefix = main.configUtils.prefix
-        showMessage(sender,
-            "command.levelledmobs.rules.resetting", "%difficulty%",
-            difficulty.toString()
-        )
+        if (sender != null) {
+            showMessage(sender,
+                "command.levelledmobs.rules.resetting", "%difficulty%",
+                difficulty.toString()
+            )
+        }
 
         val filename = "rules.yml"
-        val replaceWhat = arrayOf("    - average_challenge", "")
-        val replaceWith = arrayOf("    #- average_challenge", "")
+        val replaceWhat = arrayOf("    - challenge-silver", "")
+        val replaceWith = arrayOf("    #- challenge-silver", "")
 
         when (difficulty) {
             ResetDifficulty.VANILLA -> {
-                replaceWhat[1] = "#- vanilla_challenge"
-                replaceWith[1] = "- vanilla_challenge"
+                replaceWhat[1] = "#- challenge-vanilla"
+                replaceWith[1] = "- challenge-vanilla"
             }
 
-            ResetDifficulty.BASIC -> {
-                replaceWhat[1] = "#- basic_challenge"
-                replaceWith[1] = "- basic_challenge"
+            ResetDifficulty.BRONZE -> {
+                replaceWhat[1] = "#- challenge-bronze"
+                replaceWith[1] = "- challenge-bronze"
             }
 
-            ResetDifficulty.ADVANCED -> {
-                replaceWhat[1] = "#- advanced_challenge"
-                replaceWith[1] = "- advanced_challenge"
+            ResetDifficulty.GOLD -> {
+                replaceWhat[1] = "#- challenge-gold"
+                replaceWith[1] = "- challenge-gold"
             }
 
-            ResetDifficulty.EXTREME -> {
-                replaceWhat[1] = "#- extreme_challenge"
-                replaceWith[1] = "- extreme_challenge"
+            ResetDifficulty.PLATIUM -> {
+                replaceWhat[1] = "#- challenge-platinum"
+                replaceWith[1] = "- challenge-platinum"
             }
 
-            ResetDifficulty.AVERAGE, ResetDifficulty.UNSPECIFIED -> {}
+            ResetDifficulty.SILVER, ResetDifficulty.UNSPECIFIED -> {}
         }
         try {
             main.getResource(filename).use { stream ->
@@ -307,7 +309,7 @@ object RulesSubcommand {
                 }
                 var rulesText =
                     String(stream.readAllBytes(), StandardCharsets.UTF_8)
-                if (difficulty != ResetDifficulty.AVERAGE) {
+                if (difficulty != ResetDifficulty.SILVER) {
                     rulesText = rulesText.replace(replaceWhat[0], replaceWith[0])
                         .replace(replaceWhat[1], replaceWith[1])
                 }
@@ -333,12 +335,14 @@ object RulesSubcommand {
             return
         }
 
-        showMessage(sender, "command.levelledmobs.rules.reset-complete")
-        main.reloadLM(sender)
+        if (sender != null) {
+            showMessage(sender, "command.levelledmobs.rules.reset-complete")
+            main.reloadLM(sender)
+        }
     }
 
-    private enum class ResetDifficulty {
-        VANILLA, BASIC, AVERAGE, ADVANCED, EXTREME, UNSPECIFIED
+    enum class ResetDifficulty {
+        VANILLA, BRONZE, SILVER, GOLD, PLATIUM, UNSPECIFIED
     }
 
     private fun showHyperlink(

@@ -137,6 +137,46 @@ object DebugSubcommand {
                     .executes(CommandExecutor { sender, _ ->
                         sender.sendMessage(LevelledMobs.instance.debugManager.getDebugStatus()) })
             )
+            .withSubcommands(
+                CommandAPICommand("damage-debug-output")
+                    .withOptionalArguments(StringArgument("operation")
+                        .includeSuggestions(ArgumentSuggestions.strings("enable", "disable")))
+                    .executes(CommandExecutor { sender, args -> processDamageDebugOutput(sender, args) })
+            )
+    }
+
+    private fun processDamageDebugOutput(
+        sender: CommandSender,
+        args: CommandArguments
+    ){
+        val operation = args.get("operation") as String?
+        val debugMgr = LevelledMobs.instance.debugManager
+
+        if (operation.isNullOrEmpty()){
+            val status = if (debugMgr.damageDebugOutputIsEnabled) "enabled" else "disabled"
+            sender.sendMessage("Damage Debug Output status: $status")
+            return
+        }
+
+        if ("enable".equals(operation, true)){
+            if (debugMgr.damageDebugOutputIsEnabled)
+                sender.sendMessage("Damage Debug Output is enabled.")
+            else{
+                debugMgr.toggleDamageDebugOutput(true)
+                sender.sendMessage("Damage Debug Output is now enabled.")
+            }
+        }
+        else if ("disable".equals(operation, true)){
+            if (debugMgr.damageDebugOutputIsEnabled){
+                debugMgr.toggleDamageDebugOutput(false)
+                sender.sendMessage("Damage Debug Output is now disabled.")
+            }
+            else
+                sender.sendMessage("Damage Debug Output is disabled.")
+        }
+        else{
+            sender.sendMessage("Invalid option: $operation")
+        }
     }
 
     private fun createFilterResultsCommand(): CommandAPICommand{
