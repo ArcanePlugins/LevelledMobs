@@ -511,10 +511,9 @@ public class RulesParsingManager {
         mergePreset(cs);
 
         parsingInfo.ruleIsEnabled = ymlHelper.getBoolean(cs, "enabled", true);
-        //final String ruleName = cs.getString(ymlHelper.getKeyNameFromConfig(cs, "name"));
         final String ruleName = ymlHelper.getString(cs, "name");
         if (ruleName != null) {
-            parsingInfo.setRuleName(ymlHelper.getString(cs, "name"));
+            parsingInfo.setRuleName(ruleName);
         }
 
         parseStrategies(objTo_CS(cs, "strategies"));

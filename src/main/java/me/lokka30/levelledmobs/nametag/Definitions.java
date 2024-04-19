@@ -262,7 +262,7 @@ public class Definitions {
         }
 
         // 1.18 doesn't have #empty(), instead use #nullToEmpty()
-        // net.minecraft.network.chat.Component -> qk:
+        // net.minecraft.network.chat.Component ->
         //    net.minecraft.network.chat.Component nullToEmpty(java.lang.String) -> a
         this.method_TextComponent = clazz_IChatBaseComponent.getDeclaredMethod("a", String.class);
 
@@ -323,8 +323,12 @@ public class Definitions {
 
         switch (ver.getMajorVersionEnum()) {
             case V1_20 -> {
-                if (ver.getRevision() >= 3){
+                if (ver.getRevision() >= 5){
                     // 1.20.3+
+                    methodName = "ap";
+                }
+                else if (ver.getRevision() >= 3){
+                    // 1.20.3 - .4
                     methodName = "an";
                 }
                 else if (ver.getRevision() == 2){
@@ -354,8 +358,12 @@ public class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.method_getEntityData = clazz_Entity.getMethod(methodName);
 
-        methodName = ver.getMinecraftVersion() >= 1.18 ?
-            "b" : "set";
+        if (ver.getMinecraftVersion() >= 1.20 && ver.getRevision() >= 5)
+            methodName = "a";
+        if (ver.getMinecraftVersion() >= 1.18)
+            methodName = "b";
+        else
+            methodName = "set";
 
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         this.method_set = clazz_DataWatcher.getMethod(methodName, clazz_DataWatcherObject,
@@ -365,8 +373,12 @@ public class Definitions {
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
         if (ver.getMinecraftVersion() >= 1.20){
-            if (ver.getRevision() >= 3){
-                // 1.20.3+
+            if (ver.getRevision() >= 5){
+                // 1.20.5+
+                methodName = "al";
+            }
+            else if (ver.getRevision() >= 3){
+                // 1.20.3 - .4
                 methodName = "aj";
             }
             else{
@@ -465,7 +477,10 @@ public class Definitions {
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            methodName = ver.getMinecraftVersion() >= 1.20 ? "c" : "b";
+            methodName = (ver.getMinecraftVersion() >= 1.20 && ver.getRevision() <= 4) ?
+                "c" : "b";
+            // 1.19, 1.20.5 = b, 1.20 - 1.20.4 = c
+
             this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod(methodName,
                 clazz_DataWatcherObject);
             this.method_DataWatcher_GetItem.setAccessible(true);
@@ -478,10 +493,14 @@ public class Definitions {
 
     private void buildFields() throws NoSuchFieldException {
         // net.minecraft.network.syncher.EntityDataSerializer OPTIONAL_COMPONENT
-        this.field_OPTIONAL_COMPONENT = clazz_DataWatcherRegistry.getDeclaredField("f");
+        String methodName = (ver.getMinecraftVersion() >= 1.19) ?
+                "g" : "f";
+        this.field_OPTIONAL_COMPONENT = clazz_DataWatcherRegistry.getDeclaredField(methodName);
 
         // net.minecraft.network.syncher.EntityDataSerializer BOOLEAN
-        this.field_BOOLEAN = clazz_DataWatcherRegistry.getDeclaredField("i");
+        methodName = (ver.getMinecraftVersion() >= 1.19) ?
+                "k" : "i";
+        this.field_BOOLEAN = clazz_DataWatcherRegistry.getDeclaredField(methodName);
 
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
@@ -494,7 +513,7 @@ public class Definitions {
             //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
             // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
-            final String methodName =  this.isOneNinteenThreeOrNewer() ?
+            methodName =  this.isOneNinteenThreeOrNewer() ?
                     "e" : "f";
 
             this.field_Int2ObjectMap = clazz_DataWatcher.getDeclaredField(methodName);
