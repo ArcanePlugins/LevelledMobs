@@ -38,7 +38,7 @@ object InfoSubcommand {
                         main.description.description ?: "",
                         "1.19 - 1.20",
                         main.description.authors.joinToString(listSeparator),
-                        "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
+                        "See &8&nhttps://tinyurl.com/lm-contributors"
                     )
                 )
             })

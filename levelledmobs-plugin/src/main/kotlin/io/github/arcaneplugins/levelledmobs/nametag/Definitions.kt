@@ -146,9 +146,6 @@ class Definitions {
             ver.minecraftVersion == 1.19 && ver.revision >= 3.0 ||
                     ver.minecraftVersion >= 1.20
 
-        // protocollib is used on 1.16
-        if (ver.majorVersionEnum == MinecraftMajorVersion.V1_16) return
-
         try {
             buildClasses()
 
@@ -304,7 +301,7 @@ class Definitions {
         this.methodEmptyComponent = clazzIChatBaseComponent!!.getDeclaredMethod(methodName)
 
         // 1.18 doesn't have #empty(), instead use #nullToEmpty()
-        // net.minecraft.network.chat.Component -> qk:
+        // net.minecraft.network.chat.Component ->
         //    net.minecraft.network.chat.Component nullToEmpty(java.lang.String) -> a
         this.methodTextComponent = clazzIChatBaseComponent!!.getDeclaredMethod("a", String::class.java)
     }
@@ -367,8 +364,12 @@ class Definitions {
 
         methodName = when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_20 -> {
-                if (ver.revision >= 3) {
-                    // 1.20.3+
+                if (ver.revision >= 5) {
+                    // 1.20.5+
+                    "ap"
+                }
+                else if (ver.revision >= 3) {
+                    // 1.20.3 - .4
                     "an"
                 } else if (ver.revision == 2) {
                     // 1.20.2
@@ -394,7 +395,7 @@ class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
 
-        methodName = "b"
+        methodName = if (ver.minorVersion >= 20 && ver.revision >= 5) "a" else "b"
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         this.methodSet = clazzDataWatcher!!.getMethod(
             methodName, clazzDataWatcherObject,
@@ -405,8 +406,12 @@ class Definitions {
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
         if (ver.minecraftVersion >= 1.20) {
-            methodName = if (ver.revision >= 3) {
-                // 1.20.3+
+            methodName = if (ver.revision >= 5){
+                // 1.20.5+
+                "al"
+            }
+            else if (ver.revision >= 3) {
+                // 1.20.3 - .4
                 "aj"
             } else {
                 if (ver.revision >= 2) "ah" else "af"
@@ -470,7 +475,9 @@ class Definitions {
         // java.util.Optional byString(java.lang.String) ->
         this.methodEntityTypeByString = clazzEntityTypes!!.getDeclaredMethod("a", String::class.java)
 
-        // java.lang.String getDescriptionId() ->
+        // net.minecraft.world.entity.EntityType ->
+        // # {"fileName":"EntityType.java","id":"sourceFile"}
+        //    java.lang.String getDescriptionId() ->
         this.methodGetDescriptionId = clazzEntityTypes!!.getDeclaredMethod("g")
 
         if (this.isOneNinteenThreeOrNewer) {
@@ -488,7 +495,8 @@ class Definitions {
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            methodName = if (ver.minecraftVersion >= 1.20) "c" else "b"
+            // 1.19, 1.20.5 = b, 1.20 - 1.20.4 = c
+            methodName = if (ver.minecraftVersion >= 1.20 && ver.revision <= 4) "c" else "b"
             this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(
                 methodName,
                 clazzDataWatcherObject
@@ -504,10 +512,15 @@ class Definitions {
     @Throws(NoSuchFieldException::class)
     private fun buildFields() {
         // net.minecraft.network.syncher.EntityDataSerializer OPTIONAL_COMPONENT
-        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField("f")
+        val ver = LevelledMobs.instance.ver
+        var methodName = if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 5)
+            "f" else "g"
+        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField(methodName)
 
         // net.minecraft.network.syncher.EntityDataSerializer BOOLEAN
-        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField("i")
+        methodName = if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 5)
+            "k" else "i"
+        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField(methodName)
 
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
@@ -520,7 +533,7 @@ class Definitions {
             //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
             // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
-            val methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"
+            methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"
 
             this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             fieldInt2ObjectMap!!.setAccessible(true)
