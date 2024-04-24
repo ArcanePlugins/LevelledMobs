@@ -33,6 +33,7 @@ public class Definitions {
     private final ServerVersionInfo ver;
     private boolean hasKiori;
     private boolean isOneNinteenThreeOrNewer;
+    private boolean isOneTwentyFiveOrNewer;
     private boolean hasMiniMessage;
     public boolean useTranslationComponents;
     private boolean useLegacySerializer;
@@ -45,10 +46,13 @@ public class Definitions {
     Class<?> clazz_CraftLivingEntity;
     Class<?> clazz_CraftEntity;
     Class<?> clazz_Entity;
-    Class<?> clazz_DataWatcher;
+    Class<?> clazz_DataWatcher; // aka SynchedEntityData
+    Class<?> clazz_DataWatcherBuilder;
     Class<?> clazz_DataWatcher_Item;
+    Class<?> clazz_DataWatcher_Value;
     Class<?> clazz_DataWatcherRegistry;
     Class<?> clazz_DataWatcherObject;
+    Class<?> clazz_SyncedDataHolder;
     Class<?> clazz_DataWatcherSerializer;
     Class<?> clazz_ClientboundSetEntityDataPacket;
     Class<?> clazz_CraftPlayer;
@@ -65,6 +69,9 @@ public class Definitions {
     public Class<?> clazz_MM_MobType;
 
     // methods:
+    Method method_DataWatcherBuilderBuild;
+    Method method_DataWatcherBuilderDefine;
+    Method method_DataWatcherGetId;
     Method method_ComponentAppend;
     Method method_EmptyComponent;
     Method method_TextComponent;
@@ -105,12 +112,17 @@ public class Definitions {
     // Constructors
     Constructor<?> ctor_EntityDataAccessor;
     Constructor<?> ctor_SynchedEntityData;
+    Constructor<?> ctor_SynchedEntityDataBuilder;
     Constructor<?> ctor_Packet;
 
     private void build() {
         this.isOneNinteenThreeOrNewer =
-            ver.getMinecraftVersion() == 1.19d && ver.getRevision() >= 3d ||
-                ver.getMinecraftVersion() >= 1.20d;
+                ver.getMinorVersion() == 19 && ver.getRevision() >= 3 ||
+                    ver.getMinorVersion() >= 20;
+
+        this.isOneTwentyFiveOrNewer =
+                ver.getMinorVersion() == 20 && ver.getRevision() >= 5 ||
+                        ver.getMinorVersion() >= 21;
 
         // protocollib is used on 1.16
         if (ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_16) return;
@@ -159,8 +171,18 @@ public class Definitions {
         this.clazz_DataWatcher = Class.forName(
             "net.minecraft.network.syncher.DataWatcher");
 
+        // net.minecraft.network.syncher.SynchedEntityData$Builder
+        this.clazz_DataWatcherBuilder = Class.forName(
+                "net.minecraft.network.syncher.DataWatcher$a");
+
+        this.clazz_SyncedDataHolder = Class.forName(
+                "net.minecraft.network.syncher.SyncedDataHolder");
+
         this.clazz_DataWatcher_Item = Class.forName(
-            "net.minecraft.network.syncher.DataWatcher$Item");
+                "net.minecraft.network.syncher.DataWatcher$Item");
+
+        this.clazz_DataWatcher_Value = Class.forName(
+                "net.minecraft.network.syncher.DataWatcher$c");
 
         this.clazz_DataWatcherRegistry = Class.forName(
             "net.minecraft.network.syncher.DataWatcherRegistry");
@@ -358,11 +380,15 @@ public class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.method_getEntityData = clazz_Entity.getMethod(methodName);
 
-        if (ver.getMinecraftVersion() >= 1.20 && ver.getRevision() >= 5)
+        final boolean isVersion120 = ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_20;
+
+        if (isOneTwentyFiveOrNewer)
             methodName = "a";
-        if (ver.getMinecraftVersion() >= 1.18)
+        else if ((isVersion120 && ver.getRevision() <= 4) ||
+                ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_17 ||
+                ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_16)
             methodName = "b";
-        else
+        else // 1.16 - 1.17
             methodName = "set";
 
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
@@ -375,6 +401,15 @@ public class Definitions {
         if (ver.getMinecraftVersion() >= 1.20){
             if (ver.getRevision() >= 5){
                 // 1.20.5+
+
+                // net.minecraft.network.syncher.SynchedEntityData$Builder ->
+                //     net.minecraft.network.syncher.SynchedEntityData$Builder define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
+                method_DataWatcherBuilderDefine = clazz_DataWatcherBuilder.getDeclaredMethod("a", clazz_DataWatcherObject, Object.class);
+                // net.minecraft.network.syncher.SynchedEntityData build() ->
+                method_DataWatcherBuilderBuild = clazz_DataWatcherBuilder.getDeclaredMethod("a");
+                // int id() ->
+                method_DataWatcherGetId = clazz_DataWatcher_Value.getDeclaredMethod("a");
+
                 methodName = "al";
             }
             else if (ver.getRevision() >= 3){
@@ -525,7 +560,11 @@ public class Definitions {
         this.ctor_EntityDataAccessor = clazz_DataWatcherObject.getConstructor(
             int.class, clazz_DataWatcherSerializer);
 
-        this.ctor_SynchedEntityData = clazz_DataWatcher.getConstructor(clazz_Entity);
+        if (!isOneTwentyFiveOrNewer)
+            this.ctor_SynchedEntityData = clazz_DataWatcher.getConstructor(clazz_Entity);
+
+        if (isOneTwentyFiveOrNewer)
+            this.ctor_SynchedEntityDataBuilder = clazz_DataWatcherBuilder.getConstructor(clazz_SyncedDataHolder);
 
         if (this.isOneNinteenThreeOrNewer) {
             // starting with 1.19.3 use this one:
@@ -576,6 +615,10 @@ public class Definitions {
 
     public boolean isOneNinteenThreeOrNewer() {
         return isOneNinteenThreeOrNewer;
+    }
+
+    public boolean getisOneTwentyFiveOrNewer(){
+        return isOneTwentyFiveOrNewer;
     }
 
     public void setUseLegacySerializer(final boolean useLegacySerializer){

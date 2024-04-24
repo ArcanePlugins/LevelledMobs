@@ -123,13 +123,60 @@ public class NmsNametagSender implements NametagSender {
             return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity);
         }
 
+        // 1.19 - 1.20.4 uses this method:
+        if (!LevelledMobs.getInstance().getDefinitions().getisOneTwentyFiveOrNewer()){
+            return cloneEntityDataPre1205(entityDataPreClone, internalLivingEntity);
+        }
+
+        // constructor:
+        // public a(SyncedDataHolder synceddataholder)
+        // SynchedEntityData.Builder builder = new SynchedEntityData.Builder(internalLivingEntity);
+        final Object entityDataBuilder = def.ctor_SynchedEntityDataBuilder.newInstance(internalLivingEntity);
+
+        try {
+            // SynchedEntityData.DataItem<?>[]
+            final Object[] itemsById = (Object[])
+                def.field_Int2ObjectMap.get(entityDataPreClone);
+            if (itemsById.length == 0) {
+                return null;
+            }
+
+            for (final Object objDataItem : itemsById) {
+                // .getAccessor()
+                final Object accessor = def.method_getAccessor.invoke(objDataItem);
+                // .getValue()
+                final Object value = def.method_getValue.invoke(objDataItem);
+
+                // builder.define(dataItem.getAccessor(), dataItem.getValue());
+                def.method_DataWatcherBuilderDefine.invoke(entityDataBuilder, accessor, value);
+            }
+
+            // builder.build();
+            return def.method_DataWatcherBuilderBuild.invoke(entityDataBuilder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return def.method_DataWatcherBuilderBuild.invoke(entityDataBuilder);
+    }
+
+    private @Nullable Object cloneEntityDataPre1205(
+            final @NotNull Object entityDataPreClone,
+            final @NotNull Object internalLivingEntity
+    ) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        // 1.18 and older uses the legacy function
+        if (LevelledMobs.getInstance().getVerInfo().getMinorVersion() <= 18) {
+            return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity);
+        }
+
         // constructor:
         // public net.minecraft.network.syncher.DataWatcher(net.minecraft.world.entity.Entity)
         final Object entityData = def.ctor_SynchedEntityData.newInstance(internalLivingEntity);
 
         try {
             final Map<Integer, Object> itemsById = (Map<Integer, Object>)
-                def.field_Int2ObjectMap.get(entityDataPreClone);
+                    def.field_Int2ObjectMap.get(entityDataPreClone);
             if (itemsById.isEmpty()) {
                 return null;
             }
@@ -172,11 +219,46 @@ public class NmsNametagSender implements NametagSender {
     private @NotNull List<Object> getNametagFields(
         final @NotNull Object entityData
     ) {
+        // 1.19.3 - 1.20.4 use the legacy method
+        if (!def.getisOneTwentyFiveOrNewer()){
+            return getNametagFieldsLegacy(entityData);
+        }
+
+        // List<SynchedEntityData.DataValue<?>>
+        final List<Object> results = new LinkedList<>();
+
+        try {
+            // SynchedEntityData.DataItem<?>[]
+            final Object[] itemsById =
+                (Object[]) def.field_Int2ObjectMap.get(entityData);
+
+            if (itemsById.length == 0) return results;
+
+            for (final Object objItem : itemsById) {
+                // objItem.value()
+                final Object objData = def.method_DataWatcherItem_Value.invoke(objItem);
+
+                // .id()
+                int objDataId = (int) def.method_DataWatcherGetId.invoke(objData);
+                if (objDataId < 2 || objDataId > 3) continue;
+
+                results.add(objData);
+            }
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return results;
+    }
+
+    private @NotNull List<Object> getNametagFieldsLegacy(
+            final @NotNull Object entityData
+    ) {
         final List<Object> results = new LinkedList<>();
 
         try {
             final Map<Integer, Object> itemsById =
-                (Map<Integer, Object>) def.field_Int2ObjectMap.get(entityData);
+                    (Map<Integer, Object>) def.field_Int2ObjectMap.get(entityData);
 
             if (itemsById.isEmpty()) return results;
 
@@ -188,7 +270,7 @@ public class NmsNametagSender implements NametagSender {
 
                 // DataWatcher.Item
                 final Object dataWatcherItem = def.method_DataWatcher_GetItem
-                    .invoke(entityData, accessor);
+                        .invoke(entityData, accessor);
 
                 results.add(def.method_DataWatcherItem_Value.invoke(dataWatcherItem));
                 //results.add(objDataItem);
