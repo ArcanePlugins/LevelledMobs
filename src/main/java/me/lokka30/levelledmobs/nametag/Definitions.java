@@ -171,18 +171,20 @@ public class Definitions {
         this.clazz_DataWatcher = Class.forName(
             "net.minecraft.network.syncher.DataWatcher");
 
-        // net.minecraft.network.syncher.SynchedEntityData$Builder
-        this.clazz_DataWatcherBuilder = Class.forName(
-                "net.minecraft.network.syncher.DataWatcher$a");
+        if (isOneTwentyFiveOrNewer) {
+            // net.minecraft.network.syncher.SynchedEntityData$Builder
+            this.clazz_DataWatcherBuilder = Class.forName(
+                    "net.minecraft.network.syncher.DataWatcher$a");
 
-        this.clazz_SyncedDataHolder = Class.forName(
-                "net.minecraft.network.syncher.SyncedDataHolder");
+            this.clazz_SyncedDataHolder = Class.forName(
+                    "net.minecraft.network.syncher.SyncedDataHolder");
+
+            this.clazz_DataWatcher_Value = Class.forName(
+                    "net.minecraft.network.syncher.DataWatcher$c");
+        }
 
         this.clazz_DataWatcher_Item = Class.forName(
                 "net.minecraft.network.syncher.DataWatcher$Item");
-
-        this.clazz_DataWatcher_Value = Class.forName(
-                "net.minecraft.network.syncher.DataWatcher$c");
 
         this.clazz_DataWatcherRegistry = Class.forName(
             "net.minecraft.network.syncher.DataWatcherRegistry");
