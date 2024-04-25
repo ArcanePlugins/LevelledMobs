@@ -248,12 +248,12 @@ public class CustomDropsHandler {
         if (showCustomDrops || showCustomEquips) {
             if (equippedOnly && !drops.isEmpty() && showCustomEquips) {
                 if (lmEntity.getMobLevel() > -1) {
-                    processingInfo.addDebugMessage(
+                    processingInfo.addDebugMessage(DebugType.CUSTOM_EQUIPS,
                             String.format("&7Custom equipment for &b%s &r(%s)", lmEntity.getTypeName(),
                                     lmEntity.getMobLevel()));
 
                 } else {
-                    processingInfo.addDebugMessage(
+                    processingInfo.addDebugMessage(DebugType.CUSTOM_EQUIPS,
                         "&7Custom equipment for &b" + lmEntity.getTypeName() + "&r");
                 }
                 final StringBuilder sb = new StringBuilder();
@@ -263,7 +263,7 @@ public class CustomDropsHandler {
                     }
                     sb.append(drop.getType().name());
                 }
-                processingInfo.addDebugMessage("   " + sb);
+                processingInfo.addDebugMessage(DebugType.CUSTOM_EQUIPS,"   " + sb);
             } else if (!equippedOnly && showCustomDrops) {
                 processingInfo.addDebugMessage(
                     String.format("&8 --- &7Custom items added: &b%s&7.", postCount));
@@ -465,6 +465,7 @@ public class CustomDropsHandler {
 
                     // payload:
                     getDropsFromCustomDropItem(info, drop);
+                    info.writeAnyDebugMessages();
                 }
 
             } // next retry
@@ -527,7 +528,7 @@ public class CustomDropsHandler {
                         dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner));
                 }
             } else if (dropBase instanceof CustomCommand) {
-                info.addDebugMessage(DebugType.CUSTOM_DROPS, String.format(
+                info.addDebugMessage(DebugType.CUSTOM_COMMANDS, String.format(
                     "&8- custom-cmd: &7level: &b%s&7, fromSpawner: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, executed: &bfalse",
                     info.lmEntity.getMobLevel(), info.isSpawner, dropBase.minLevel,
                     dropBase.maxLevel, dropBase.noSpawner));
@@ -582,7 +583,7 @@ public class CustomDropsHandler {
             }
         }
 
-        if (didNotMakeChance && (!info.equippedOnly || runOnSpawn) && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+        if (didNotMakeChance && (!info.equippedOnly || runOnSpawn) && main.debugManager.isEnabled()) {
             if (dropBase instanceof final CustomDropItem dropItem) {
                 final ItemStack itemStack =
                     info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack())
@@ -595,9 +596,9 @@ public class CustomDropsHandler {
                 );
             }
             else{
-                info.addDebugMessage(DebugType.CUSTOM_DROPS, String.format(
-                        "&8 - &7Custom command&7, chance: &b%s&7, chanceRole: &b%s&7, executed: &bfalse&7.",
-                        dropBase.chance.showMatchedChance(), Utils.round(chanceRole, 4))
+                info.addDebugMessage(DebugType.CUSTOM_COMMANDS, String.format(
+                        "&8- &7level: &b%s&7, item: command, chance: &b%s&7, chanceRole: &b%s&7, executed: &bfalse",
+                        info.lmEntity.getMobLevel(), dropBase.chance.showMatchedChance(), Utils.round(chanceRole, 4))
                 );
             }
         }
@@ -642,26 +643,25 @@ public class CustomDropsHandler {
             // ------------------------------------------ commands get executed here then function returns ---------------------------------------------------
             executeCommand(customCommand, info);
 
-            if (dropBase.hasGroupId()) {
-                if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-                    final int count = info.getItemsDropsByGroup(dropBase);
-                    String msg = String.format(
-                        "&8- &7level: &b%s&7, item: command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
-                        info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count);
-                    if (info.retryNumber > 0){
-                        msg += ", retry: " + info.retryNumber;
-                    }
-                    info.addDebugMessage(msg);
-                }
-            } else if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+            Utils.logger.info("test: " + dropBase.chance.showMatchedChance());
+            if (dropBase.hasGroupId() && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_COMMANDS)) {
+                final int count = info.getItemsDropsByGroup(dropBase);
                 String msg = String.format(
-                    "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
-                    info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup);
+                    "&8- &7level: &b%s&7, item: command, chance: &b%s&7, chanceRole: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
+                    info.lmEntity.getMobLevel(), dropBase.chance.showMatchedChance(), Utils.round(chanceRole, 4), dropBase.groupId, dropBase.maxDropGroup, count);
+                if (info.retryNumber > 0){
+                    msg += ", retry: " + info.retryNumber;
+                }
+                info.addDebugMessage(DebugType.CUSTOM_COMMANDS, msg);
+            } else if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_COMMANDS)) {
+                String msg = String.format(
+                    "&8- &7level: &b%s&7, item: command, chance: &b%s&7, chanceRole: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
+                    info.lmEntity.getMobLevel(), dropBase.chance.showMatchedChance(), Utils.round(chanceRole, 4), dropBase.groupId, dropBase.maxDropGroup);
 
                 if (info.retryNumber > 0){
                     msg += ", retry: " + info.retryNumber;
                 }
-                info.addDebugMessage(msg);
+                info.addDebugMessage(DebugType.CUSTOM_COMMANDS, msg);
             }
 
             return;
@@ -736,7 +736,7 @@ public class CustomDropsHandler {
             if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 final String equippedChance = dropItem.equippedChance != null ?
                         dropItem.equippedChance.showMatchedChance() : "0.0";
-                info.addDebugMessage(String.format(
+                info.addDebugMessage(DebugType.CUSTOM_EQUIPS, String.format(
                         "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
                         newItem.getType().name(), equippedChance,
                         Utils.round(info.equippedChanceRole, 4)));
@@ -812,7 +812,7 @@ public class CustomDropsHandler {
 
         if (equippedChance <= 0.0f || 1.0F - info.equippedChanceRole >= equippedChance) {
             if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
-                info.addDebugMessage(String.format(
+                info.addDebugMessage(DebugType.CUSTOM_EQUIPS, String.format(
                         "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
                         info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(),
                         dropItem.getMaterial().name(), dropItem.equippedChance.showMatchedChance(),
@@ -1120,7 +1120,7 @@ public class CustomDropsHandler {
                                 info.lmEntity.getTypeName(), ((CustomDropItem) dropBase).getMaterial(),
                                 papiResult));
                     } else {
-                        info.addDebugMessage(String.format(
+                        info.addDebugMessage(DebugType.CUSTOM_COMMANDS, String.format(
                                 "&8 - &7Mob: &b%s&7, (customCommand), PAPI val: %s, no matches found",
                                 info.lmEntity.getTypeName(), papiResult));
                     }
@@ -1153,7 +1153,7 @@ public class CustomDropsHandler {
                             info.lmEntity.getTypeName(), ((CustomDropItem) dropBase).getMaterial(),
                             levelToUse, dropBase.minPlayerLevel, dropBase.maxPlayerLevel));
                     } else {
-                        info.addDebugMessage(String.format(
+                        info.addDebugMessage(DebugType.CUSTOM_COMMANDS, String.format(
                             "&8 - &7Mob: &b%s&7, (customCommand), lvl-src: %s, minlvl: %s, maxlvl: %s player level criteria not met",
                             info.lmEntity.getTypeName(), levelToUse, dropBase.minPlayerLevel,
                             dropBase.maxPlayerLevel));
