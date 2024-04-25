@@ -643,7 +643,6 @@ public class CustomDropsHandler {
             // ------------------------------------------ commands get executed here then function returns ---------------------------------------------------
             executeCommand(customCommand, info);
 
-            Utils.logger.info("test: " + dropBase.chance.showMatchedChance());
             if (dropBase.hasGroupId() && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_COMMANDS)) {
                 final int count = info.getItemsDropsByGroup(dropBase);
                 String msg = String.format(
