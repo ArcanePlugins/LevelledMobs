@@ -146,7 +146,7 @@ public class Definitions {
     private @NotNull String getClassName(final @NotNull String classSuffix){
         // suffix ------------------------->
         // "org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity"
-        if (ver.getIsRunningFabric()){
+        if (ver.getIsRunningPaper() && isOneTwentyFiveOrNewer || ver.getIsRunningFabric()){
             return "org.bukkit.craftbukkit." + classSuffix;
         }
         else{
@@ -387,8 +387,8 @@ public class Definitions {
         if (isOneTwentyFiveOrNewer)
             methodName = "a";
         else if ((isVersion120 && ver.getRevision() <= 4) ||
-                ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_17 ||
-                ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_16)
+                ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_18 ||
+                ver.getMajorVersionEnum() == ServerVersionInfo.MinecraftMajorVersion.V1_19)
             methodName = "b";
         else // 1.16 - 1.17
             methodName = "set";
