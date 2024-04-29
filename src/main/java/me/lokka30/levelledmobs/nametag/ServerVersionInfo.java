@@ -3,8 +3,6 @@ package me.lokka30.levelledmobs.nametag;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.lokka30.levelledmobs.util.MessageUtils;
-import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
