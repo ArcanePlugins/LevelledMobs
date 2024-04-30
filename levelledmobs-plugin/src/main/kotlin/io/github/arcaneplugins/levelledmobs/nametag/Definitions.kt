@@ -20,12 +20,14 @@ import org.bukkit.entity.LivingEntity
  * @author stumper66
  * @since 3.9.2
  */
-class Definitions {
+class Definitions{
     internal var hasKiori = false
     internal var isOneNinteenThreeOrNewer = false
+    internal var isOneTwentyFiveOrNewer = false
     private var hasMiniMessage = false
     var useTranslationComponents = false
     private var useLegacySerializer = false
+    private var ver = ServerVersionInfo()
     var mm: MiniMessage? = null
 
     // classes:
@@ -38,10 +40,13 @@ class Definitions {
     var clazzEntity: Class<*>? = null
         private set
     private var clazzDataWatcher: Class<*>? = null
+    private var clazzDataWatcherBuilder: Class<*>? = null
     private var clazzDataWatcherItem: Class<*>? = null
+    private var clazzDataWatcherValue: Class<*>? = null
     var clazzDataWatcherRegistry: Class<*>? = null
         private set
     private var clazzDataWatcherObject: Class<*>? = null
+    private var clazzSyncedDataHolder: Class<*>? = null
     private var clazzDataWatcherSerializer: Class<*>? = null
     private var clazzClientboundSetEntityDataPacket: Class<*>? = null
     private var clazzCraftPlayer: Class<*>? = null
@@ -60,6 +65,12 @@ class Definitions {
     private var clazzMMmobType: Class<*>? = null
 
     // methods:
+    var methodDataWatcherBuilderBuild: Method? = null
+        private set
+    var methodDataWatcherBuilderDefine: Method? = null
+        private set
+    var methodDataWatcherGetId: Method? = null
+        private set
     var methodComponentAppend: Method? = null
         private set
     var methodEmptyComponent: Method? = null
@@ -132,19 +143,25 @@ class Definitions {
         private set
     var ctorSynchedEntityData: Constructor<*>? = null
         private set
+    var ctorSynchedEntityDataBuilder: Constructor<*>? = null
+        private set
     var ctorPacket: Constructor<*>? = null
         private set
 
     fun load(){
+        ver = LevelledMobs.instance.ver
         build()
         if (hasMiniMessage) mm = MiniMessage.miniMessage()
     }
 
     private fun build() {
-        val ver = LevelledMobs.instance.ver
         this.isOneNinteenThreeOrNewer =
-            ver.minecraftVersion == 1.19 && ver.revision >= 3.0 ||
-                    ver.minecraftVersion >= 1.20
+            ver.minorVersion == 19 && ver.revision >= 3 ||
+                    ver.minorVersion >= 20
+
+        this.isOneTwentyFiveOrNewer =
+            ver.minorVersion == 20 && ver.revision >= 5 ||
+                    ver.minorVersion >= 21
 
         try {
             buildClasses()
@@ -162,16 +179,13 @@ class Definitions {
         }
     }
 
-    private val craftbukkitPackage = Bukkit.getServer().javaClass.getPackage().name
-
     private fun getClassName(classSuffix: String): String {
         // suffix ------------------------->
         // "org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity"
-        return if (LevelledMobs.instance.ver.isRunningFabric) {
+        return if (ver.isRunningPaper && isOneNinteenThreeOrNewer || ver.isRunningFabric) {
             "org.bukkit.craftbukkit.$classSuffix"
         } else {
-            "$craftbukkitPackage.$classSuffix"
-            //("org.bukkit.craftbukkit." + LevelledMobs.instance.ver.nmsVersion) + "." + classSuffix
+            ("org.bukkit.craftbukkit." + ver.nmsVersion) + "." + classSuffix
         }
     }
 
@@ -196,6 +210,20 @@ class Definitions {
         this.clazzDataWatcher = Class.forName(
             "net.minecraft.network.syncher.DataWatcher"
         )
+
+        if (isOneTwentyFiveOrNewer){
+            this.clazzDataWatcherBuilder = Class.forName(
+                "net.minecraft.network.syncher.DataWatcher\$a"
+            )
+
+            this.clazzSyncedDataHolder = Class.forName(
+                "net.minecraft.network.syncher.SyncedDataHolder"
+            )
+
+            this.clazzDataWatcherValue = Class.forName(
+                "net.minecraft.network.syncher.DataWatcher\$c"
+            )
+        }
 
         this.clazzDataWatcherItem = Class.forName(
             "net.minecraft.network.syncher.DataWatcher\$Item"
@@ -267,12 +295,10 @@ class Definitions {
         }
     }
 
-    @Throws(NoSuchMethodException::class)
     private fun getMethodComponentAppend() {
         // # {"fileName":"MutableComponent.java","id":"sourceFile"}
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
         // 1.19.0 = a, everything else  = b
-        val ver = LevelledMobs.instance.ver
         val methodName = if (ver.minecraftVersion == 1.19 && ver.revision == 0
         ) "a" else "b"
 
@@ -281,13 +307,11 @@ class Definitions {
         )
     }
 
-    @Throws(NoSuchMethodException::class)
     private fun getMethodTextComponents() {
         // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
         //     net.minecraft.network.chat.MutableComponent empty()
 
-        val ver = LevelledMobs.instance.ver
         val methodName = if (ver.minecraftVersion >= 1.20) {
             if (ver.revision >= 3) // 1.20.3+ or 1.20.0 - 2
                 "i" else "h"
@@ -306,7 +330,6 @@ class Definitions {
         this.methodTextComponent = clazzIChatBaseComponent!!.getDeclaredMethod("a", String::class.java)
     }
 
-    @Throws(NoSuchMethodException::class)
     private fun getMethodTranslatable() {
         // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
@@ -335,7 +358,7 @@ class Definitions {
         try {
             optionalResult = methodEntityTypeByString!!.invoke(
                 null,
-                livingEntity.type.name.lowercase()
+                livingEntity.type.name
             ) as Optional<*>
 
             if (optionalResult.isEmpty) {
@@ -353,9 +376,7 @@ class Definitions {
         return ""
     }
 
-    @Throws(NoSuchMethodException::class)
     private fun buildSimpleMethods() {
-        val ver = LevelledMobs.instance.ver
         this.methodGetHandle = clazzCraftLivingEntity!!.getDeclaredMethod("getHandle")
 
         // # {"fileName":"Entity.java","id":"sourceFile"}
@@ -395,7 +416,8 @@ class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
 
-        methodName = if (ver.minorVersion >= 20 && ver.revision >= 5) "a" else "b"
+        methodName = if (isOneTwentyFiveOrNewer) "a" else "b"
+
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         this.methodSet = clazzDataWatcher!!.getMethod(
             methodName, clazzDataWatcherObject,
@@ -406,17 +428,18 @@ class Definitions {
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
         if (ver.minecraftVersion >= 1.20) {
-            methodName = if (ver.revision >= 5){
-                // 1.20.5+
-                "al"
-            }
-            else if (ver.revision >= 3) {
-                // 1.20.3 - .4
-                "aj"
-            } else {
-                if (ver.revision >= 2) "ah" else "af"
-            }
-        } else if (ver.minecraftVersion >= 1.18) {
+            methodName =
+                if (ver.revision >= 5) {
+                    // 1.20.5+
+                    "al"
+                }
+                else if (ver.revision >= 3) {
+                    // 1.20.3 - .4
+                    "aj"
+                } else {
+                    if (ver.revision >= 2) "ah" else "af"
+                }
+        } else {
             methodName = if (ver.revision >= 4) {
                 "af"
             } else if (this.isOneNinteenThreeOrNewer) {
@@ -426,6 +449,19 @@ class Definitions {
                 // 1.18 - 1.19.2
                 "ae"
             }
+        }
+
+        if (isOneTwentyFiveOrNewer){
+            // net.minecraft.network.syncher.SynchedEntityData$Builder ->
+            //     net.minecraft.network.syncher.SynchedEntityData$Builder define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
+            methodDataWatcherBuilderDefine =
+                clazzDataWatcherBuilder!!.getDeclaredMethod("a", clazzDataWatcherObject, Any::class.java)
+
+            // net.minecraft.network.syncher.SynchedEntityData build() ->
+            methodDataWatcherBuilderBuild = clazzDataWatcherBuilder!!.getDeclaredMethod("a")
+
+            // int id() ->
+            methodDataWatcherGetId = clazzDataWatcherValue!!.getDeclaredMethod("a")
         }
 
         this.methodGetId = clazzEntity!!.getDeclaredMethod(methodName)
@@ -475,9 +511,7 @@ class Definitions {
         // java.util.Optional byString(java.lang.String) ->
         this.methodEntityTypeByString = clazzEntityTypes!!.getDeclaredMethod("a", String::class.java)
 
-        // net.minecraft.world.entity.EntityType ->
-        // # {"fileName":"EntityType.java","id":"sourceFile"}
-        //    java.lang.String getDescriptionId() ->
+        // java.lang.String getDescriptionId() ->
         this.methodGetDescriptionId = clazzEntityTypes!!.getDeclaredMethod("g")
 
         if (this.isOneNinteenThreeOrNewer) {
@@ -495,8 +529,9 @@ class Definitions {
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
+            methodName = if (ver.minorVersion >= 20 && ver.revision <= 4) "c" else "b"
             // 1.19, 1.20.5 = b, 1.20 - 1.20.4 = c
-            methodName = if (ver.minecraftVersion >= 1.20 && ver.revision <= 4) "c" else "b"
+
             this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(
                 methodName,
                 clazzDataWatcherObject
@@ -512,28 +547,23 @@ class Definitions {
     @Throws(NoSuchFieldException::class)
     private fun buildFields() {
         // net.minecraft.network.syncher.EntityDataSerializer OPTIONAL_COMPONENT
-        val ver = LevelledMobs.instance.ver
-        var methodName = if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 5)
-            "f" else "g"
-        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField(methodName)
+        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField("g")
 
         // net.minecraft.network.syncher.EntityDataSerializer BOOLEAN
-        methodName = if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 5)
-            "k" else "i"
-        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField(methodName)
+        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField("k")
 
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
-        val fieldName = if (LevelledMobs.instance.ver.minecraftVersion >= 1.20) "c" else "b"
+        val fieldName = if (ver.minecraftVersion >= 1.20) "c" else "b"
         this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
-        if (LevelledMobs.instance.ver.minorVersion >= 19) {
+        if (ver.minorVersion >= 19) {
             // net.minecraft.network.syncher.SynchedEntityData ->
             //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
             // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
-            methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"
+            val methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"
 
             this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             fieldInt2ObjectMap!!.setAccessible(true)
@@ -546,7 +576,10 @@ class Definitions {
             Int::class.javaPrimitiveType, clazzDataWatcherSerializer
         )
 
-        this.ctorSynchedEntityData = clazzDataWatcher!!.getConstructor(clazzEntity)
+        if (isOneTwentyFiveOrNewer)
+            this.ctorSynchedEntityDataBuilder = clazzDataWatcherBuilder!!.getConstructor(clazzSyncedDataHolder)
+        else
+            this.ctorSynchedEntityData = clazzDataWatcher!!.getConstructor(clazzEntity)
 
         if (this.isOneNinteenThreeOrNewer) {
             // starting with 1.19.3 use this one:

@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.Locale
 import java.util.regex.Matcher
@@ -43,7 +44,11 @@ class ServerVersionInfo {
     private fun parseServerVersion(){
         if (isRunningPaper)
             parsePaperVersion()
-        else
+
+        val isOneTwentyFiveOrNewer: Boolean =
+            minorVersion == 20 && revision >= 5 || minorVersion >= 21
+
+        if (!isRunningPaper || !isOneTwentyFiveOrNewer)
             parseBukkitVersion()
     }
 
@@ -100,9 +105,9 @@ class ServerVersionInfo {
                 versionStr = versionStr.replace("_", ".").replace("V", "")
                 this.minecraftVersion = versionStr.toDouble()
             } catch (e: Exception) {
-                Log.war(
+                LevelledMobs.instance.logger.warning(
                     String.format(
-                        "Could not extract the minecraft version from '%s'. %s",
+                        "LevelledMobs: Could not extract the minecraft version from '%s'. %s",
                         Bukkit.getServer().javaClass.canonicalName, e.message
                     )
                 )
@@ -113,8 +118,8 @@ class ServerVersionInfo {
         if (nmsRegex.find()) {
             this.nmsVersion = nmsRegex.group(1)
         } else if (!isRunningPaper) {
-            Log.war(
-                "NMSHandler: Could not match regex for bukkit version: " + Bukkit.getServer()
+            LevelledMobs.instance.logger.warning(
+                "LevelledMobs: NMSHandler, Could not match regex for bukkit version: " + Bukkit.getServer()
                     .javaClass.canonicalName
             )
         }

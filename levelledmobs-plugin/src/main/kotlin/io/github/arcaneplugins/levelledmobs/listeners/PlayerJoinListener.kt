@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.commands.CommandHandler
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsHandler
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsParser
 import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
@@ -74,6 +75,14 @@ class PlayerJoinListener : Listener {
                     "&b&lLevelledMobs:&r &6There was an error parsing customdrops.yml&r\n" +
                             "Check the console log for more details"
                 ))
+            }
+
+            if (CommandHandler.hadErrorLoading){
+                event.player.sendMessage(
+                    MessageUtils.colorizeAll(
+                        "&b&lLevelledMobs:&r &6There was an error loading the command framework.&r\n" +
+                                "Only the reload option will be available."
+                    ))
             }
         }
     }

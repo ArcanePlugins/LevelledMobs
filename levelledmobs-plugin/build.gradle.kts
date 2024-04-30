@@ -27,7 +27,7 @@ dependencies {
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.0.2") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
     //implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
-    implementation("nomaven:CommandAPI:9.3.0-mod") // https://github.com/JorelAli/CommandAPI
+    implementation("nomaven:CommandAPI:9.4.0-mod") // https://github.com/JorelAli/CommandAPI
     // stumper66's fork: https://github.com/stumper66/CommandAPI
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("LibsDisguises:LibsDisguises:10.0.42-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises

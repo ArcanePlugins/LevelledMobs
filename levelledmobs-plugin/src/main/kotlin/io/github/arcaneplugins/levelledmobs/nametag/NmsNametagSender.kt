@@ -1,8 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
-import java.lang.reflect.InvocationTargetException
-import java.util.Objects
-import java.util.Optional
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.nametag.ComponentUtils.appendComponents
 import io.github.arcaneplugins.levelledmobs.nametag.ComponentUtils.getTextComponent
@@ -11,6 +8,10 @@ import io.github.arcaneplugins.levelledmobs.nametag.KyoriNametags.generateCompon
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import java.lang.reflect.InvocationTargetException
+import java.util.LinkedList
+import java.util.Objects
+import java.util.Optional
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
@@ -113,6 +114,44 @@ class NmsNametagSender : NametagSender {
         entityDataPreClone: Any,
         internalLivingEntity: Any
     ): Any? {
+        // // 1.19 - 1.20.4 uses this method:
+        if (!def.isOneNinteenThreeOrNewer)
+            return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity)
+
+        // constructor:
+        // public a(SyncedDataHolder synceddataholder)
+        // SynchedEntityData.Builder builder = new SynchedEntityData.Builder(internalLivingEntity);
+        val entityDataBuilder: Any = def.ctorSynchedEntityDataBuilder!!.newInstance(internalLivingEntity)
+
+        try {
+            // SynchedEntityData.DataItem<?>[]
+            val itemsById = def.fieldInt2ObjectMap!!.get(entityDataPreClone) as Array<Any>
+            if (itemsById.isEmpty())
+                return null
+
+            for (objDataItem in itemsById) {
+                // .getAccessor()
+                val accessor: Any = def.methodGetAccessor!!.invoke(objDataItem)
+                // .getValue()
+                val value: Any = def.methodGetValue!!.invoke(objDataItem)
+
+                // builder.define(dataItem.getAccessor(), dataItem.getValue());
+                def.methodDataWatcherBuilderDefine!!.invoke(entityDataBuilder, accessor, value)
+            }
+
+            // builder.build();
+            return def.methodDataWatcherBuilderBuild!!.invoke(entityDataBuilder)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+        return def.methodDataWatcherBuilderBuild!!.invoke(entityDataBuilder)
+    }
+
+    private fun cloneEntityDataLegacy(
+        entityDataPreClone: Any,
+        internalLivingEntity: Any
+    ): Any? {
         // constructor:
         // public net.minecraft.network.syncher.DataWatcher(net.minecraft.world.entity.Entity)
         val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
@@ -139,7 +178,42 @@ class NmsNametagSender : NametagSender {
     private fun getNametagFields(
         entityData: Any
     ): List<Any> {
-        val results = mutableListOf<Any>()
+        // 1.19.3 - 1.20.4 use the legacy method
+        if (!def.isOneTwentyFiveOrNewer)
+            return getNametagFieldsLegacy(entityData)
+
+
+        // List<SynchedEntityData.DataValue<?>>
+        val results: MutableList<Any> = LinkedList()
+
+        try {
+            // SynchedEntityData.DataItem<?>[]
+            val itemsById =
+                def.fieldInt2ObjectMap!!.get(entityData) as Array<Any>
+
+            if (itemsById.isEmpty()) return results
+
+            for (objItem in itemsById) {
+                // objItem.value()
+                val objData: Any = def.methodDataWatcherItemValue!!.invoke(objItem)
+
+                // .id()
+                val objDataId = def.methodDataWatcherGetId!!.invoke(objData) as Int
+                if (objDataId < 2 || objDataId > 3) continue
+
+                results.add(objData)
+            }
+        } catch (ex: java.lang.Exception) {
+            ex.printStackTrace()
+        }
+
+        return results
+    }
+
+    private fun getNametagFieldsLegacy(
+        entityData: Any
+    ): List<Any> {
+        val results: MutableList<Any> = LinkedList()
 
         try {
             val itemsById =
