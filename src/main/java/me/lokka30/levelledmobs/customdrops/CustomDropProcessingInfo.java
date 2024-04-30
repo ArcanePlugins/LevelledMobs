@@ -35,6 +35,7 @@ public class CustomDropProcessingInfo {
         this.allDropInstances = new LinkedList<>();
         this.playerLevelVariableCache = new TreeMap<>();
         this.stackToItem = new LinkedList<>();
+        this.debugMessages = new TreeMap<>();
     }
 
     public LivingEntityWrapper lmEntity;
@@ -61,7 +62,7 @@ public class CustomDropProcessingInfo {
     Map<Integer, List<CustomDropBase>> prioritizedDrops;
     @Nullable CustomDropsRuleSet dropRules;
     final @NotNull List<CustomDropInstance> allDropInstances;
-    private StringBuilder debugMessages;
+    private final Map<DebugType, StringBuilder> debugMessages;
     public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
 
     public void itemGotDropped(final @NotNull CustomDropBase dropBase, final int amountDropped){
@@ -95,32 +96,31 @@ public class CustomDropProcessingInfo {
         return groupIDsDroppedAlready.getOrDefault(useGroupId, 0);
     }
 
+    void addDebugMessage(final String message) {
+        addDebugMessage(DebugType.CUSTOM_DROPS, message);
+    }
+
     void addDebugMessage(final DebugType debugType, final String message) {
         if (!LevelledMobs.getInstance().debugManager.isDebugTypeEnabled(debugType)){
             return;
         }
 
-        addDebugMessage(message);
-    }
+        final StringBuilder sb = this.debugMessages.computeIfAbsent(
+                debugType, k -> new StringBuilder());
 
-    void addDebugMessage(final String message) {
-        if (this.debugMessages == null) {
-            this.debugMessages = new StringBuilder();
-        }
+        if (!sb.isEmpty())
+            sb.append(System.lineSeparator());
 
-        if (!this.debugMessages.isEmpty()) {
-            this.debugMessages.append(System.lineSeparator());
-        }
-
-        this.debugMessages.append(message);
+        sb.append(message);
     }
 
     void writeAnyDebugMessages() {
-        if (this.debugMessages == null || this.debugMessages.isEmpty()) {
-            return;
+        if (this.debugMessages.isEmpty()) return;
+
+        for (DebugType debugType : this.debugMessages.keySet()){
+            DebugManager.log(debugType, lmEntity, () -> this.debugMessages.get(debugType).toString());
         }
 
-        DebugManager.log(DebugType.CUSTOM_DROPS, lmEntity, () -> this.debugMessages.toString());
-        this.debugMessages.setLength(0);
+        this.debugMessages.clear();
     }
 }

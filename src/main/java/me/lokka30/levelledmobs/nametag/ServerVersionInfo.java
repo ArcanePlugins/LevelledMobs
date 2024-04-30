@@ -2,7 +2,7 @@ package me.lokka30.levelledmobs.nametag;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import me.lokka30.levelledmobs.util.Utils;
+
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class ServerVersionInfo {
 
     public ServerVersionInfo() {
-        parseBukkitVersion();
-        parseNMSVersion();
+        parseServerVersion();
     }
 
     private int majorVersion;
@@ -36,6 +35,37 @@ public class ServerVersionInfo {
         Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?");
     private static final Pattern versionShortPattern =
         Pattern.compile(".*\\.(v\\d+_\\d+)(?:.+)?");
+
+    private void parseServerVersion(){
+        if (getIsRunningPaper())
+            parsePaperVersion();
+
+        final boolean isOneTwentyFiveOrNewer =
+                getMinorVersion() == 20 && getRevision() >= 5 ||
+                        getMinorVersion() >= 21;
+
+        if (!getIsRunningPaper() || !isOneTwentyFiveOrNewer) {
+            parseNMSVersion();
+            parseBukkitVersion();
+        }
+    }
+
+    private void parsePaperVersion(){
+        final String minecraftVersion = Bukkit.getServer().getMinecraftVersion();
+        // 1.20.4
+        String[] versions = minecraftVersion.split("\\.");
+        for (int i = 0; i < versions.length; i++) {
+            switch (i) {
+                case 0 -> this.majorVersion = Integer.parseInt(versions[i]);
+                case 1 -> this.minorVersion = Integer.parseInt(versions[i]);
+                case 2 -> this.revision = Integer.parseInt(versions[i]);
+            }
+        }
+
+        this.majorVersionEnum =
+                MinecraftMajorVersion.valueOf(String.format("V%s_%s", majorVersion, minorVersion));
+        this.minecraftVersion = Double.parseDouble(majorVersion + "." + minorVersion);
+    }
 
     private void parseBukkitVersion() {
         final String bukkitVersion = Bukkit.getBukkitVersion();
@@ -69,7 +99,7 @@ public class ServerVersionInfo {
                 versionStr = versionStr.replace("_", ".").replace("V", "");
                 this.minecraftVersion = Double.parseDouble(versionStr);
             } catch (Exception e) {
-                Utils.logger.warning(
+                Bukkit.getLogger().warning(
                     String.format("Could not extract the minecraft version from '%s'. %s",
                         Bukkit.getServer().getClass().getCanonicalName(), e.getMessage()));
             }
@@ -79,8 +109,8 @@ public class ServerVersionInfo {
         if (nmsRegex.find()) {
             this.nmsVersion = nmsRegex.group(1);
         } else {
-            Utils.logger.warning(
-                "NMSHandler: Could not match regex for bukkit version: " + Bukkit.getServer()
+            Bukkit.getLogger().warning(
+                "LevelledMobs: NMSHandler: Could not match regex for bukkit version: " + Bukkit.getServer()
                     .getClass().getCanonicalName()
             );
         }

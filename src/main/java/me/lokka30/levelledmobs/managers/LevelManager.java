@@ -515,7 +515,7 @@ public class LevelManager implements LevelInterface {
             final ItemStack[] chestItems = inv.getContents();
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (final ItemStack item : chestItems) {
-                if (item.getType() == Material.LEATHER) {
+                if (item != null && item.getType() == Material.LEATHER) {
                     return List.of(item);
                 }
             }
@@ -791,24 +791,20 @@ public class LevelManager implements LevelInterface {
         text.replace("%player-uuid%", playerId);
         text.replace("%player%", playerName);
         text.replaceIfExists("%displayname%", () -> {
-            final boolean useCustomNameForNametags = main.helperSettings.getBoolean(
-                    main.settingsCfg, "use-customname-for-mob-nametags");
             final String overridenName = lmEntity.lockedOverrideName == null ?
                     main.rulesManager.getRuleEntityOverriddenName(lmEntity, false) :
                     lmEntity.lockedOverrideName;
 
-            boolean hasOverridenName = (overridenName != null && !overridenName.isEmpty());
-            String useDisplayname = overridenName;
+            if (overridenName != null && !overridenName.isEmpty())
+                return overridenName;
+
+            if (lmEntity.getLivingEntity().getCustomName() != null)
+                return lmEntity.getLivingEntity().getCustomName();
 
             if (preserveMobName)
-                useDisplayname =  "{DisplayName}";
-            else if (!hasOverridenName)
-                useDisplayname = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
-
-            if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
-                useDisplayname = lmEntity.getLivingEntity().getCustomName();
-            }
-            return useDisplayname;
+                return "{DisplayName}";
+            else
+                return Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
         });
 
         if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {

@@ -277,6 +277,9 @@ public class EntitySpawnListener implements Listener {
 
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
+        // this only happens on folia far as I know
+        if (lmEntity.getWorld() != lmEntity.getLivingEntity().getWorld()) return;
+
         lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
 
         if (event instanceof final SpawnerSpawnEvent spawnEvent) {

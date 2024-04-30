@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
-import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -49,9 +48,9 @@ public class EntityNametagListener implements Listener {
 
             final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                 (LivingEntity) event.getRightClicked(), main);
+            final int level = main.rulesManager.getRuleMobMaxLevel(lmEntity);
 
-            if (main.rulesManager.getRuleMobCustomNameStatus(lmEntity)
-                == MobCustomNameStatus.NOT_NAMETAGGED) {
+            if (level <= 0 && lmEntity.getMobLevel() > 0) {
                 main.levelInterface.removeLevel(lmEntity);
                 lmEntity.free();
                 return;

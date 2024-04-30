@@ -49,7 +49,7 @@ public class InfoSubcommand extends MessagesBase implements Subcommand {
                     main.getDescription().getDescription(),
                     "1.16 - 1.20",
                     String.join(listSeparator, main.getDescription().getAuthors()),
-                    "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
+                    "See &8&nhttps://github.com/ArcanePlugins/LevelledMobs/wiki/Credits"
                 }
             );
         } else {
