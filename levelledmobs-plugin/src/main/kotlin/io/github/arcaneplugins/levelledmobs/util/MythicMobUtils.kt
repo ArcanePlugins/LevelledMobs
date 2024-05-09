@@ -38,7 +38,7 @@ object MythicMobUtils {
         val def = LevelledMobs.instance.definitions
 
         if (def.fieldMMmobManager == null) {
-            Log.war("Mythic Mobs is installed but field_MM_mobManager is null")
+            Log.war("Mythic Mobs is installed but fieldMMmobManager is null")
             return null
         }
 

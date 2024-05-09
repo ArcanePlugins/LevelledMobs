@@ -99,14 +99,14 @@ object RulesSubcommand {
                 CommandAPICommand("help-wiki")
                     .executes(CommandExecutor { sender, _ ->
                         val message = MessagesHelper.getMessage("command.levelledmobs.rules.wiki-link")
-                        showHyperlink(sender, message, "https://github.com/ArcanePlugins/LevelledMobs/wiki")
+                        showHyperlink(sender, message, "https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/")
                     })
             )
             .withSubcommands(
                 CommandAPICommand("reset")
                     .withOptionalArguments(StringArgument("difficulty")
                         .includeSuggestions(ArgumentSuggestions.strings(
-                            "vanilla", "bronze", "silver", "gold", "platium")))
+                            "vanilla", "bronze", "silver", "gold", "platinum")))
                     .withOptionalArguments(StringArgument("confirm"))
                     .executes(CommandExecutor { sender, args -> resetRules(sender, args) })
             )
@@ -244,7 +244,7 @@ object RulesSubcommand {
             "bronze" -> ResetDifficulty.BRONZE
             "silver" -> ResetDifficulty.SILVER
             "gold" -> ResetDifficulty.GOLD
-            "platium" -> ResetDifficulty.PLATIUM
+            "platinum" -> ResetDifficulty.PLATINUM
             else -> ResetDifficulty.UNSPECIFIED
         }
 
@@ -294,7 +294,7 @@ object RulesSubcommand {
                 replaceWith[1] = "- challenge-gold"
             }
 
-            ResetDifficulty.PLATIUM -> {
+            ResetDifficulty.PLATINUM -> {
                 replaceWhat[1] = "#- challenge-platinum"
                 replaceWith[1] = "- challenge-platinum"
             }
@@ -342,7 +342,7 @@ object RulesSubcommand {
     }
 
     enum class ResetDifficulty {
-        VANILLA, BRONZE, SILVER, GOLD, PLATIUM, UNSPECIFIED
+        VANILLA, BRONZE, SILVER, GOLD, PLATINUM, UNSPECIFIED
     }
 
     private fun showHyperlink(

@@ -310,47 +310,13 @@ object FileMigrator {
         val isMessages = to.name.equals("messages.yml", ignoreCase = true)
         val showMessages = !isMessages
         val processedKeys = mutableListOf<String>()
-
-        // version 20 = 1.34 - last version before 2.0
-        val version20KeysToKeep: List<String?> = listOf(
-            "level-passive",
-            "fine-tuning.min-level",
-            "fine-tuning.max-level",
-            "spawn-distance-levelling.active",
-            "spawn-distance-levelling.variance.enabled",
-            "spawn-distance-levelling.variance.max",
-            "spawn-distance-levelling.variance.min",
-            "spawn-distance-levelling.increase-level-distance",
-            "spawn-distance-levelling.start-distance",
-            "use-update-checker"
-        )
-
-        // version 2.1.0 - these fields should be reset to default
-        val version24Resets: List<String?> = listOf(
-            "fine-tuning.additions.movement-speed",
-            "fine-tuning.additions.attack-damage",
-            "world-level-override.min-level.example_world_123",
-            "world-level-override.max-level.example_world_123",
-            "world-level-override.max-level.example_world_456"
-        )
-
-        // version 2.2.0 - these fields should be reset to default
-        val version26Resets: List<String?> = listOf(
-            "world-level-override.min-level.example_world_123",
-            "world-level-override.max-level.example_world_123",
-            "world-level-override.max-level.example_world_456"
-        )
-
-        val messagesexemptV5: List<String?> = listOf(
-            "command.levelledmobs.spawner.usage",
-            "command.levelledmobs.spawner.spawner-give-message"
-        )
-
-        val messagesexemptV7: List<String?> = listOf(
-            "command.levelledmobs.rules.reset"
-        )
-
         val useCustomDrops = "use-custom-item-drops-for-mobs"
+        val settingsToRemove = mutableListOf(
+            "kill-skip-conditions.nametagged",
+            "kill-skip-conditions.tamed",
+            "kill-skip-conditions.leashed",
+            "kill-skip-conditions.convertingZombieVillager"
+        )
 
         try {
             val oldConfigLines = Files.readAllLines(
@@ -408,23 +374,7 @@ object FileMigrator {
                         if (!hasValues) {
                             currentKey.add(keyOnly)
 
-                            if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(
-                                    key
-                                )
-                            ) {
-                                currentLine++
-                                continue
-                            }
-                            if (isMessages && oldVersion <= 5 && messagesexemptV5.contains(key)) {
-                                currentLine++
-                                continue
-                            }
-                            if (isMessages && oldVersion <= 7 && messagesexemptV7.contains(key)) {
-                                currentLine++
-                                continue
-                            }
-
-                            if (oldConfigMap.containsKey(oldKey) && newConfigMap.containsKey(key)) {
+                                if (oldConfigMap.containsKey(oldKey) && newConfigMap.containsKey(key)) {
                                 val fiOld = oldConfigMap[oldKey]
                                 val fiNew = newConfigMap[key]
                                 val padding: String = getPadding((depth + 1) * 2)
@@ -452,17 +402,6 @@ object FileMigrator {
                                     val numOfPeriods: Int = countPeriods(key)
                                     for (entry in oldConfigMap.entries) {
                                         val enumeratedKey = entry.key
-                                        if (isSettings && (oldVersion > 20) && (oldVersion <= 24
-                                                    ) && version24Resets.contains(enumeratedKey)
-                                        ) {
-                                            continue
-                                        }
-                                        if (isSettings && (oldVersion > 24) && (oldVersion <= 26
-                                                    ) && version26Resets.contains(enumeratedKey)
-                                        ) {
-                                            continue
-                                        }
-
                                         val numofperiodsEnumerated: Int = countPeriods(
                                             enumeratedKey!!
                                         )
@@ -471,6 +410,12 @@ object FileMigrator {
                                                     ) && !newConfigMap.containsKey(enumeratedKey))
                                         ) {
                                             val fi = entry.value
+
+                                            if (isSettings && settingsToRemove.contains(enumeratedKey)){
+                                                currentLine++
+                                                continue
+                                            }
+
                                             if (!fi!!.isList && fi.simpleValue != null) {
                                                 val newline =
                                                     (padding + getEndingKey(enumeratedKey) + ": "
@@ -495,33 +440,6 @@ object FileMigrator {
                             val fi = oldConfigMap[oldKey]
                             val migratedValue = fi!!.simpleValue
 
-                            if (isSettings && (oldVersion <= 20) && !version20KeysToKeep.contains(
-                                    key
-                                )
-                            ) {
-                                currentLine++
-                                continue
-                            }
-                            if (isSettings && (oldVersion > 20) && (oldVersion <= 24
-                                        ) && version24Resets.contains(key)
-                            ) {
-                                currentLine++
-                                continue
-                            }
-                            if (isSettings && (oldVersion > 24) && (oldVersion <= 26
-                                        ) && version26Resets.contains(key)
-                            ) {
-                                currentLine++
-                                continue
-                            }
-                            if (isMessages && (oldVersion <= 5) && messagesexemptV5.contains(key)) {
-                                currentLine++
-                                continue
-                            }
-                            if (isMessages && (oldVersion <= 7) && messagesexemptV7.contains(key)) {
-                                currentLine++
-                                continue
-                            }
                             if (key.lowercase(Locale.getDefault()).startsWith("file-version")) {
                                 currentLine++
                                 continue
@@ -571,28 +489,6 @@ object FileMigrator {
                                     if (!isEntitySameSubkey(parentKey, oldValue)) {
                                         continue
                                     }
-                                    if (isSettings && (oldVersion > 20) && (oldVersion <= 24
-                                                ) && version24Resets.contains(oldValue)
-                                    ) {
-                                        continue
-                                    }
-                                    if (isSettings && (oldVersion > 24) && (oldVersion <= 26
-                                                ) && version26Resets.contains(oldValue)
-                                    ) {
-                                        continue
-                                    }
-                                    if (isMessages && (oldVersion <= 5) && messagesexemptV5.contains(
-                                            key
-                                        )
-                                    ) {
-                                        continue
-                                    }
-                                    if (isMessages && (oldVersion <= 7) && messagesexemptV7.contains(
-                                            key
-                                        )
-                                    ) {
-                                        continue
-                                    }
 
                                     val fiOld = entry.value
                                     if (fiOld!!.isList) {
@@ -633,15 +529,6 @@ object FileMigrator {
                     } else if (line.trim { it <= ' ' }.startsWith("-")) {
                         val key = getKeyFromList(currentKey, null)
                         val value = line.trim { it <= ' ' }.substring(1).trim { it <= ' ' }
-
-                        if (isMessages && (oldVersion <= 5) && messagesexemptV5.contains(key)) {
-                            currentLine++
-                            continue
-                        }
-                        if (isMessages && (oldVersion <= 7) && messagesexemptV7.contains(key)) {
-                            currentLine++
-                            continue
-                        }
 
                         // we have an array value present in the new config but not the old, so it must've been removed
                         if ((oldConfigMap.containsKey(key) && oldConfigMap[key]!!.isList

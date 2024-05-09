@@ -115,7 +115,7 @@ class NmsNametagSender : NametagSender {
         internalLivingEntity: Any
     ): Any? {
         // // 1.19 - 1.20.4 uses this method:
-        if (!def.isOneNinteenThreeOrNewer)
+        if (!def.isOneTwentyFiveOrNewer)
             return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity)
 
         // constructor:

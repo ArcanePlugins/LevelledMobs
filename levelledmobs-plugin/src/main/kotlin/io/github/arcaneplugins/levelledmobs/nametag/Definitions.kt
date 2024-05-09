@@ -182,7 +182,7 @@ class Definitions{
     private fun getClassName(classSuffix: String): String {
         // suffix ------------------------->
         // "org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity"
-        return if (ver.isRunningPaper && isOneNinteenThreeOrNewer || ver.isRunningFabric) {
+        return if (ver.isRunningPaper && isOneTwentyFiveOrNewer || ver.isRunningFabric) {
             "org.bukkit.craftbukkit.$classSuffix"
         } else {
             ("org.bukkit.craftbukkit." + ver.nmsVersion) + "." + classSuffix
