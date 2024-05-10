@@ -9,6 +9,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -20,6 +21,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.flywaydb.core.internal.util.logging.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,8 +123,8 @@ public class PlayerDeathListener {
 
         String mobKey = null;
         Component itemComp = null;
-        for (final Component c : tc.args()){
-            if (c instanceof final TranslatableComponent tc2) {
+        for (final TranslationArgument c : tc.arguments()){
+            if (c.asComponent() instanceof final TranslatableComponent tc2) {
                 if ("chat.square_brackets".equals(tc2.key())) {
                     // this is when the mob was holding a weapon
                     itemComp = tc2;
@@ -133,9 +135,8 @@ public class PlayerDeathListener {
             }
         }
 
-        if (mobKey == null) {
-            return;
-        }
+        if (mobKey == null) return;
+
         final String mobName = nametagResult.getNametagNonNull();
         final int displayNameIndex = mobName.indexOf("{DisplayName}");
         final ComponentSerializer<Component, ?, String> cs = main.getDefinitions().getUseLegacySerializer() ?
@@ -198,11 +199,12 @@ public class PlayerDeathListener {
     private @NotNull Component buildPlayerComponent(final @NotNull Player player){
         final Component playerName = main.nametagQueueManager.nametagSenderHandler.versionInfo.getMinecraftVersion() >= 1.18 ?
                 player.name() : Component.text(player.getName());
-        final HoverEvent<HoverEvent.ShowEntity> hoverEvent = HoverEvent.showEntity(
-                Key.key("minecraft"), player.getUniqueId(), playerName);
+//        final HoverEvent<HoverEvent.ShowEntity> hoverEvent = HoverEvent.showEntity(
+//                Key.key("minecraft"), player.getUniqueId(), playerName);
         final ClickEvent clickEvent = ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND,
                 "/tell " + player.getName() + " ");
 
-        return Component.text(player.getName()).clickEvent(clickEvent).hoverEvent(hoverEvent);
+        return Component.text(player.getName()).clickEvent(clickEvent);
+                //.hoverEvent(hoverEvent);
     }
 }
