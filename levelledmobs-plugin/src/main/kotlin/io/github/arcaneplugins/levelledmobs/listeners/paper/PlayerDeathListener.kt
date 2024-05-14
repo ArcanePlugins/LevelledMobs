@@ -4,12 +4,10 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.nametag.KyoriNametags
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -84,7 +82,7 @@ class PlayerDeathListener {
             return lmKiller
         }
 
-        val player = if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) event.player else event.entity
+        val player = event.player
 
         lmKiller.playerForLevelling = player
         val mobNametag: NametagResult = LevelledMobs.instance.levelManager.getNametag(lmKiller,
@@ -118,24 +116,24 @@ class PlayerDeathListener {
         var mobKey: String? = null
         var itemComp: Component? = null
         for (c in tc.arguments()) {
-            if (c is TranslatableComponent) {
-                if ("chat.square_brackets" == c.key()) {
+            val tc2 = c.asComponent() as? TranslatableComponent
+            if (tc2 != null) {
+                if ("chat.square_brackets" == tc2.key()) {
                     // this is when the mob was holding a weapon
-                    itemComp = c
+                    itemComp = tc2
                 } else {
-                    mobKey = c.key()
+                    mobKey = tc2.key()
                 }
             }
         }
 
-        if (mobKey == null) {
-            return
-        }
+        if (mobKey == null) return
+
         val main = LevelledMobs.instance
         val mobName: String = nametagResult.nametagNonNull
         val displayNameIndex = mobName.indexOf("{DisplayName}")
-        val cs =
-            if (main.definitions.getUseLegacySerializer()) LegacyComponentSerializer.legacyAmpersand() else main.definitions.mm!!
+        val cs = if (main.definitions.getUseLegacySerializer())
+            LegacyComponentSerializer.legacyAmpersand() else main.definitions.mm!!
 
         var newCom: Component
         if (nametagResult.hadCustomDeathMessage) {
@@ -191,18 +189,11 @@ class PlayerDeathListener {
     }
 
     private fun buildPlayerComponent(player: Player): Component {
-        val playerName =
-            if (LevelledMobs.instance.ver.minecraftVersion >= 1.18) player.name() else Component.text(
-                player.name
-            )
-        val hoverEvent = HoverEvent.showEntity(
-            Key.key("minecraft"), player.uniqueId, playerName
-        )
         val clickEvent = ClickEvent.clickEvent(
             ClickEvent.Action.SUGGEST_COMMAND,
             "/tell " + player.name + " "
         )
 
-        return Component.text(player.name).clickEvent(clickEvent).hoverEvent(hoverEvent)
+        return Component.text(player.name).clickEvent(clickEvent)
     }
 }
