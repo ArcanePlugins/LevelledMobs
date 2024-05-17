@@ -20,15 +20,15 @@ import kotlin.math.roundToInt
 class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
     val levelTiers = mutableListOf<LevelTierMatching>()
     var defaultLevelTier: LevelTierMatching? = null
-    var matchPlayerLevel: Boolean? = null
+    var matchVariable: Boolean? = null
     var enabled: Boolean? = null
-    var usePlayerMaxLevel: Boolean? = null
+    var usevariableAsMax: Boolean? = null
     var recheckPlayers: Boolean? = null
-    var assignmentCap: Float? = null
+    var outputCap: Float? = null
     var preserveEntityTime: Long? = null
-    var playerLevelScale: Float? = null
+    var playerVariableScale: Float? = null
     var variable: String? = null
-    var decreaseLevel = true
+    var decreaseOutput = true
     var doMerge = false
 
     override val strategyType = StrategyType.PLAYER_VARIABLE
@@ -50,7 +50,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
         val variableToUse =
             if (options.variable.isNullOrEmpty()) "%level%" else options.variable!!
-        val scale = if (options.playerLevelScale != null) options.playerLevelScale!! else 1f
+        val scale = if (options.playerVariableScale != null) options.playerVariableScale!! else 1f
         val playerLevelSourceResult = lmEntity.main.levelManager.getPlayerLevelSourceNumber(
             lmEntity.playerForLevelling, lmEntity, variableToUse
         )
@@ -64,7 +64,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
         val results = MinAndMaxHolder(0f, 0f)
         var tierMatched: String? = null
-        val capDisplay = if (options.assignmentCap == null) "" else "cap: ${options.assignmentCap}, "
+        val capDisplay = if (options.outputCap == null) "" else "cap: ${options.outputCap}, "
 
         if (options.getUsePlayerMaxLevel) {
             results.min = levelSource
@@ -125,8 +125,8 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                         )
                     }
                 }
-                if (options.assignmentCap != null) {
-                    results.max = results.max.coerceAtMost(options.assignmentCap!!)
+                if (options.outputCap != null) {
+                    results.max = results.max.coerceAtMost(options.outputCap!!)
                     return calculateResult(results)
                 } else {
                     return 0f
@@ -148,8 +148,8 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             varianceDebug = ""
         }
 
-        if (options.assignmentCap != null) {
-            results.max = results.max.coerceAtMost(options.assignmentCap!!)
+        if (options.outputCap != null) {
+            results.max = results.max.coerceAtMost(options.outputCap!!)
         }
 
         val homeName = if (playerLevelSourceResult.homeNameUsed != null)
@@ -199,7 +199,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 numberOrString
             )
         }
-        lmEntity.playerLevellingAllowDecrease = options.decreaseLevel
+        lmEntity.playerLevellingAllowDecrease = options.decreaseOutput
 
         return calculateResult(results)
     }
@@ -220,17 +220,17 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         }
 
         levelTiers.addAll(levellingStrategy.levelTiers)
-        if (levellingStrategy.matchPlayerLevel != null) {
-            this.matchPlayerLevel = levellingStrategy.matchPlayerLevel
+        if (levellingStrategy.matchVariable != null) {
+            this.matchVariable = levellingStrategy.matchVariable
         }
-        if (levellingStrategy.usePlayerMaxLevel != null) {
-            this.usePlayerMaxLevel = levellingStrategy.usePlayerMaxLevel
+        if (levellingStrategy.usevariableAsMax != null) {
+            this.usevariableAsMax = levellingStrategy.usevariableAsMax
         }
-        if (levellingStrategy.playerLevelScale != null) {
-            this.playerLevelScale = levellingStrategy.playerLevelScale
+        if (levellingStrategy.playerVariableScale != null) {
+            this.playerVariableScale = levellingStrategy.playerVariableScale
         }
-        if (levellingStrategy.assignmentCap != null) {
-            this.assignmentCap = levellingStrategy.assignmentCap
+        if (levellingStrategy.outputCap != null) {
+            this.outputCap = levellingStrategy.outputCap
         }
         if (variable != null) {
             this.variable = levellingStrategy.variable
@@ -255,14 +255,14 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
     }
 
     val getMatchPlayerLevel: Boolean
-        get() = this.matchPlayerLevel != null && matchPlayerLevel!!
+        get() = this.matchVariable != null && matchVariable!!
 
     val getEnabled: Boolean
         // enabled is true by default unless specifically disabled
         get() = this.enabled == null || enabled!!
 
     val getUsePlayerMaxLevel: Boolean
-        get() = this.usePlayerMaxLevel != null && usePlayerMaxLevel!!
+        get() = this.usevariableAsMax != null && usevariableAsMax!!
 
     val getRecheckPlayers: Boolean
         get() = this.recheckPlayers != null && recheckPlayers!!
@@ -315,20 +315,20 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             sb.append("use-plr-max-lvl")
         }
 
-        if (playerLevelScale != null) {
+        if (playerVariableScale != null) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }
             sb.append("scale: ")
-            sb.append(playerLevelScale)
+            sb.append(playerVariableScale)
         }
 
-        if (assignmentCap != null) {
+        if (outputCap != null) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }
             sb.append("cap: ")
-            sb.append(assignmentCap)
+            sb.append(outputCap)
         }
 
         if (levelTiers.isNotEmpty()) {
@@ -338,7 +338,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             sb.append(levelTiers)
         }
 
-        if (decreaseLevel) {
+        if (decreaseOutput) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }

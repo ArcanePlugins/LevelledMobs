@@ -1334,20 +1334,20 @@ class RulesParser {
 
         val ymlHelper = YmlParsingHelper(cs)
         val options = PlayerLevellingStrategy()
-        options.matchPlayerLevel = ymlHelper.getBoolean2(
-             "match-variable", options.matchPlayerLevel
+        options.matchVariable = ymlHelper.getBoolean2(
+             "match-variable", options.matchVariable
         )
-        options.usePlayerMaxLevel = ymlHelper.getBoolean2(
-             "use-variable-as-max", options.usePlayerMaxLevel
+        options.usevariableAsMax = ymlHelper.getBoolean2(
+             "use-variable-as-max", options.usevariableAsMax
         )
-        options.playerLevelScale = ymlHelper.getFloat2(
-             "player-variable-scale", options.playerLevelScale
+        options.playerVariableScale = ymlHelper.getFloat2(
+             "player-variable-scale", options.playerVariableScale
         )
-        options.assignmentCap = ymlHelper.getFloat2( "assignment-cap", options.assignmentCap)
+        options.outputCap = ymlHelper.getFloat2( "output-cap", options.outputCap)
         options.enabled = ymlHelper.getBoolean2( "enabled", options.enabled)
         options.doMerge = ymlHelper.getBoolean( "merge", options.doMerge)
         options.variable = ymlHelper.getString( "player-variable", options.variable)
-        options.decreaseLevel = ymlHelper.getBoolean( "decrease-level", true)
+        options.decreaseOutput = ymlHelper.getBoolean( "decrease-output", true)
         options.recheckPlayers = ymlHelper.getBoolean2( "recheck-players", options.recheckPlayers)
         options.preserveEntityTime = ymlHelper.getIntTimeUnitMS( "preserve-entity", options.preserveEntityTime)
         parsingInfo.levellingStrategy[options.strategyType] = options

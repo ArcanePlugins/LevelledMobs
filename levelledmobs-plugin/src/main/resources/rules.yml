@@ -91,8 +91,8 @@ presets:
         match-variable: false
         use-variable-as-max: false
         recheck-players: true
-        decrease-level: true
-        level-cap: 25
+        decrease-output: true
+        output-cap: 25
         preserve-entity: 5s
 
   lvlmodifier-custom-formula:
