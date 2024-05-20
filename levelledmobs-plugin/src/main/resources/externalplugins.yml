@@ -1,0 +1,65 @@
+#   -------------------------------------------------------------------------------------
+#   ----------------------------------------  -  ----------------------------------------
+#    _                   _ _          _       |
+#   | |    _____   _____| | | ___  __| |      |   Developer: PenalBuffalo
+#   | |   / _ \ \ / / _ \ | |/ _ \/ _` |      |   ko-fi.com/penalbuffalo
+#   | |__|  __/\ V /  __/ | |  __/ (_| |      |
+#   |_____\___| \_/ \___|_|_|\___|\__,_|_     |   Original Author: Lokka30
+#            |  \/  | ___ | |__  ___| || |    |   ko-fi.com/lokka30
+#            | |\/| |/ _ \| '_ \/ __| || |_   |
+#            | |  | | (_) | |_) \__ \__   _|  |   Support & Wiki: UltimaOath
+#            |_|  |_|\___/|_.__/|___/  |_|    |   ko-fi.com/ultimaoath
+#
+#   ----------------------   The Ultimate Mob Levelling Solution   ----------------------
+#
+#   Documentation                             |   Support
+#   . Wiki: tinyurl.com/lm-git-wiki           |   . Discord: discord.gg/RQ8M4A5
+#   . FAQ: tinyurl.com/lm-git-faq             |   Please review our plugin!
+#   . Ex. Rules: tinyurl.com/lm-sample-rules  |   . Hangar - tinyurl.com/lm-hangar
+#   . Ex. Drops: tinyurl.com/lm-sample-drops  |   . SpigotMC - tinyurl.com/lm-spigotmc
+#                                             |
+#   ----------------------------------------  -  ----------------------------------------
+#   -------------------------------------------------------------------------------------
+#
+#   ---------------  -  ------------------------------
+#        Section 01  |  External Plugin Support
+#   ---------------  -  ------------------------------
+#
+infernal-mobs:
+  friendly-name: 'infernal-mobs'
+  plugin-name: 'InfernalMobs'
+  key-name: 'infernalMetadata'
+  key-type: 'metadata'
+  requirement: 'exists'
+#  placeholder-name: '%infernal-mobs-name%'
+
+shop-keepers:
+  friendly-name: 'shop-keepers'
+  plugin-name: 'ShopKeepers'
+  key-name: 'shopkeeper'
+  key-type: 'metadata'
+  requirement: 'exists'
+#  placeholder-name: '%shop-keeper-name%'
+
+blood-night:
+  friendly-name: 'blood-night'
+  plugin-name: 'BloodNight'
+  key-name: 'mobtype'
+  key-type: 'PDC'
+  requirement: 'exists'
+#  placeholder-name: '%blood-night-name%'
+
+eco-bosses:
+  friendly-name: 'eco-bosses'
+  plugin-name: 'EcoBosses'
+  key-name: 'boss'
+  key-type: 'PDC'
+  requirement: 'exists'
+#  placeholder-name: '%eco-bosses-name%'
+
+#
+#   ---------------  -  ------------------------------
+#        Section 02  |  Developer Settings / Do Not Edit Beyond This Point
+#   ---------------  -  ------------------------------
+#
+file-version: 1

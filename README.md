@@ -1,12 +1,10 @@
-<div style="text-align: center;">
+<div align="center">
 
-<img src="https://i.ibb.co/ySgMPd0/Levelled-Mobs-Banner-v2-0.png" width="600" height="300" alt="LevelledMobs Banner"></img>
+<img src="https://i.ibb.co/ySgMPd0/Levelled-Mobs-Banner-v2-0.png" width="600" height="300" alt="LevelledMobs Banner" />
 
-# Welcome to LevelledMobs 3
+# LevelledMobs 4
 
-Level-up mobs on your server, RPG-style! Perfect for Survival mode.
-
-Maintained by PenalBuffalo, UltimaOath and lokka30.
+*An ArcanePlugins Resource • by PenalBuffalo, UltimaOath, and lokka30*
 
 <a href="https://www.discord.io/arcaneplugins">
 <img src="https://img.shields.io/badge/Chat%20%2F%20Support-on%20Discord-skyblue?style=for-the-badge&logo=discord&logoColor=white" alt="Support available on Discord">
@@ -18,76 +16,65 @@ Maintained by PenalBuffalo, UltimaOath and lokka30.
 <br />
 
 <a href="https://github.com/lokka30/LevelledMobs/wiki">
-<img src="https://img.shields.io/badge/Documentation-on%20Wiki-skyblue?style=for-the-badge&logo=wikipedia" alt="Documentation available on the Wiki">
+<img src="https://img.shields.io/badge/Documentation-on%20Wiki-skyblue?style=for-the-badge&logo=github" alt="Documentation available on the Wiki">
 </a>
-<a href="https://github.com/lokka30/LevelledMobs">
-<img src="https://img.shields.io/badge/Source%20Code-on%20GitHub-skyblue?style=for-the-badge&logo=github" alt="Source Code available on GitHub">
-</a>
-
-<br />
 
 <a href="https://github.com/lokka30/LevelledMobs/wiki/Credits">
-<img src="https://img.shields.io/badge/Contributors-View%20Credits-skyblue?style=for-the-badge" alt="Contributors listed in Credits Page">
+    <img src="https://img.shields.io/badge/Contributors-View%20Credits-skyblue?style=for-the-badge" alt="Contributors listed in Credits Page">
 </a>
 
-### [SpigotMC Resource Page](https://www.spigotmc.org/resources/levelledmobs.74304/)
+<br /><hr />
 
-#### [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
+## Learn More at [✈️ HangarMC](https://hangar.papermc.io/ArcanePlugins/LevelledMobs) or [🚰 SpigotMC](https://www.spigotmc.org/resources/levelledmobs.74304/)
 
+### Also see: [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
 
 </div>
 
-<br /><hr /><br />
+<br /><hr />
 
-## About
+## Embedded Projects
 
-### Minecraft's mobs, on 'hard' difficulty, are so darn easy!
+We are grateful to the  authors and contributors of these projects,
+as they make the current version of LevelledMobs possible.
 
-This is where LevelledMobs comes to shine on your server, by upgrading the PvE experience for mobs. LevelledMobs applies a level through customizable formulas to every newly spawned mob on your server - the higher the level, the higher the stats, the more difficult a mob is to fight. Harder, better, faster and stronger, all completely automatic!
+Remember to give these projects a star. :)
 
-It can hook with your favourite plugins, such as *EcoSkills*, *Aurelium Skills*, *mcMMO*, *WorldGuard*, and far more.
-
-### [Visit the LevelledMobs resource page on SpigotMC.org to learn more.](https://www.spigotmc.org/resources/levelledmobs.74304/)
-
-<br />
-
-<div style="text-align: center;">
-<img src="https://i.ibb.co/ZBfws4Y/LM-Gallery.png" width="500" height="300" alt="LM Gallery">
-</div>
-
-<br /><hr /><br />
+- [CommandAPI](https://github.com/JorelAli/CommandAPI) (JorelAli)
+- [Configurate](https://github.com/SpongePowered/Configurate/) (SpongePowered Team)
+- [Crunch](https://github.com/Redempt/Crunch) (Redempt)
+- [MineDown](https://github.com/Phoenix616/MineDown) (Phoenix616)
+- [MorePersistentDataTypes](https://github.com/JEFF-Media-GbR/MorePersistentDataTypes) (JEFF-Media-GbR)
+- [Item-NBT-API](https://github.com/tr7zw/Item-NBT-API) (tr7zw)
+- [Paper-API](https://github.com/PaperMC/Paper) (PaperMC Team)
+- [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) (PlaceholderAPI Team)
+- [Spigot-API](https://www.spigotmc.org/) (SpigotMC Team)
 
 ## License
 
-LevelledMobs is libre software, licensed under the GNU Affero General Public License v3.
+[![GPLv3 or Later](https://www.gnu.org/graphics/gplv3-with-text-84x42.png)](https://www.gnu.org/licenses/gpl-3.0.html)
+> Copyright © 2020-2024 lokka30
+>
+> Copyright © 2020-2024 PenalBuffalo (aka stumper66)
+>
+> Copyright © 2020-2024 UltimaOath (aka Oathkeeper)
+>
+> Copyright © 2020-2024 LevelledMobs Contributors
+>
+> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+>
+> You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-```
-Copyright (C) 2020-2022  lokka30
+**[View License Document: `LICENSE.md`](LICENSE.md)**
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+<br /><hr />
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
+<div align="center">
 
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-```
+## Learn More at [✈️ HangarMC](https://hangar.papermc.io/ArcanePlugins/LevelledMobs) or [🚰 SpigotMC](https://www.spigotmc.org/resources/levelledmobs.74304/)
 
-[View the license here](LICENSE.md).
+### Also see: [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
 
-LevelledMobs 4 will be relicensed with GNU GPL v3 (non-Affero) as the re-code permits.
-
-## Branches
-
-* `main`: release branch (latest version on Spigot). Code here is stable.
-* `?.?-dev`: these branches contain unfinished code for future releases. Code here is unlikely to be
-  stable.
-    * e.g. `3.0-dev`: code being written for LM v3.0
-    * e.g. `1.2-dev`: code being written for LM v1.2
-* `javadocs`: javadocs for the plugin
-* `task/???`: a branch addressing a specific topic (should be merged later).
+</div>

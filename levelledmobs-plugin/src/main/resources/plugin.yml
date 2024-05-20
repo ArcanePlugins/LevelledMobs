@@ -1,0 +1,20 @@
+name: 'LevelledMobs'
+version: '${version}'
+description: '${description}'
+authors: [ 'PenalBuffalo', 'lokka30', 'UltimaOath' ]
+website: 'https://github.com/ArcanePlugins/LevelledMobs/'
+folia-supported: true
+
+main: 'io.github.arcaneplugins.levelledmobs.LevelledMobs'
+api-version: '1.19'
+load: 'POSTWORLD'
+
+softdepend:
+  - WorldEdit
+  - WorldGuard
+  - MythicMobs
+  - PlaceholderAPI
+  - NBTAPI
+  - SimplePets
+  - Essentials
+  - LM_Items

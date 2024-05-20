@@ -1,0 +1,380 @@
+#   -------------------------------------------------------------------------------------
+#   ----------------------------------------  -  ----------------------------------------
+#    _                   _ _          _       |
+#   | |    _____   _____| | | ___  __| |      |   Developer: PenalBuffalo
+#   | |   / _ \ \ / / _ \ | |/ _ \/ _` |      |   ko-fi.com/penalbuffalo
+#   | |__|  __/\ V /  __/ | |  __/ (_| |      |
+#   |_____\___| \_/ \___|_|_|\___|\__,_|_     |   Original Author: Lokka30
+#            |  \/  | ___ | |__  ___| || |    |   ko-fi.com/lokka30
+#            | |\/| |/ _ \| '_ \/ __| || |_   |
+#            | |  | | (_) | |_) \__ \__   _|  |   Support & Wiki: UltimaOath
+#            |_|  |_|\___/|_.__/|___/  |_|    |   ko-fi.com/ultimaoath
+#
+#   ----------------------   The Ultimate Mob Levelling Solution   ----------------------
+#
+#   Documentation                             |   Support
+#   . Wiki: tinyurl.com/lm-git-wiki           |   . Discord: discord.gg/RQ8M4A5
+#   . FAQ: tinyurl.com/lm-git-faq             |   Please review our plugin!
+#   . Ex. Rules: tinyurl.com/lm-sample-rules  |   . Hangar - tinyurl.com/lm-hangar
+#   . Ex. Drops: tinyurl.com/lm-sample-drops  |   . SpigotMC - tinyurl.com/lm-spigotmc
+#                                             |
+#   ----------------------------------------  -  ----------------------------------------
+#   -------------------------------------------------------------------------------------
+#
+#   ---------------  -  ------------------------------
+#        Section 01  |  Default CustomDrop Settings
+#   ---------------  -  ------------------------------
+#
+defaults:
+  chance: 0.2
+  overall_chance: 1.0
+  amount: 1
+  equipped: 1.0
+  equip-offhand: true
+  equip-on-helmet: false
+  only-drop-if-equipped: false
+  player-caused: true
+  nomultiplier: true
+  nospawner: false
+  use-chunk-kill-max: true
+  overall_permission: ''
+  override: false
+  minLevel: -1
+  maxLevel: -1
+  item-flags: ''
+  groupid: ''
+  group-limits:
+    cap-select: 1
+    cap-per-item: -1
+    cap-total: -1
+    cap-equipped: -1
+    retries: 0
+  #The following are for CustomCommand Drops only:
+  run-on-spawn: false
+  run-on-death: true
+  delay: 0
+
+
+#
+#   ---------------  -  ------------------------------
+#        Section 02  |  Group CustomDrops
+#   ---------------  -  ------------------------------
+#
+all_mobs:
+  -
+
+all_levellable_mobs:
+  -
+
+all_hostile_mobs:
+  -
+
+all_passive_mobs:
+  -
+
+all_overworld_mobs:
+  -
+
+all_nether_mobs:
+  -
+
+all_flying_mobs:
+  -
+
+all_ground_mobs:
+  -
+
+all_aquatic_mobs:
+  -
+
+
+#
+#   ---------------  -  ------------------------------
+#        Section 03  |  Entity CustomDrops
+#   ---------------  -  ------------------------------
+#
+ALLAY:
+  -
+
+ARMADILLO:
+  -
+
+AXOLOTL:
+  -
+
+BAT:
+  -
+
+BEE:
+  -
+
+BLAZE:
+  -
+
+CAMEL:
+  -
+
+CAT:
+  -
+
+CAVE_SPIDER:
+  -
+
+CHICKEN:
+  -
+
+COD:
+  -
+
+COW:
+  -
+
+CREEPER:
+  -
+
+DOLPHIN:
+  -
+
+DONKEY:
+  -
+
+DROWNED:
+  -
+
+ELDER_GUARDIAN:
+  -
+
+ENDER_DRAGON:
+  -
+
+ENDERMAN:
+  -
+
+ENDERMITE:
+  -
+
+EVOKER:
+  -
+
+FOX:
+  -
+
+FROG:
+  -
+
+GHAST:
+  -
+
+GLOW_SQUID:
+  -
+
+GOAT:
+  -
+
+GUARDIAN:
+  -
+
+HOGLIN:
+  -
+
+HORSE:
+  -
+
+HUSK:
+  -
+
+ILLUSIONER:
+  -
+
+IRON_GOLEM:
+  -
+
+LLAMA:
+  -
+
+MAGMA_CUBE:
+  -
+
+MULE:
+  -
+
+MUSHROOM_COW:
+  -
+
+OCELOT:
+  -
+
+PANDA:
+  -
+
+PARROT:
+  -
+
+PHANTOM:
+  -
+
+PIG:
+  -
+
+PIGLIN:
+  -
+
+PIGLIN_BRUTE:
+  -
+
+PILLAGER:
+  -
+
+POLAR_BEAR:
+  -
+
+PUFFERFISH:
+  -
+
+RABBIT:
+  -
+
+RAVAGER:
+  -
+
+SALMON:
+  -
+
+SHEEP:
+  -
+
+SHULKER:
+  -
+
+SILVERFISH:
+  -
+
+SKELETON:
+  -
+
+SKELETON_HORSE:
+  -
+
+SLIME:
+  -
+
+SNIFFER:
+  -
+
+SNOWMAN:
+  -
+
+SPIDER:
+  -
+
+SQUID:
+  -
+
+STRAY:
+  -
+
+STRIDER:
+  -
+
+TADPOLE:
+  -
+
+TRADER_LLAMA:
+  -
+
+TROPICAL_FISH:
+  -
+
+TURTLE:
+  -
+
+VEX:
+  -
+
+VILLAGER:
+  -
+
+VINDICATOR:
+  -
+
+WANDERING_TRADER:
+  -
+
+WARDEN:
+  -
+
+WITCH:
+  -
+
+WITHER:
+  -
+
+WITHER_SKELETON:
+  -
+
+WOLF:
+  -
+
+ZOGLIN:
+  -
+
+ZOMBIE:
+  -
+
+ZOMBIE_HORSE:
+  -
+
+ZOMBIE_VILLAGER:
+  -
+
+ZOMBIFIED_PIGLIN:
+  -
+
+
+#
+#   ---------------  -  ------------------------------
+#        Section 04  |  Drop Tables
+#   ---------------  -  ------------------------------
+#
+drop-table:
+  armor_and_weapons:
+    - IRON_HELMET:
+        groupid: iron_armor
+        group-limits:
+          cap-per-item: -1
+          cap-total: 2
+          cap-equipped: 2
+        equipped: 0.05
+        chance: 0.005
+    - IRON_CHESTPLATE:
+        groupid: iron_armor
+        equipped: 0.05
+        chance: 0.005
+    - IRON_LEGGINGS:
+        groupid: iron_armor
+        equipped: 0.05
+        chance: 0.005
+    - IRON_BOOTS:
+        groupid: iron_armor
+        equipped: 0.05
+        chance: 0.005
+    - IRON_SWORD:
+        groupid: iron_weapons
+        group-limits:
+          cap-per-item: -1
+          cap-total: 1
+          cap-equipped: 1
+        equipped: 0.05
+        chance: 0.005
+    - IRON_AXE:
+        groupid: iron_weapons
+        equipped: 0.05
+        chance: 0.005
+
+
+#
+#   ---------------  -  ------------------------------
+#        Section 05  |  Developer Settings / Do Not Edit Beyond This Point
+#   ---------------  -  ------------------------------
+#
+file-version: 11
