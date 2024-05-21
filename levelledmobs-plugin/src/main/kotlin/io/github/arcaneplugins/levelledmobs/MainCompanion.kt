@@ -547,17 +547,17 @@ class MainCompanion{
             EntityType.SNOWMAN
         ))
 
-        if (versionInfo.majorVersion >= 1.19) {
+        if (versionInfo.minorVersion >= 19) {
             passiveMobsGroup.addAll(Compat119.getPassiveMobs())
         }
-        if (versionInfo.majorVersion >= 1.20) {
+        if (versionInfo.minorVersion >= 20) {
             passiveMobsGroup.addAll(Compat120.getPassiveMobs())
         }
-        if (versionInfo.majorVersion >= 1.21) {
+        if (versionInfo.minorVersion >= 21) {
             passiveMobsGroup.addAll(Compat121.getPassiveMobs())
         }
 
-        if (versionInfo.majorVersion >= 1.19) {
+        if (versionInfo.minorVersion >= 19) {
             hostileMobsGroup.addAll(Compat119.getHostileMobs())
         }
 
@@ -569,7 +569,7 @@ class MainCompanion{
             EntityType.TURTLE
         ))
 
-        if (versionInfo.majorVersion >= 1.19) {
+        if (versionInfo.minorVersion >= 19) {
             aquaticMobsGroup.addAll(getAquaticMobs())
         }
     }
