@@ -21,17 +21,22 @@ import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeInstance
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.AbstractVillager
 import org.bukkit.entity.Ageable
 import org.bukkit.entity.Animals
+import org.bukkit.entity.Bat
 import org.bukkit.entity.Boss
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Flying
+import org.bukkit.entity.Frog
+import org.bukkit.entity.Guardian
 import org.bukkit.entity.Hoglin
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
+import org.bukkit.entity.Turtle
 import org.bukkit.entity.WaterMob
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataContainer
@@ -963,7 +968,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS.toString())
         }
 
-        if (livingEntity is WaterMob || flyingMobNames.contains(eType.name.uppercase())) {
+        if (livingEntity is WaterMob || livingEntity is Turtle ||
+            livingEntity is Frog || livingEntity is Guardian) {
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString())
         }
 
@@ -987,6 +993,10 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         if (livingEntity is Animals && livingEntity !is Hoglin || livingEntity is WaterMob
             || main.mainCompanion.passiveMobsGroup.contains(eType)
         ) {
+            groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString())
+        }
+
+        if (livingEntity is AbstractVillager || livingEntity is Bat){
             groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString())
         }
 
