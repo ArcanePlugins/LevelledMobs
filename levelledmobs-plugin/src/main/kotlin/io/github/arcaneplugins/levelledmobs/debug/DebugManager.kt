@@ -113,7 +113,7 @@ class DebugManager {
         fun log(
             debugType: DebugType,
             ruleInfo: RuleInfo,
-            lmEntity: LivingEntityWrapper,
+            lmEntity: LivingEntityWrapper?,
             msg: Supplier<String?>
         ) {
             instance.logInstance(debugType, ruleInfo, lmEntity, null, null, msg.get()!!)
@@ -122,7 +122,7 @@ class DebugManager {
         fun log(
             debugType: DebugType,
             ruleInfo: RuleInfo,
-            lmInterface: LivingEntityInterface,
+            lmInterface: LivingEntityInterface?,
             ruleResult: Boolean,
             msg: Supplier<String?>
         ) {
@@ -131,7 +131,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            lmEntity: LivingEntityWrapper,
+            lmEntity: LivingEntityWrapper?,
             msg: Supplier<String?>
         ) {
             instance.logInstance(debugType, null, lmEntity, null, null, msg.get()!!)
@@ -139,7 +139,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            lmEntity: LivingEntityWrapper,
+            lmEntity: LivingEntityWrapper?,
             result: Boolean,
             msg: Supplier<String?>
         ) {
@@ -148,7 +148,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            entity: Entity,
+            entity: Entity?,
             result: Boolean,
             msg: Supplier<String?>
         ) {
@@ -157,7 +157,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            entity: Entity,
+            entity: Entity?,
             msg: Supplier<String?>
         ) {
             instance.logInstance(debugType, null, null, entity, null, msg.get()!!)

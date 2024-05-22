@@ -66,10 +66,10 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         var tierMatched: String? = null
         val capDisplay = if (options.outputCap == null) "" else "cap: ${options.outputCap}, "
 
-        if (options.getVariableAsMax) {
+        if (options.getMatchVariable) {
             results.min = levelSource
             results.max = results.min
-        } else if (options.getMatchVariable) {
+        } else if (options.getVariableAsMax) {
             results.max = levelSource
         } else {
             var foundMatch = false

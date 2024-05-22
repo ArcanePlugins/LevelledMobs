@@ -432,7 +432,7 @@ class CustomDropsHandler {
         info: CustomDropProcessingInfo
     ) {
         val dropLimitsReached = mutableListOf<UUID>()
-        val defaultLimits = groupLimitsMap.getOrDefault("default", null)!!
+        val defaultLimits = groupLimitsMap.getOrDefault("default", null)
 
         for (items in info.prioritizedDrops!!.values) {
             // loop thru each drop list associated with any groupids
@@ -458,29 +458,24 @@ class CustomDropsHandler {
                     }
 
                     if (info.groupLimits != null) {
+                        val groupLimits = info.groupLimits!!
                         val itemDroppedCount = info.getItemsDropsById(drop)
-                        if (info.groupLimits!!.hasReachedCapPerItem(itemDroppedCount)) {
+                        if (groupLimits.hasReachedCapPerItem(itemDroppedCount)) {
                             if (!dropLimitsReached.contains(drop.uid)) {
                                 dropLimitsReached.add(drop.uid)
                                 val itemDescription =
                                     if ((drop is CustomDropItem)) drop.material.name else "CustomCommand"
-                                DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity!!) {
-                                    String.format(
-                                        "Reached cap-per-item limit of %s for %s",
-                                        info.groupLimits!!.capPerItem, itemDescription
-                                    )
+                                DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity) {
+                                    "Reached cap-per-item limit of ${groupLimits.capPerItem} for $itemDescription"
                                 }
                             }
                             continue
                         }
 
                         val groupDroppedCount = info.getDropItemsCountForGroup(drop)
-                        if (info.groupLimits!!.hasReachedCapTotal(groupDroppedCount)) {
-                            DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity!!) {
-                                String.format(
-                                    "Reached cap-total of %s for group: %s",
-                                    info.groupLimits!!.capTotal, drop.groupId
-                                )
+                        if (groupLimits.hasReachedCapTotal(groupDroppedCount)) {
+                            DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity) {
+                                "Reached cap-total of ${groupLimits.capTotal} for group: ${drop.groupId}"
                             }
                             return
                         }
@@ -531,10 +526,7 @@ class CustomDropsHandler {
         if (dropBase.excludedMobs.contains(info.lmEntity!!.typeName)) {
             if (dropBase is CustomDropItem && !info.equippedOnly) {
                 info.addDebugMessage(
-                    DebugType.CUSTOM_DROPS, String.format(
-                        "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.lmEntity!!.typeName,
-                        dropBase.material.name
-                    )
+                    "item: ${dropBase.material.name}, mob was excluded"
                 )
             }
             return
