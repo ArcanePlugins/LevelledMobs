@@ -816,13 +816,9 @@ class RulesManager {
                     DebugType.SETTING_STOP_PROCESSING,
                     ruleInfo, lmInterface, result
                 ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7, rule count: &b%s",
-                        ruleInfo.ruleName, lmInterface.typeName,
-                        applicableRules.allApplicableRules.size
-                    )
+                    "rule count: &b${applicableRules.allApplicableRules.size}&r"
                 }
-                if (!result) break
+                if (result) break
             }
         }
 
@@ -866,7 +862,9 @@ class RulesManager {
                 ) {
                     return
                 }
-                DebugManager.log(DebugType.SETTING_COOLDOWN) { ruleInfo.ruleName + ": cooldown reached, disabling rule" }
+                DebugManager.log(DebugType.SETTING_COOLDOWN, ruleInfo, lmInterface,true) {
+                    "cooldown reached, disabling rule"
+                }
                 ruleInfo.isTempDisabled = true
             }
         }
@@ -883,11 +881,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel,
-                    ri.conditionsMinLevel
-                )
+                "mob lvl: &b${lmEntity.getMobLevel}&7, rule minlvl: &b${ri.conditionsMinLevel}&7"
             }
             if (!result) return false
         }
@@ -898,11 +892,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, lmEntity.getMobLevel,
-                    ri.conditionsMaxLevel
-                )
+                "mob lvl: &b${lmEntity.getMobLevel}&7, rule maxlvl: &b${ri.conditionsMaxLevel}&7"
             }
             if (!result) return false
         }
@@ -923,10 +913,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_CUSTOM_NAME, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, name: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, customName
-                )
+                "name: &b$customName&7"
             }
 
             if (!result) return false
@@ -939,10 +926,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_SPAWN_REASON, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, spawn reason: &b%s&7",
-                    ri.ruleName, lmEntity.typeName, lmEntity.spawnReason
-                )
+                "spawn reason: &b${lmEntity.spawnReason}&7"
             }
             if (!result) return false
         }
@@ -962,7 +946,7 @@ class RulesManager {
 
             DebugManager.log(
                 DebugType.CONDITION_PLUGIN_COMPAT, ri, lmEntity, madeIt
-            ) { "&b${ri.ruleName}&7, mob: &b${lmEntity.nameIfBaby}&7, mob plugins: &b$mobCompats&7" }
+            ) { "mob plugins: &b$mobCompats&7" }
             if (!madeIt) return false
         }
 
@@ -977,10 +961,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MYTHICMOBS_INTERNAL_NAME, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
-                    ri.ruleName, lmEntity.nameIfBaby, mmNameFinal
-                )
+                "mm_name: &b$mmNameFinal&7"
             }
 
             if (!result) return false
@@ -993,10 +974,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_SPAWNER_NAME, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, spawner: &b%s&7",
-                    ri.ruleName, lmEntity.nameIfBaby, checkName
-                )
+                "spawner: &b$checkName&7"
             }
 
             if (!result) return false
@@ -1009,10 +987,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_SPAWNER_NAME, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
-                    ri.ruleName, lmEntity.nameIfBaby, checkName
-                )
+                "spawn_egg: &b$checkName&7"
             }
 
             if (!result) return false
@@ -1023,10 +998,7 @@ class RulesManager {
                 DebugManager.log(
                     DebugType.CONDITION_PERMISSION, ri, lmEntity, false
                 ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7, no player was provided",
-                        ri.ruleName, lmEntity.nameIfBaby
-                    )
+                    "no player was provided"
                 }
                 return false
             }
@@ -1039,11 +1011,7 @@ class RulesManager {
                 DebugManager.log(
                     DebugType.CONDITION_PERMISSION, ri, lmEntity, false
                 ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
-                        ri.ruleName, lmEntity.nameIfBaby,
-                        lmEntity.associatedPlayer!!.name
-                    )
+                    "player: &b${lmEntity.nameIfBaby}&7, permission denied"
                 }
                 return false
             }
@@ -1051,11 +1019,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_PERMISSION, ri, lmEntity, true
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, player: &b%s&7, permission granted",
-                    ri.ruleName, lmEntity.nameIfBaby,
-                    lmEntity.associatedPlayer!!.name
-                )
+                "player: &b${lmEntity.associatedPlayer!!.name}&7, permission granted"
             }
         }
 
@@ -1070,11 +1034,7 @@ class RulesManager {
                 DebugManager.log(
                     DebugType.CONDITION_CUSTOM_NAME, ri, lmEntity, false
                 ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
-                        ri.ruleName, lmEntity.nameIfBaby, lmEntity.livingEntity.customName,
-                        ri.conditionsMobCustomnameStatus
-                    )
+                    "nametag: ${lmEntity.livingEntity.customName}"
                 }
                 return false
             }
@@ -1082,11 +1042,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_CUSTOM_NAME, ri, lmEntity, true
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
-                    ri.ruleName, lmEntity.nameIfBaby, lmEntity.livingEntity.customName,
-                    ri.conditionsMobCustomnameStatus
-                )
+                "nametag: ${lmEntity.livingEntity.customName}"
             }
         }
 
@@ -1099,11 +1055,7 @@ class RulesManager {
                 DebugManager.log(
                     DebugType.ENTITY_TAME, ri, lmEntity, false
                 ) {
-                    String.format(
-                        "&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
-                        ri.ruleName, lmEntity.nameIfBaby, lmEntity.isMobTamed,
-                        ri.conditionsMobTamedStatus
-                    )
+                    "tamed: ${lmEntity.isMobTamed}"
                 }
                 return false
             }
@@ -1111,11 +1063,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.ENTITY_TAME, ri, lmEntity, true
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
-                    ri.ruleName, lmEntity.nameIfBaby, lmEntity.isMobTamed,
-                    ri.conditionsMobTamedStatus
-                )
+                "tamed: ${lmEntity.isMobTamed}"
             }
         }
 
@@ -1134,7 +1082,7 @@ class RulesManager {
 
             DebugManager.log(
                 DebugType.SCOREBOARD_TAGS, ri, lmEntity, madeCriteria
-            ) { "&b${ri.ruleName}&7, mob: &b${lmEntity.nameIfBaby}&7" }
+            ) { "" }
 
             if (!madeCriteria) return false
         }
@@ -1151,7 +1099,7 @@ class RulesManager {
 
             DebugManager.log(
                 DebugType.CONDITION_STRUCTURES, ri, lmEntity, madeCriteria
-            ) { "&b${ri.ruleName}&7, mob: &b${lmEntity.nameIfBaby}&7" }
+            ) { "" }
 
             if (!madeCriteria) return false
         }
@@ -1163,11 +1111,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.SKYLIGHT_LEVEL, ri, lmEntity, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, skylight: %s, criteria: %s",
-                    ri.ruleName, lmEntity.nameIfBaby, lightLevel,
-                    ri.conditionsSkyLightLevel
-                )
+                "skylight: $lightLevel, criteria: ${ri.conditionsSkyLightLevel}"
             }
             return result
         }
@@ -1183,39 +1127,27 @@ class RulesManager {
 
         if (mdr.getHasX && !mdr.isLocationWithinRange(lmEntity.location.blockX, WithinCoordinates.Axis.X)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
-                String.format(
-                    "entity: %s, xCoord: %s, startX: %s, endX: %s",
-                    lmEntity.nameIfBaby, lmEntity.location.blockX, mdr.startX, mdr.endX
-                )
+                "xCoord: ${lmEntity.location.blockX}, startX: ${mdr.startX}, endX: ${mdr.endX}"
             }
             return false
         }
 
         if (mdr.getHasY && !mdr.isLocationWithinRange(lmEntity.location.blockY, WithinCoordinates.Axis.Y)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
-                String.format(
-                    "entity: %s, yCoord: %s, startY: %s, endY: %s",
-                    lmEntity.nameIfBaby, lmEntity.location.blockY, mdr.startY, mdr.endY
-                )
+                "yCoord: ${lmEntity.location.blockY}, startY: ${mdr.startY}, endY: ${mdr.endY}"
             }
             return false
         }
 
         if (mdr.getHasZ && !mdr.isLocationWithinRange(lmEntity.location.blockZ, WithinCoordinates.Axis.Z)) {
             DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, false) {
-                String.format(
-                    "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
-                    lmEntity.nameIfBaby, lmEntity.location.blockZ, mdr.startZ, mdr.endZ
-                )
+                "zCoord: ${lmEntity.location.blockZ}, startZ: ${mdr.startZ}, endZ: ${mdr.endZ}"
             }
             return false
         }
 
         DebugManager.log(DebugType.CONDITION_WITH_COORDINATES, rule, lmEntity, true) {
-            String.format(
-                "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
-                lmEntity.nameIfBaby, lmEntity.location.blockZ, mdr.startZ, mdr.endZ
-            )
+            "zCoord: ${lmEntity.location.blockZ}, startZ: ${mdr.startZ}, endZ: ${mdr.endZ}"
         }
 
         return true
@@ -1232,7 +1164,7 @@ class RulesManager {
                 )
                 DebugManager.log(
                     DebugType.CONDITION_ENTITIES_LIST, ri, lmInterface, result
-                ) { "&b${ri.ruleName}&7, mob: &b${lmInterface.nameIfBaby}&7" }
+                ) { "" }
 
                 if (!result) return RuleCheckResult(false)
             } else {
@@ -1243,7 +1175,7 @@ class RulesManager {
 
                 DebugManager.log(
                     DebugType.CONDITION_ENTITIES_LIST, ri, lmInterface, result
-                ) { "&b${ri.ruleName}&7, mob: &b${lmInterface.typeName}&7" }
+                ) { "" }
 
                 if (!result) return RuleCheckResult(false)
             }
@@ -1255,10 +1187,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_WORLD_LIST, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, mob world: &b%s&7",
-                    ri.ruleName, lmInterface.typeName, lmInterface.world!!.name
-                )
+                "mob world: &b${lmInterface.world!!.name}&7"
             }
             if (!result) return RuleCheckResult(false)
         }
@@ -1271,11 +1200,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_BIOME_LIST, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, mob biome: &b%s&7",
-                    ri.ruleName, lmInterface.typeName,
-                    lmInterface.location!!.block.biome.name
-                )
+                "mob biome: &b${lmInterface.location!!.block.biome.name}&7"
             }
             if (!result) return RuleCheckResult(false)
         }
@@ -1301,7 +1226,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_WG_REGION, ri, lmInterface, isInList
             ) {
-                "&b${ri.ruleName}&7, mob: &b${lmInterface.typeName}&7, wg_regions: &b$wgRegions&7"
+                "wg_regions: &b$wgRegions&7"
             }
             if (!isInList) return RuleCheckResult(false)
         }
@@ -1327,10 +1252,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_WG_REGION_OWNER, ri, lmInterface, isInList
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, wg_owners: &b%s&7",
-                    ri.ruleName, lmInterface.typeName, wgRegionOwners
-                )
+                "wg_owners: &b$wgRegionOwners&7"
             }
 
             if (!isInList) return RuleCheckResult(false)
@@ -1341,11 +1263,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_Y_LEVEL, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, y-level: &b%s&7, max-y: &b%s&7",
-                    ri.ruleName, lmInterface.typeName,
-                    lmInterface.location!!.blockY, ri.conditionsApplyAboveY
-                )
+                "y-level: &b${lmInterface.location!!.blockY}&7, max-y: &b${ri.conditionsApplyAboveY}&7"
             }
             if (!result) return RuleCheckResult(false)
         }
@@ -1355,11 +1273,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_Y_LEVEL, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, y-level: &b%s&7, min-y: &b%s&7",
-                    ri.ruleName, lmInterface.typeName,
-                    lmInterface.location!!.blockY, ri.conditionsApplyBelowY
-                )
+                "y-level: &b${lmInterface.location!!.blockY}&7, min-y: &b${ri.conditionsApplyBelowY}&7"
             }
             if (!result) return RuleCheckResult(false)
         }
@@ -1369,12 +1283,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MIN_SPAWN_DISTANCE, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
-                    ri.ruleName, lmInterface.typeName,
-                    round(lmInterface.distanceFromSpawn),
-                    ri.conditionsMinDistanceFromSpawn
-                )
+                "spawn-distance: &b${round(lmInterface.distanceFromSpawn)}&7, min-sd: &b${ri.conditionsMinDistanceFromSpawn}&7"
             }
 
             if (!result) return RuleCheckResult(false)
@@ -1385,12 +1294,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MAX_SPAWN_DISTANCE, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
-                    ri.ruleName, lmInterface.typeName,
-                    round(lmInterface.distanceFromSpawn),
-                    ri.conditionsMaxDistanceFromSpawn
-                )
+                "spawn-distance: &b${round(lmInterface.distanceFromSpawn)}&7, min-sd: &b${ri.conditionsMaxDistanceFromSpawn}&7"
             }
 
             if (!result) return RuleCheckResult(false)
@@ -1402,10 +1306,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_WORLD_TIME_TICK, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, tick time: &b%s&7",
-                    ri.ruleName, lmInterface.typeName, currentWorldTickTime
-                )
+                "tick time: &b$currentWorldTickTime&7"
             }
 
             if (!result) return RuleCheckResult(useResult = false, ruleMadeChance = false)
@@ -1429,11 +1330,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_CHANCE, ri, lmInterface, result
             ) {
-                String.format(
-                    "&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
-                    ri.ruleName, lmInterface.typeName, ri.conditionsChance,
-                    round(chanceRole.toDouble(), 4)
-                )
+                "chance: &b${ri.conditionsChance}&7, chance role: &b${round(chanceRole.toDouble(), 4)}&7"
             }
 
             if (!result) return RuleCheckResult(useResult = false, ruleMadeChance = false)
@@ -1523,10 +1420,7 @@ class RulesManager {
                                 > rule.conditionsCooldownTime!!)
                     }) {
                     DebugManager.log(DebugType.SETTING_COOLDOWN) {
-                        String.format(
-                            "rule: %s, removed cooldown entries, pre: %s, post: %s",
-                            rule.ruleName, preCount, instants.size
-                        )
+                        "removed cooldown entries, pre: $preCount, post: ${instants.size}"
                     }
                     if (instants.isEmpty()) {
                         rule.isTempDisabled = false

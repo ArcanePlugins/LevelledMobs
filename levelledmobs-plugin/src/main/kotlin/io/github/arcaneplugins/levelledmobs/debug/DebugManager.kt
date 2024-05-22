@@ -267,15 +267,28 @@ class DebugManager {
             }
         } // end bypass all
 
-        if (lmInterface != null){
-            msg = if (lmInterface is LivingEntityWrapper)
-                "${lmInterface.nameIfBaby}, $msg"
+        if (ruleInfo != null){
+            msg = if (origMsg.isEmpty())
+                "(${ruleInfo.ruleName})"
             else
-                "${lmInterface.typeName}, $msg"
+                "(${ruleInfo.ruleName}) $msg"
+        }
+
+        if (lmInterface != null){
+            val useName = if (lmInterface is LivingEntityWrapper)
+                lmInterface.nameIfBaby else lmInterface.typeName
+
+            msg = if (msg.isEmpty())
+                "mob: &b$useName&7"
+            else
+                "mob: &b$useName&7, $msg"
         }
 
         if (ruleResult != null) {
-            msg += ", result: $ruleResult"
+            if (msg.isEmpty())
+                msg = "result: $ruleResult"
+            else
+                msg += ", result: $ruleResult"
         }
 
         if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CONSOLE) {

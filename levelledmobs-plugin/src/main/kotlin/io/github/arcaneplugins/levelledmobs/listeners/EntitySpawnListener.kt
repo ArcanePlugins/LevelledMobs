@@ -299,9 +299,7 @@ class EntitySpawnListener : Listener{
             }
         } else {
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false) {
-                ("Entity &b" + lmEntity.nameIfBaby + "&7 in wo" +
-                        "rld&b " + lmEntity.worldName
-                        + "&7 was not levelled -> levellable state: &b" + levellableState)
+                ("world: &b${lmEntity.worldName}&7 was not levelled -> levellable state: &b${levellableState}")
             }
 
             // Check if the mob is already levelled - if so, remove their level

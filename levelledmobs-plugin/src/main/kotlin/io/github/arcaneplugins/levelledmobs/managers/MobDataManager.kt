@@ -213,8 +213,7 @@ class MobDataManager {
 
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                 String.format(
-                    "%s (%s): attrib: %s, base: %s, addtion: %s",
-                    lmEntity.nameIfBaby,
+                    "lvl: %s, attrib: %s, base: %s, addtion: %s",
                     lmEntity.getMobLevel,
                     info.attribute.name,
                     Utils.round(attrib.baseValue, 3),
@@ -338,8 +337,7 @@ class MobDataManager {
 
         if (maxLevel == 0f || multiplierValue == 0.0f) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                lmEntity.nameIfBaby +
-                        ", maxLevel was 0 or multiplier was 0; returning 0 for " + addition
+                "maxLevel or multiplier was 0; returning 0 for $addition"
             }
             return MultiplierResult(0.0f, isAddition)
         }

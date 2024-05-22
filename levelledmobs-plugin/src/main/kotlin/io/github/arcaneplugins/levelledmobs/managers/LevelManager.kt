@@ -31,7 +31,6 @@ import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
-import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomVarianceGenerator
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -1877,7 +1876,7 @@ class LevelManager : LevelInterface2 {
                 DebugType.APPLY_LEVEL_RESULT,
                 lmEntity,
                 false
-            ) { "Entity &b" + lmEntity.typeName + "&7 had &bnoLevelKey&7 attached" }
+            ) { "&7 had &bnoLevelKey&7 attached" }
             return
         }
 
@@ -1929,11 +1928,6 @@ class LevelManager : LevelInterface2 {
                 .callEvent(MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation))
 
             val sb = StringBuilder()
-            sb.append("entity: ")
-            sb.append(lmEntity.livingEntity.name)
-            if (lmEntity.isBabyMob) {
-                sb.append(" (baby)")
-            }
             sb.append(", world: ")
             sb.append(lmEntity.worldName)
             sb.append(", level: ")
