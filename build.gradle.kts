@@ -9,11 +9,11 @@ apply(plugin = "maven-publish")
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+    maven("https://repo.codemc.io/repository/nms/")
 }
 
-dependencies {
-    implementation("io.github.arcaneplugins:LevelledMobs:4.0.0 b6")
+dependencies{
+    compileOnly("io.github.arcaneplugins:LevelledMobs:4.0.0 b6")
 }
 
 subprojects {

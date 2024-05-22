@@ -66,10 +66,10 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         var tierMatched: String? = null
         val capDisplay = if (options.outputCap == null) "" else "cap: ${options.outputCap}, "
 
-        if (options.getUsePlayerMaxLevel) {
+        if (options.getVariableAsMax) {
             results.min = levelSource
             results.max = results.min
-        } else if (options.getMatchPlayerLevel) {
+        } else if (options.getMatchVariable) {
             results.max = levelSource
         } else {
             var foundMatch = false
@@ -111,16 +111,16 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 if (playerLevelSourceResult.isNumericResult) {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
-                            "mob: %s, player: %s, input: %s, scale: %s, %sno tiers matched",
-                            lmEntity.nameIfBaby, player.name, origLevelSource, levelSource,
+                            "player: %s, input: %s, scale: %s, %sno tiers matched",
+                            player.name, origLevelSource, levelSource,
                             capDisplay
                         )
                     }
                 } else {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                         String.format(
-                            "mob: %s, player: %s, input: '%s', %sno tiers matched",
-                            lmEntity.nameIfBaby, player.name,
+                            "player: %s, input: '%s', %sno tiers matched",
+                            player.name,
                             playerLevelSourceResult.stringResult, capDisplay
                         )
                     }
@@ -159,8 +159,8 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         if (tierMatched == null) {
             DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                 String.format(
-                    "mob: %s, player: %s, input: %s%s%s, scale: %s, %sresult: %s",
-                    lmEntity.nameIfBaby, player.name, origLevelSource, homeName,
+                    "player: %s, input: %s%s%s, scale: %s, %sresult: %s",
+                    player.name, origLevelSource, homeName,
                     varianceDebug, levelSource, capDisplay, results
                 )
             }
@@ -169,16 +169,16 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             if (playerLevelSourceResult.isNumericResult) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                     String.format(
-                        "mob: %s, player: %s, input: %s%s%s, scale: %s, tier: %s, %sresult: %s",
-                        lmEntity.nameIfBaby, player.name, origLevelSource, homeName,
+                        "player: %s, input: %s%s%s, scale: %s, tier: %s, %sresult: %s",
+                        player.name, origLevelSource, homeName,
                         varianceDebug, levelSource, tierMatchedFinal, capDisplay, results
                     )
                 }
             } else {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                     String.format(
-                        "mob: %s, player: %s, input: '%s'%s, tier: %s, %sresult: %s",
-                        lmEntity.nameIfBaby, player.name,
+                        "player: %s, input: '%s'%s, tier: %s, %sresult: %s",
+                        player.name,
                         playerLevelSourceResult.stringResult, varianceDebug, tierMatchedFinal,
                         capDisplay, results
                     )
@@ -254,14 +254,14 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         return copy as LevellingStrategy
     }
 
-    val getMatchPlayerLevel: Boolean
+    val getMatchVariable: Boolean
         get() = this.matchVariable != null && matchVariable!!
 
     val getEnabled: Boolean
         // enabled is true by default unless specifically disabled
         get() = this.enabled == null || enabled!!
 
-    val getUsePlayerMaxLevel: Boolean
+    val getVariableAsMax: Boolean
         get() = this.usevariableAsMax != null && usevariableAsMax!!
 
     val getRecheckPlayers: Boolean
@@ -301,14 +301,14 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             sb.append(variable)
         }
 
-        if (getMatchPlayerLevel) {
+        if (getMatchVariable) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }
             sb.append("match-plr-lvl")
         }
 
-        if (getUsePlayerMaxLevel) {
+        if (getVariableAsMax) {
             if (sb.isNotEmpty()) {
                 sb.append(", ")
             }

@@ -900,8 +900,8 @@ class CustomDropsHandler {
             if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 info.addDebugMessage(
                     String.format(
-                        "&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
-                        info.lmEntity!!.typeName, info.lmEntity!!.getMobLevel,
+                        "&b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
+                        info.lmEntity!!.getMobLevel,
                         dropItem.material.name, dropItem.equippedChance!!.showMatchedChance(),
                         Utils.round(info.equippedChanceRole.toDouble(), 4)
                     )

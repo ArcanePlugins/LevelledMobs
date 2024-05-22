@@ -265,9 +265,9 @@ class LevelManager : LevelInterface2 {
         val result = evalResult.result.toInt()
 
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
-            "mob: ${lmEntity.nameIfBaby}, result $result\n" +
-                    "   formulaPre: '$formulaPre'\n" +
-                    "   formula: '$formula'" }
+            "result $result\n" +
+            "   formulaPre: '$formulaPre'\n" +
+            "   formula: '$formula'" }
 
         return result
     }
