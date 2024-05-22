@@ -490,10 +490,7 @@ class LevelManager : LevelInterface2 {
             ).amount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-                    String.format(
-                        "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel
-                    )
+                    "mob-lvl: &b${lmEntity.getMobLevel}&7, removing any drops present"
                 }
                 currentDrops.clear()
                 return
@@ -515,11 +512,11 @@ class LevelManager : LevelInterface2 {
         if (dropsToMultiply.isNotEmpty()) {
             currentDrops.addAll(dropsToMultiply)
         }
-        val nameWithOverride = if (hasOverride) lmEntity.nameIfBaby + " (override)" else lmEntity.nameIfBaby
+        val nameWithOverride = if (hasOverride) " (override), " else ""
         val additionUsedFinal = additionUsed
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
             String.format(
-                "&7Mob: &b%s&7, mob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
+                "%smob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
                 nameWithOverride, lmEntity.getMobLevel, vanillaDrops, currentDrops.size,
                 additionUsedFinal
             )
@@ -652,10 +649,7 @@ class LevelManager : LevelInterface2 {
 
             if (dropAddition == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                    String.format(
-                        "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b0&7",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel, xp
-                    )
+                    "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b0&7"
                 }
                 return 0
             }
@@ -666,10 +660,7 @@ class LevelManager : LevelInterface2 {
 
             val newXpFinal = newXp.toInt()
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                String.format(
-                    "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel, xp, newXpFinal
-                )
+                "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
             }
             return newXp.toInt()
         } else {
@@ -1619,8 +1610,8 @@ class LevelManager : LevelInterface2 {
                 if (groupLimits!!.hasReachedCapEquipped(equippedSoFar)) {
                     DebugManager.log(DebugType.GROUP_LIMITS, lmEntity) {
                         String.format(
-                            "Reached equip limit of %s, mob: %s, item: %s, group: %s",
-                            groupLimits.capEquipped, lmEntity.nameIfBaby, material, item.groupId
+                            "Reached equip limit of %s, item: %s, group: %s",
+                            groupLimits.capEquipped, material, item.groupId
                         )
                     }
                     continue
@@ -2047,8 +2038,7 @@ class LevelManager : LevelInterface2 {
 
         if (hadSuccess) {
             DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
-                ("Applied NBT data to '" + lmEntity.nameIfBaby +
-                        "'. " + getNBTDebugMessage(allResults))
+                "Applied NBT data, ${getNBTDebugMessage(allResults)}"
             }
         }
     }

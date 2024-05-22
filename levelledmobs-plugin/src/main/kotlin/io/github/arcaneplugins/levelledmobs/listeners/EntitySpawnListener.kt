@@ -162,8 +162,8 @@ class EntitySpawnListener : Listener{
         val customDropIdFinal = customDropId
         DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity) {
             String.format(
-                "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
-                event.entityType, useMinLevel, useMaxLevel, generatedLevel,
+                "Spawned mob from LM spawner: minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
+                useMinLevel, useMaxLevel, generatedLevel,
                 (if (customDropIdFinal == null) "" else ", dropid: $customDropIdFinal")
             )
         }
@@ -223,7 +223,7 @@ class EntitySpawnListener : Listener{
             DebugManager.log(
                 DebugType.LM_MOB_SPAWNER,
                 lmEntity
-            ) { "Spawned mob from vanilla spawner: &b" + event.entityType }
+            ) { "Spawned mob from vanilla spawner" }
         } else if (event is CreatureSpawnEvent) {
             if (event.spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER ||
                 event.spawnReason == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT
@@ -271,8 +271,8 @@ class EntitySpawnListener : Listener{
             if (shouldDenyLevel(lmEntity, levelAssignment)) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
                     String.format(
-                        "Entity &b%s (lvl %s)&r denied relevelling to &b%s&r due to decrease-level disabled",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel, levelAssignment
+                        "lvl: %s&r, denied relevelling to &b%s&r due to decrease-level disabled",
+                        lmEntity.getMobLevel, levelAssignment
                     )
                 }
             } else {
@@ -371,13 +371,12 @@ class EntitySpawnListener : Listener{
             }
 
             DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity) {
-                ("instanceof CreatureSpawnListener: &b" + event.entityType
-                        + "&7, with spawnReason &b" + event.spawnReason + "&7.")
+                "instanceof CreatureSpawnListener: &b${event.entityType}" +
+                        "&7, with spawnReason &b${event.spawnReason}&7."
             }
         } else if (event is EntitySpawnEvent) {
             DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity) {
-                ("not instanceof CreatureSpawnListener: &b"
-                        + event.entityType)
+                "not instanceof CreatureSpawnListener: &b${event.entityType}"
             }
         }
 

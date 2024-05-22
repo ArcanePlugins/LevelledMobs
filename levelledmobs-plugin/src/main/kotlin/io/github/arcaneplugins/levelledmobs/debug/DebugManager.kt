@@ -283,6 +283,12 @@ class DebugManager {
             else
                 "mob: &b$useName&7, $msg"
         }
+        else if (entity != null){
+            msg = if (msg.isEmpty())
+                "mob: &b${entity.type}&7"
+            else
+                "mob: &b${entity.type}&7, $msg"
+        }
 
         if (ruleResult != null) {
             if (msg.isEmpty())

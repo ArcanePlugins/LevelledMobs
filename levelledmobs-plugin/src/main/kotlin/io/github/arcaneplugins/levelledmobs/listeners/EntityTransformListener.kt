@@ -27,8 +27,7 @@ class EntityTransformListener : Listener {
         // is the original entity a living entity
         if (event.entity !is LivingEntity) {
             DebugManager.log(DebugType.ENTITY_MISC, event.entity, false) {
-                event.entity.type.name +
-                        ": entity was &bnot&7 an instance of LivingEntity"
+                "entity was &bnot&7 an instance of LivingEntity"
             }
             return
         }
@@ -37,7 +36,7 @@ class EntityTransformListener : Listener {
         // is the original entity levelled
         if (!main.levelManager.isLevelled(event.entity as LivingEntity)) {
             DebugManager.log(DebugType.ENTITY_MISC, event.entity, false) {
-                event.entity.name + ": original entity was &bnot&7 levelled"
+                "original entity was &bnot&7 levelled"
             }
             if (event.transformReason == EntityTransformEvent.TransformReason.SPLIT)
                 checkForSlimeSplit(event.entity as LivingEntity,event.transformedEntities)
@@ -57,8 +56,7 @@ class EntityTransformListener : Listener {
         for (transformedEntity in event.transformedEntities) {
             if (transformedEntity !is LivingEntity) {
                 DebugManager.log(DebugType.ENTITY_MISC, event.entity, false) {
-                    (event.entity.type.name
-                            + ": entity was&b not&7 an instance of LivingEntity (loop)")
+                    "entity was&b not&7 an instance of LivingEntity (loop)"
                 }
                 continue
             }
@@ -70,9 +68,7 @@ class EntityTransformListener : Listener {
             )
             if (levelledState != LevellableState.ALLOWED) {
                 DebugManager.log(DebugType.ENTITY_MISC, event.entity, false) {
-                    (transformedEntity.getType().name
-                            + ": transformed entity was &bnot&7 levellable, reason: &b"
-                            + levelledState)
+                    "transformed entity was &bnot&7 levellable, reason: &b$levelledState"
                 }
                 main.levelManager.updateNametagWithDelay(transformedLmEntity)
                 transformedLmEntity.free()
@@ -81,9 +77,9 @@ class EntityTransformListener : Listener {
 
             DebugManager.log(
                 DebugType.ENTITY_MISC,
-                event.entity,
+                transformedEntity,
                 true
-            ) { transformedEntity.getType().name + ": entity was transformed" }
+            ) { "entity was transformed" }
 
             if (useInheritance) {
                 if (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER) {

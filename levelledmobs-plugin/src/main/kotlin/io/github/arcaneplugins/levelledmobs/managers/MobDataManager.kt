@@ -262,10 +262,9 @@ class MobDataManager {
             if (!existingMod.name.startsWith("GENERIC_")) {
                 DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
                     String.format(
-                        "Removing %s from (lvl %s) %s at %s,%s,%s",
+                        "Removing %s from (lvl %s) at %s,%s,%s",
                         existingMod.name,
                         lmEntity.getMobLevel,
-                        lmEntity.nameIfBaby,
                         lmEntity.location.blockX,
                         lmEntity.location.blockY,
                         lmEntity.location.blockZ
@@ -321,7 +320,7 @@ class MobDataManager {
                     Log.war("Error evaluating formula: '$formulaStr', ${evalResult.error}")
 
                 DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                    "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
+                    "lvl: ${lmEntity.getMobLevel}, formula: '${multiplier.formula}', result: '$multiplierValue'" }
             }
             else if (multiplier != null)
                 multiplierValue = multiplier.value
@@ -352,18 +351,12 @@ class MobDataManager {
 
         if (fineTuning!!.getUseStacked() || multiplier!!.useStacked) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                String.format(
-                    "%s (%s): using stacked formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel, multiplier!!.value
-                )
+                "lvl: ${lmEntity.getMobLevel}, using stacked formula, multiplier: ${multiplier!!.value}"
             }
             return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                String.format(
-                    "%s (%s): using standard formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel, multiplier.value
-                )
+                "lvl: ${lmEntity.getMobLevel}, using standard formula, multiplier: ${multiplier.value}"
             }
 
             multiplierValue = if (attributeMax > 0.0) {

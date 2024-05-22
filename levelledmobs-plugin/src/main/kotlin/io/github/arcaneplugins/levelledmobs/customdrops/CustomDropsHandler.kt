@@ -199,10 +199,10 @@ class CustomDropsHandler {
 
         if (!equippedOnly) {
             val mobLevel =
-                if (lmEntity.getMobLevel > 0) "&r (level " + lmEntity.getMobLevel + ")" else ""
+                if (lmEntity.getMobLevel > 0) "&r (level ${lmEntity.getMobLevel})" else ""
             processingInfo.addDebugMessage(
                 DebugType.CUSTOM_DROPS,
-                "&7Custom drops for &b" + lmEntity.nameIfBaby + mobLevel
+                "&7Custom drops for &b${lmEntity.nameIfBaby} $mobLevel"
             )
 
             processingInfo.addDebugMessage(
@@ -233,8 +233,8 @@ class CustomDropsHandler {
             } else {
                 processingInfo.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
-                        "&7%s (%s) - didn't make overall chance permission for player: &b%s &r",
-                        lmEntity.typeName, lmEntity.getMobLevel,
+                        "lvl: %s, didn't make overall chance permission for player: &b%s &r",
+                        lmEntity.getMobLevel,
                         if (processingInfo.mobKiller == null) "(null)"
                         else processingInfo.mobKiller!!.name
                     )
@@ -1354,7 +1354,7 @@ class CustomDropsHandler {
             val debugCommand = if (timesToRun > 1) String.format("Command (%sx): ", timesToRun) else "Command: "
 
             val commandFinal = command
-            DebugManager.log(DebugType.CUSTOM_COMMANDS, info.lmEntity!!) { debugCommand + commandFinal }
+            DebugManager.log(DebugType.CUSTOM_COMMANDS, info.lmEntity) { debugCommand + commandFinal }
 
             if (customCommand.delay > 0) {
                 val commandToRun = command

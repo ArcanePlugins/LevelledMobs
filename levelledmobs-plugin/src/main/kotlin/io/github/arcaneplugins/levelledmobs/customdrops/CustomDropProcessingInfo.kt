@@ -100,7 +100,7 @@ class CustomDropProcessingInfo {
             return
         }
 
-        DebugManager.log(DebugType.CUSTOM_DROPS, lmEntity!!) { debugMessages.toString() }
+        DebugManager.log(DebugType.CUSTOM_DROPS, lmEntity) { debugMessages.toString() }
         debugMessages!!.setLength(0)
     }
 }

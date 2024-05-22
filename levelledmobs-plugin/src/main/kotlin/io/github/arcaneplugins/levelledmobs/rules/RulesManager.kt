@@ -1011,7 +1011,7 @@ class RulesManager {
                 DebugManager.log(
                     DebugType.CONDITION_PERMISSION, ri, lmEntity, false
                 ) {
-                    "player: &b${lmEntity.nameIfBaby}&7, permission denied"
+                    "player: &b${lmEntity.associatedPlayer!!.name}&7, permission denied"
                 }
                 return false
             }

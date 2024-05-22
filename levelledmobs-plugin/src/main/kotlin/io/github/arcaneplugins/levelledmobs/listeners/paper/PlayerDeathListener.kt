@@ -90,7 +90,6 @@ class PlayerDeathListener {
             preserveMobName = true
         )
         if (mobNametag.nametagNonNull.isEmpty()) {
-            this.shouldCancelEvent = true
             return lmKiller
         }
 
@@ -129,11 +128,10 @@ class PlayerDeathListener {
 
         if (mobKey == null) return
 
-        val main = LevelledMobs.instance
-        val mobName: String = nametagResult.nametagNonNull
+        val mobName = nametagResult.nametagNonNull
         val displayNameIndex = mobName.indexOf("{DisplayName}")
-        val cs = if (main.definitions.getUseLegacySerializer())
-            LegacyComponentSerializer.legacyAmpersand() else main.definitions.mm!!
+        val cs = if (LevelledMobs.instance.definitions.getUseLegacySerializer())
+            LegacyComponentSerializer.legacyAmpersand() else LevelledMobs.instance.definitions.mm!!
 
         var newCom: Component
         if (nametagResult.hadCustomDeathMessage) {

@@ -1,10 +1,12 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = "io.github.arcaneplugins"
 description = description
 version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("idea")
 }
@@ -22,8 +24,8 @@ idea {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = "1.9.23"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
+    implementation(kotlin("stdlib", version = "2.0.0"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.0.2") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
     //implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
@@ -82,9 +84,10 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         }
     }
 

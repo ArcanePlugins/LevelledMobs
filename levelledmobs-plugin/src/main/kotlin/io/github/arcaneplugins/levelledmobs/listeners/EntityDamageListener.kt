@@ -214,8 +214,8 @@ class EntityDamageListener : Listener {
             ).amount
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, shooter) {
             String.format(
-                "&7Source: &b%s&7 (lvl &b%s&7), damage: &b%s&7, new damage: &b%s&7",
-                shooter.nameIfBaby, shooter.getMobLevel, event.damage, newDamage
+                "lvl: &b%s&7, damage: &b%s&7, new damage: &b%s&7",
+                shooter.getMobLevel, event.damage, newDamage
             )
         }
         event.damage = newDamage.toDouble()
@@ -240,21 +240,14 @@ class EntityDamageListener : Listener {
             return
         }
 
-        DebugManager.log(
-            DebugType.RANGED_DAMAGE_MODIFICATION,
-            livingEntity
-        ) { "Range attack damage modified for &b" + livingEntity.name + "&7:" }
-        DebugManager.log(
-            DebugType.RANGED_DAMAGE_MODIFICATION,
-            livingEntity
-        ) { "Previous guardianDamage: &b" + event.damage }
-
+        val oldDamage = event.damage
         val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
         event.damage = lmEntity.main.mobDataManager.getAdditionsForLevel(
             lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE,
             event.damage.toFloat()
         ).amount.toDouble() // use ranged attack damage value
-        DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, livingEntity) { "New guardianDamage: &b" + event.damage }
+        DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, livingEntity)
+            { "old damage: &b: $oldDamage&r, new damage: &b${event.damage}&r" }
         lmEntity.free()
     }
 }
