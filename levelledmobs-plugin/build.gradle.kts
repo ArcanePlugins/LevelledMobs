@@ -9,12 +9,14 @@ plugins {
     kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("idea")
+    id("maven-publish")
 }
 
 apply(plugin = "java")
 apply(plugin = "java-library")
 apply(plugin = "kotlin")
 apply(plugin = "com.github.johnrengelman.shadow")
+apply(plugin = "maven-publish")
 
 idea {
     module {
@@ -113,3 +115,43 @@ tasks {
     }
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = group.toString()
+            version = version.toString()
+            artifactId = artifactId.toString()
+            pom {
+                //name.set("…")
+                description.set("The Ultimate RPG Mob Levelling Solution")
+                url.set("https://github.com/ArcanePlugins/LevelledMobs")
+                licenses {
+                    license {
+                        name.set("GNU")
+                        url.set("https://github.com/ArcanePlugins/LevelledMobs/blob/master/LICENSE.md")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("Stumper66")
+                    }
+                    developer {
+                        name.set("UltimaOath")
+                    }
+                    developer {
+                        name.set("Lokka30")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/ArcanePlugins/LevelledMobs")
+                }
+            }
+
+            from(components["java"])
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+}

@@ -5,7 +5,6 @@ plugins {
 
 apply(plugin = "kotlin")
 apply(plugin = "org.jetbrains.dokka")
-apply(plugin = "maven-publish")
 
 repositories {
     mavenCentral()

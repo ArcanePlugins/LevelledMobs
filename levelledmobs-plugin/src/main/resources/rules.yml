@@ -198,7 +198,7 @@ presets:
         max-health: '%max-health% + (%level% * (%max-health% * 0.25))'
         movement-speed: '%movement-speed% + (%level% * (%movement-speed% * 0.025))'
         attack-damage: '%attack-damage% + (%level-ratio% * (%attack-damage% * 2))'
-        ranged-attack-damage: '%ranged-attack-damage% + (%level-ratio% * (%attack-damage% * 1.5))'
+        ranged-attack-damage: '%ranged-attack-damage% + (%level-ratio% * (%ranged-attack-damage% * 0.75))'
         creeper-blast-damage: '(%creeper-blast-damage% * 2.5) / %level-ratio%'
         follow-range: '%follow-range% + (1.75 * %level%)'
         item-drop: '(%item-drop% * 2.5) / %level-ratio%'

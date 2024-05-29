@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.listeners.paper
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.nametag.KyoriNametags
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -24,6 +25,17 @@ import org.bukkit.event.entity.PlayerDeathEvent
  */
 class PlayerDeathListener {
     private var shouldCancelEvent = false
+    private var useNewerAdventureArgs = true
+
+    init {
+        val ver = LevelledMobs.instance.ver
+        // 1.20.5 and newer (technically must be at least build 53 of 1.20.6)
+        // Adventure 4.17.0 and newer
+        if (!ver.isRunningPaper || ver.minorVersion < 20 ||
+            (ver.minorVersion == 20 && ver.revision < 6)){
+            useNewerAdventureArgs = false
+        }
+    }
 
     fun onPlayerDeathEvent(event: PlayerDeathEvent): Boolean {
         this.shouldCancelEvent = false
@@ -114,14 +126,30 @@ class PlayerDeathListener {
 
         var mobKey: String? = null
         var itemComp: Component? = null
-        for (c in tc.arguments()) {
-            val tc2 = c.asComponent() as? TranslatableComponent
-            if (tc2 != null) {
-                if ("chat.square_brackets" == tc2.key()) {
-                    // this is when the mob was holding a weapon
-                    itemComp = tc2
-                } else {
-                    mobKey = tc2.key()
+
+        if (useNewerAdventureArgs){
+            for (c in tc.arguments()) {
+                val tc2 = c.asComponent() as? TranslatableComponent
+                if (tc2 != null) {
+                    if ("chat.square_brackets" == tc2.key()) {
+                        // this is when the mob was holding a weapon
+                        itemComp = tc2
+                    } else {
+                        mobKey = tc2.key()
+                    }
+                }
+            }
+        }
+        else{
+            @Suppress("DEPRECATION")
+            for (c in tc.args()) {
+                if (c is TranslatableComponent) {
+                    if ("chat.square_brackets" == c.key()) {
+                        // this is when the mob was holding a weapon
+                        itemComp = c
+                    } else {
+                        mobKey = c.key()
+                    }
                 }
             }
         }
