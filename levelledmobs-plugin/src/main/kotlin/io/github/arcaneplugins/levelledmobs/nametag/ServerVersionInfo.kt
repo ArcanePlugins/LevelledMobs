@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern

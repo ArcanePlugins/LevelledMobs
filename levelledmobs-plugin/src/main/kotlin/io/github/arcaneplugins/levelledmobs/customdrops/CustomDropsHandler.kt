@@ -892,7 +892,7 @@ class CustomDropsHandler {
             if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 info.addDebugMessage(
                     String.format(
-                        "&b%s&7, &7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
+                        "&7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
                         info.lmEntity!!.getMobLevel,
                         dropItem.material.name, dropItem.equippedChance!!.showMatchedChance(),
                         Utils.round(info.equippedChanceRole.toDouble(), 4)
@@ -981,14 +981,14 @@ class CustomDropsHandler {
                 if (!madeChance) {
                     if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                         if (enchantmentNumber > 1) debug.append(", ")
-                        debug.append(String.format("%s: &4%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue))
+                        debug.append("$enchantLevel: &4$chanceRole&r &b($chanceValue)&r")
                     }
                     continue
                 }
 
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                     if (enchantmentNumber > 1) debug.append(", ")
-                    debug.append(String.format("%s: &2%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue))
+                    debug.append("$enchantLevel: &2$chanceRole&r &b($chanceValue)&r")
                 }
 
                 if (itemStack.type == Material.ENCHANTED_BOOK) {
@@ -1073,12 +1073,10 @@ class CustomDropsHandler {
         val main = LevelledMobs.instance
         if (info.mobKiller == null) {
             if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+                val itemDescription = if ((dropBase is CustomDropItem)) dropBase.itemStack?.type?.name
+                    else "custom command"
                 info.addDebugMessage(
-                    String.format(
-                        "&8 - &7item: &b%s&7, not player was provided for item permissions",
-                        if ((dropBase is CustomDropItem)) dropBase.itemStack!!.type.name
-                        else "custom command"
-                    )
+                    "&8 - &7item: &b$itemDescription&7, not player was provided for item permissions"
                 )
             }
             return false
@@ -1098,9 +1096,9 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     String.format(
                         "&8 - &7item: &b%s&7, player: &b%s&7 didn't have permission: &b%s&7",
-                        if ((dropBase is CustomDropItem)) dropBase.itemStack!!.type.name
+                        if ((dropBase is CustomDropItem)) dropBase.itemStack?.type?.name
                         else "custom command",
-                        info.mobKiller!!.name, dropBase.permissions
+                        info.mobKiller?.name, dropBase.permissions
                     )
                 )
             }
@@ -1120,14 +1118,15 @@ class CustomDropsHandler {
             return true
         }
 
-        return isMobWearingItem(item.itemStack!!, info.lmEntity!!.livingEntity, item)
+        return isMobWearingItem(item.itemStack, info.lmEntity!!.livingEntity, item)
     }
 
     private fun isMobWearingItem(
-        item: ItemStack,
+        item: ItemStack?,
         mob: LivingEntity,
         customDropItem: CustomDropItem
     ): Boolean {
+        if (item == null) return false
         val equipment = mob.equipment ?: return false
         val equippedItemsInfo = customEquippedItems[mob] ?: return false
 

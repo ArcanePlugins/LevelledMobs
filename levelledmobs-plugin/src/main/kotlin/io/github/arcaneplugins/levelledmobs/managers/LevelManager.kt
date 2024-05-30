@@ -706,7 +706,7 @@ class LevelManager : LevelInterface2 {
                 nametag = StringReplacer(deathMessage.replace("%death_nametag%", nametag.text))
                 val player = lmEntity.associatedPlayer
                 nametag.replace("%player%", if (player != null) player.name + "&r" else "")
-                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, usePreserveMobName)
+                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, false)
                 usePreserveMobName = true
 
                 customDeathMessage =

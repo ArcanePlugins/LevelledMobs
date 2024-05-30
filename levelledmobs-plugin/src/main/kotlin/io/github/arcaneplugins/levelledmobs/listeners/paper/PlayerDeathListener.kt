@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.listeners.paper
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.nametag.KyoriNametags
 import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper

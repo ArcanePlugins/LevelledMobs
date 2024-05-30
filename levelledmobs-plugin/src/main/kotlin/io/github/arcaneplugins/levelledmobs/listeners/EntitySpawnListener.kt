@@ -385,11 +385,29 @@ class EntitySpawnListener : Listener{
 
     companion object{
         fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
-            val main = LevelledMobs.instance
             val onlinePlayerCount = lmEntity.world.players.size
-            val checkDistance = main.helperSettings.getInt(
+            val checkDistance = LevelledMobs.instance.helperSettings.getInt(
                 "async-task-max-blocks-from-player", 100
             )
+
+            val wrapper = SchedulerWrapper(lmEntity.livingEntity){
+                updateMobForPlayerLevellingNonAsync(
+                    lmEntity,
+                    checkDistance,
+                    onlinePlayerCount
+                )
+                lmEntity.free()
+            }
+            lmEntity.inUseCount.getAndIncrement()
+            wrapper.run()
+        }
+
+        private fun updateMobForPlayerLevellingNonAsync(
+            lmEntity: LivingEntityWrapper,
+            checkDistance: Int,
+            onlinePlayerCount: Int
+        ){
+            val main = LevelledMobs.instance
             val playerList: MutableList<Player> = if (onlinePlayerCount <= 10) getPlayersOnServerNearMob(
                 lmEntity.livingEntity,
                 checkDistance
@@ -417,12 +435,10 @@ class EntitySpawnListener : Listener{
                 main.mainCompanion.removeRecentlyJoinedPlayer(closestPlayer)
             }
 
-            synchronized(lmEntity.livingEntity.persistentDataContainer) {
-                lmEntity.pdc.set(
-                    NamespacedKeys.playerLevellingId, PersistentDataType.STRING,
-                    closestPlayer.uniqueId.toString()
-                )
-            }
+            lmEntity.pdc.set(
+                NamespacedKeys.playerLevellingId, PersistentDataType.STRING,
+                closestPlayer.uniqueId.toString()
+            )
 
             lmEntity.playerForLevelling = closestPlayer
             val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(

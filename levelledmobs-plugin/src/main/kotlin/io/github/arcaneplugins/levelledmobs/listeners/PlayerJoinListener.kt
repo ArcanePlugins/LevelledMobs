@@ -2,8 +2,6 @@ package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.CommandHandler
-import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsHandler
-import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropsParser
 import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
