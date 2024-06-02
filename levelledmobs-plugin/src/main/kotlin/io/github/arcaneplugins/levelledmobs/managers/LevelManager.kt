@@ -1598,7 +1598,7 @@ class LevelManager : LevelInterface2 {
         dropResult.stackToItem.shuffle()
 
         for ((itemStack, item) in dropResult.stackToItem) {
-            val material: Material = itemStack.type
+            val material = itemStack.type
             val groupLimits = main.customDropsHandler.getGroupLimits(item)
             val hasEquipLimits = item.hasGroupId && groupLimits != null && groupLimits.hasCapEquipped
 
@@ -1621,22 +1621,22 @@ class LevelManager : LevelInterface2 {
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true)
                 equipment.bootsDropChance = 0f
-                equippedItemsInfo.boots = item
+                equippedItemsInfo.boots = item.itemStack
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true)
                 equipment.leggingsDropChance = 0f
-                equippedItemsInfo.leggings = item
+                equippedItemsInfo.leggings = item.itemStack
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true)
                 equipment.chestplateDropChance = 0f
-                equippedItemsInfo.chestplate = item
+                equippedItemsInfo.chestplate = item.itemStack
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)
                 || material.name.endsWith("_HEAD") || (item.equipOnHelmet
                         && !hadPlayerHead)
             ) {
                 equipment.setHelmet(itemStack, true)
                 equipment.helmetDropChance = 0f
-                equippedItemsInfo.helmet = item
+                equippedItemsInfo.helmet = item.itemStack
                 if (material == Material.PLAYER_HEAD) {
                     hadPlayerHead = true
                 }
@@ -1644,12 +1644,12 @@ class LevelManager : LevelInterface2 {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack)
                     equipment.itemInMainHandDropChance = 0f
-                    equippedItemsInfo.mainHand = item
+                    equippedItemsInfo.mainHand = item.itemStack
                     hadMainItem = true
                 } else if (item.equipOffhand) {
                     equipment.setItemInOffHand(itemStack)
                     equipment.itemInOffHandDropChance = 0f
-                    equippedItemsInfo.offhand = item
+                    equippedItemsInfo.offhand = item.itemStack
                 }
             }
 
@@ -1660,10 +1660,7 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        main.customDropsHandler.addEntityEquippedItems(
-            lmEntity.livingEntity,
-            equippedItemsInfo
-        )
+        equippedItemsInfo.saveEquipment(lmEntity)
     }
 
     private fun getMobAttributeValue(lmEntity: LivingEntityWrapper): Double {

@@ -8,11 +8,11 @@ package io.github.arcaneplugins.levelledmobs.customdrops
  * @since 3.13.0
  */
 class GroupLimits {
-    var capTotal: Int = 0
-    var capEquipped: Int = 0
-    var capPerItem: Int = 0
-    var capSelect: Int = 0
-    var retries: Int = 0
+    var capTotal = 0
+    var capEquipped = 0
+    var capPerItem = 0
+    var capSelect = 0
+    var retries = 0
 
     val isEmpty: Boolean
         get() {

@@ -13,6 +13,12 @@ object Log {
     private const val PREFIX = "&b[LevelledMobs]&7 "
     private val serverIsSpigot = LevelledMobs.instance.ver.isRunningSpigot
 
+    // use this function for testing messages so you will remember to remove them later
+    @Deprecated("Remove before releasing", ReplaceWith("inf(msg)", "io.github.arcaneplugins.levelledmobs.util.Log.inf"))
+    fun infTemp(msg: String?) {
+        inf(msg)
+    }
+
     fun inf(msg: String?) {
         if (serverIsSpigot) {
             Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))

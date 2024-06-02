@@ -29,6 +29,7 @@ class ServerVersionInfo {
         private set
     var minecraftVersion = 0.0
         private set
+    private var isOneTwentyFiveOrNewer = false
 
     // preliminary fabric support. not entirely there yet
     private var _isRunningFabric: Boolean? = null
@@ -44,7 +45,7 @@ class ServerVersionInfo {
         if (isRunningPaper)
             parsePaperVersion()
 
-        val isOneTwentyFiveOrNewer: Boolean =
+        isOneTwentyFiveOrNewer =
             minorVersion == 20 && revision >= 5 || minorVersion >= 21
 
         if (!isRunningPaper || !isOneTwentyFiveOrNewer)
@@ -181,13 +182,13 @@ class ServerVersionInfo {
         }
 
     val isNMSVersionValid: Boolean
-        get() { return "unknown" != this.nmsVersion }
+        get() { return isOneTwentyFiveOrNewer && isRunningPaper || "unknown" != this.nmsVersion }
 
     override fun toString(): String {
         return "$majorVersion.$minorVersion.$revision - $nmsVersion"
     }
 
     enum class MinecraftMajorVersion {
-        V1_16, V1_17, V1_18, V1_19, V1_20, V1_21
+        V1_19, V1_20, V1_21
     }
 }

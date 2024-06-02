@@ -209,7 +209,6 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
         val useMin = minAndMax.min.roundToInt()
         val useMax = minAndMax.max.roundToInt().coerceAtLeast(useMin)
-        
         if (useMin == useMax) return useMin.toFloat()
 
         return ThreadLocalRandom.current().nextInt(useMin, useMax + 1).toFloat()

@@ -21,12 +21,11 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.TreeMap
 import java.util.UUID
-import java.util.WeakHashMap
 import java.util.concurrent.ThreadLocalRandom
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
@@ -65,7 +64,6 @@ class CustomDropsHandler {
     val externalCustomDrops: ExternalCustomDrops = ExternalCustomDropsImpl()
     var lmItemsParser: LMItemsParser? = null
         private set
-    private val customEquippedItems = WeakHashMap<LivingEntity, EquippedItemsInfo>()
 
     fun load(){
         if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
@@ -147,6 +145,7 @@ class CustomDropsHandler {
         processingInfo.lmEntity = lmEntity
         processingInfo.equippedOnly = equippedOnly
         processingInfo.newDrops = drops
+        processingInfo.equippedItemsInfo = EquippedItemsInfo.getEntityEquippedItems(lmEntity)
 
         val main = LevelledMobs.instance
         processingInfo.dropRules = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity)
@@ -548,7 +547,7 @@ class CustomDropsHandler {
                     info.addDebugMessage(
                         String.format(
                             "&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
-                            info.lmEntity!!.getMobLevel, info.isSpawner, itemStack.type.name,
+                            info.lmEntity?.getMobLevel, info.isSpawner, itemStack.type.name,
                             dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner
                         )
                     )
@@ -557,7 +556,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&8- custom-cmd: &7level: &b%s&7, fromSpawner: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, executed: &bfalse",
-                        info.lmEntity!!.getMobLevel, info.isSpawner, dropBase.minLevel,
+                        info.lmEntity?.getMobLevel, info.isSpawner, dropBase.minLevel,
                         dropBase.maxLevel, dropBase.noSpawner
                     )
                 )
@@ -565,12 +564,16 @@ class CustomDropsHandler {
             return
         }
 
+        if (!info.equippedOnly && dropBase is CustomDropItem){
+            info.itemWasEquipped = isMobWearingItem(info, dropBase)
+        }
+
         // equip-chance and equip-drop-chance:
         if (!info.equippedOnly && dropBase is CustomDropItem) {
             if (!checkIfMadeEquippedDropChance(info, dropBase)) {
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                     info.addDebugMessage(
-                        "&8 - &7item: &b${dropBase.itemStack!!.type.name}&7, was not equipped on mob, dropped: &bfalse&7.",
+                        "&8 - &7item: &b${dropBase.itemStack?.type?.name}&7, was not equipped on mob, dropped: &bfalse&7.",
                     )
                 }
                 return
@@ -592,7 +595,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, chunk kill count reached",
-                        info.lmEntity!!.getMobLevel,
+                        info.lmEntity?.getMobLevel,
                         dropBase.material.name, dropBase.groupId
                     )
                 )
@@ -600,7 +603,7 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS, String.format(
                         "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, chunk kill count reached",
-                        info.lmEntity!!.getMobLevel, dropBase.groupId
+                        info.lmEntity?.getMobLevel, dropBase.groupId
                     )
                 )
             }
@@ -664,7 +667,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, dropped: &bfalse",
-                                info.lmEntity!!.getMobLevel,
+                                info.lmEntity?.getMobLevel,
                                 dropBase.material.name, dropBase.groupId,
                                 info.getItemsDropsByGroup(dropBase), groupDroppedCount
                             )
@@ -673,7 +676,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &bfalse",
-                                info.lmEntity!!.getMobLevel,
+                                info.lmEntity?.getMobLevel,
                                 info.getItemsDropsByGroup(dropBase),
                                 dropBase.maxDropGroup,
                                 groupDroppedCount
@@ -694,7 +697,7 @@ class CustomDropsHandler {
                     val count = info.getItemsDropsByGroup(dropBase)
                     var msg = String.format(
                         "&8- &7level: &b%s&7, item: command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
-                        info.lmEntity!!.getMobLevel, dropBase.groupId, dropBase.maxDropGroup, count
+                        info.lmEntity?.getMobLevel, dropBase.groupId, dropBase.maxDropGroup, count
                     )
                     if (info.retryNumber > 0) {
                         msg += ", retry: ${info.retryNumber}"
@@ -704,7 +707,7 @@ class CustomDropsHandler {
             } else if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 var msg = String.format(
                     "&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
-                    info.lmEntity!!.getMobLevel, dropBase.groupId, dropBase.maxDropGroup
+                    info.lmEntity?.getMobLevel, dropBase.groupId, dropBase.maxDropGroup
                 )
 
                 if (info.retryNumber > 0) {
@@ -893,8 +896,8 @@ class CustomDropsHandler {
                 info.addDebugMessage(
                     String.format(
                         "&7level: &b%s&7, item: &b%s&7, equipchance: &b%s&7, chancerole: &b%s&7, did not make equipped chance",
-                        info.lmEntity!!.getMobLevel,
-                        dropItem.material.name, dropItem.equippedChance!!.showMatchedChance(),
+                        info.lmEntity?.getMobLevel,
+                        dropItem.material.name, dropItem.equippedChance?.showMatchedChance(),
                         Utils.round(info.equippedChanceRole.toDouble(), 4)
                     )
                 )
@@ -1112,88 +1115,59 @@ class CustomDropsHandler {
         info: CustomDropProcessingInfo,
         item: CustomDropItem
     ): Boolean {
+        if (item.onlyDropIfEquipped && !info.itemWasEquipped) return false
+
+        if (info.equippedItemsInfo != null && info.equipmentClass != null &&
+            EquippedItemsInfo.droppedEquipmentByClass.contains(info.equipmentClass)){
+            // if we have dropped this equipment type already then don't drop multiples of it
+            return false
+        }
+
         if (item.equippedChance != null && item.equippedChance!!.isAssuredChance
             || !item.onlyDropIfEquipped
         ) {
             return true
         }
 
-        return isMobWearingItem(item.itemStack, info.lmEntity!!.livingEntity, item)
+        return info.itemWasEquipped
     }
 
     private fun isMobWearingItem(
-        item: ItemStack?,
-        mob: LivingEntity,
+        info: CustomDropProcessingInfo,
         customDropItem: CustomDropItem
     ): Boolean {
-        if (item == null) return false
-        val equipment = mob.equipment ?: return false
-        val equippedItemsInfo = customEquippedItems[mob] ?: return false
+        val item = customDropItem.itemStack ?: return false
 
-        if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet)) {
+        if (info.lmEntity == null) return false
+        val equipment = info.lmEntity!!.livingEntity.equipment ?: return false
+
+        if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet))
+            return true
+
+        if (EnchantmentTarget.ARMOR_HEAD.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
+            return item.isSimilar(equipment.helmet)
+        }
+        if (EnchantmentTarget.ARMOR_TORSO.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
+            return item.isSimilar(equipment.chestplate)
+        }
+        if (EnchantmentTarget.ARMOR_LEGS.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
+            return item.isSimilar(equipment.leggings)
+        }
+        if (EnchantmentTarget.ARMOR_FEET.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
+            return item.isSimilar(equipment.boots)
+        }
+
+        if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
+        if (item.isSimilar(equipment.itemInMainHand)) {
             return true
         }
 
-        when (item.type) {
-            Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.NETHERITE_HELMET -> {
-                if (equippedItemsInfo.helmet != null
-                    && customDropItem == equippedItemsInfo.helmet
-                ) {
-                    return true
-                }
-                if (equippedItemsInfo.chestplate != null
-                    && customDropItem == equippedItemsInfo.chestplate
-                ) {
-                    return true
-                }
-                if (equippedItemsInfo.leggings != null
-                    && customDropItem == equippedItemsInfo.leggings
-                ) {
-                    return true
-                }
-                if (equippedItemsInfo.boots != null && customDropItem == equippedItemsInfo.boots) {
-                    return true
-                }
-            }
-
-            Material.LEATHER_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE, Material.NETHERITE_CHESTPLATE -> {
-                if (equippedItemsInfo.chestplate != null
-                    && customDropItem == equippedItemsInfo.chestplate
-                ) {
-                    return true
-                }
-                if (equippedItemsInfo.leggings != null
-                    && customDropItem == equippedItemsInfo.leggings
-                ) {
-                    return true
-                }
-                if (equippedItemsInfo.boots != null && customDropItem == equippedItemsInfo.boots) {
-                    return true
-                }
-            }
-
-            Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.NETHERITE_LEGGINGS -> {
-                if (equippedItemsInfo.leggings != null
-                    && customDropItem == equippedItemsInfo.leggings
-                ) {
-                    return true
-                }
-                if (equippedItemsInfo.boots != null && customDropItem == equippedItemsInfo.boots) {
-                    return true
-                }
-            }
-
-            Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS, Material.DIAMOND_BOOTS, Material.NETHERITE_BOOTS -> if (equippedItemsInfo.boots != null && customDropItem == equippedItemsInfo.boots) {
-                return true
-            }
-
-           else -> {}
-        }
-        if (equippedItemsInfo.mainHand != null && customDropItem == equippedItemsInfo.mainHand) {
-            return true
-        }
-
-        return equippedItemsInfo.offhand != null && customDropItem == equippedItemsInfo.offhand
+        if (item.isSimilar(info.equippedItemsInfo?.offhand)) return true
+        return item.isSimilar(equipment.itemInOffHand)
     }
 
     private fun madePlayerLevelRequirement(
@@ -1217,7 +1191,7 @@ class CustomDropsHandler {
                             info.addDebugMessage(
                                 String.format(
                                     "&8 - &7Mob: &b%s&7, item: %s, PAPI val: %s, matched: %s",
-                                    info.lmEntity!!.typeName, dropBase.material,
+                                    info.lmEntity?.typeName, dropBase.material,
                                     papiResult, resultStr
                                 )
                             )
@@ -1225,7 +1199,7 @@ class CustomDropsHandler {
                             info.addDebugMessage(
                                 String.format(
                                     "&8 - &7Mob: &b%s&7, (customCommand), PAPI val: %s, matched: %s",
-                                    info.lmEntity!!.typeName, papiResult, resultStr
+                                    info.lmEntity?.typeName, papiResult, resultStr
                                 )
                             )
                         }
@@ -1240,7 +1214,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8 - &7Mob: &b%s&7, item: %s, PAPI val: %s, no matches found",
-                                info.lmEntity!!.typeName, dropBase.material,
+                                info.lmEntity?.typeName, dropBase.material,
                                 papiResult
                             )
                         )
@@ -1248,7 +1222,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8 - &7Mob: &b%s&7, (customCommand), PAPI val: %s, no matches found",
-                                info.lmEntity!!.typeName, papiResult
+                                info.lmEntity?.typeName, papiResult
                             )
                         )
                     }
@@ -1281,7 +1255,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8 - &7Mob: &b%s&7, item: %s, lvl-src: %s, minlvl: %s, maxlvl: %s player level criteria not met",
-                                info.lmEntity!!.typeName, dropBase.material,
+                                info.lmEntity?.typeName, dropBase.material,
                                 levelToUse, dropBase.minPlayerLevel, dropBase.maxPlayerLevel
                             )
                         )
@@ -1289,7 +1263,7 @@ class CustomDropsHandler {
                         info.addDebugMessage(
                             String.format(
                                 "&8 - &7Mob: &b%s&7, (customCommand), lvl-src: %s, minlvl: %s, maxlvl: %s player level criteria not met",
-                                info.lmEntity!!.typeName, levelToUse, dropBase.minPlayerLevel,
+                                info.lmEntity?.typeName, levelToUse, dropBase.minPlayerLevel,
                                 dropBase.maxPlayerLevel
                             )
                         )
@@ -1426,13 +1400,6 @@ class CustomDropsHandler {
             Material.SALMON -> ItemStack(Material.COOKED_SALMON)
             else -> itemStack
         }
-    }
-
-    fun addEntityEquippedItems(
-        livingEntity: LivingEntity,
-        equippedItemsInfo: EquippedItemsInfo
-    ) {
-        customEquippedItems[livingEntity] = equippedItemsInfo
     }
 
     fun setDropInstanceFromId(groupId: String, dropInstance: CustomDropInstance) {

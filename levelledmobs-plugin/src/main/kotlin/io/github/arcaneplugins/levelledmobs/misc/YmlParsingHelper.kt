@@ -301,7 +301,7 @@ class YmlParsingHelper(
                     val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
                     Log.war(
                         "$currentPath: couldn't parse Config of type: " + obj.javaClass
-                            .simpleName + ", value: $obj"
+                            .simpleName + ", value: $obj (did you put enough spaces?)"
                     )
                     return null
                 }
