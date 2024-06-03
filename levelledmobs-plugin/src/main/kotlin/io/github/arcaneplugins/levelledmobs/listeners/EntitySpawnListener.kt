@@ -53,6 +53,7 @@ class EntitySpawnListener : Listener{
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
         lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
+        lmEntity.populateShowShowLMNametag()
         MobDataManager.populateAttributeCache(lmEntity, null)
 
         if (event is CreatureSpawnEvent) {

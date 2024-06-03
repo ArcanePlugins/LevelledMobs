@@ -30,6 +30,7 @@ class SummonedMobPreLevelEvent(
     companion object{
         private val HANDLERS = HandlerList()
 
+        @JvmStatic
         fun getHandlerList(): HandlerList {
             return HANDLERS
         }

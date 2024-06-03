@@ -57,6 +57,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private var _livingEntity: LivingEntity? = null
     private var isBuildingCache = false
     private var groupsAreBuilt = false
+    private var _shouldShowLMNametag: Boolean? = null
     var chunkKillcount = 0
     var mobLevel: Int? = null
     private var _spawnedTimeOfDay: Int? = null
@@ -186,6 +187,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         applicableRules.clear()
         mobExternalTypes.clear()
         this._spawnedTimeOfDay = null
+        this._shouldShowLMNametag = null
         this._spawnReason = null
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM
         this.isBuildingCache = false
@@ -844,8 +846,13 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             return spawnedWGRegions!![0]
         }
 
+    fun populateShowShowLMNametag(){
+        this._shouldShowLMNametag = !pdc.has(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER)
+    }
+
     var shouldShowLMNametag: Boolean
         set(value) {
+            _shouldShowLMNametag = value
             if (!getPDCLock()) {
                 return
             }
@@ -869,15 +876,18 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
         get() {
+            if (_shouldShowLMNametag != null) return _shouldShowLMNametag!!
+
             if (!getPDCLock()) {
                 return true
             }
 
             try {
-                return !pdc.has(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER)
+                _shouldShowLMNametag = !pdc.has(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER)
             } finally {
                 releasePDCLock()
             }
+            return _shouldShowLMNametag!!
         }
 
 

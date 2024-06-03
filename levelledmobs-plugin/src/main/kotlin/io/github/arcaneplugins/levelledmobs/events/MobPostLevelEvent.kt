@@ -21,6 +21,7 @@ class MobPostLevelEvent(
     companion object {
         private val HANDLERS = HandlerList()
 
+        @JvmStatic
         fun getHandlerList(): HandlerList {
             return HANDLERS
         }
