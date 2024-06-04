@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -271,10 +272,7 @@ class EntitySpawnListener : Listener{
             val levelAssignment = main.levelInterface.generateLevel(lmEntity)
             if (shouldDenyLevel(lmEntity, levelAssignment)) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                    String.format(
-                        "lvl: %s&r, denied relevelling to &b%s&r due to decrease-level disabled",
-                        lmEntity.getMobLevel, levelAssignment
-                    )
+                    "lvl: ${lmEntity.getMobLevel}&r, denied relevelling to &b$levelAssignment&r due to decrease-level disabled"
                 }
             } else {
                 if (lmEntity.reEvaluateLevel && main.rulesManager.isPlayerLevellingEnabled()) {
@@ -390,6 +388,16 @@ class EntitySpawnListener : Listener{
             val checkDistance = LevelledMobs.instance.helperSettings.getInt(
                 "async-task-max-blocks-from-player", 100
             )
+
+            if (!LevelledMobs.instance.ver.isRunningFolia && Bukkit.isPrimaryThread()){
+                // run directly if we're in the main thread already
+                updateMobForPlayerLevellingNonAsync(
+                    lmEntity,
+                    checkDistance,
+                    onlinePlayerCount
+                )
+                return
+            }
 
             val wrapper = SchedulerWrapper(lmEntity.livingEntity){
                 updateMobForPlayerLevellingNonAsync(

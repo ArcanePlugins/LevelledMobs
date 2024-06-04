@@ -235,7 +235,7 @@ class LevelManager : LevelInterface2 {
             }
         }
         finally {
-            DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT)
+            DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT, lmEntity)
         }
 
         // if no levelling strategy was selected then we just use a random number between min and max
@@ -832,10 +832,34 @@ class LevelManager : LevelInterface2 {
     ): String{
         val str = StringReplacer(text)
 
-        str.replaceIfExists("%level-ratio%"){
-            val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity)
-            if (lmEntity.getMobLevel == 0 || maxLevel == 0) "0"
-            else (lmEntity.getMobLevel / maxLevel).toString()
+        if (str.text.contains("%level-ratio%", ignoreCase = true)){
+            val mobLevel = lmEntity.mobLevel ?: lmEntity.getMobLevel
+            val maxLevel = RulesManager.instance.getRuleMobMaxLevel(lmEntity).toFloat()
+            val minLevel = RulesManager.instance.getRuleMobMinLevel(lmEntity).toFloat()
+            if (mobLevel == 0 || maxLevel == 0f){
+                str.replace("%level-ratio%", "0")
+                DebugManager.log(DebugType.LEVEL_RATIO, lmEntity){ "mob-lvl was 0 or maxlevel was 0" }
+            }
+            else{
+                val newValue: Float
+                val part1 = (mobLevel.toFloat() - minLevel)
+                val part2 = (maxLevel - minLevel)
+                newValue = if (part2 == 0f)
+                    1f
+                else if (part1 == 0f)
+                    0f
+                else
+                    (part1 / part2).coerceAtLeast(0f)
+
+                str.replace("%level-ratio%", newValue.toString())
+                DebugManager.log(DebugType.LEVEL_RATIO, lmEntity){
+                    "'(${mobLevel.toFloat()} - $minLevel) / ($maxLevel - $minLevel)', result: $newValue"
+                }
+            }
+        }
+
+        str.replaceIfExists("%ranged-attack-damage%"){
+            if (lmEntity.rangedDamage != null) lmEntity.rangedDamage.toString() else "0"
         }
 
         for (placeholder in strategyPlaceholders){
@@ -861,7 +885,7 @@ class LevelManager : LevelInterface2 {
         }
 
         for (placeholder in attributeStringList){
-            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value)?.value.toString() }
+            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value)?.baseValue.toString() }
         }
 
         str.replaceIfExists("%item-drop%"){ "1" }

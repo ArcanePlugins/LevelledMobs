@@ -40,4 +40,8 @@ class StringReplacer(var text: String) {
     fun contains(s: CharSequence): Boolean {
         return text.contains(s)
     }
+
+    override fun toString(): String {
+        return text
+    }
 }

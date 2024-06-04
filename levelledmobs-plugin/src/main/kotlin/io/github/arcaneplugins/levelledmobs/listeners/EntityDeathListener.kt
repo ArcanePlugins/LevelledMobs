@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropResult
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.result.AdjacentChunksResult
@@ -113,6 +114,7 @@ class EntityDeathListener : Listener {
 
         if (lmEntity.isLevelled) {
             // Set levelled item drops
+            MobDataManager.populateAttributeCache(lmEntity)
             main.levelManager.setLevelledItemDrops(lmEntity, event.drops, doNotMultiplyDrops)
 
             // Set levelled exp drops

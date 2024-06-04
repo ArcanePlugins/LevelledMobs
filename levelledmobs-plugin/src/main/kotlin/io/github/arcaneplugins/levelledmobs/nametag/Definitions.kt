@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo.MinecraftMajorVersion
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
@@ -347,33 +348,11 @@ class Definitions{
         )
     }
 
+    @Suppress("DEPRECATION")
     fun getTranslationKey(livingEntity: LivingEntity): String {
         // only needed for spigot. paper has a built-in method
 
-        // net.minecraft.world.entity.EntityType ->
-        //   java.util.Optional byString(java.lang.String) -> a
-        // public static Optional<EntityTypes<?>> byString(String s)
-
-        val optionalResult: Optional<*>
-        try {
-            optionalResult = methodEntityTypeByString!!.invoke(
-                null,
-                livingEntity.type.name
-            ) as Optional<*>
-
-            if (optionalResult.isEmpty) {
-                return ""
-            }
-
-            // net.minecraft.world.entity.EntityTypes<T extends Entity>
-            return methodGetDescriptionId!!.invoke(optionalResult.get()) as String
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: InvocationTargetException) {
-            e.printStackTrace()
-        }
-
-        return ""
+        return Bukkit.getUnsafe().getTranslationKey(livingEntity.type)
     }
 
     private fun buildSimpleMethods() {

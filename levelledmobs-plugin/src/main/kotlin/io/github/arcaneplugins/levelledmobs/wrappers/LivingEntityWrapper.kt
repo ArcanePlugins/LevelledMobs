@@ -75,6 +75,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private val pdcLock = ReentrantLock()
 
     // publics:
+    var rangedDamage: Float? = null
     var attributeValuesCache: MutableMap<Attribute, AttributeInstance>? = null
     val strategyResults = mutableMapOf<StrategyType, Float>()
     var customStrategyResults = mutableMapOf<String, Float>()
@@ -179,6 +180,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     override fun clearEntityData() {
         this._livingEntity = null
         this.attributeValuesCache = null
+        this.rangedDamage = null
         this.strategyResults.clear()
         this.customStrategyResults.clear()
         this.libsDisguiseCache = null

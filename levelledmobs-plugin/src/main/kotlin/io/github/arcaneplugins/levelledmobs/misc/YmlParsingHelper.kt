@@ -292,8 +292,13 @@ class YmlParsingHelper(
 
                 is Map<*, *> -> {
                     val result = MemoryConfiguration()
+                    val tempList = mutableMapOf<String, Any>()
                     @Suppress("UNCHECKED_CAST")
-                    result.addDefaults((obj as MutableMap<String, Any>))
+                    for (entry in obj as MutableMap<Any, Any>){
+                        tempList[entry.key.toString()] = entry.value
+                    }
+
+                    result.addDefaults(tempList)
                     return result.defaultSection
                 }
 

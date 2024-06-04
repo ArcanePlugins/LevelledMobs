@@ -191,7 +191,11 @@ class DebugManager {
             }
         }
 
-        fun endLongMessage(id: UUID, debugType: DebugType){
+        fun endLongMessage(
+            id: UUID,
+            debugType: DebugType,
+            lmEntity: LivingEntityWrapper
+        ){
             val messages: MutableList<Supplier<String>>?
 
             synchronized(lock){
@@ -203,7 +207,7 @@ class DebugManager {
             for (message in messages)
                 sb.append(message.get())
 
-            log(debugType){ sb.toString() }
+            log(debugType, lmEntity){ sb.toString() }
         }
     }
 
@@ -244,7 +248,7 @@ class DebugManager {
                 var foundMatch = false
                 if (players != null) {
                     for (player in players) {
-                        if (player.world !== useEntity.world) continue
+                        if (player.world != useEntity.world) continue
                         val dist = player.location.distance(useEntity.location)
                         if (dist <= maxPlayerDistance!!) {
                             foundMatch = true

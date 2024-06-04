@@ -8,7 +8,7 @@ apply(plugin = "org.jetbrains.dokka")
 
 repositories {
     mavenCentral()
-    maven("https://repo.codemc.io/repository/nms/")
+    maven("https://mvnrepository.com/")
 }
 
 dependencies{

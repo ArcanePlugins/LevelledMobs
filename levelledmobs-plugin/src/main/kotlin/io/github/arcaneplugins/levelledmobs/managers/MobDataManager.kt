@@ -6,6 +6,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
+import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
 import io.github.arcaneplugins.levelledmobs.result.AttributePreMod
 import io.github.arcaneplugins.levelledmobs.result.EvaluationResult
 import io.github.arcaneplugins.levelledmobs.result.MultiplierResult
@@ -54,6 +55,15 @@ class MobDataManager {
             }
             catch (e: Exception){
                 error = e.message
+            }
+
+            if (numberResult.isInfinite()){
+                error = "Result was infinite"
+                numberResult = 0.0
+            }
+            else if (numberResult.isNaN()){
+                error = "Result was NaN (not a number)"
+                numberResult = 0.0
             }
 
             return EvaluationResult(
@@ -307,20 +317,21 @@ class MobDataManager {
             multiplier = fineTuning.getItem(addition)
             if (multiplier?.hasFormula == true){
                 isAddition = multiplier.isAddition
-                val formulaStr = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
-                    multiplier.formula!!,
-                    lmEntity,
-                    true,
-                    null,
-                    true
+                val formulaStr = StringReplacer(multiplier.formula!!)
+                formulaStr.replaceIfExists("%level%"){ lmEntity.getMobLevel.toString() }
+                formulaStr.text = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(
+                    formulaStr.text,
+                    lmEntity
                 )
-                val evalResult = evaluateExpression(formulaStr)
+
+                val evalResult = evaluateExpression(formulaStr.text)
                 multiplierValue = evalResult.result.toFloat()
                 if (evalResult.hadError)
-                    Log.war("Error evaluating formula: '$formulaStr', ${evalResult.error}")
+                    Log.war("Error evaluating formula for ${lmEntity.nameIfBaby}: '$formulaStr', ${evalResult.error}")
 
-                DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                    "lvl: ${lmEntity.getMobLevel}, formula: '${multiplier.formula}', result: '$multiplierValue'" }
+                DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity, !evalResult.hadError) {
+                    "lvl: ${lmEntity.getMobLevel}, ${multiplier.addition.name}, formulaPre: '${multiplier.formula}'\nformula: " +
+                            "'$formulaStr', result: '$multiplierValue'" }
             }
             else if (multiplier != null)
                 multiplierValue = multiplier.value
@@ -336,7 +347,8 @@ class MobDataManager {
 
         if (maxLevel == 0f || multiplierValue == 0.0f) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "maxLevel or multiplier was 0; returning 0 for $addition"
+                val msg = if (maxLevel == 0f) "maxLevel was 0" else "multiplier was 0"
+                "$msg; returning 0 for $addition"
             }
             return MultiplierResult(0.0f, isAddition)
         }
