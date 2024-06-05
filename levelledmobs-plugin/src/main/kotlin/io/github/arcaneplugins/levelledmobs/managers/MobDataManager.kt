@@ -18,6 +18,7 @@ import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.util.Collections
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeInstance
@@ -287,6 +288,11 @@ class MobDataManager {
     }
 
     fun getAllAttributeValues(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
+        if (!LevelledMobs.instance.ver.isRunningFolia && Bukkit.isPrimaryThread()){
+            populateAttributeCache(lmEntity, whichOnes)
+            return
+        }
+
         val completableFuture = CompletableFuture<Boolean>()
         val scheduler = SchedulerWrapper(lmEntity.livingEntity){
             populateAttributeCache(lmEntity, whichOnes)

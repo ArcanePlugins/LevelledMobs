@@ -6,6 +6,7 @@ import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -23,6 +24,7 @@ class EntityTameListener : Listener {
     private fun onEntityTameEvent(event: EntityTameEvent) {
         val main = LevelledMobs.instance
         val lmEntity = LivingEntityWrapper.getInstance(event.entity)
+        MobDataManager.populateAttributeCache(lmEntity)
         val levellableState: LevellableState = main.levelInterface.getLevellableState(lmEntity)
 
         if (levellableState != LevellableState.ALLOWED) {

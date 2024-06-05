@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
@@ -28,6 +29,7 @@ class EntityRegainHealthListener : Listener {
         }
 
         val lmEntity = LivingEntityWrapper.getInstance((event.entity as LivingEntity))
+        MobDataManager.populateAttributeCache(lmEntity)
 
         LevelledMobs.instance.levelManager.updateNametagWithDelay(lmEntity)
         lmEntity.free()
