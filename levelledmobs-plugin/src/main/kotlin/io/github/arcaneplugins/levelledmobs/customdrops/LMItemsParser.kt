@@ -65,7 +65,10 @@ class LMItemsParser {
         return getExternalItem(item, null)
     }
 
-    fun getExternalItem(item: CustomDropItem, info: CustomDropProcessingInfo?): Boolean {
+    fun getExternalItem(
+        item: CustomDropItem,
+        info: CustomDropProcessingInfo?
+    ): Boolean {
         val itemsAPI = LM_Items.plugin.getItemAPIForPlugin(item.externalPluginName!!)
 
         if (itemsAPI == null) {

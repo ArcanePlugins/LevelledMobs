@@ -45,6 +45,9 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
             return getRandomLevel(minLevel, maxLevel).toFloat()
         }
 
+        if (randomArray == null || randomArray!!.isEmpty())
+            return 0f
+
         val useArrayNum = ThreadLocalRandom.current().nextInt(0, randomArray!!.size)
         return randomArray!![useArrayNum].toFloat()
     }
@@ -55,7 +58,6 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
             autoGenerate = true
             for (i in minLevel..maxLevel){
                 val test = maxLevel - i + 1
-                //Log.inf("range: $i, value: $test")
                 weightedRandom["$i"] = test
             }
         }

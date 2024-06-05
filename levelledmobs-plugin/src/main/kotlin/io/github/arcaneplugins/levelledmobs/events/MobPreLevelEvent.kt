@@ -42,6 +42,7 @@ class MobPreLevelEvent(
     companion object{
         private val HANDLERS = HandlerList()
 
+        @JvmStatic
         fun getHandlerList(): HandlerList {
             return HANDLERS
         }

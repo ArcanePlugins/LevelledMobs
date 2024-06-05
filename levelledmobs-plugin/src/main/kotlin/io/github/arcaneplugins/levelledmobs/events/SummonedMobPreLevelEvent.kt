@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList
  * @author lokka30
  * @since 2.5.0
  */
+@Suppress("unused")
 class SummonedMobPreLevelEvent(
     val entity: LivingEntity,
     var level: Int
@@ -30,6 +31,7 @@ class SummonedMobPreLevelEvent(
     companion object{
         private val HANDLERS = HandlerList()
 
+        @JvmStatic
         fun getHandlerList(): HandlerList {
             return HANDLERS
         }

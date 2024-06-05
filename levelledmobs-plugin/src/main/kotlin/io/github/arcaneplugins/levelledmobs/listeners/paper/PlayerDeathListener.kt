@@ -24,6 +24,17 @@ import org.bukkit.event.entity.PlayerDeathEvent
  */
 class PlayerDeathListener {
     private var shouldCancelEvent = false
+    private var useNewerAdventureArgs = true
+
+    init {
+        val ver = LevelledMobs.instance.ver
+        // 1.20.5 and newer (technically must be at least build 53 of 1.20.6)
+        // Adventure 4.17.0 and newer
+        if (!ver.isRunningPaper || ver.minorVersion < 20 ||
+            (ver.minorVersion == 20 && ver.revision < 6)){
+            useNewerAdventureArgs = false
+        }
+    }
 
     fun onPlayerDeathEvent(event: PlayerDeathEvent): Boolean {
         this.shouldCancelEvent = false
@@ -90,7 +101,6 @@ class PlayerDeathListener {
             preserveMobName = true
         )
         if (mobNametag.nametagNonNull.isEmpty()) {
-            this.shouldCancelEvent = true
             return lmKiller
         }
 
@@ -115,25 +125,40 @@ class PlayerDeathListener {
 
         var mobKey: String? = null
         var itemComp: Component? = null
-        for (c in tc.arguments()) {
-            val tc2 = c.asComponent() as? TranslatableComponent
-            if (tc2 != null) {
-                if ("chat.square_brackets" == tc2.key()) {
-                    // this is when the mob was holding a weapon
-                    itemComp = tc2
-                } else {
-                    mobKey = tc2.key()
+
+        if (useNewerAdventureArgs){
+            for (c in tc.arguments()) {
+                val tc2 = c.asComponent() as? TranslatableComponent
+                if (tc2 != null) {
+                    if ("chat.square_brackets" == tc2.key()) {
+                        // this is when the mob was holding a weapon
+                        itemComp = tc2
+                    } else {
+                        mobKey = tc2.key()
+                    }
+                }
+            }
+        }
+        else{
+            @Suppress("DEPRECATION")
+            for (c in tc.args()) {
+                if (c is TranslatableComponent) {
+                    if ("chat.square_brackets" == c.key()) {
+                        // this is when the mob was holding a weapon
+                        itemComp = c
+                    } else {
+                        mobKey = c.key()
+                    }
                 }
             }
         }
 
         if (mobKey == null) return
 
-        val main = LevelledMobs.instance
-        val mobName: String = nametagResult.nametagNonNull
+        val mobName = nametagResult.nametagNonNull
         val displayNameIndex = mobName.indexOf("{DisplayName}")
-        val cs = if (main.definitions.getUseLegacySerializer())
-            LegacyComponentSerializer.legacyAmpersand() else main.definitions.mm!!
+        val cs = if (LevelledMobs.instance.definitions.getUseLegacySerializer())
+            LegacyComponentSerializer.legacyAmpersand() else LevelledMobs.instance.definitions.mm!!
 
         var newCom: Component
         if (nametagResult.hadCustomDeathMessage) {

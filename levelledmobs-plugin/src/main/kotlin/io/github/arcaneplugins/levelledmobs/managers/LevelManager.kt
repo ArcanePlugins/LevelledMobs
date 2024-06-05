@@ -31,7 +31,6 @@ import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
-import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomVarianceGenerator
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -236,7 +235,7 @@ class LevelManager : LevelInterface2 {
             }
         }
         finally {
-            DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT)
+            DebugManager.endLongMessage(debugId, DebugType.STRATEGY_RESULT, lmEntity)
         }
 
         // if no levelling strategy was selected then we just use a random number between min and max
@@ -266,9 +265,9 @@ class LevelManager : LevelInterface2 {
         val result = evalResult.result.toInt()
 
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
-            "mob: ${lmEntity.nameIfBaby}, result $result\n" +
-                    "   formulaPre: '$formulaPre'\n" +
-                    "   formula: '$formula'" }
+            "result $result\n" +
+            "   formulaPre: '$formulaPre'\n" +
+            "   formula: '$formula'" }
 
         return result
     }
@@ -491,10 +490,7 @@ class LevelManager : LevelInterface2 {
             ).amount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-                    String.format(
-                        "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel
-                    )
+                    "mob-lvl: &b${lmEntity.getMobLevel}&7, removing any drops present"
                 }
                 currentDrops.clear()
                 return
@@ -516,11 +512,11 @@ class LevelManager : LevelInterface2 {
         if (dropsToMultiply.isNotEmpty()) {
             currentDrops.addAll(dropsToMultiply)
         }
-        val nameWithOverride = if (hasOverride) lmEntity.nameIfBaby + " (override)" else lmEntity.nameIfBaby
+        val nameWithOverride = if (hasOverride) " (override), " else ""
         val additionUsedFinal = additionUsed
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
             String.format(
-                "&7Mob: &b%s&7, mob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
+                "%smob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
                 nameWithOverride, lmEntity.getMobLevel, vanillaDrops, currentDrops.size,
                 additionUsedFinal
             )
@@ -653,10 +649,7 @@ class LevelManager : LevelInterface2 {
 
             if (dropAddition == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                    String.format(
-                        "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b0&7",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel, xp
-                    )
+                    "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b0&7"
                 }
                 return 0
             }
@@ -667,10 +660,7 @@ class LevelManager : LevelInterface2 {
 
             val newXpFinal = newXp.toInt()
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                String.format(
-                    "&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel, xp, newXpFinal
-                )
+                "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
             }
             return newXp.toInt()
         } else {
@@ -716,7 +706,7 @@ class LevelManager : LevelInterface2 {
                 nametag = StringReplacer(deathMessage.replace("%death_nametag%", nametag.text))
                 val player = lmEntity.associatedPlayer
                 nametag.replace("%player%", if (player != null) player.name + "&r" else "")
-                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, usePreserveMobName)
+                nametag.text = replaceStringPlaceholders(nametag.text, lmEntity, true, player, false)
                 usePreserveMobName = true
 
                 customDeathMessage =
@@ -842,10 +832,34 @@ class LevelManager : LevelInterface2 {
     ): String{
         val str = StringReplacer(text)
 
-        str.replaceIfExists("%level-ratio%"){
-            val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity)
-            if (lmEntity.getMobLevel == 0 || maxLevel == 0) "0"
-            else (lmEntity.getMobLevel / maxLevel).toString()
+        if (str.text.contains("%level-ratio%", ignoreCase = true)){
+            val mobLevel = lmEntity.mobLevel ?: lmEntity.getMobLevel
+            val maxLevel = RulesManager.instance.getRuleMobMaxLevel(lmEntity).toFloat()
+            val minLevel = RulesManager.instance.getRuleMobMinLevel(lmEntity).toFloat()
+            if (mobLevel == 0 || maxLevel == 0f){
+                str.replace("%level-ratio%", "0")
+                DebugManager.log(DebugType.LEVEL_RATIO, lmEntity){ "mob-lvl was 0 or maxlevel was 0" }
+            }
+            else{
+                val newValue: Float
+                val part1 = (mobLevel.toFloat() - minLevel)
+                val part2 = (maxLevel - minLevel)
+                newValue = if (part2 == 0f)
+                    1f
+                else if (part1 == 0f)
+                    0f
+                else
+                    (part1 / part2).coerceAtLeast(0f)
+
+                str.replace("%level-ratio%", newValue.toString())
+                DebugManager.log(DebugType.LEVEL_RATIO, lmEntity){
+                    "'(${mobLevel.toFloat()} - $minLevel) / ($maxLevel - $minLevel)', result: $newValue"
+                }
+            }
+        }
+
+        str.replaceIfExists("%ranged-attack-damage%"){
+            if (lmEntity.rangedDamage != null) lmEntity.rangedDamage.toString() else "0"
         }
 
         for (placeholder in strategyPlaceholders){
@@ -871,7 +885,7 @@ class LevelManager : LevelInterface2 {
         }
 
         for (placeholder in attributeStringList){
-            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value)?.value.toString() }
+            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value)?.baseValue.toString() }
         }
 
         str.replaceIfExists("%item-drop%"){ "1" }
@@ -1608,7 +1622,7 @@ class LevelManager : LevelInterface2 {
         dropResult.stackToItem.shuffle()
 
         for ((itemStack, item) in dropResult.stackToItem) {
-            val material: Material = itemStack.type
+            val material = itemStack.type
             val groupLimits = main.customDropsHandler.getGroupLimits(item)
             val hasEquipLimits = item.hasGroupId && groupLimits != null && groupLimits.hasCapEquipped
 
@@ -1620,8 +1634,8 @@ class LevelManager : LevelInterface2 {
                 if (groupLimits!!.hasReachedCapEquipped(equippedSoFar)) {
                     DebugManager.log(DebugType.GROUP_LIMITS, lmEntity) {
                         String.format(
-                            "Reached equip limit of %s, mob: %s, item: %s, group: %s",
-                            groupLimits.capEquipped, lmEntity.nameIfBaby, material, item.groupId
+                            "Reached equip limit of %s, item: %s, group: %s",
+                            groupLimits.capEquipped, material, item.groupId
                         )
                     }
                     continue
@@ -1631,22 +1645,22 @@ class LevelManager : LevelInterface2 {
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true)
                 equipment.bootsDropChance = 0f
-                equippedItemsInfo.boots = item
+                equippedItemsInfo.boots = item.itemStack
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true)
                 equipment.leggingsDropChance = 0f
-                equippedItemsInfo.leggings = item
+                equippedItemsInfo.leggings = item.itemStack
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true)
                 equipment.chestplateDropChance = 0f
-                equippedItemsInfo.chestplate = item
+                equippedItemsInfo.chestplate = item.itemStack
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)
                 || material.name.endsWith("_HEAD") || (item.equipOnHelmet
                         && !hadPlayerHead)
             ) {
                 equipment.setHelmet(itemStack, true)
                 equipment.helmetDropChance = 0f
-                equippedItemsInfo.helmet = item
+                equippedItemsInfo.helmet = item.itemStack
                 if (material == Material.PLAYER_HEAD) {
                     hadPlayerHead = true
                 }
@@ -1654,12 +1668,12 @@ class LevelManager : LevelInterface2 {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack)
                     equipment.itemInMainHandDropChance = 0f
-                    equippedItemsInfo.mainHand = item
+                    equippedItemsInfo.mainHand = item.itemStack
                     hadMainItem = true
                 } else if (item.equipOffhand) {
                     equipment.setItemInOffHand(itemStack)
                     equipment.itemInOffHandDropChance = 0f
-                    equippedItemsInfo.offhand = item
+                    equippedItemsInfo.offhand = item.itemStack
                 }
             }
 
@@ -1670,10 +1684,7 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        main.customDropsHandler.addEntityEquippedItems(
-            lmEntity.livingEntity,
-            equippedItemsInfo
-        )
+        equippedItemsInfo.saveEquipment(lmEntity)
     }
 
     private fun getMobAttributeValue(lmEntity: LivingEntityWrapper): Double {
@@ -1877,7 +1888,7 @@ class LevelManager : LevelInterface2 {
                 DebugType.APPLY_LEVEL_RESULT,
                 lmEntity,
                 false
-            ) { "Entity &b" + lmEntity.typeName + "&7 had &bnoLevelKey&7 attached" }
+            ) { "&7 had &bnoLevelKey&7 attached" }
             return
         }
 
@@ -1929,11 +1940,6 @@ class LevelManager : LevelInterface2 {
                 .callEvent(MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation))
 
             val sb = StringBuilder()
-            sb.append("entity: ")
-            sb.append(lmEntity.livingEntity.name)
-            if (lmEntity.isBabyMob) {
-                sb.append(" (baby)")
-            }
             sb.append(", world: ")
             sb.append(lmEntity.worldName)
             sb.append(", level: ")
@@ -2053,8 +2059,7 @@ class LevelManager : LevelInterface2 {
 
         if (hadSuccess) {
             DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
-                ("Applied NBT data to '" + lmEntity.nameIfBaby +
-                        "'. " + getNBTDebugMessage(allResults))
+                "Applied NBT data, ${getNBTDebugMessage(allResults)}"
             }
         }
     }

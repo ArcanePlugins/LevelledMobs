@@ -131,7 +131,7 @@ presets:
         merge: false
         max-health: 2.5
         attack-damage: 1.0
-        ranged-attack-damage: 1.0
+        ranged-attack-damage: 0.7
         item-drop: 3.0
         xp-drop: 5.0
 
@@ -143,7 +143,7 @@ presets:
         max-health: 5.0
         movement-speed: 0.15
         attack-damage: 2.25
-        ranged-attack-damage: 2.25
+        ranged-attack-damage: 1.5
         creeper-blast-damage: 0.75
         item-drop: 3.0
         xp-drop: 5.0
@@ -159,7 +159,7 @@ presets:
         max-health: 8.0
         movement-speed: 0.35
         attack-damage: 3.5
-        ranged-attack-damage: 2.75
+        ranged-attack-damage: 2.0
         creeper-blast-damage: 1.75
         follow-range: 0.25
         item-drop: 3.0
@@ -178,7 +178,7 @@ presets:
         max-health: 15.0
         movement-speed: 1.0
         attack-damage: 5.0
-        ranged-attack-damage: 4.0
+        ranged-attack-damage: 3.2
         creeper-blast-damage: 2.5
         follow-range: 0.5
         item-drop: 3.0
@@ -195,20 +195,20 @@ presets:
     settings:
       attribute-modifier:
         merge: false
-        max-health: '%max-health% + (%level% * (%max-health% * 0.25))'
-        movement-speed: '%movement-speed% + (%level% * (%movement-speed% * 0.025))'
-        attack-damage: '%attack-damage% + (%level-ratio% * (%attack-damage% * 2))'
-        ranged-attack-damage: '%ranged-attack-damage% + (%level-ratio% * (%attack-damage% * 2))'
-        creeper-blast-damage: '(%creeper-blast-damage% * 2.5) / %level-ratio%'
-        follow-range: '%follow-range% + (1.75 * %level%)'
-        item-drop: '(%item-drop% * 2.5) / %level-ratio%'
-        xp-drop: '(%xp-drop% * 3.5) / %level-ratio%'
-      # Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: '(%level-ratio% * (15 - %armor-bonus%)) / (15 - %armor-bonus%)'
-        armor-toughness: '(%level-ratio% * (7 - %armor-toughness%)) / (7 - %armor-toughness%)'
-        attack-knockback: '(%level-ratio% * (2 - %attack-knockback%)) / (2 - %attack-knockback%)'
-        knockback-resistance: '(%level-ratio% * (0.25 - %knockback-resistance%)) / (0.25 - %knockback-resistance%)'
-        zombie-spawn-reinforcements: '(%level-ratio% * (0.25 - %zombie-spawn-reinforcements%)) / (0.25 - %zombie-spawn-reinforcements%)'
+        max-health: '(%level-ratio% * %max-health% * 5)'
+        movement-speed: '(%level-ratio% * %movement-speed% * 0.25)'
+        attack-damage: '(%level-ratio% * %attack-damage% * 2)'
+        ranged-attack-damage: '(%level-ratio% * %ranged-attack-damage% * 1.50)'
+        creeper-blast-damage: '(%level-ratio% * %creeper-blast-damage% * 2.5)'
+        follow-range: '(%level-ratio% * %follow-range% * 0.5)'
+        item-drop: '(%level-ratio% * %item-drop% * 2)'
+        xp-drop: '(%level-ratio% * %xp-drop% * 5)'
+        # Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: '(%level-ratio% * (7.5 - %armor-bonus%))'
+        armor-toughness: '(%level-ratio% * (3.5 - %armor-toughness%))'
+        attack-knockback: '(%level-ratio% * (2 - %attack-knockback%))'
+        knockback-resistance: '(%level-ratio% * (0.25 - %knockback-resistance%))'
+        zombie-spawn-reinforcements: '(%level-ratio% * (0.25 - %zombie-spawn-reinforcements%))'
 
 
 #

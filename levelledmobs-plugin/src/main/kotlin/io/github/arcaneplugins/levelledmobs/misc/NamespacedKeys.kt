@@ -53,4 +53,10 @@ object NamespacedKeys {
     val keySpawnerCustomName = NamespacedKey(LevelledMobs.instance, "customname")
     val keySpawnerLore = NamespacedKey(LevelledMobs.instance, "lore")
     val overallChanceKey = NamespacedKey(LevelledMobs.instance, "pickedUpItems")
+    val equipment0 = NamespacedKey(LevelledMobs.instance, "equipment0")
+    val equipment1 = NamespacedKey(LevelledMobs.instance, "equipment1")
+    val equipment2 = NamespacedKey(LevelledMobs.instance, "equipment2")
+    val equipment3 = NamespacedKey(LevelledMobs.instance, "equipment3")
+    val equipment4 = NamespacedKey(LevelledMobs.instance, "equipment4")
+    val equipment5 = NamespacedKey(LevelledMobs.instance, "equipment5")
 }

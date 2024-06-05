@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList
  * @author lokka30
  * @since 2.5.0
  */
+@Suppress("unused")
 class MobPostLevelEvent(
     val lmEntity: LivingEntityWrapper,
     val levelCause: LevelCause,
@@ -21,6 +22,7 @@ class MobPostLevelEvent(
     companion object {
         private val HANDLERS = HandlerList()
 
+        @JvmStatic
         fun getHandlerList(): HandlerList {
             return HANDLERS
         }

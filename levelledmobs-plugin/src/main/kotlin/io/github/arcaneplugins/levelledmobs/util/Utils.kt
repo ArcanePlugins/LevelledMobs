@@ -446,11 +446,11 @@ object Utils {
         if (hashChanged) {
             if (hadHash) {
                 DebugManager.log(DebugType.MOB_HASH, lmEntity, false) {
-                    "Invalid hash for ${lmEntity.nameIfBaby} ${showLocation(lmEntity.location)}"
+                    "Invalid hash, location: ${showLocation(lmEntity.location)}"
                 }
             } else {
                 DebugManager.log(DebugType.MOB_HASH, lmEntity, false) {
-                    "Hash missing for ${lmEntity.nameIfBaby} ${showLocation(lmEntity.location)}"
+                    "Hash missing, location: ${showLocation(lmEntity.location)}"
                 }
             }
 
@@ -460,7 +460,7 @@ object Utils {
                 .set(NamespacedKeys.mobHash, PersistentDataType.STRING, main.rulesManager.currentRulesHash)
         } else {
             DebugManager.log(DebugType.MOB_HASH, lmEntity, true) {
-                "Hash missing for ${lmEntity.nameIfBaby} ${showLocation(lmEntity.location)}"
+                "Hash missing, location: ${showLocation(lmEntity.location)}"
             }
         }
 

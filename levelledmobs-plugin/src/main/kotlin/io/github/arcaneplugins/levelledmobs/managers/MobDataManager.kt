@@ -6,6 +6,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
+import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
 import io.github.arcaneplugins.levelledmobs.result.AttributePreMod
 import io.github.arcaneplugins.levelledmobs.result.EvaluationResult
 import io.github.arcaneplugins.levelledmobs.result.MultiplierResult
@@ -17,6 +18,7 @@ import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.util.Collections
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeInstance
@@ -54,6 +56,15 @@ class MobDataManager {
             }
             catch (e: Exception){
                 error = e.message
+            }
+
+            if (numberResult.isInfinite()){
+                error = "Result was infinite"
+                numberResult = 0.0
+            }
+            else if (numberResult.isNaN()){
+                error = "Result was NaN (not a number)"
+                numberResult = 0.0
             }
 
             return EvaluationResult(
@@ -213,8 +224,7 @@ class MobDataManager {
 
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
                 String.format(
-                    "%s (%s): attrib: %s, base: %s, addtion: %s",
-                    lmEntity.nameIfBaby,
+                    "lvl: %s, attrib: %s, base: %s, addtion: %s",
                     lmEntity.getMobLevel,
                     info.attribute.name,
                     Utils.round(attrib.baseValue, 3),
@@ -263,10 +273,9 @@ class MobDataManager {
             if (!existingMod.name.startsWith("GENERIC_")) {
                 DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
                     String.format(
-                        "Removing %s from (lvl %s) %s at %s,%s,%s",
+                        "Removing %s from (lvl %s) at %s,%s,%s",
                         existingMod.name,
                         lmEntity.getMobLevel,
-                        lmEntity.nameIfBaby,
                         lmEntity.location.blockX,
                         lmEntity.location.blockY,
                         lmEntity.location.blockZ
@@ -279,6 +288,11 @@ class MobDataManager {
     }
 
     fun getAllAttributeValues(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
+        if (!LevelledMobs.instance.ver.isRunningFolia && Bukkit.isPrimaryThread()){
+            populateAttributeCache(lmEntity, whichOnes)
+            return
+        }
+
         val completableFuture = CompletableFuture<Boolean>()
         val scheduler = SchedulerWrapper(lmEntity.livingEntity){
             populateAttributeCache(lmEntity, whichOnes)
@@ -309,20 +323,21 @@ class MobDataManager {
             multiplier = fineTuning.getItem(addition)
             if (multiplier?.hasFormula == true){
                 isAddition = multiplier.isAddition
-                val formulaStr = LevelledMobs.instance.levelManager.replaceStringPlaceholders(
-                    multiplier.formula!!,
-                    lmEntity,
-                    true,
-                    null,
-                    true
+                val formulaStr = StringReplacer(multiplier.formula!!)
+                formulaStr.replaceIfExists("%level%"){ lmEntity.getMobLevel.toString() }
+                formulaStr.text = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(
+                    formulaStr.text,
+                    lmEntity
                 )
-                val evalResult = evaluateExpression(formulaStr)
+
+                val evalResult = evaluateExpression(formulaStr.text)
                 multiplierValue = evalResult.result.toFloat()
                 if (evalResult.hadError)
-                    Log.war("Error evaluating formula: '$formulaStr', ${evalResult.error}")
+                    Log.war("Error evaluating formula for ${lmEntity.nameIfBaby}: '$formulaStr', ${evalResult.error}")
 
-                DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                    "%${lmEntity.nameIfBaby} (${lmEntity.getMobLevel}):formula: '${multiplier.formula}', result: '$multiplierValue'" }
+                DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity, !evalResult.hadError) {
+                    "lvl: ${lmEntity.getMobLevel}, ${multiplier.addition.name}, formulaPre: '${multiplier.formula}'\nformula: " +
+                            "'$formulaStr', result: '$multiplierValue'" }
             }
             else if (multiplier != null)
                 multiplierValue = multiplier.value
@@ -338,8 +353,8 @@ class MobDataManager {
 
         if (maxLevel == 0f || multiplierValue == 0.0f) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                lmEntity.nameIfBaby +
-                        ", maxLevel was 0 or multiplier was 0; returning 0 for " + addition
+                val msg = if (maxLevel == 0f) "maxLevel was 0" else "multiplier was 0"
+                "$msg; returning 0 for $addition"
             }
             return MultiplierResult(0.0f, isAddition)
         }
@@ -354,18 +369,12 @@ class MobDataManager {
 
         if (fineTuning!!.getUseStacked() || multiplier!!.useStacked) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                String.format(
-                    "%s (%s): using stacked formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel, multiplier!!.value
-                )
+                "lvl: ${lmEntity.getMobLevel}, using stacked formula, multiplier: ${multiplier!!.value}"
             }
             return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                String.format(
-                    "%s (%s): using standard formula, multiplier: %s",
-                    lmEntity.nameIfBaby, lmEntity.getMobLevel, multiplier.value
-                )
+                "lvl: ${lmEntity.getMobLevel}, using standard formula, multiplier: ${multiplier.value}"
             }
 
             multiplierValue = if (attributeMax > 0.0) {

@@ -55,6 +55,7 @@ class DebugManager {
 
     init {
         instance = this
+        maxPlayerDistance = defaultPlayerDistance
         buildExcludedEntityTypes()
     }
 
@@ -113,7 +114,7 @@ class DebugManager {
         fun log(
             debugType: DebugType,
             ruleInfo: RuleInfo,
-            lmEntity: LivingEntityWrapper,
+            lmEntity: LivingEntityWrapper?,
             msg: Supplier<String?>
         ) {
             instance.logInstance(debugType, ruleInfo, lmEntity, null, null, msg.get()!!)
@@ -122,7 +123,7 @@ class DebugManager {
         fun log(
             debugType: DebugType,
             ruleInfo: RuleInfo,
-            lmInterface: LivingEntityInterface,
+            lmInterface: LivingEntityInterface?,
             ruleResult: Boolean,
             msg: Supplier<String?>
         ) {
@@ -131,7 +132,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            lmEntity: LivingEntityWrapper,
+            lmEntity: LivingEntityWrapper?,
             msg: Supplier<String?>
         ) {
             instance.logInstance(debugType, null, lmEntity, null, null, msg.get()!!)
@@ -139,7 +140,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            lmEntity: LivingEntityWrapper,
+            lmEntity: LivingEntityWrapper?,
             result: Boolean,
             msg: Supplier<String?>
         ) {
@@ -148,7 +149,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            entity: Entity,
+            entity: Entity?,
             result: Boolean,
             msg: Supplier<String?>
         ) {
@@ -157,7 +158,7 @@ class DebugManager {
 
         fun log(
             debugType: DebugType,
-            entity: Entity,
+            entity: Entity?,
             msg: Supplier<String?>
         ) {
             instance.logInstance(debugType, null, null, entity, null, msg.get()!!)
@@ -191,7 +192,11 @@ class DebugManager {
             }
         }
 
-        fun endLongMessage(id: UUID, debugType: DebugType){
+        fun endLongMessage(
+            id: UUID,
+            debugType: DebugType,
+            lmEntity: LivingEntityWrapper?
+        ){
             val messages: MutableList<Supplier<String>>?
 
             synchronized(lock){
@@ -203,7 +208,7 @@ class DebugManager {
             for (message in messages)
                 sb.append(message.get())
 
-            log(debugType){ sb.toString() }
+            log(debugType, lmEntity){ sb.toString() }
         }
     }
 
@@ -244,7 +249,7 @@ class DebugManager {
                 var foundMatch = false
                 if (players != null) {
                     for (player in players) {
-                        if (player.world !== useEntity.world) continue
+                        if (player.world != useEntity.world) continue
                         val dist = player.location.distance(useEntity.location)
                         if (dist <= maxPlayerDistance!!) {
                             foundMatch = true
@@ -267,15 +272,34 @@ class DebugManager {
             }
         } // end bypass all
 
-        if (lmInterface != null){
-            msg = if (lmInterface is LivingEntityWrapper)
-                "${lmInterface.nameIfBaby}, $msg"
+        if (ruleInfo != null){
+            msg = if (origMsg.isEmpty())
+                "(${ruleInfo.ruleName})"
             else
-                "${lmInterface.typeName}, $msg"
+                "(${ruleInfo.ruleName}) $msg"
+        }
+
+        if (lmInterface != null){
+            val useName = if (lmInterface is LivingEntityWrapper)
+                lmInterface.nameIfBaby else lmInterface.typeName
+
+            msg = if (msg.isEmpty())
+                "mob: &b$useName&7"
+            else
+                "mob: &b$useName&7, $msg"
+        }
+        else if (entity != null){
+            msg = if (msg.isEmpty())
+                "mob: &b${entity.type}&7"
+            else
+                "mob: &b${entity.type}&7, $msg"
         }
 
         if (ruleResult != null) {
-            msg += ", result: $ruleResult"
+            if (msg.isEmpty())
+                msg = "result: $ruleResult"
+            else
+                msg += ", result: $ruleResult"
         }
 
         if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CONSOLE) {

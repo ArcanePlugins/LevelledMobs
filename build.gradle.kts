@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.0.0"
     id("org.jetbrains.dokka") version "1.9.20"
 }
 
@@ -8,11 +8,11 @@ apply(plugin = "org.jetbrains.dokka")
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+    maven("https://mvnrepository.com/")
 }
 
-dependencies {
-    implementation("io.github.arcaneplugins:LevelledMobs:4.0.0 b6")
+dependencies{
+    compileOnly("io.github.arcaneplugins:LevelledMobs:$version")
 }
 
 subprojects {

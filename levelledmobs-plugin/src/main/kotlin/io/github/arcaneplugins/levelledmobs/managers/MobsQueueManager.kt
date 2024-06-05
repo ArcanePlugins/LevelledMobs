@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.managers
 
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType

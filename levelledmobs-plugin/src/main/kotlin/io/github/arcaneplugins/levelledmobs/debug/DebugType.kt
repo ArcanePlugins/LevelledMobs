@@ -138,5 +138,7 @@ enum class DebugType {
 
     STRATEGY_RESULT,
 
-    RANDOM_NUMBER
+    RANDOM_NUMBER,
+
+    LEVEL_RATIO
 }

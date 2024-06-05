@@ -1,18 +1,22 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = "io.github.arcaneplugins"
 description = description
 version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("idea")
+    id("maven-publish")
 }
 
 apply(plugin = "java")
 apply(plugin = "java-library")
 apply(plugin = "kotlin")
 apply(plugin = "com.github.johnrengelman.shadow")
+apply(plugin = "maven-publish")
 
 idea {
     module {
@@ -22,8 +26,8 @@ idea {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = "1.9.23"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
+    implementation(kotlin("stdlib", version = "2.0.0"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.0.2") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
     //implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
@@ -82,9 +86,10 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         }
     }
 
@@ -110,3 +115,43 @@ tasks {
     }
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = group.toString()
+            version = version.toString()
+            artifactId = artifactId.toString()
+            pom {
+                //name.set("…")
+                description.set("The Ultimate RPG Mob Levelling Solution")
+                url.set("https://github.com/ArcanePlugins/LevelledMobs")
+                licenses {
+                    license {
+                        name.set("GNU")
+                        url.set("https://github.com/ArcanePlugins/LevelledMobs/blob/master/LICENSE.md")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("Stumper66")
+                    }
+                    developer {
+                        name.set("UltimaOath")
+                    }
+                    developer {
+                        name.set("Lokka30")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/ArcanePlugins/LevelledMobs")
+                }
+            }
+
+            from(components["java"])
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+}

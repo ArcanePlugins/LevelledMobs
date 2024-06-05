@@ -10,7 +10,6 @@ import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.lang.reflect.InvocationTargetException
 import java.util.LinkedList
-import java.util.Objects
 import java.util.Optional
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -278,14 +277,14 @@ class NmsNametagSender : NametagSender {
 
         // for whatever reason if you use an empty component,
         // the nametag will get duplicated with each call of this function
-        val comp = Objects.requireNonNull(getTextComponent(""))
+        val comp = getTextComponent("")!!
 
         if (leftText != null) {
             // comp.append(Component);
-            appendComponents(comp!!, getTextComponent(leftText))
+            appendComponents(comp, getTextComponent(leftText))
         }
 
-        appendComponents(comp!!, mobNameComponent)
+        appendComponents(comp, mobNameComponent)
 
         if (rightText != null) {
             // comp.append(Component);

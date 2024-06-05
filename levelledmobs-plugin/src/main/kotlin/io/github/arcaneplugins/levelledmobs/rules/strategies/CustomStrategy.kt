@@ -25,7 +25,7 @@ class CustomStrategy(
         maxLevel: Int
     ): Float {
         if (formula.isNullOrEmpty()){
-            DebugManager.log(DebugType.CUSTOM_STRATEGY) { "no formula supplied, using 1" }
+            DebugManager.log(DebugType.CUSTOM_STRATEGY, lmEntity) { "no formula supplied, using 1" }
             return 1f
         }
 
@@ -36,7 +36,7 @@ class CustomStrategy(
         val evalResult = MobDataManager.evaluateExpression(useFormula)
         val result = evalResult.result
 
-        DebugManager.log(DebugType.CUSTOM_STRATEGY) {
+        DebugManager.log(DebugType.CUSTOM_STRATEGY, lmEntity) {
             "formulaPre: '$formula', formulaPost: '$useFormula', result: $result" }
 
         return result.toFloat()

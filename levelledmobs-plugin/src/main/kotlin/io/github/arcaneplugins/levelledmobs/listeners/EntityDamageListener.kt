@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.EnderDragon
@@ -148,6 +149,7 @@ class EntityDamageListener : Listener {
                 return
             }
             val lmEntity = LivingEntityWrapper.getInstance(aec.source as LivingEntity)
+            MobDataManager.populateAttributeCache(lmEntity)
 
             processRangedDamage2(lmEntity, event)
             lmEntity.free()
@@ -167,6 +169,7 @@ class EntityDamageListener : Listener {
             && event.entity is LivingEntity
         ) {
             val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
+            MobDataManager.populateAttributeCache(lmEntity)
 
             if (lmEntity.isLevelled && lmEntity.main.rulesManager.getRuleCreatureNametagVisbility(
                     lmEntity
@@ -187,6 +190,7 @@ class EntityDamageListener : Listener {
         }
 
         val shooter = LivingEntityWrapper.getInstance(projectile.shooter as LivingEntity)
+        MobDataManager.populateAttributeCache(shooter)
         processRangedDamage2(shooter, event)
 
         shooter.free()
@@ -207,16 +211,14 @@ class EntityDamageListener : Listener {
             shooter.main.mobsQueueManager.addToQueue(QueueItem(shooter, event))
         }
 
+        shooter.rangedDamage = event.damage.toFloat()
         val newDamage: Float =
             event.damage.toFloat() + shooter.main.mobDataManager.getAdditionsForLevel(
                 shooter,
                 Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.damage.toFloat()
             ).amount
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, shooter) {
-            String.format(
-                "&7Source: &b%s&7 (lvl &b%s&7), damage: &b%s&7, new damage: &b%s&7",
-                shooter.nameIfBaby, shooter.getMobLevel, event.damage, newDamage
-            )
+            "lvl: &b${shooter.getMobLevel}&7, damage: &b${event.damage}&7, new damage: &b$newDamage&7"
         }
         event.damage = newDamage.toDouble()
     }
@@ -240,21 +242,14 @@ class EntityDamageListener : Listener {
             return
         }
 
-        DebugManager.log(
-            DebugType.RANGED_DAMAGE_MODIFICATION,
-            livingEntity
-        ) { "Range attack damage modified for &b" + livingEntity.name + "&7:" }
-        DebugManager.log(
-            DebugType.RANGED_DAMAGE_MODIFICATION,
-            livingEntity
-        ) { "Previous guardianDamage: &b" + event.damage }
-
+        val oldDamage = event.damage
         val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
         event.damage = lmEntity.main.mobDataManager.getAdditionsForLevel(
             lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE,
             event.damage.toFloat()
         ).amount.toDouble() // use ranged attack damage value
-        DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, livingEntity) { "New guardianDamage: &b" + event.damage }
+        DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, livingEntity)
+            { "old damage: &b: $oldDamage&r, new damage: &b${event.damage}&r" }
         lmEntity.free()
     }
 }

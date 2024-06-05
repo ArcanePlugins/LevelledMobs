@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -53,6 +54,7 @@ class EntitySpawnListener : Listener{
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
         lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
+        lmEntity.populateShowShowLMNametag()
         MobDataManager.populateAttributeCache(lmEntity, null)
 
         if (event is CreatureSpawnEvent) {
@@ -162,8 +164,8 @@ class EntitySpawnListener : Listener{
         val customDropIdFinal = customDropId
         DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity) {
             String.format(
-                "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
-                event.entityType, useMinLevel, useMaxLevel, generatedLevel,
+                "Spawned mob from LM spawner: minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
+                useMinLevel, useMaxLevel, generatedLevel,
                 (if (customDropIdFinal == null) "" else ", dropid: $customDropIdFinal")
             )
         }
@@ -223,7 +225,7 @@ class EntitySpawnListener : Listener{
             DebugManager.log(
                 DebugType.LM_MOB_SPAWNER,
                 lmEntity
-            ) { "Spawned mob from vanilla spawner: &b" + event.entityType }
+            ) { "Spawned mob from vanilla spawner" }
         } else if (event is CreatureSpawnEvent) {
             if (event.spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER ||
                 event.spawnReason == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT
@@ -270,10 +272,7 @@ class EntitySpawnListener : Listener{
             val levelAssignment = main.levelInterface.generateLevel(lmEntity)
             if (shouldDenyLevel(lmEntity, levelAssignment)) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                    String.format(
-                        "Entity &b%s (lvl %s)&r denied relevelling to &b%s&r due to decrease-level disabled",
-                        lmEntity.nameIfBaby, lmEntity.getMobLevel, levelAssignment
-                    )
+                    "lvl: ${lmEntity.getMobLevel}&r, denied relevelling to &b$levelAssignment&r due to decrease-level disabled"
                 }
             } else {
                 if (lmEntity.reEvaluateLevel && main.rulesManager.isPlayerLevellingEnabled()) {
@@ -299,9 +298,7 @@ class EntitySpawnListener : Listener{
             }
         } else {
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false) {
-                ("Entity &b" + lmEntity.nameIfBaby + "&7 in wo" +
-                        "rld&b " + lmEntity.worldName
-                        + "&7 was not levelled -> levellable state: &b" + levellableState)
+                ("world: &b${lmEntity.worldName}&7 was not levelled -> levellable state: &b${levellableState}")
             }
 
             // Check if the mob is already levelled - if so, remove their level
@@ -373,13 +370,12 @@ class EntitySpawnListener : Listener{
             }
 
             DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity) {
-                ("instanceof CreatureSpawnListener: &b" + event.entityType
-                        + "&7, with spawnReason &b" + event.spawnReason + "&7.")
+                "instanceof CreatureSpawnListener: &b${event.entityType}" +
+                        "&7, with spawnReason &b${event.spawnReason}&7."
             }
         } else if (event is EntitySpawnEvent) {
             DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity) {
-                ("not instanceof CreatureSpawnListener: &b"
-                        + event.entityType)
+                "not instanceof CreatureSpawnListener: &b${event.entityType}"
             }
         }
 
@@ -388,11 +384,39 @@ class EntitySpawnListener : Listener{
 
     companion object{
         fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
-            val main = LevelledMobs.instance
             val onlinePlayerCount = lmEntity.world.players.size
-            val checkDistance = main.helperSettings.getInt(
+            val checkDistance = LevelledMobs.instance.helperSettings.getInt(
                 "async-task-max-blocks-from-player", 100
             )
+
+            if (!LevelledMobs.instance.ver.isRunningFolia && Bukkit.isPrimaryThread()){
+                // run directly if we're in the main thread already
+                updateMobForPlayerLevellingNonAsync(
+                    lmEntity,
+                    checkDistance,
+                    onlinePlayerCount
+                )
+                return
+            }
+
+            val wrapper = SchedulerWrapper(lmEntity.livingEntity){
+                updateMobForPlayerLevellingNonAsync(
+                    lmEntity,
+                    checkDistance,
+                    onlinePlayerCount
+                )
+                lmEntity.free()
+            }
+            lmEntity.inUseCount.getAndIncrement()
+            wrapper.run()
+        }
+
+        private fun updateMobForPlayerLevellingNonAsync(
+            lmEntity: LivingEntityWrapper,
+            checkDistance: Int,
+            onlinePlayerCount: Int
+        ){
+            val main = LevelledMobs.instance
             val playerList: MutableList<Player> = if (onlinePlayerCount <= 10) getPlayersOnServerNearMob(
                 lmEntity.livingEntity,
                 checkDistance
@@ -420,12 +444,10 @@ class EntitySpawnListener : Listener{
                 main.mainCompanion.removeRecentlyJoinedPlayer(closestPlayer)
             }
 
-            synchronized(lmEntity.livingEntity.persistentDataContainer) {
-                lmEntity.pdc.set(
-                    NamespacedKeys.playerLevellingId, PersistentDataType.STRING,
-                    closestPlayer.uniqueId.toString()
-                )
-            }
+            lmEntity.pdc.set(
+                NamespacedKeys.playerLevellingId, PersistentDataType.STRING,
+                closestPlayer.uniqueId.toString()
+            )
 
             lmEntity.playerForLevelling = closestPlayer
             val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(

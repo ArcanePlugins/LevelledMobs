@@ -6,6 +6,7 @@ build-logic/
 LevelledMobs.iml
 build/
 *.iml
+.kotlin/
 
 # Eclipse
 .classpath

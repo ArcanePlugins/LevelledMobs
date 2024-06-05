@@ -292,8 +292,13 @@ class YmlParsingHelper(
 
                 is Map<*, *> -> {
                     val result = MemoryConfiguration()
+                    val tempList = mutableMapOf<String, Any>()
                     @Suppress("UNCHECKED_CAST")
-                    result.addDefaults((obj as MutableMap<String, Any>))
+                    for (entry in obj as MutableMap<Any, Any>){
+                        tempList[entry.key.toString()] = entry.value
+                    }
+
+                    result.addDefaults(tempList)
                     return result.defaultSection
                 }
 
@@ -301,7 +306,7 @@ class YmlParsingHelper(
                     val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
                     Log.war(
                         "$currentPath: couldn't parse Config of type: " + obj.javaClass
-                            .simpleName + ", value: $obj"
+                            .simpleName + ", value: $obj (did you put enough spaces?)"
                     )
                     return null
                 }

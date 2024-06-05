@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
-import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.TreeSet
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.generator.structure.Structure
