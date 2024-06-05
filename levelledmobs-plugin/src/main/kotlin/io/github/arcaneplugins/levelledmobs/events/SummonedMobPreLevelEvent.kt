@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList
  * @author lokka30
  * @since 2.5.0
  */
+@Suppress("unused")
 class SummonedMobPreLevelEvent(
     val entity: LivingEntity,
     var level: Int

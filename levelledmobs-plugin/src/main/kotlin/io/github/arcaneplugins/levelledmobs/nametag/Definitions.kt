@@ -2,12 +2,9 @@ package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo.MinecraftMajorVersion
-import io.github.arcaneplugins.levelledmobs.util.Log
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
-import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
-import java.util.Optional
 import java.util.UUID
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage

@@ -22,7 +22,7 @@ interface LivingEntityInterface {
 
     fun getApplicableRules(): MutableList<RuleInfo>
 
-    var distanceFromSpawn: Double
+    val distanceFromSpawn: Double
 
     var spawnedTimeOfDay: Int
 

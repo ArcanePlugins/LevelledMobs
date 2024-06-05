@@ -3,7 +3,6 @@ package io.github.arcaneplugins.levelledmobs.rules.strategies
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
-import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.concurrent.ThreadLocalRandom
 

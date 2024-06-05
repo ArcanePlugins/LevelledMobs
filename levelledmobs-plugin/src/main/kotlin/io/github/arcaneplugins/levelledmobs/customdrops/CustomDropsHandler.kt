@@ -766,7 +766,7 @@ class CustomDropsHandler {
 
             var newItem = newItemPre.clone()
 
-            processEnchantmentChances(dropBase, newItem)
+            processEnchantmentChances(dropBase, newItem, info)
 
             if (info.deathByFire) {
                 newItem = getCookedVariantOfMeat(dropBase.itemStack!!)
@@ -950,24 +950,23 @@ class CustomDropsHandler {
 
     private fun processEnchantmentChances(
         dropItem: CustomDropItem,
-        itemStack: ItemStack
+        itemStack: ItemStack,
+        info: CustomDropProcessingInfo
     ) {
         if (dropItem.enchantmentChances == null || dropItem.enchantmentChances!!.isEmpty) return
 
         val chances = dropItem.enchantmentChances!!
-        val main = LevelledMobs.instance
-        val debug = StringBuilder()
+        val debugId = DebugManager.startLongDebugMessage()
+        DebugManager.logLongMessage(debugId){ "&7item: &b${itemStack.type.name}&r, enchts" }
         var isFirstEnchantment = true
+
         for (enchantment in chances.items.keys) {
             val opts = chances.options[enchantment]
             var madeAnyChance = false
-            if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-                if (!isFirstEnchantment) debug.append("; ")
-                debug.append(enchantment.key.value()).append(": ")
-            }
+            if (!isFirstEnchantment) DebugManager.logLongMessage(debugId){ "; ${enchantment.key.value()} " }
+            DebugManager.logLongMessage(debugId){ ": ${enchantment.key.value()} " }
 
             if (isFirstEnchantment) isFirstEnchantment = false
-
             var enchantmentNumber = 0
             val levelsList = mutableListOf<Int>()
             levelsList.addAll(chances.items[enchantment]!!.keys)
@@ -982,16 +981,17 @@ class CustomDropsHandler {
                     ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
                 val madeChance = 1.0f - chanceRole < chanceValue
                 if (!madeChance) {
-                    if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-                        if (enchantmentNumber > 1) debug.append(", ")
-                        debug.append("$enchantLevel: &4$chanceRole&r &b($chanceValue)&r")
+                    if (enchantmentNumber > 1) DebugManager.logLongMessage(debugId){ ", " }
+                    DebugManager.logLongMessage(debugId){
+                        "(l-$enchantLevel): &4$chanceRole&r &b($chanceValue)&r"
                     }
                     continue
                 }
 
-                if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-                    if (enchantmentNumber > 1) debug.append(", ")
-                    debug.append("$enchantLevel: &2$chanceRole&r &b($chanceValue)&r")
+                if (enchantmentNumber > 1) DebugManager.logLongMessage(debugId){ ", " }
+                DebugManager.logLongMessage(debugId){
+                    val msg = if (chanceValue >= 1f) "&b($chanceValue chance)" else "&2$chanceRole&r &b($chanceValue)"
+                    "(l-$enchantLevel): $msg&r"
                 }
 
                 if (itemStack.type == Material.ENCHANTED_BOOK) {
@@ -1013,12 +1013,13 @@ class CustomDropsHandler {
                 } else {
                     itemStack.addUnsafeEnchantment(enchantment, opts.defaultLevel!!)
                 }
-                if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) debug.append(", used dflt: &2")
-                    .append(opts.defaultLevel).append("&r")
+
+                DebugManager.logLongMessage(debugId){ ", used dflt: &2${opts.defaultLevel}&r" }
             }
         }
 
-        if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) Log.inf(debug.toString())
+        val debugType = if (info.equippedOnly) DebugType.CUSTOM_EQUIPS else DebugType.CUSTOM_DROPS
+        DebugManager.endLongMessage(debugId, debugType, info.lmEntity)
     }
 
     private fun hasReachedChunkKillLimit(lmEntity: LivingEntityWrapper): Boolean {

@@ -55,6 +55,7 @@ class DebugManager {
 
     init {
         instance = this
+        maxPlayerDistance = defaultPlayerDistance
         buildExcludedEntityTypes()
     }
 
@@ -194,7 +195,7 @@ class DebugManager {
         fun endLongMessage(
             id: UUID,
             debugType: DebugType,
-            lmEntity: LivingEntityWrapper
+            lmEntity: LivingEntityWrapper?
         ){
             val messages: MutableList<Supplier<String>>?
 
