@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>LivingEntityWrapper</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            levelledmobs-plugin
+                    </a>
+            </div>
+            <div class="library-version">
+4.0.3.1            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":levelledmobs-plugin:dokkaHtml/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="levelledmobs-plugin::io.github.arcaneplugins.levelledmobs.wrappers/LivingEntityWrapper///PointingToDeclaration//710695995">
+  <div class="breadcrumbs"><a href="../../../index.html">levelledmobs-plugin</a><span class="delimiter">/</span><a href="../index.html">io.github.arcaneplugins.levelledmobs.wrappers</a><span class="delimiter">/</span><span class="current">LivingEntityWrapper</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Living</span><wbr></wbr><span>Entity</span><wbr></wbr><span><span>Wrapper</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">LivingEntityWrapper</a> : <a href="../-living-entity-wrapper-base/index.html">LivingEntityWrapperBase</a>, <a href="../../io.github.arcaneplugins.levelledmobs/-living-entity-interface/index.html">LivingEntityInterface</a></div><p class="paragraph">A wrapper for the LivingEntity class that provides various common function and settings used for processing rules</p><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">stumper66</p></span><span class="kdoc-tag"><h4 class="">Since</h4><p class="paragraph">3.0.0</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-157997346%2FClasslikes%2F710695995" anchor-label="Companion" id="-157997346%2FClasslikes%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-157997346%2FClasslikes%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1551974660%2FProperties%2F710695995" anchor-label="associatedPlayer" id="-1551974660%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="associated-player.html"><span>associated</span><wbr></wbr><span><span>Player</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1551974660%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="associated-player.html">associatedPlayer</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.entity/Player///PointingToDeclaration/">Player</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-819589409%2FProperties%2F710695995" anchor-label="attributeValuesCache" id="-819589409%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="attribute-values-cache.html"><span>attribute</span><wbr></wbr><span>Values</span><wbr></wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-819589409%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="attribute-values-cache.html">attributeValuesCache</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><span data-unresolved-link="org.bukkit.attribute/Attribute///PointingToDeclaration/">Attribute</span><span class="token punctuation">, </span><span data-unresolved-link="org.bukkit.attribute/AttributeInstance///PointingToDeclaration/">AttributeInstance</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="727645727%2FProperties%2F710695995" anchor-label="chunkKillcount" id="727645727%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="chunk-killcount.html"><span>chunk</span><wbr></wbr><span><span>Killcount</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="727645727%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="chunk-killcount.html">chunkKillcount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1979560781%2FProperties%2F710695995" anchor-label="currentSkyLightLevel" id="1979560781%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-sky-light-level.html"><span>current</span><wbr></wbr><span>Sky</span><wbr></wbr><span>Light</span><wbr></wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1979560781%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="current-sky-light-level.html">currentSkyLightLevel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1876498043%2FProperties%2F710695995" anchor-label="customStrategyResults" id="-1876498043%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="custom-strategy-results.html"><span>custom</span><wbr></wbr><span>Strategy</span><wbr></wbr><span><span>Results</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1876498043%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="custom-strategy-results.html">customStrategyResults</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1765026926%2FProperties%2F710695995" anchor-label="deathCause" id="1765026926%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="death-cause.html"><span>death</span><wbr></wbr><span><span>Cause</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1765026926%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="death-cause.html">deathCause</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.event.entity/EntityDamageEvent.DamageCause///PointingToDeclaration/">EntityDamageEvent.DamageCause</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2054902646%2FProperties%2F710695995" anchor-label="distanceFromSpawn" id="-2054902646%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/distance-from-spawn.html"><span>distance</span><wbr></wbr><span>From</span><wbr></wbr><span><span>Spawn</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2054902646%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="../-living-entity-wrapper-base/distance-from-spawn.html">distanceFromSpawn</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html">Double</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1867321850%2FProperties%2F710695995" anchor-label="entityType" id="-1867321850%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="entity-type.html"><span>entity</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1867321850%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="entity-type.html">entityType</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.entity/EntityType///PointingToDeclaration/">EntityType</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1032756067%2FProperties%2F710695995" anchor-label="fineTuningAttributes" id="-1032756067%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fine-tuning-attributes.html"><span>fine</span><wbr></wbr><span>Tuning</span><wbr></wbr><span><span>Attributes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1032756067%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="fine-tuning-attributes.html">fineTuningAttributes</a><span class="token operator">: </span><a href="../../io.github.arcaneplugins.levelledmobs.rules/-fine-tuning-attributes/index.html">FineTuningAttributes</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="952340093%2FProperties%2F710695995" anchor-label="getMobLevel" id="952340093%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-mob-level.html"><span>get</span><wbr></wbr><span>Mob</span><wbr></wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="952340093%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="get-mob-level.html">getMobLevel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-574363928%2FProperties%2F710695995" anchor-label="hashCode" id="-574363928%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="hash-code.html"><span>hash</span><wbr></wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-574363928%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="hash-code.html">hashCode</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="390627895%2FProperties%2F710695995" anchor-label="hasLockedDropsOverride" id="390627895%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-locked-drops-override.html"><span>has</span><wbr></wbr><span>Locked</span><wbr></wbr><span>Drops</span><wbr></wbr><span><span>Override</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="390627895%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="has-locked-drops-override.html">hasLockedDropsOverride</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1447138573%2FProperties%2F710695995" anchor-label="hasOverridenEntityName" id="1447138573%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-overriden-entity-name.html"><span>has</span><wbr></wbr><span>Overriden</span><wbr></wbr><span>Entity</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1447138573%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="has-overriden-entity-name.html">hasOverridenEntityName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="859899303%2FProperties%2F710695995" anchor-label="inUseCount" id="859899303%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/in-use-count.html"><span>in</span><wbr></wbr><span>Use</span><wbr></wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="859899303%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="../-living-entity-wrapper-base/in-use-count.html">inUseCount</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html">AtomicInteger</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-675179561%2FProperties%2F710695995" anchor-label="isBabyMob" id="-675179561%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-baby-mob.html"><span>is</span><wbr></wbr><span>Baby</span><wbr></wbr><span><span>Mob</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-675179561%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-baby-mob.html">isBabyMob</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-602043662%2FProperties%2F710695995" anchor-label="isLevelled" id="-602043662%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-levelled.html"><span>is</span><wbr></wbr><span><span>Levelled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-602043662%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-levelled.html">isLevelled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-955545307%2FProperties%2F710695995" anchor-label="isMobOfExternalType" id="-955545307%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-mob-of-external-type.html"><span>is</span><wbr></wbr><span>Mob</span><wbr></wbr><span>Of</span><wbr></wbr><span>External</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-955545307%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-mob-of-external-type.html">isMobOfExternalType</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="680718554%2FProperties%2F710695995" anchor-label="isMobTamed" id="680718554%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-mob-tamed.html"><span>is</span><wbr></wbr><span>Mob</span><wbr></wbr><span><span>Tamed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="680718554%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-mob-tamed.html">isMobTamed</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="617679436%2FProperties%2F710695995" anchor-label="isNewlySpawned" id="617679436%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-newly-spawned.html"><span>is</span><wbr></wbr><span>Newly</span><wbr></wbr><span><span>Spawned</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="617679436%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="is-newly-spawned.html">isNewlySpawned</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1277763734%2FProperties%2F710695995" anchor-label="isPopulated" id="1277763734%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/is-populated.html"><span>is</span><wbr></wbr><span><span>Populated</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1277763734%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="../-living-entity-wrapper-base/is-populated.html">isPopulated</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="726012852%2FProperties%2F710695995" anchor-label="isRulesForceAll" id="726012852%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-rules-force-all.html"><span>is</span><wbr></wbr><span>Rules</span><wbr></wbr><span>Force</span><wbr></wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="726012852%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="is-rules-force-all.html">isRulesForceAll</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1454938270%2FProperties%2F710695995" anchor-label="libsDisguiseCache" id="-1454938270%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="libs-disguise-cache.html"><span>libs</span><wbr></wbr><span>Disguise</span><wbr></wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1454938270%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="libs-disguise-cache.html">libsDisguiseCache</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-762626761%2FProperties%2F710695995" anchor-label="livingEntity" id="-762626761%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="living-entity.html"><span>living</span><wbr></wbr><span><span>Entity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-762626761%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="living-entity.html">livingEntity</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.entity/LivingEntity///PointingToDeclaration/">LivingEntity</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1916718913%2FProperties%2F710695995" anchor-label="location" id="-1916718913%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/location.html"><span><span>location</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1916718913%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="../-living-entity-wrapper-base/location.html">location</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit/Location///PointingToDeclaration/">Location</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1664789166%2FProperties%2F710695995" anchor-label="lockedCustomDrops" id="1664789166%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="locked-custom-drops.html"><span>locked</span><wbr></wbr><span>Custom</span><wbr></wbr><span><span>Drops</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1664789166%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="locked-custom-drops.html">lockedCustomDrops</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2040534386%2FProperties%2F710695995" anchor-label="lockedNametag" id="2040534386%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="locked-nametag.html"><span>locked</span><wbr></wbr><span><span>Nametag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2040534386%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="locked-nametag.html">lockedNametag</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1287741022%2FProperties%2F710695995" anchor-label="lockedOverrideName" id="-1287741022%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="locked-override-name.html"><span>locked</span><wbr></wbr><span>Override</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1287741022%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="locked-override-name.html">lockedOverrideName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1439143186%2FProperties%2F710695995" anchor-label="lockEntitySettings" id="1439143186%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="lock-entity-settings.html"><span>lock</span><wbr></wbr><span>Entity</span><wbr></wbr><span><span>Settings</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1439143186%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="lock-entity-settings.html">lockEntitySettings</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="156695227%2FProperties%2F710695995" anchor-label="main" id="156695227%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/main.html"><span><span>main</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="156695227%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="../-living-entity-wrapper-base/main.html">main</a><span class="token operator">: </span><a href="../../io.github.arcaneplugins.levelledmobs/-levelled-mobs/index.html">LevelledMobs</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1043183595%2FProperties%2F710695995" anchor-label="mobExternalTypes" id="-1043183595%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mob-external-types.html"><span>mob</span><wbr></wbr><span>External</span><wbr></wbr><span><span>Types</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1043183595%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="mob-external-types.html">mobExternalTypes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html">MutableSet</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1478761793%2FProperties%2F710695995" anchor-label="mobLevel" id="-1478761793%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mob-level.html"><span>mob</span><wbr></wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1478761793%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="mob-level.html">mobLevel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2037908709%2FProperties%2F710695995" anchor-label="nameIfBaby" id="2037908709%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="name-if-baby.html"><span>name</span><wbr></wbr><span>If</span><wbr></wbr><span><span>Baby</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2037908709%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="name-if-baby.html">nameIfBaby</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-284854707%2FProperties%2F710695995" anchor-label="nbtData" id="-284854707%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="nbt-data.html"><span>nbt</span><wbr></wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-284854707%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="nbt-data.html">nbtData</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1497249351%2FProperties%2F710695995" anchor-label="overridenEntityName" id="1497249351%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="overriden-entity-name.html"><span>overriden</span><wbr></wbr><span>Entity</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1497249351%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="overriden-entity-name.html">overridenEntityName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2017842424%2FProperties%2F710695995" anchor-label="pdc" id="-2017842424%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pdc.html"><span><span>pdc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2017842424%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="pdc.html">pdc</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.persistence/PersistentDataContainer///PointingToDeclaration/">PersistentDataContainer</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1405122801%2FProperties%2F710695995" anchor-label="pendingPlayerIdToSet" id="-1405122801%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pending-player-id-to-set.html"><span>pending</span><wbr></wbr><span>Player</span><wbr></wbr><span>Id</span><wbr></wbr><span>To</span><wbr></wbr><span><span>Set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1405122801%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="pending-player-id-to-set.html">pendingPlayerIdToSet</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1313951951%2FProperties%2F710695995" anchor-label="playerForLevelling" id="-1313951951%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="player-for-levelling.html"><span>player</span><wbr></wbr><span>For</span><wbr></wbr><span><span>Levelling</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1313951951%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="player-for-levelling.html">playerForLevelling</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.entity/Player///PointingToDeclaration/">Player</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1132733579%2FProperties%2F710695995" anchor-label="playerLevellingAllowDecrease" id="-1132733579%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="player-levelling-allow-decrease.html"><span>player</span><wbr></wbr><span>Levelling</span><wbr></wbr><span>Allow</span><wbr></wbr><span><span>Decrease</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1132733579%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="player-levelling-allow-decrease.html">playerLevellingAllowDecrease</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1653370002%2FProperties%2F710695995" anchor-label="playersNeedingNametagCooldownUpdate" id="-1653370002%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="players-needing-nametag-cooldown-update.html"><span>players</span><wbr></wbr><span>Needing</span><wbr></wbr><span>Nametag</span><wbr></wbr><span>Cooldown</span><wbr></wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1653370002%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="players-needing-nametag-cooldown-update.html">playersNeedingNametagCooldownUpdate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html">MutableSet</a><span class="token operator">&lt;</span><span data-unresolved-link="org.bukkit.entity/Player///PointingToDeclaration/">Player</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1253448292%2FProperties%2F710695995" anchor-label="prevChanceRuleResults" id="1253448292%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prev-chance-rule-results.html"><span>prev</span><wbr></wbr><span>Chance</span><wbr></wbr><span>Rule</span><wbr></wbr><span><span>Results</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1253448292%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="prev-chance-rule-results.html">prevChanceRuleResults</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="483867469%2FProperties%2F710695995" anchor-label="rangedDamage" id="483867469%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="ranged-damage.html"><span>ranged</span><wbr></wbr><span><span>Damage</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="483867469%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="ranged-damage.html">rangedDamage</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-996356577%2FProperties%2F710695995" anchor-label="reEvaluateLevel" id="-996356577%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="re-evaluate-level.html"><span>re</span><wbr></wbr><span>Evaluate</span><wbr></wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-996356577%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="re-evaluate-level.html">reEvaluateLevel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-812432455%2FProperties%2F710695995" anchor-label="shouldShowLMNametag" id="-812432455%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="should-show-l-m-nametag.html"><span>should</span><wbr></wbr><span>Show</span><wbr></wbr><span><span>LMNametag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-812432455%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="should-show-l-m-nametag.html">shouldShowLMNametag</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1029630072%2FProperties%2F710695995" anchor-label="skylightLevel" id="-1029630072%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="skylight-level.html"><span>skylight</span><wbr></wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1029630072%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="skylight-level.html">skylightLevel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1505331507%2FProperties%2F710695995" anchor-label="sourceSpawnEggName" id="1505331507%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source-spawn-egg-name.html"><span>source</span><wbr></wbr><span>Spawn</span><wbr></wbr><span>Egg</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1505331507%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="source-spawn-egg-name.html">sourceSpawnEggName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="624339359%2FProperties%2F710695995" anchor-label="sourceSpawnerName" id="624339359%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source-spawner-name.html"><span>source</span><wbr></wbr><span>Spawner</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="624339359%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="source-spawner-name.html">sourceSpawnerName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2126085339%2FProperties%2F710695995" anchor-label="spawnedTimeOfDay" id="-2126085339%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spawned-time-of-day.html"><span>spawned</span><wbr></wbr><span>Time</span><wbr></wbr><span>Of</span><wbr></wbr><span><span>Day</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2126085339%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="spawned-time-of-day.html">spawnedTimeOfDay</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="912154200%2FProperties%2F710695995" anchor-label="spawnReason" id="912154200%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spawn-reason.html"><span>spawn</span><wbr></wbr><span><span>Reason</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="912154200%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="spawn-reason.html">spawnReason</a><span class="token operator">: </span><a href="../../io.github.arcaneplugins.levelledmobs.enums/-levelled-mob-spawn-reason/index.html">LevelledMobSpawnReason</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1077291636%2FProperties%2F710695995" anchor-label="strategyResults" id="1077291636%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="strategy-results.html"><span>strategy</span><wbr></wbr><span><span>Results</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1077291636%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="strategy-results.html">strategyResults</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="../../io.github.arcaneplugins.levelledmobs.rules.strategies/-strategy-type/index.html">StrategyType</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1602488674%2FProperties%2F710695995" anchor-label="summonedLevel" id="1602488674%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/summoned-level.html"><span>summoned</span><wbr></wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1602488674%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="../-living-entity-wrapper-base/summoned-level.html">summonedLevel</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="551328814%2FProperties%2F710695995" anchor-label="summonedSender" id="551328814%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="summoned-sender.html"><span>summoned</span><wbr></wbr><span><span>Sender</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="551328814%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="summoned-sender.html">summonedSender</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit.command/CommandSender///PointingToDeclaration/">CommandSender</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-427796130%2FProperties%2F710695995" anchor-label="typeName" id="-427796130%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="type-name.html"><span>type</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-427796130%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="type-name.html">typeName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="728171363%2FProperties%2F710695995" anchor-label="wasPreviouslyLevelled" id="728171363%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="was-previously-levelled.html"><span>was</span><wbr></wbr><span>Previously</span><wbr></wbr><span><span>Levelled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="728171363%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="was-previously-levelled.html">wasPreviouslyLevelled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-864875538%2FProperties%2F710695995" anchor-label="wasSummoned" id="-864875538%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="was-summoned.html"><span>was</span><wbr></wbr><span><span>Summoned</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-864875538%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="was-summoned.html">wasSummoned</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="106821620%2FProperties%2F710695995" anchor-label="wgRegionName" id="106821620%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="wg-region-name.html"><span>wg</span><wbr></wbr><span>Region</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="106821620%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="wg-region-name.html">wgRegionName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1325664076%2FProperties%2F710695995" anchor-label="world" id="-1325664076%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/world.html"><span><span>world</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1325664076%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="../-living-entity-wrapper-base/world.html">world</a><span class="token operator">: </span><span data-unresolved-link="org.bukkit/World///PointingToDeclaration/">World</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="605551849%2FProperties%2F710695995" anchor-label="worldName" id="605551849%2FProperties%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-living-entity-wrapper-base/world-name.html"><span>world</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="605551849%2FProperties%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="../-living-entity-wrapper-base/world-name.html">worldName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="530992893%2FFunctions%2F710695995" anchor-label="clearEntityData" id="530992893%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-entity-data.html"><span>clear</span><wbr></wbr><span>Entity</span><wbr></wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="530992893%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="clear-entity-data.html"><span class="token function">clearEntityData</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1275761481%2FFunctions%2F710695995" anchor-label="free" id="-1275761481%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="free.html"><span><span>free</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1275761481%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="free.html"><span class="token function">free</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1117512558%2FFunctions%2F710695995" anchor-label="getApplicableGroups" id="1117512558%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-applicable-groups.html"><span>get</span><wbr></wbr><span>Applicable</span><wbr></wbr><span><span>Groups</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1117512558%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-applicable-groups.html"><span class="token function">getApplicableGroups</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html">MutableSet</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1515484929%2FFunctions%2F710695995" anchor-label="getApplicableRules" id="1515484929%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-applicable-rules.html"><span>get</span><wbr></wbr><span>Applicable</span><wbr></wbr><span><span>Rules</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1515484929%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="get-applicable-rules.html"><span class="token function">getApplicableRules</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><a href="../../io.github.arcaneplugins.levelledmobs.rules/-rule-info/index.html">RuleInfo</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1211056942%2FFunctions%2F710695995" anchor-label="getNametagCooldownTime" id="-1211056942%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-nametag-cooldown-time.html"><span>get</span><wbr></wbr><span>Nametag</span><wbr></wbr><span>Cooldown</span><wbr></wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1211056942%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-nametag-cooldown-time.html"><span class="token function">getNametagCooldownTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1730046736%2FFunctions%2F710695995" anchor-label="invalidateCache" id="-1730046736%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="invalidate-cache.html"><span>invalidate</span><wbr></wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1730046736%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="invalidate-cache.html"><span class="token function">invalidateCache</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1048041101%2FFunctions%2F710695995" anchor-label="populateShowShowLMNametag" id="1048041101%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="populate-show-show-l-m-nametag.html"><span>populate</span><wbr></wbr><span>Show</span><wbr></wbr><span>Show</span><wbr></wbr><span><span>LMNametag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1048041101%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="populate-show-show-l-m-nametag.html"><span class="token function">populateShowShowLMNametag</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1011609732%2FFunctions%2F710695995" anchor-label="setMobExternalType" id="1011609732%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-mob-external-type.html"><span>set</span><wbr></wbr><span>Mob</span><wbr></wbr><span>External</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1011609732%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-mob-external-type.html"><span class="token function">setMobExternalType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">externalType<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-835163262%2FFunctions%2F710695995" anchor-label="setMobPrelevel" id="-835163262%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-mob-prelevel.html"><span>set</span><wbr></wbr><span>Mob</span><wbr></wbr><span><span>Prelevel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-835163262%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-mob-prelevel.html"><span class="token function">setMobPrelevel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">level<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1186563367%2FFunctions%2F710695995" anchor-label="setSpawnReason" id="1186563367%2FFunctions%2F710695995" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":levelledmobs-plugin:dokkaHtml/main" data-filterable-set=":levelledmobs-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-spawn-reason.html"><span>set</span><wbr></wbr><span>Spawn</span><wbr></wbr><span><span>Reason</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1186563367%2FFunctions%2F710695995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":levelledmobs-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-spawn-reason.html"><span class="token function">setSpawnReason</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">spawnReason<span class="token operator">: </span><a href="../../io.github.arcaneplugins.levelledmobs.enums/-levelled-mob-spawn-reason/index.html">LevelledMobSpawnReason</a><span class="token punctuation">, </span></span><span class="parameter ">doForce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

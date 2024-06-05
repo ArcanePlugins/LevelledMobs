@@ -3,3 +3,7 @@
 /target/
 /.git/
 /.idea/
+/.gradle/
+/build/
+/levelledmobs-api/
+/levelledmobs-plugin/
