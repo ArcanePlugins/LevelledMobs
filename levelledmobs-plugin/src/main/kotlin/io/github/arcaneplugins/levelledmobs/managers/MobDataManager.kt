@@ -357,7 +357,7 @@ class MobDataManager {
 
         if (multiplier?.hasFormula == true)
             return MultiplierResult(multiplierValue, isAddition)
-        
+
         if ((addition == Addition.CUSTOM_ITEM_DROP || addition == Addition.CUSTOM_XP_DROP)
             && multiplierValue == -1f
         ) return MultiplierResult(Float.MIN_VALUE, isAddition)

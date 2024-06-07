@@ -960,8 +960,8 @@ class CustomDropsHandler {
         for (enchantment in chances.items.keys) {
             val opts = chances.options[enchantment]
             var madeAnyChance = false
-            if (!isFirstEnchantment) DebugManager.logLongMessage(debugId){ "; ${enchantment.key.value()} " }
-            DebugManager.logLongMessage(debugId){ ": ${enchantment.key.value()} " }
+            if (!isFirstEnchantment) DebugManager.logLongMessage(debugId){ "; " }
+            DebugManager.logLongMessage(debugId){ "\n  ${enchantment.key.value()} " }
 
             if (isFirstEnchantment) isFirstEnchantment = false
             var enchantmentNumber = 0
