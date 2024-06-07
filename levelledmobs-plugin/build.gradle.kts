@@ -17,6 +17,7 @@ apply(plugin = "java-library")
 apply(plugin = "kotlin")
 apply(plugin = "com.github.johnrengelman.shadow")
 apply(plugin = "maven-publish")
+apply(plugin = "org.jetbrains.dokka")
 
 idea {
     module {

@@ -40,8 +40,6 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -71,6 +69,7 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 /**
@@ -496,13 +495,11 @@ class LevelManager : LevelInterface2 {
                 return
             }
 
-            val addition = BigDecimal.valueOf(additionValue.toDouble())
-                .setScale(0, RoundingMode.HALF_DOWN).intValueExact() // truncate double to int
-            additionUsed = addition
+            additionUsed = additionValue.roundToInt()
 
             // Modify current drops
             for (currentDrop in dropsToMultiply) {
-                multiplyDrop(lmEntity, currentDrop, addition.toDouble(), false)
+                multiplyDrop(lmEntity, currentDrop, additionValue)
             }
         }
 
@@ -526,28 +523,22 @@ class LevelManager : LevelInterface2 {
     fun multiplyDrop(
         lmEntity: LivingEntityWrapper,
         currentDrop: ItemStack,
-        addition: Double,
-        isCustomDrop: Boolean
+        addition: Float,
     ) {
-        val oldAmount = currentDrop.amount
-
-        if (isCustomDrop || LevelledMobs.instance.mobDataManager.isLevelledDropManaged(
-                lmEntity.livingEntity.type, currentDrop.type
-            )
-        ) {
-            var useAmount = Math.round(currentDrop.amount + (currentDrop.amount.toDouble() * addition)).toInt()
-            if (useAmount > currentDrop.maxStackSize) {
-                useAmount = currentDrop.maxStackSize
-            }
-            currentDrop.amount = useAmount
-            DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-                String.format(
-                    "&7Drop: &b%s&7, old amount: &b%s&7, addition value: &b%s&7, new amount: &b%s&7.",
-                    currentDrop.type, oldAmount, addition, currentDrop.amount
-                )
-            }
-        } else {
+        if (LevelledMobs.instance.mobDataManager.isLevelledDropManaged(currentDrop.type)) {
             DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) { "&7Item was unmanaged." }
+            return
+        }
+
+        val oldAmount = currentDrop.amount
+        var useAmount = (currentDrop.amount + (currentDrop.amount.toFloat() * addition)).roundToInt()
+        if (useAmount > currentDrop.maxStackSize) {
+            useAmount = currentDrop.maxStackSize
+        }
+        currentDrop.amount = useAmount
+        DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
+            "&7Drop: &b${currentDrop.type}&7, old amount: &b$oldAmount&7, addition value: &b$addition&7, " +
+                    "new amount: &b${currentDrop.amount}&7."
         }
     }
 
