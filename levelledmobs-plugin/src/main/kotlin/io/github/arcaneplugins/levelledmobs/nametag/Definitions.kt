@@ -218,11 +218,13 @@ class Definitions{
                 "net.minecraft.network.syncher.SyncedDataHolder"
             )
 
+            // net.minecraft.network.syncher.SynchedEntityData$DataValue ->
             this.clazzDataWatcherValue = Class.forName(
                 "net.minecraft.network.syncher.DataWatcher\$c"
             )
         }
 
+        // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
         this.clazzDataWatcherItem = Class.forName(
             "net.minecraft.network.syncher.DataWatcher\$Item"
         )
@@ -322,7 +324,6 @@ class Definitions{
         //     net.minecraft.network.chat.MutableComponent empty()
         this.methodEmptyComponent = clazzIChatBaseComponent!!.getDeclaredMethod(methodName)
 
-        // 1.18 doesn't have #empty(), instead use #nullToEmpty()
         // net.minecraft.network.chat.Component ->
         //    net.minecraft.network.chat.Component nullToEmpty(java.lang.String) -> a
         this.methodTextComponent = clazzIChatBaseComponent!!.getDeclaredMethod("a", String::class.java)
@@ -360,6 +361,9 @@ class Definitions{
         var methodName: String
 
         methodName = when (ver.majorVersionEnum) {
+            MinecraftMajorVersion.V1_21 -> {
+                "ar"
+            }
             MinecraftMajorVersion.V1_20 -> {
                 if (ver.revision >= 5) {
                     // 1.20.5+
@@ -403,27 +407,33 @@ class Definitions{
         // # {"fileName":"ChunkStatusUpdateListener.java","id":"sourceFile"}
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
-        if (ver.minecraftVersion >= 1.20) {
-            methodName =
-                if (ver.revision >= 5) {
-                    // 1.20.5+
-                    "al"
-                }
-                else if (ver.revision >= 3) {
-                    // 1.20.3 - .4
-                    "aj"
+        when (ver.majorVersionEnum) {
+            MinecraftMajorVersion.V1_21 -> {
+                methodName = "an"
+            }
+            MinecraftMajorVersion.V1_20 -> {
+                methodName =
+                    if (ver.revision >= 5) {
+                        // 1.20.5+
+                        "al"
+                    }
+                    else if (ver.revision >= 3) {
+                        // 1.20.3 - .4
+                        "aj"
+                    } else {
+                        if (ver.revision >= 2) "ah" else "af"
+                    }
+            }
+            else -> {
+                methodName = if (ver.revision >= 4) {
+                    "af"
+                } else if (this.isOneNinteenThreeOrNewer) {
+                    // 1.19.3
+                    "ah"
                 } else {
-                    if (ver.revision >= 2) "ah" else "af"
+                    // 1.18 - 1.19.2
+                    "ae"
                 }
-        } else {
-            methodName = if (ver.revision >= 4) {
-                "af"
-            } else if (this.isOneNinteenThreeOrNewer) {
-                // 1.19.3
-                "ah"
-            } else {
-                // 1.18 - 1.19.2
-                "ae"
             }
         }
 
@@ -452,7 +462,8 @@ class Definitions{
 
         //    void send(net.minecraft.network.protocol.Packet) ->
         methodName =
-            if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 2) {
+            if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 2 ||
+                ver.minorVersion >= 21) {
                 "b"
             } else {
                 "a"
@@ -484,6 +495,7 @@ class Definitions{
             )
         }
 
+        // # {"fileName":"EntityType.java","id":"sourceFile"}
         // java.util.Optional byString(java.lang.String) ->
         this.methodEntityTypeByString = clazzEntityTypes!!.getDeclaredMethod("a", String::class.java)
 
@@ -505,7 +517,7 @@ class Definitions{
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            methodName = if (ver.minorVersion >= 20 && ver.revision <= 4) "c" else "b"
+            methodName = if (ver.minorVersion == 20 && ver.revision <= 4 || ver.minorVersion == 19) "c" else "b"
             // 1.19, 1.20.5 = b, 1.20 - 1.20.4 = c
 
             this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(
@@ -531,12 +543,15 @@ class Definitions{
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
-        val fieldName = if (ver.minecraftVersion >= 1.20) "c" else "b"
+        val fieldName = if (ver.minorVersion >= 20) "c" else "b"
         this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
         if (ver.minorVersion >= 19) {
             // net.minecraft.network.syncher.SynchedEntityData ->
+            // pre 1.20.5:
             //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
+            // 1.20.5+:
+            //    net.minecraft.network.syncher.SynchedEntityData$DataItem[] itemsById ->
             // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
             val methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"

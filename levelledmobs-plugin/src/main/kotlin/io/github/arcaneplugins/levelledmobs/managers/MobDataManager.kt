@@ -139,19 +139,15 @@ class MobDataManager {
     }
 
     fun isLevelledDropManaged(
-        entityType: EntityType,
         material: Material
     ): Boolean {
         // Head drops
         val main = LevelledMobs.instance
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!main.helperSettings.getBoolean( "mobs-multiply-head-drops")) {
-                return false
-            }
+            return main.helperSettings.getBoolean( "mobs-multiply-head-drops")
         }
 
-        // Check list
-        return main.dropsCfg.getStringList(entityType.toString()).contains(material.toString())
+        return false
     }
 
     fun prepareSetAttributes(
@@ -362,19 +358,18 @@ class MobDataManager {
         if (multiplier?.hasFormula == true)
             return MultiplierResult(multiplierValue, isAddition)
 
-        //val multiplierValue: Float = multiplier.value
         if ((addition == Addition.CUSTOM_ITEM_DROP || addition == Addition.CUSTOM_XP_DROP)
             && multiplierValue == -1f
         ) return MultiplierResult(Float.MIN_VALUE, isAddition)
 
         if (fineTuning!!.getUseStacked() || multiplier!!.useStacked) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "lvl: ${lmEntity.getMobLevel}, using stacked formula, multiplier: ${multiplier!!.value}"
+                "lvl: ${lmEntity.getMobLevel}, attrib: ${addition.name}, stkd formula, ${multiplier!!.value}"
             }
             return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "lvl: ${lmEntity.getMobLevel}, using standard formula, multiplier: ${multiplier.value}"
+                "lvl: ${lmEntity.getMobLevel}, attrib: ${addition.name}, std formula, ${multiplier.value}"
             }
 
             multiplierValue = if (attributeMax > 0.0) {

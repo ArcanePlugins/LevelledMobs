@@ -236,14 +236,14 @@ presets:
     name: 'Nametag - Minimized'
     settings:
       nametag: ' &f%displayname%&8 &8&l༻ %health-indicator-color%%entity-health-rounded%&fꓧꓑ '
-      creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
+      creature-death-nametag: '&f%displayname% %tiered%%heart-symbol%'
 
   nametag-disabled:
     name: 'Nametag - Disabled'
     settings:
       nametag: disabled
       nametag-visibility-method: [ 'DISABLED' ]
-      creature-death-nametag: '&f%displayname% %tiered%%heart_symbol%'
+      creature-death-nametag: '&f%displayname% %tiered%%heart-symbol%'
 
   custom-death-messages:
     name: 'Custom Death Messages'

@@ -24,7 +24,7 @@ class CustomDropProcessingInfo {
     var mobKiller: Player? = null
     val playerLevelVariableCache = mutableMapOf<String, Int>()
     var deathCause: DeathCause? = null
-    var addition = 0.0
+    var addition = 0f
     var isSpawner = false
     var equippedOnly = false
     var deathByFire = false

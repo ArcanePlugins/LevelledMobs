@@ -78,8 +78,6 @@ class LevelledMobs : JavaPlugin() {
     // Configuration
     var messagesCfg = YamlConfiguration()
         internal set
-    var dropsCfg = YamlConfiguration()
-        internal set
     val configUtils = ConfigUtils()
 
     // Misc

@@ -16,8 +16,6 @@ import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.Locale
 import java.util.TreeMap
 import java.util.UUID
@@ -178,10 +176,9 @@ class CustomDropsHandler {
             )
         }
 
-        processingInfo.addition = BigDecimal.valueOf(
-            main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount.toDouble()
+        processingInfo.addition = (
+            main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount
         )
-            .setScale(0, RoundingMode.HALF_DOWN).intValueExact().toDouble() // truncate double to int
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRuleCheckIfNoDropMultiplierEntitiy(
             lmEntity
@@ -775,7 +772,7 @@ class CustomDropsHandler {
             if (newDropAmount > 1) newItem.amount = newDropAmount
 
             if (!dropBase.noMultiplier && !info.doNotMultiplyDrops) {
-                main.levelManager.multiplyDrop(info.lmEntity!!, newItem, info.addition, true)
+                main.levelManager.multiplyDrop(info.lmEntity!!, newItem, info.addition)
                 newDropAmount = newItem.amount
             } else if (newDropAmount > newItem.maxStackSize) {
                 newDropAmount = newItem.maxStackSize
@@ -963,8 +960,8 @@ class CustomDropsHandler {
         for (enchantment in chances.items.keys) {
             val opts = chances.options[enchantment]
             var madeAnyChance = false
-            if (!isFirstEnchantment) DebugManager.logLongMessage(debugId){ "; ${enchantment.key.value()} " }
-            DebugManager.logLongMessage(debugId){ ": ${enchantment.key.value()} " }
+            if (!isFirstEnchantment) DebugManager.logLongMessage(debugId){ "; " }
+            DebugManager.logLongMessage(debugId){ "\n  ${enchantment.key.value()} " }
 
             if (isFirstEnchantment) isFirstEnchantment = false
             var enchantmentNumber = 0
@@ -1018,8 +1015,7 @@ class CustomDropsHandler {
             }
         }
 
-        val debugType = if (info.equippedOnly) DebugType.CUSTOM_EQUIPS else DebugType.CUSTOM_DROPS
-        DebugManager.endLongMessage(debugId, debugType, info.lmEntity)
+        DebugManager.endLongMessage(debugId, DebugType.ENCHANTMENT_CHANCES, info.lmEntity)
     }
 
     private fun hasReachedChunkKillLimit(lmEntity: LivingEntityWrapper): Boolean {

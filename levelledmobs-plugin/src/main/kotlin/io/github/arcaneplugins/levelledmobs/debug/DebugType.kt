@@ -140,5 +140,7 @@ enum class DebugType {
 
     RANDOM_NUMBER,
 
-    LEVEL_RATIO
+    LEVEL_RATIO,
+
+    ENCHANTMENT_CHANCES
 }

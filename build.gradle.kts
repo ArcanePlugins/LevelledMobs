@@ -4,7 +4,6 @@ plugins {
 }
 
 apply(plugin = "kotlin")
-apply(plugin = "org.jetbrains.dokka")
 
 repositories {
     mavenCentral()
@@ -12,7 +11,7 @@ repositories {
 }
 
 dependencies{
-    compileOnly("io.github.arcaneplugins:LevelledMobs:$version")
+    compileOnly("io.github.arcaneplugins:levelledmobs-plugin:$version")
 }
 
 subprojects {
