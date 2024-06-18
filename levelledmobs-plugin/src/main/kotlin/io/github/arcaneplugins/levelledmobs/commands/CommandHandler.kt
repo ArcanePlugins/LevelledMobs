@@ -23,6 +23,7 @@ object CommandHandler {
                     val commandCfg = CommandAPIBukkitConfig(LevelledMobs.instance)
                         .silentLogs(true)
                         .verboseOutput(false)
+                        .skipReloadDatapacks(true)
                     CommandAPI.onLoad(commandCfg)
                     registerCommands()
                 }

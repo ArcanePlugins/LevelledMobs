@@ -517,7 +517,7 @@ class Definitions{
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            methodName = if (ver.minorVersion == 20 && ver.revision <= 4 || ver.minorVersion >= 21) "c" else "b"
+            methodName = if (ver.minorVersion == 20 && ver.revision <= 4) "c" else "b"
             // 1.19, 1.20.5 = b, 1.20 - 1.20.4+ = c
 
             this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(

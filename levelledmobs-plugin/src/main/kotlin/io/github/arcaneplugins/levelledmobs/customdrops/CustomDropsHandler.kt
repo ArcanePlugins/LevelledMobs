@@ -201,10 +201,9 @@ class CustomDropsHandler {
                 "&7Custom drops for &b${lmEntity.nameIfBaby} $mobLevel"
             )
 
-            processingInfo.addDebugMessage(
-                DebugType.MOB_GROUPS,
+            DebugManager.log(DebugType.MOB_GROUPS, lmEntity){
                 "&8- &7Groups: &b" + lmEntity.getApplicableGroups().joinToString("&7, &b") + "&7."
-            )
+            }
         }
 
         val groupsList = mutableListOf<String>()
