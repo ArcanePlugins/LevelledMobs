@@ -69,8 +69,9 @@ class ExternalPluginDetection(
         if (namespaceKey == null){
             namespaceKey = NamespacedKey(cachedPlugin!!, keyName)
             cachedMamespaceKey = namespaceKey
-            keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING)
         }
+
+        keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING)
 
         when (requirement){
             RequirementTypes.EXISTS -> { return keyExists }
@@ -149,6 +150,11 @@ class ExternalPluginDetection(
             if (result.isEmpty()) return ""
             return result.first().value().toString()
         }
+    }
+
+    fun clearDetectionCache(){
+        this.cachedPlugin = null
+        this.cachedMamespaceKey = null
     }
 
     override fun toString(): String {
