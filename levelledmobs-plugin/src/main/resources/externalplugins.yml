@@ -62,6 +62,7 @@ combat-pets:
   plugin-name: 'CombatPets'
   key-name: 'attribute.health_regeneration_speed'
   key-type: 'PDC'
+  key-valuetype: 'double'
   requirement: 'exists'
 #  placeholder-name: '%combat-pets-name%'
 
