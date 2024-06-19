@@ -483,7 +483,7 @@ class LevelManager : LevelInterface2 {
 
         if (!doNotMultiplyDrops && dropsToMultiply.isNotEmpty()) {
             // Get currentDrops added per level valu
-            val additionValue: Float = main.mobDataManager.getAdditionsForLevel(
+            val additionValue = main.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_ITEM_DROP, 2.0f
             ).amount
@@ -496,10 +496,26 @@ class LevelManager : LevelInterface2 {
             }
 
             additionUsed = additionValue.roundToInt()
+            val itemsToNotMultiply = mutableListOf<ItemStack>()
+
+            if (lmEntity.livingEntity.equipment != null){
+                // make sure we don't multiply anything it has picked up
+                itemsToNotMultiply.addAll(removePickedUpItems(lmEntity, dropsToMultiply))
+            }
 
             // Modify current drops
             for (currentDrop in dropsToMultiply) {
-                multiplyDrop(lmEntity, currentDrop, additionValue)
+                var skipItem = false
+                val iterator = itemsToNotMultiply.iterator()
+                while (iterator.hasNext()){
+                    val itemToSkip = iterator.next()
+                    if (itemToSkip.isSimilar(currentDrop)){
+                        skipItem = true
+                        iterator.remove()
+                    }
+                }
+
+                if (!skipItem) multiplyDrop(lmEntity, currentDrop, additionValue)
             }
         }
 
@@ -582,6 +598,31 @@ class LevelManager : LevelInterface2 {
         }
 
         return results
+    }
+
+    private fun removePickedUpItems(
+        lmEntity: LivingEntityWrapper,
+        drops: MutableList<ItemStack>
+    ): MutableList<ItemStack>{
+        val removedItems = mutableListOf<ItemStack>()
+        val pickedUpItems = PickedUpEquipment(lmEntity).getMobPickedUpItems()
+        if (pickedUpItems.isEmpty())
+            return removedItems
+
+        val iteratorPickedUpItems = pickedUpItems.listIterator()
+
+        while (iteratorPickedUpItems.hasNext()) {
+            val foundItem = iteratorPickedUpItems.next()
+            for (mobItem in drops) {
+                if (mobItem.isSimilar(foundItem)) {
+                    iteratorPickedUpItems.remove()
+                    removedItems.add(mobItem)
+                    break
+                }
+            }
+        }
+
+        return removedItems
     }
 
     fun removeVanillaDrops(

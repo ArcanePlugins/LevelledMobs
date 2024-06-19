@@ -31,7 +31,7 @@ class PickedUpEquipment(
         this.itemStack = itemStack
         this.ee = lmEntity.livingEntity.equipment
 
-        val slotNumber: Int = getItemEquippedSlot()
+        val slotNumber = getItemEquippedSlot()
         if (slotNumber >= 0) {
             storeItemInPDC(slotNumber)
         }
@@ -52,7 +52,7 @@ class PickedUpEquipment(
                 continue
             }
 
-            val bytes: ByteArray = hexToByte(itemsHex)
+            val bytes = hexToByte(itemsHex)
             try {
                 results.add(ItemStack.deserializeBytes(bytes))
             } catch (e: Exception) {

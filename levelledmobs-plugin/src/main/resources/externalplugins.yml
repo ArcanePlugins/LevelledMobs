@@ -57,6 +57,21 @@ eco-bosses:
   requirement: 'exists'
 #  placeholder-name: '%eco-bosses-name%'
 
+combat-pets:
+  friendly-name: 'combat-pets'
+  plugin-name: 'CombatPets'
+  key-name: 'attribute.health_regeneration_speed'
+  key-type: 'PDC'
+  requirement: 'exists'
+#  placeholder-name: '%combat-pets-name%'
+
+Deadly-Disasters:
+  friendly-name: 'Deadly-Disasters'
+  plugin-name: 'DeadlyDisasters'
+  key-name: 'customentity'
+  key-type: 'PDC'
+  requirement: 'exists'
+
 #
 #   ---------------  -  ------------------------------
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point

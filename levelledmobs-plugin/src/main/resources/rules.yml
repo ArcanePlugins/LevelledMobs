@@ -485,7 +485,7 @@ custom-rules:
     use-preset: challenge-vanilla, nametag-minimized
     conditions:
       external-plugins:
-        included-list: ['eco-bosses', 'mythic-mobs', 'elite-mobs', 'infernal-mobs', 'citizens', 'shop-keepers', 'simple-pets', 'elite-bosses', 'blood-night']
+        included-list: ['eco-bosses', 'mythic-mobs', 'elite-mobs', 'infernal-mobs', 'citizens', 'shop-keepers', 'simple-pets', 'elite-bosses', 'blood-night', 'combat-pets', 'Deadly-Disasters']
         #excluded-list: ['*']
 
 
