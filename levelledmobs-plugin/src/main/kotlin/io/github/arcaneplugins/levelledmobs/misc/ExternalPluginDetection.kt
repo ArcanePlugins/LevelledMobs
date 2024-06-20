@@ -77,7 +77,7 @@ class ExternalPluginDetection(
         }
 
         when (keyValueType){
-            null, "" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING) }
+            null, "", "string" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING) }
             "double" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.DOUBLE) }
             "integer", "int" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.INTEGER) }
             "byte_array" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.BYTE_ARRAY) }
@@ -111,7 +111,7 @@ class ExternalPluginDetection(
                     "byte" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BYTE).toString() }
                     "boolean", "bool" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BOOLEAN).toString() }
                     "float" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.FLOAT).toString() }
-                    "integer_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.FLOAT).toString() }
+                    "integer_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.INTEGER_ARRAY).toString() }
                     "long" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG).toString() }
                     "long_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG_ARRAY).toString() }
                     "short" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.SHORT).toString() }
