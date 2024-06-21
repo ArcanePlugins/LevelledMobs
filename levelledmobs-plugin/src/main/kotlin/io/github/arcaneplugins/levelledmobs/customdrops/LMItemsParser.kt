@@ -124,10 +124,7 @@ class LMItemsParser {
                     )
                 } else {
                     Log.war(
-                        String.format(
-                            "custom item '%s:%s' doesn't support type %s",
-                            item.externalPluginName, item.externalItemId, item.externalType
-                        )
+                        "custom item '${item.externalPluginName}:${item.externalItemId}' doesn't support type ${item.externalType}"
                     )
                 }
 

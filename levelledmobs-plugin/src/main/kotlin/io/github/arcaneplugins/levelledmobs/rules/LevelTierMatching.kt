@@ -65,21 +65,15 @@ class LevelTierMatching {
         }
 
         if (minLevel != null && maxLevel != null) {
-            return String.format(
-                "%s-%s %s", minLevel, maxLevel,
-                if (names == null) valueRanges.toString() else names
-            )
+            val msg = if (names == null) valueRanges.toString() else names.toString()
+            return "$minLevel-$maxLevel $msg"
         }
         return if (minLevel != null) {
-            String.format(
-                "%s- %s", minLevel,
-                if (names == null) valueRanges.toString() else names
-            )
+            val msg = if (names == null) valueRanges.toString() else names.toString()
+            "$minLevel- $msg"
         } else {
-            String.format(
-                "-%s %s", maxLevel,
-                if (names == null) valueRanges.toString() else names
-            )
+            val msg =  if (names == null) valueRanges.toString() else names.toString()
+            "-$maxLevel $msg"
         }
     }
 

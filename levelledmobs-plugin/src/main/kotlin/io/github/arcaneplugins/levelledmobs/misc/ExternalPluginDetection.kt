@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -17,6 +18,10 @@ class ExternalPluginDetection(
     var requirementValue: String? = null
     var externalCompatibility: ExternalCompatibility? = null
     var placeholderName: String? = null
+    var keyValueType: String? = "string"
+        set(value) {
+            field = value?.lowercase()
+        }
     private var cachedPlugin: Plugin? = null
     private var cachedMamespaceKey: NamespacedKey? = null
 
@@ -64,12 +69,30 @@ class ExternalPluginDetection(
     private fun checkPDCkey(
         lmEntity: LivingEntityWrapper
     ): Boolean{
-        var keyExists = false
+        val keyExists: Boolean
         var namespaceKey = cachedMamespaceKey
         if (namespaceKey == null){
             namespaceKey = NamespacedKey(cachedPlugin!!, keyName)
             cachedMamespaceKey = namespaceKey
-            keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING)
+        }
+
+        when (keyValueType){
+            null, "", "string" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING) }
+            "double" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.DOUBLE) }
+            "integer", "int" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.INTEGER) }
+            "byte_array" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.BYTE_ARRAY) }
+            "byte" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.BYTE) }
+            "boolean", "bool" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.BOOLEAN) }
+            "float" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.FLOAT) }
+            "integer_array" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.INTEGER_ARRAY) }
+            "long" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.LONG) }
+            "long_array" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.LONG_ARRAY) }
+            "short" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.SHORT) }
+            "tag_container" -> { keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.TAG_CONTAINER) }
+            else -> {
+                Log.sev("Invalid key-valuetype: $keyValueType")
+                keyExists = lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING)
+            }
         }
 
         when (requirement){
@@ -78,7 +101,26 @@ class ExternalPluginDetection(
             RequirementTypes.CONTAINS, RequirementTypes.NOT_CONTAINS -> {
                 if (this.requirementValue.isNullOrEmpty()) return false
                 if (!keyExists) return false
-                val keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.STRING)
+                val keyValue: String?
+
+                when (keyValueType){
+                    null, "" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.STRING) }
+                    "double" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.DOUBLE).toString() }
+                    "integer", "int" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.INTEGER).toString() }
+                    "byte_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BYTE_ARRAY).toString() }
+                    "byte" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BYTE).toString() }
+                    "boolean", "bool" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BOOLEAN).toString() }
+                    "float" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.FLOAT).toString() }
+                    "integer_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.INTEGER_ARRAY).toString() }
+                    "long" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG).toString() }
+                    "long_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG_ARRAY).toString() }
+                    "short" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.SHORT).toString() }
+                    "tag_container" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.TAG_CONTAINER).toString() }
+                    else -> {
+                        keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.STRING)
+                    }
+                }
+
                 if (keyValue.isNullOrEmpty()){
                     return requirement != RequirementTypes.CONTAINS
                 }
@@ -149,6 +191,11 @@ class ExternalPluginDetection(
             if (result.isEmpty()) return ""
             return result.first().value().toString()
         }
+    }
+
+    fun clearDetectionCache(){
+        this.cachedPlugin = null
+        this.cachedMamespaceKey = null
     }
 
     override fun toString(): String {

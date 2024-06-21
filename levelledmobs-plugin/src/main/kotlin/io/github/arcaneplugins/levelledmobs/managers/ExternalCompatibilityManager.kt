@@ -56,6 +56,7 @@ class ExternalCompatibilityManager {
             var friendlyName = csKey.getString("friendly-name")
             val pluginName = csKey.getString("plugin-name")
             val keyName = csKey.getString("key-name")
+            val keyValueType = csKey.getString("key-valuetype", "string")
             if ("metadata".equals(csKey.getString("key-type"), ignoreCase = true))
                 keyType = ExternalPluginDetection.KeyTypes.METADATA
             val requirementStr = csKey.getString("requirement")
@@ -84,6 +85,7 @@ class ExternalCompatibilityManager {
                 requirement,
                 keyType
             )
+            mpd.keyValueType = keyValueType
             mpd.requirementValue = csKey.getString("requirement-value")
             mpd.placeholderName = csKey.getString("placeholder-name")
             this.externalPluginDefinitions[mpd.friendlyName] = mpd

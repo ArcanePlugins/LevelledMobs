@@ -36,7 +36,7 @@ object InfoSubcommand {
                     arrayOf(
                         main.description.version,
                         main.description.description ?: "",
-                        "1.19 - 1.20",
+                        "1.19 - 1.21",
                         main.description.authors.joinToString(listSeparator),
                         "See &8&nhttps://tinyurl.com/lm-contributors"
                     )

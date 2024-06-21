@@ -163,11 +163,8 @@ class EntitySpawnListener : Listener{
 
         val customDropIdFinal = customDropId
         DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity) {
-            String.format(
-                "Spawned mob from LM spawner: minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
-                useMinLevel, useMaxLevel, generatedLevel,
-                (if (customDropIdFinal == null) "" else ", dropid: $customDropIdFinal")
-            )
+            val msg = (if (customDropIdFinal == null) "" else ", dropid: $customDropIdFinal")
+            "Spawned mob from LM spawner: minLevel:&b $useMinLevel&7, maxLevel: &b$useMaxLevel&7, generatedLevel: &b$generatedLevel&b$msg"
         }
 
         main.levelInterface.applyLevelToMob(

@@ -36,11 +36,7 @@ class PlayerPortalEventListener : Listener {
 
         // store the player's portal coords in the nether.  only used for player levelling
         main.mainCompanion.setPlayerNetherPortalLocation(player, event.to)
-        val locationStr = String.format(
-            "%s,%s,%s,%s",
-            event.to.world.name, event.to.blockX,
-            event.to.blockY, event.to.blockZ
-        )
+        val locationStr = "${event.to.world.name},${event.to.blockX},${event.to.blockY},${event.to.blockZ}"
 
         val runnable: BukkitRunnable = object : BukkitRunnable() {
             override fun run() {

@@ -183,11 +183,7 @@ class EntityDeathListener : Listener {
             }
 
             DebugManager.log(DebugType.CHUNK_KILL_COUNT, lmEntity) {
-                String.format(
-                    "%s: player: %s, reached chunk kill limit, max: %s",
-                    Utils.displayChunkLocation(lmEntity.location), player.name,
-                    maximumDeathInChunkThreshold
-                )
+                "${Utils.displayChunkLocation(lmEntity.location)}: player: ${player.name}, reached chunk kill limit, max: $maximumDeathInChunkThreshold"
             }
 
             val prefix = main.configUtils.prefix

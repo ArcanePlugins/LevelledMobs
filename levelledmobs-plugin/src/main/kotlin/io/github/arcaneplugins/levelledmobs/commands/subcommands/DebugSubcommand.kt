@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.nametag.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.Locale
@@ -79,6 +80,12 @@ object DebugSubcommand {
             .withSubcommands(
                 CommandAPICommand("show-customdrops")
                     .executes(CommandExecutor { sender, _ -> showCustomDrops(sender) })
+            )
+            .withSubcommands(
+                CommandAPICommand("show-pdc-keys")
+                    .executes(CommandExecutor { sender, args -> showPDCKeys(sender, args) })
+                    .withOptionalArguments(StringArgument("console")
+                        .includeSuggestions(ArgumentSuggestions.strings("console")))
             )
             .withSubcommands(
                 CommandAPICommand("show-plugin-definitions")
@@ -289,6 +296,47 @@ object DebugSubcommand {
             )
     }
 
+    private fun showPDCKeys(sender: CommandSender, args: CommandArguments){
+        val player = sender as? Player
+        if (player == null){
+            sender.sendMessage("This command must be run by a player")
+            return
+        }
+
+        var showOnConsole = sender is ConsoleCommandSender
+        if (args.get("console") as? String != null)
+            showOnConsole = true
+
+        val lmEntity = RulesSubcommand.getMobBeingLookedAt(player, true, sender) ?: return
+        val results = MiscUtils.getPDCKeys(lmEntity.livingEntity)
+        val sb = StringBuilder()
+        var isFirst = true
+
+        for (items in results.entries){
+            if (isFirst)
+                isFirst = false
+            else
+                sb.append("\n")
+
+            sb.append("key: &b${items.key}&r, ${items.value}")
+        }
+
+        val message = formatDumpMessage(
+            "Showing PDC keys for",
+            lmEntity,
+            sb.toString()
+        )
+
+        lmEntity.free()
+
+        if (showOnConsole) {
+            Log.inf(message)
+            sender.sendMessage("PDC keys have been printed in the console")
+        }
+        else
+            sender.sendMessage(MessageUtils.colorizeAll(message))
+    }
+
     private fun createZip(sender: CommandSender, args: CommandArguments){
         if ("confirm".equals(args.get("confirm") as? String, ignoreCase = true)) {
             DebugCreator.createDebug(sender)
@@ -356,12 +404,30 @@ object DebugSubcommand {
             return
         }
 
-        var entityName = lmEntity.typeName
+        val message = formatDumpMessage(
+            "Showing nbt dump for",
+            lmEntity,
+            MiscUtils.getNBTDump(lmEntity.livingEntity)
+        )
+
+        lmEntity.free()
+        Log.inf(message)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun formatDumpMessage(
+        messageStart: String,
+        lmEntity: LivingEntityWrapper,
+        values: String
+    ): String {
+        var entityName = lmEntity.nameIfBaby
         if (ExternalCompatibilityManager.hasMythicMobsInstalled
             && ExternalCompatibilityManager.isMythicMob(lmEntity)
         ) {
             entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
         }
+        else if (lmEntity.livingEntity.customName != null)
+            entityName = lmEntity.livingEntity.customName!!
 
         val locationStr =
             "${lmEntity.livingEntity.location.blockX}, " +
@@ -370,18 +436,10 @@ object DebugSubcommand {
 
         val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
 
-        val message = String.format(
-            "Showing nbt dump for: %s (lvl %s %s) in %s, %s\n%s",
-            entityName,
-            mobLevel,
-            lmEntity.nameIfBaby,
-            lmEntity.worldName,
-            locationStr,
-            MiscUtils.getNBTDump(lmEntity.livingEntity)
-        )
-
-        lmEntity.free()
-        Log.inf(message)
+        return if (lmEntity.nameIfBaby.equals(entityName, ignoreCase = true))
+            "$messageStart: $entityName (lvl $mobLevel) in ${lmEntity.worldName}, $locationStr&r\n$values"
+        else
+            "$messageStart: $entityName (lvl $mobLevel ${lmEntity.typeName}) in ${lmEntity.worldName}, $locationStr&r\n$values"
     }
 
     private fun parseEnableTimer(sender: CommandSender, args: CommandArguments) {

@@ -13,10 +13,10 @@
 #   ----------------------   The Ultimate Mob Levelling Solution   ----------------------
 #
 #   Documentation                             |   Support
-#   . Wiki: tinyurl.com/lm-git-wiki           |   . Discord: discord.gg/RQ8M4A5
-#   . FAQ: tinyurl.com/lm-git-faq             |   Please review our plugin!
-#   . Ex. Rules: tinyurl.com/lm-sample-rules  |   . Hangar - tinyurl.com/lm-hangar
-#   . Ex. Drops: tinyurl.com/lm-sample-drops  |   . SpigotMC - tinyurl.com/lm-spigotmc
+#   . Wiki: tinyurl.com/lm4-wiki              |   . Discord: discord.gg/RQ8M4A5
+#   . FAQ: tinyurl.com/lm4-wiki-faq           |   Please review our plugin!
+#   . Ex. Rules: tinyurl.com/lm4-ex-rules     |   . Hangar - tinyurl.com/lm-hangar
+#   . Ex. Drops: tinyurl.com/lm4-ex-drops     |   . SpigotMC - tinyurl.com/lm-spigotmc
 #                                             |
 #   ----------------------------------------  -  ----------------------------------------
 #   -------------------------------------------------------------------------------------
@@ -485,9 +485,18 @@ custom-rules:
     use-preset: challenge-vanilla, nametag-minimized
     conditions:
       external-plugins:
-        included-list: ['eco-bosses', 'mythic-mobs', 'elite-mobs', 'infernal-mobs', 'citizens', 'shop-keepers', 'simple-pets', 'elite-bosses', 'blood-night']
+        included-list: ['eco-bosses', 'mythic-mobs', 'elite-mobs', 'infernal-mobs', 'citizens', 'shop-keepers', 'simple-pets', 'elite-bosses', 'blood-night', 'combat-pets', 'Deadly-Disasters']
         #excluded-list: ['*']
 
+  - custom-rule: 'Player Farm Item and XP Limiter'
+    is-enabled: true
+    settings:
+      maximum-death-in-chunk-threshold: 15
+      max-adjacent-chunks: 5
+      chunk-max-cooldown-seconds: 10m
+      disable-vanilla-drops-on-chunk-max: false
+      disable-item-boost-on-chunk-max: true
+      disable-xp-boost-on-chunk-max: true
 
 #
 #   ---------------  -  ------------------------------
