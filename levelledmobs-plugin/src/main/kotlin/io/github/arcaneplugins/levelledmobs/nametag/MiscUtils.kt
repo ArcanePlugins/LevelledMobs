@@ -38,6 +38,7 @@ object MiscUtils {
         return ""
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getPDCKeys(
         livingEntity: LivingEntity
     ): MutableMap<String, String> {
@@ -67,14 +68,14 @@ object MiscUtils {
             val ver = LevelledMobs.instance.ver
             var methodName = if (ver.majorVersion >= 21) "tags" else "x"
 
-            val tags = compoundTagClazz.getDeclaredField(methodName)
-            val test2 = tags.get(compoundTag) as MutableMap<String, Any>
+            val tagsField = compoundTagClazz.getDeclaredField(methodName)
+            val tagsMap = tagsField.get(compoundTag) as MutableMap<String, Any>
 
             // NBTTagCompound.java
-            val bukkitValues = test2["BukkitValues"]
+            val bukkitValues = tagsMap["BukkitValues"]
 
             // private final Map<String, NBTBase> tags; (again)
-            val bukkitValuesMap = tags.get(bukkitValues) as MutableMap<String, Any>
+            val bukkitValuesMap = tagsField.get(bukkitValues) as MutableMap<String, Any>
 
             for (nbtBase in bukkitValuesMap.entries){
                 // @Override
@@ -82,18 +83,18 @@ object MiscUtils {
                 // net.minecraft.nbt.CompoundTag ->
                 //     net.minecraft.nbt.TagType getType() ->
                 methodName = if (ver.majorVersion >= 21) "getType" else "c"
-                val getType = nbtBase.value::javaClass.get().getMethod(methodName)
-                val type = getType.invoke(nbtBase.value)
+                val getTypeMethod = nbtBase.value::javaClass.get().getMethod(methodName)
+                val type = getTypeMethod.invoke(nbtBase.value)
                 // @Override
                 // public String getName()
                 // net.minecraft.nbt.TagType ->
                 //    java.lang.String getName() ->
                 methodName = if (ver.majorVersion >= 21) "getName" else "a"
-                val getName =  type::class.java.getDeclaredMethod(methodName)
+                val getNameMethod =  type::class.java.getDeclaredMethod(methodName)
                 // all classes are public but for some reason acts like it is private
-                getName.trySetAccessible()
+                getNameMethod.trySetAccessible()
 
-                val valueType = getName.invoke(type).toString().lowercase()
+                val valueType = getNameMethod.invoke(type).toString().lowercase()
                 if ("byte[]" == valueType) {
                     // NBTTagByteArray.java: public int size()
                     val methodSize = nbtBase.value.javaClass.getDeclaredMethod("size")

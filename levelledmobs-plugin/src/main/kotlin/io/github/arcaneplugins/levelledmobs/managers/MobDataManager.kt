@@ -268,14 +268,8 @@ class MobDataManager {
 
             if (!existingMod.name.startsWith("GENERIC_")) {
                 DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
-                    String.format(
-                        "Removing %s from (lvl %s) at %s,%s,%s",
-                        existingMod.name,
-                        lmEntity.getMobLevel,
-                        lmEntity.location.blockX,
-                        lmEntity.location.blockY,
-                        lmEntity.location.blockZ
-                    )
+                    val locationStr = "${lmEntity.location.blockX},${lmEntity.location.blockY},${lmEntity.location.blockZ}"
+                    "Removing ${existingMod.name} from (lvl ${lmEntity.getMobLevel}) at $locationStr"
                 }
             }
 

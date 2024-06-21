@@ -446,10 +446,8 @@ class CustomDropsParser(
         if (!ymlHelper.getString( "amount").isNullOrEmpty()) {
             if (!dropBase.setAmountRangeFromString(ymlHelper.getString( "amount"))) {
                 hadError(
-                    String.format(
-                        "Invalid number or number range for amount on %s, %s",
-                        dropInstance!!.getMobOrGroupName(), ymlHelper.getString( "amount")
-                    )
+                    "Invalid number or number range for amount on " +
+                            "${dropInstance!!.getMobOrGroupName()}, ${ymlHelper.getString( "amount")}"
                 )
             }
         }
@@ -570,10 +568,7 @@ class CustomDropsParser(
         if (!ymlHelper.getString("damage").isNullOrEmpty()) {
             if (!item.setDamageRangeFromString(ymlHelper.getString( "damage"))) {
                 hadError(
-                    String.format(
-                        "Invalid number range for damage on %s, %s",
-                        dropInstance!!.getMobOrGroupName(), ymlHelper.getString("damage")
-                    )
+                    "Invalid number range for damage on ${dropInstance!!.getMobOrGroupName()}, ${ymlHelper.getString("damage")}"
                 )
             }
         }
@@ -594,11 +589,7 @@ class CustomDropsParser(
             if (ExternalCompatibilityManager.hasNbtApiInstalled) {
                 val result: NBTApplyResult = NBTManager.applyNBTDataItem(item, item.nbtData!!)
                 if (result.hadException) {
-                    String.format(
-                        "custom drop %s for %s has invalid NBT data: %s",
-                        item.material, dropInstance!!.getMobOrGroupName(),
-                        result.exceptionMessage
-                    )
+                    "custom drop ${item.material} for ${dropInstance!!.getMobOrGroupName()} has invalid NBT data: ${result.exceptionMessage}"
                 } else if (result.itemStack != null) {
                     item.itemStack = result.itemStack
                     this.dropsUtilizeNBTAPI = true
@@ -800,12 +791,7 @@ class CustomDropsParser(
 
             if (!isDefault) {
                 if (!Utils.isInteger(key.toString())) {
-                    hadError(
-                        String.format(
-                            "Enchantment: %s, invalid enchantment level %s",
-                            enchantment, key
-                        )
-                    )
+                    hadError("Enchantment: $enchantment, invalid enchantment level $key")
                     continue
                 }
                 enchantmentLevel = key.toString().toInt()
@@ -815,12 +801,7 @@ class CustomDropsParser(
             try {
                 chanceValue = value.toString().toDouble()
             } catch (ignored: Exception) {
-                hadError(
-                    String.format(
-                        "Enchantment: %s, invalid chance specified: %s",
-                        enchantment, value
-                    )
-                )
+                hadError("Enchantment: $enchantment, invalid chance specified: $value")
                 continue
             }
 
@@ -922,12 +903,7 @@ class CustomDropsParser(
                 val newFlag = ItemFlag.valueOf(flag.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                 results.add(newFlag)
             } catch (e: Exception) {
-                hadError(
-                    String.format(
-                        "Invalid itemflag: %s, item: %s, mobOrGroup: %s",
-                        flag, item.material.name, dropInstance!!.getMobOrGroupName()
-                    )
-                )
+                hadError("Invalid itemflag: $flag, item: ${item.material.name}, mobOrGroup: ${dropInstance!!.getMobOrGroupName()}")
             }
         }
 
@@ -979,12 +955,7 @@ class CustomDropsParser(
 
             else -> {
                 val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
-                hadError(
-                    String.format(
-                        "%s: couldn't parse Config of type: %s, value: %s",
-                        currentPath, obj.javaClass.simpleName, obj
-                    )
-                )
+                hadError("$currentPath: couldn't parse Config of type: ${obj.javaClass.simpleName}, value: $obj")
                 return null
             }
         }
@@ -1048,12 +1019,7 @@ class CustomDropsParser(
             try {
                 material = Material.valueOf(useMaterialName.uppercase(Locale.getDefault()))
             } catch (e: Exception) {
-                hadError(
-                    String.format(
-                        "Invalid material type specified in customdrops.yml for: %s, %s",
-                        dropInstance!!.getMobOrGroupName(), useMaterialName
-                    )
-                )
+                hadError("Invalid material type specified in customdrops.yml for: ${dropInstance!!.getMobOrGroupName()}, $useMaterialName")
                 return false
             }
 
@@ -1183,17 +1149,11 @@ class CustomDropsParser(
         if (item != null) {
             val itemMaterial = item.material.toString()
             sb.append(
-                String.format(
-                    "  &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
-                    item.amountAsString, baseItem.chance
-                )
+                "  &b$itemMaterial&r, amount: &b${item.amountAsString}&r, chance: &b${baseItem.chance}&r"
             )
         } else if (baseItem is CustomCommand) {
             sb.append(
-                String.format(
-                    "  COMMAND, chance: &b%s&r, run-on-spawn: %s, run-on-death: %s",
-                    baseItem.chance, baseItem.runOnSpawn, baseItem.runOnDeath
-                )
+                "  COMMAND, chance: &b${baseItem.chance}&r, run-on-spawn: ${baseItem.runOnSpawn}, run-on-death: ${baseItem.runOnDeath}"
             )
         }
 
@@ -1345,10 +1305,7 @@ class CustomDropsParser(
                     if (sb2.isNotEmpty()) sb2.append(", ")
 
                     sb2.append(
-                        String.format(
-                            "&b%s&r (%s)", enchant.key.key,
-                            item.itemStack!!.itemMeta.enchants[enchant]
-                        )
+                        "&b${enchant.key.key}&r (${item.itemStack!!.itemMeta.enchants[enchant]})", enchant.key.key
                     )
                 }
             }

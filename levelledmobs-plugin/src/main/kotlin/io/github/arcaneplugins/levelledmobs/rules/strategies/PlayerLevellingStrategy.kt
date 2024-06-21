@@ -110,19 +110,11 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             if (!foundMatch) {
                 if (playerLevelSourceResult.isNumericResult) {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        String.format(
-                            "player: %s, input: %s, scale: %s, %sno tiers matched",
-                            player.name, origLevelSource, levelSource,
-                            capDisplay
-                        )
+                        "player: ${player.name}, input: $origLevelSource, scale: $levelSource,${capDisplay}sno tiers matched"
                     }
                 } else {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        String.format(
-                            "player: %s, input: '%s', %sno tiers matched",
-                            player.name,
-                            playerLevelSourceResult.stringResult, capDisplay
-                        )
+                        "player: ${player.name}, input: '${playerLevelSourceResult.stringResult}', ${capDisplay}no tiers matched"
                     }
                 }
                 if (options.outputCap != null) {
@@ -158,30 +150,17 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
         if (tierMatched == null) {
             DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                String.format(
-                    "player: %s, input: %s%s%s, scale: %s, %sresult: %s",
-                    player.name, origLevelSource, homeName,
-                    varianceDebug, levelSource, capDisplay, results
-                )
+                "player: ${player.name}, input: ${origLevelSource}${homeName}${varianceDebug}, scale: ${levelSource}, ${capDisplay}result: $results"
             }
         } else {
             val tierMatchedFinal: String = tierMatched
             if (playerLevelSourceResult.isNumericResult) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                    String.format(
-                        "player: %s, input: %s%s%s, scale: %s, tier: %s, %sresult: %s",
-                        player.name, origLevelSource, homeName,
-                        varianceDebug, levelSource, tierMatchedFinal, capDisplay, results
-                    )
+                    "player: ${player.name}, input: ${origLevelSource}${homeName}$varianceDebug, scale: $levelSource, tier: $tierMatchedFinal, ${capDisplay}result: $results"
                 }
             } else {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                    String.format(
-                        "player: %s, input: '%s'%s, tier: %s, %sresult: %s",
-                        player.name,
-                        playerLevelSourceResult.stringResult, varianceDebug, tierMatchedFinal,
-                        capDisplay, results
-                    )
+                    "player: ${player.name}, input: '${playerLevelSourceResult.stringResult}'$varianceDebug, tier: $tierMatchedFinal, ${capDisplay}result: $results"
                 }
             }
         }

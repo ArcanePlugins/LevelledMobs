@@ -286,21 +286,14 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                 retryCount++
                 if (retryCount > LOCKMAXRETRYTIMES) {
                     DebugManager.log(DebugType.THREAD_LOCKS) {
-                        String.format(
-                            "getPDCLock could not lock thread - %s:%s",
-                            callingFunction.fileName, callingFunction.lineNumber
-                        )
+                        "getPDCLock could not lock thread - ${callingFunction.fileName}:${callingFunction.lineNumber}"
                     }
                     return false
                 }
 
                 val retryCountFinal = retryCount
                 DebugManager.log(DebugType.THREAD_LOCKS) {
-                    String.format(
-                        "getPDCLock retry %s - %s:%s",
-                        retryCountFinal, callingFunction.fileName,
-                        callingFunction.lineNumber
-                    )
+                    "getPDCLock retry $retryCountFinal - ${callingFunction.fileName}:${callingFunction.lineNumber}"
                 }
             }
         } catch (e: InterruptedException) {

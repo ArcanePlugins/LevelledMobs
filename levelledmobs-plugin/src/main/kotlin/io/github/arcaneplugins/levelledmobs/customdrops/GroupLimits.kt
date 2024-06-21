@@ -49,9 +49,6 @@ class GroupLimits {
     }
 
     override fun toString(): String {
-        return String.format(
-            "capTotal: %s, capEquip: %s, capPerItem: %s, capSelect: %s, retries: %s",
-            capTotal, capEquipped, capPerItem, capSelect, retries
-        )
+        return "capTotal: $capTotal, capEquip: $capEquipped, capPerItem: $capPerItem, capSelect: $capSelect, retries: $retries"
     }
 }

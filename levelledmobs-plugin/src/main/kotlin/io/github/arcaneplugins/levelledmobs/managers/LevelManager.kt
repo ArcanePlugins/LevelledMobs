@@ -351,11 +351,7 @@ class LevelManager : LevelInterface2 {
                 if (papiResult.isEmpty()) {
                     val l = player.location
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        String.format(
-                            "Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
-                            variableToUse, player.name, l.blockX, l.blockY,
-                            l.blockZ, player.world.name
-                        )
+                        "Got blank result for '$variableToUse' from PAPI. Player ${player.name} at ${l.blockX},${l.blockY},${l.blockZ} in ${player.world.name}"
                     }
                     usePlayerLevel = true
                 }
@@ -373,11 +369,7 @@ class LevelManager : LevelInterface2 {
                 if (papiResult.isNullOrEmpty()) {
                     origLevelSource = player.level.toFloat()
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        String.format(
-                            "Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
-                            variableToUse, player.name, l.blockX, l.blockY,
-                            l.blockZ, player.world.name
-                        )
+                        "Got blank result for '$variableToUse' from PAPI. Player ${player.name} at ${l.blockX},${l.blockY},${l.blockZ} in ${player.world.name}"
                     }
                 } else {
                     if (Utils.isDouble(papiResult)) {
@@ -528,11 +520,7 @@ class LevelManager : LevelInterface2 {
         val nameWithOverride = if (hasOverride) " (override), " else ""
         val additionUsedFinal = additionUsed
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-            String.format(
-                "%smob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
-                nameWithOverride, lmEntity.getMobLevel, vanillaDrops, currentDrops.size,
-                additionUsedFinal
-            )
+            "${nameWithOverride}mob-lvl: &b${lmEntity.getMobLevel}&7, vanilla drops: &b$vanillaDrops&7, all drops: &b${currentDrops.size}&7, addition: &b$additionUsedFinal&7."
         }
     }
 
@@ -1566,10 +1554,7 @@ class LevelManager : LevelInterface2 {
 
         val blastRadiusFinal = blastRadius
         DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) {
-            String.format(
-                "lvl: %s, mulp: %s, max: %s, result: %s",
-                lmEntity.getMobLevel, Utils.round(damage.toDouble(), 3), maxRadius, blastRadiusFinal
-            )
+            "lvl: ${lmEntity.getMobLevel}, mulp: ${Utils.round(damage.toDouble(), 3)}, max: $maxRadius, result: $blastRadiusFinal"
         }
 
         if (blastRadius < 0) {
@@ -1665,10 +1650,7 @@ class LevelManager : LevelInterface2 {
 
                 if (groupLimits!!.hasReachedCapEquipped(equippedSoFar)) {
                     DebugManager.log(DebugType.GROUP_LIMITS, lmEntity) {
-                        String.format(
-                            "Reached equip limit of %s, item: %s, group: %s",
-                            groupLimits.capEquipped, material, item.groupId
-                        )
+                        "Reached equip limit of ${groupLimits.capEquipped}, item: $material, group: ${item.groupId}"
                     }
                     continue
                 }
@@ -1971,17 +1953,11 @@ class LevelManager : LevelInterface2 {
             Bukkit.getPluginManager()
                 .callEvent(MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation))
 
-            val sb = StringBuilder()
-            sb.append(", world: ")
-            sb.append(lmEntity.worldName)
-            sb.append(", level: ")
-            sb.append(useLevel)
-            if (isSummoned) {
+            val sb = StringBuilder().append("world: ").append(lmEntity.worldName).append(", level: ").append(useLevel)
+            if (isSummoned)
                 sb.append(" (summoned)")
-            }
-            if (bypassLimits) {
+            if (bypassLimits)
                 sb.append(" (limit bypass)")
-            }
 
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, true, sb::toString)
         }
@@ -2072,10 +2048,7 @@ class LevelManager : LevelInterface2 {
             if (result.hadException) {
                 if (lmEntity.summonedSender == null) {
                     Log.war(
-                        String.format(
-                            "Error applying NBT data '%s' to %s. Exception message: %s",
-                            nbtData, lmEntity.nameIfBaby, result.exceptionMessage
-                        )
+                        "Error applying NBT data '$nbtData' to ${lmEntity.nameIfBaby}. Exception message: ${result.exceptionMessage}"
                     )
                 } else {
                     lmEntity.summonedSender!!.sendMessage(

@@ -585,10 +585,7 @@ object FileMigrator {
                 "&fFile Loader: &8(Migration) &7Migrated &b${to.name}&7 successfully."
             )
             Log.inf(
-                String.format(
-                    "&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.",
-                    keysMatched, valuesMatched, valuesUpdated
-                )
+                "&fFile Loader: &8(Migration) &7Keys matched: &b$keysMatched&7, values matched: &b$valuesMatched&7, values updated: &b$valuesUpdated&7."
             )
         } catch (e: Exception) {
             Log.sev(

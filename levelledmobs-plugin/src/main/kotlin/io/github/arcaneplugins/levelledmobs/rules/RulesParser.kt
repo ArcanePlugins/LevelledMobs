@@ -1240,10 +1240,7 @@ class RulesParser {
             for (i in 0..1) {
                 if (!isInteger(split[i])) {
                     Log.war(
-                        String.format(
-                            "Invalid value for %s: '%s' in rule %s", configName, split[i],
-                            parsingInfo.ruleName
-                        )
+                        "Invalid value for $configName: '${split[i]}' in rule ${parsingInfo.ruleName}"
                     )
                     hadInvalidValue = true
                     break

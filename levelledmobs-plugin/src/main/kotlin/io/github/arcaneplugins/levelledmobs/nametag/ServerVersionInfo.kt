@@ -106,10 +106,7 @@ class ServerVersionInfo {
                 this.minecraftVersion = versionStr.toDouble()
             } catch (e: Exception) {
                 LevelledMobs.instance.logger.warning(
-                    String.format(
-                        "LevelledMobs: Could not extract the minecraft version from '%s'. %s",
-                        Bukkit.getServer().javaClass.canonicalName, e.message
-                    )
+                    "LevelledMobs: Could not extract the minecraft version from '${Bukkit.getServer().javaClass.canonicalName}'. ${e.message}"
                 )
             }
         }
