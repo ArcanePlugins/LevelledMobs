@@ -7,5 +7,5 @@ package io.github.arcaneplugins.levelledmobs.annotations
  * @author stumper66
  * @since 3.12.0
  */
-@Target(AnnotationTarget.PROPERTY)
+@Target(AnnotationTarget.FIELD)
 annotation class ExcludeFromHash

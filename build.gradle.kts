@@ -3,8 +3,6 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.20"
 }
 
-apply(plugin = "kotlin")
-
 repositories {
     mavenCentral()
     maven("https://mvnrepository.com/")
