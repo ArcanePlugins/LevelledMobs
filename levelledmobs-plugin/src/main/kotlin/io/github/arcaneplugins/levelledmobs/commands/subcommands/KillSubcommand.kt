@@ -49,7 +49,8 @@ object KillSubcommand {
                     .executes(CommandExecutor { sender, args -> processCmd(sender, args, true) })
                     .withOptionalArguments(
                         ListArgumentBuilder<String>("values")
-                            .skipListValidation(true)
+                            .allowAnyValue(true)
+                            .allowDuplicates(true)
                             .withList { info -> buildTabSuggestions(info) }
                             .withStringMapper()
                             .buildGreedy()
@@ -60,7 +61,8 @@ object KillSubcommand {
                     .executes(CommandExecutor { sender, args -> processCmd(sender, args, false) })
                     .withOptionalArguments(
                         ListArgumentBuilder<String>("values")
-                            .skipListValidation(true)
+                            .allowAnyValue(true)
+                            .allowDuplicates(true)
                             .withList { info -> buildTabSuggestions(info) }
                             .withStringMapper()
                             .buildGreedy()

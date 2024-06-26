@@ -443,7 +443,7 @@ class CustomDropsHandler {
                         info.dropInstance = groupIdToInstance[drop.groupId]
                         info.groupLimits = groupLimitsMap.getOrDefault(drop.groupId, defaultLimits)
                         maxRetries =
-                            info.groupLimits!!.retries.coerceAtMost(retriesHardcodedMax)
+                            info.groupLimits?.retries?.coerceAtMost(retriesHardcodedMax) ?: 0
                     } else {
                         info.dropInstance = null
                         info.groupLimits = null

@@ -33,7 +33,7 @@ dependencies {
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.0.2") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
     //implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
-    implementation("nomaven:CommandAPI:9.5.0-mod") // https://github.com/JorelAli/CommandAPI
+    implementation("nomaven:CommandAPI:9.6.0-snapshot") // https://github.com/JorelAli/CommandAPI
     // stumper66's fork: https://github.com/stumper66/CommandAPI
     compileOnly("LibsDisguises:LibsDisguises:10.0.44-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
     compileOnly("net.essentialsx:EssentialsX:2.20.1") // https://repo.essentialsx.net/#/releases/net/essentialsx/EssentialsX

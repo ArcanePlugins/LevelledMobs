@@ -504,6 +504,7 @@ class RulesManager {
     fun getRuleCreatureNametagVisbility(
         lmEntity: LivingEntityWrapper
     ): MutableList<NametagVisibilityEnum> {
+        // TODO: cache this value
         var result: MutableList<NametagVisibilityEnum>? = null
 
         try {
@@ -513,9 +514,9 @@ class RulesManager {
                 }
             }
         } catch (e: ConcurrentModificationException) {
-            Log.war(
-                "Got ConcurrentModificationException in getRule_CreatureNametagVisbility"
-            )
+//            Log.war(
+//                "Got ConcurrentModificationException in getRuleCreatureNametagVisbility"
+//            )
         }
 
         return if (result.isNullOrEmpty()) {

@@ -64,7 +64,8 @@ object SummonSubcommand {
                 .replaceSuggestions(ArgumentSuggestions.strings("here", "at-player", "at-location")))
             .withOptionalArguments(
                 ListArgumentBuilder<String>("values")
-                    .skipListValidation(true)
+                    .allowAnyValue(true)
+                    .allowDuplicates(true)
                     .withList { info -> buildTabSuggestions(info) }
                     .withStringMapper()
                     .buildGreedy()
