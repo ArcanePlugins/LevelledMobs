@@ -60,9 +60,7 @@ class EntityTargetListener : Listener {
             return
         }
 
-        if (main.rulesManager.getRuleCreatureNametagVisbility(lmEntity)
-                .contains(NametagVisibilityEnum.TRACKING)
-        ) {
+        if (lmEntity.nametagVisibilityEnum.contains(NametagVisibilityEnum.TRACKING)) {
             synchronized(NametagTimerChecker.entityTarget_Lock) {
                 main.nametagTimerChecker.entityTargetMap.put(
                     lmEntity.livingEntity,

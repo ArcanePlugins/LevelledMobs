@@ -14,6 +14,7 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.rules.ApplicableRulesResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -180,6 +181,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     override fun clearEntityData() {
         this._livingEntity = null
         this.attributeValuesCache = null
+        this.nametagVisibilityEnum.clear()
         this.rangedDamage = null
         this.strategyResults.clear()
         this.customStrategyResults.clear()
@@ -225,19 +227,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     private fun buildCache() {
-        if (isBuildingCache || this.hasCache) {
-            return
-        }
+        if (this.hasCache) return
 
         try {
-            if (!cacheLock.tryLock(500, TimeUnit.MILLISECONDS)) {
-                Log.war("lock timed out building cache")
-                return
-            }
+            if (!cacheLock.tryLock(500, TimeUnit.MILLISECONDS)) return
+            if (this.hasCache) return
 
-            if (this.hasCache) {
-                return
-            }
             isBuildingCache = true
             this.mobLevel =
                 if (main.levelInterface.isLevelled(livingEntity)) main.levelInterface.getLevelOfMob(livingEntity) else null
@@ -263,6 +258,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             checkChanceRules(applicableRulesResult)
             this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this)
             this.nametagCooldownTime = main.rulesManager.getRuleNametagVisibleTime(this)
+            this.nametagVisibilityEnum.clear()
+            this.nametagVisibilityEnum.addAll(main.rulesManager.getRuleCreatureNametagVisbility(this))
             this.isBuildingCache = false
         } catch (e: InterruptedException) {
             Log.war("exception in buildCache: " + e.message)
@@ -313,6 +310,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.groupsAreBuilt = false
         applicableGroups.clear()
         applicableRules.clear()
+    }
+
+    fun buildCacheIfNeeded(){
+        if (!hasCache) {
+            buildCache()
+        }
     }
 
     private fun checkChanceRules(
@@ -472,6 +475,15 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
             return field
     }
+
+    val nametagVisibilityEnum = mutableListOf<NametagVisibilityEnum>()
+        get() {
+            if (!hasCache) {
+                buildCache()
+            }
+
+            return field
+        }
 
     override fun getApplicableRules(): MutableList<RuleInfo> {
         if (!hasCache) {

@@ -43,12 +43,12 @@ object LibsDisguisesUtils {
         if (!isMobUsingLibsDisguises(lmEntity)) return
 
         val disguise = lmEntity.libsDisguiseCache as Disguise
-        val le = lmEntity.livingEntity
-
-        val wrapper = SchedulerWrapper(le) {
+        val wrapper = SchedulerWrapper(lmEntity.livingEntity) {
             disguise.watcher.customName = nametag
+            lmEntity.free()
         }
 
+        lmEntity.inUseCount.getAndIncrement()
         wrapper.run()
     }
 }

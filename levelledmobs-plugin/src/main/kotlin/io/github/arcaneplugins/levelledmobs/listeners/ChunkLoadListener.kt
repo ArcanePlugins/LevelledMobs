@@ -41,10 +41,9 @@ class ChunkLoadListener : Listener {
     }
 
     private fun checkEntity(livingEntity: LivingEntity, event: ChunkLoadEvent) {
-        val main = LevelledMobs.instance
+        val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
         val wrapper = SchedulerWrapper(livingEntity){
-            val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
-            if (main.levelManager.doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
+            if (LevelledMobs.instance.levelManager.doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
                 lmEntity.reEvaluateLevel = true
                 lmEntity.isRulesForceAll = true
                 lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled
@@ -53,10 +52,12 @@ class ChunkLoadListener : Listener {
                 return@SchedulerWrapper
             }
 
-            main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
+            LevelledMobs.instance.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
             lmEntity.free()
         }
 
+        lmEntity.buildCacheIfNeeded()
+        lmEntity.inUseCount.getAndIncrement()
         wrapper.runDirectlyInBukkit = true
         wrapper.run()
     }

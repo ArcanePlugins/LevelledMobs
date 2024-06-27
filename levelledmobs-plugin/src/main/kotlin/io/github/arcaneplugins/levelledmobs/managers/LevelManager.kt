@@ -1238,9 +1238,7 @@ class LevelManager : LevelInterface2 {
             if (!lmEntity.isPopulated) {
                 return
             }
-            val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
-                lmEntity
-            )
+            val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
             val nametagVisibleTime = lmEntity.getNametagCooldownTime()
             if (nametagVisibleTime > 0L &&
                 nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&

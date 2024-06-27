@@ -13,12 +13,6 @@ package io.github.arcaneplugins.levelledmobs.util
 class QuickTimer {
     private var startTime = 0L
 
-    constructor()
-
-    constructor(startTime: Long){
-        this.startTime = startTime
-    }
-
     init {
         start()
     }

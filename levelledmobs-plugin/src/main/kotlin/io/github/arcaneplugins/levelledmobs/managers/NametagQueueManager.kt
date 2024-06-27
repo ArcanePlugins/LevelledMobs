@@ -69,16 +69,9 @@ class NametagQueueManager {
 
     fun addToQueue(item: QueueItem) {
         if (!item.lmEntity.shouldShowLMNametag) return
-
-        if (Bukkit.getOnlinePlayers().isEmpty()) {
+        if (Bukkit.getOnlinePlayers().isEmpty()) return
+        if (item.lmEntity.nametagVisibilityEnum.contains(NametagVisibilityEnum.DISABLED))
             return
-        }
-
-        if (LevelledMobs.instance.rulesManager.getRuleCreatureNametagVisbility(item.lmEntity)
-            .contains(NametagVisibilityEnum.DISABLED)
-        ) {
-            return
-        }
 
         item.lmEntity.inUseCount.getAndIncrement()
         queue.offer(item)
@@ -225,9 +218,7 @@ class NametagQueueManager {
         for (i in 0 until loopCount) {
             // will loop again to update with nametag cooldown for only the specified players
 
-            val nametagVisibilityEnum = LevelledMobs.instance.rulesManager.getRuleCreatureNametagVisbility(
-                    lmEntity
-                )
+            val nametagVisibilityEnum = lmEntity.nametagVisibilityEnum
             val doAlwaysVisible = i == 1 || !nametag.isNullOrEmpty && lmEntity.livingEntity.isCustomNameVisible ||
                     nametagVisibilityEnum.contains(NametagVisibilityEnum.ALWAYS_ON)
 

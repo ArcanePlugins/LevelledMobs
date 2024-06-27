@@ -121,9 +121,7 @@ class NametagTimerChecker {
         if (timeDuration.toMillis() >= cooldownTime) {
             // if using LoS targeting check if it's still within LoS and don't remove if so.
             val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
-            val usesLoS: Boolean = LevelledMobs.instance.rulesManager.getRuleCreatureNametagVisbility(
-                lmEntity
-            ).contains(NametagVisibilityEnum.TARGETED)
+            val usesLoS = lmEntity.nametagVisibilityEnum.contains(NametagVisibilityEnum.TARGETED)
 
             if (usesLoS && livingEntity.hasLineOfSight(player)) {
                 coolDown.value[livingEntity] = Instant.now()

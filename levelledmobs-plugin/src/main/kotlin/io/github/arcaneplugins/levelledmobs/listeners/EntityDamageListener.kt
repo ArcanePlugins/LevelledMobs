@@ -67,9 +67,7 @@ class EntityDamageListener : Listener {
             }
 
             val theHitter = LivingEntityWrapper.getInstance(event.damager as LivingEntity)
-            val nametagVisibilityEnums = LevelledMobs.instance.rulesManager.getRuleCreatureNametagVisbility(
-                theHitter
-            )
+            val nametagVisibilityEnums = theHitter.nametagVisibilityEnum
             val nametagVisibleTime = theHitter.getNametagCooldownTime()
 
             if (nametagVisibleTime > 0L &&
@@ -106,9 +104,7 @@ class EntityDamageListener : Listener {
                 lmEntity.associatedPlayer = (event.damager as Player)
             }
         }
-        val nametagVisibilityEnums = lmEntity.main.rulesManager.getRuleCreatureNametagVisbility(
-            lmEntity
-        )
+        val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
         val nametagVisibleTime = lmEntity.getNametagCooldownTime()
 
         if (nametagVisibleTime > 0L && wasDamagedByEntity &&
@@ -171,10 +167,7 @@ class EntityDamageListener : Listener {
             val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
             MobDataManager.populateAttributeCache(lmEntity)
 
-            if (lmEntity.isLevelled && lmEntity.main.rulesManager.getRuleCreatureNametagVisbility(
-                    lmEntity
-                ).contains(NametagVisibilityEnum.ATTACKED)
-            ) {
+            if (lmEntity.isLevelled && (lmEntity.nametagVisibilityEnum).contains(NametagVisibilityEnum.ATTACKED)) {
                 if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
                     lmEntity.playersNeedingNametagCooldownUpdate = java.util.HashSet()
                 }

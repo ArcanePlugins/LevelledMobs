@@ -49,5 +49,6 @@ enum class LevelledMobSpawnReason {
     SPELL,
     LM_SUMMON,
     DEFAULT,
-    DUPLICATION
+    DUPLICATION,
+    TRIAL_SPAWNER
 }
