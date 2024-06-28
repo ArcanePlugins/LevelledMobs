@@ -53,14 +53,12 @@ import org.bukkit.persistence.PersistentDataType
 class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), LivingEntityInterface {
     // privates:
     private var applicableGroups: MutableSet<String> = TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
-    val mobExternalTypes: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     private var hasCache = false
+    private var isClearingData = false
     private var _livingEntity: LivingEntity? = null
     private var isBuildingCache = false
     private var groupsAreBuilt = false
     private var _shouldShowLMNametag: Boolean? = null
-    var chunkKillcount = 0
-    var mobLevel: Int? = null
     private var _spawnedTimeOfDay: Int? = null
     private var _skylightLevelAtSpawn: Int? = null
     private var nametagCooldownTime = 0L
@@ -68,14 +66,17 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private var _sourceSpawnEggName: String? = null
     private val applicableRules = mutableListOf<RuleInfo>()
     private var spawnedWGRegions: List<String>? = null
-    //private var fineTuningAttributes: FineTuningAttributes? = null
     private var _spawnReason: LevelledMobSpawnReason? = null
-    var prevChanceRuleResults: MutableMap<String, Boolean>? = null
-        private set
+    private var _nametagVisibilityEnum = mutableListOf<NametagVisibilityEnum>()
     private val cacheLock = ReentrantLock()
     private val pdcLock = ReentrantLock()
 
     // publics:
+    var prevChanceRuleResults: MutableMap<String, Boolean>? = null
+        private set
+    var chunkKillcount = 0
+    var mobLevel: Int? = null
+    val mobExternalTypes: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     var rangedDamage: Float? = null
     var attributeValuesCache: MutableMap<Attribute, AttributeInstance>? = null
     val strategyResults = mutableMapOf<StrategyType, Float>()
@@ -105,9 +106,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         private const val LOCKMAXRETRYTIMES = 3
         private val flyingMobNames = mutableListOf(
             "ALLAY", "BEE", "BLAZE", "ENDER_DRAGON", "VEX", "WITHER", "PARROT", "BAT"
-        )
-        private val aquaticMobs = mutableListOf(
-            "AXOLOTL", "DROWNED", "ELDER_GUARDIAN", "GUARDIAN", "FROG", "TURTLE"
         )
 
         fun getInstance(
@@ -179,6 +177,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     override fun clearEntityData() {
+        this.isClearingData = true
         this._livingEntity = null
         this.attributeValuesCache = null
         this.nametagVisibilityEnum.clear()
@@ -224,6 +223,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.lockedCustomDrops = null
 
         super.clearEntityData()
+        this.isClearingData = false
     }
 
     private fun buildCache() {
@@ -469,18 +469,16 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     var fineTuningAttributes: FineTuningAttributes? = null
         private set
         get() {
-            if (!hasCache) {
-                buildCache()
-            }
+            if (isClearingData) return field
+            if (!hasCache) buildCache()
 
             return field
     }
 
     val nametagVisibilityEnum = mutableListOf<NametagVisibilityEnum>()
         get() {
-            if (!hasCache) {
-                buildCache()
-            }
+            if (isClearingData) return field
+            if (!hasCache) buildCache()
 
             return field
         }

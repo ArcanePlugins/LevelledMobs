@@ -1095,21 +1095,29 @@ class RulesParser {
             val ymlHelper2 = YmlParsingHelper(csSpawnDistance)
             val spawnDistanceStrategy = SpawnDistanceStrategy()
 
-            spawnDistanceStrategy.increaseLevelDistance = ymlHelper2.getFloat2(
-                "ringed-tiers", spawnDistanceStrategy.increaseLevelDistance
+            spawnDistanceStrategy.ringedTiers = ymlHelper2.getFloat2(
+                "ringed-tiers", spawnDistanceStrategy.ringedTiers
             )
-            spawnDistanceStrategy.startDistance = ymlHelper2.getFloat2(
-                "buffer-distance", spawnDistanceStrategy.startDistance
+            spawnDistanceStrategy.bufferDistance = ymlHelper2.getFloat2(
+                "buffer-distance", spawnDistanceStrategy.bufferDistance
+            )
+            spawnDistanceStrategy.enableHeightMod = ymlHelper2.getBoolean2(
+                "enable-height-modifier", spawnDistanceStrategy.enableHeightMod
+            )
+            spawnDistanceStrategy.transitionYheight = ymlHelper2.getFloat2(
+                "transition-y-height", spawnDistanceStrategy.transitionYheight
+            )
+            spawnDistanceStrategy.lvlMultiplier = ymlHelper2.getFloat2(
+                "level-multiplier", spawnDistanceStrategy.lvlMultiplier
+            )
+            spawnDistanceStrategy.yHeightPeriod = ymlHelper2.getFloat2(
+                "y-height-period", spawnDistanceStrategy.yHeightPeriod
+            )
+            spawnDistanceStrategy.scaleDownward = ymlHelper2.getBoolean2(
+                "scale-increase-downward", spawnDistanceStrategy.scaleDownward
             )
 
             parseOptionalSpawnCoordinate(csSpawnDistance, spawnDistanceStrategy)
-
-            if (ymlHelper2.getString( "blended-levelling") != null) {
-                parseBlendedLevelling(
-                    YmlParsingHelper.objToCS(csSpawnDistance, "blended-levelling"),
-                    spawnDistanceStrategy
-                )
-            }
 
             if (parsingInfo.levellingStrategy.containsKey(StrategyType.SPAWN_DISTANCE))
                 parsingInfo.levellingStrategy[StrategyType.SPAWN_DISTANCE]!!.mergeRule(spawnDistanceStrategy)
@@ -1397,30 +1405,6 @@ class RulesParser {
         options.defaultLevelTier = defaultTier
     }
 
-    private fun parseBlendedLevelling(
-        cs: ConfigurationSection?,
-        spawnDistanceStrategy: SpawnDistanceStrategy
-    ) {
-        if (cs == null) return
-
-        val ymlHelper = YmlParsingHelper(cs)
-        spawnDistanceStrategy.blendedLevellingEnabled = ymlHelper.getBoolean2(
-             "enabled", spawnDistanceStrategy.blendedLevellingEnabled
-        )
-        spawnDistanceStrategy.transitionYheight = ymlHelper.getFloat2(
-             "transition-y-height", spawnDistanceStrategy.transitionYheight
-        )
-        spawnDistanceStrategy.lvlMultiplier = ymlHelper.getFloat2(
-             "level-multiplier", spawnDistanceStrategy.lvlMultiplier
-        )
-        spawnDistanceStrategy.multiplierPeriod = ymlHelper.getFloat2(
-             "y-height-period", spawnDistanceStrategy.multiplierPeriod
-        )
-        spawnDistanceStrategy.scaleDownward = ymlHelper.getBoolean2(
-             "scale-increase-downward", spawnDistanceStrategy.scaleDownward
-        )
-    }
-
     private fun parseOptionalSpawnCoordinate(
         cs: ConfigurationSection,
         sds: SpawnDistanceStrategy
@@ -1428,11 +1412,11 @@ class RulesParser {
         val spawnLocation = YmlParsingHelper.objToCS(cs, "origin-coordinates") ?: return
 
         if (!"spawn".equals(spawnLocation.getString("x"), ignoreCase = true)) {
-            sds.spawnLocationX = spawnLocation.getDouble("x").toFloat()
+            sds.originCoordX = spawnLocation.getDouble("x").toFloat()
         }
 
         if (!"spawn".equals(spawnLocation.getString("z"), ignoreCase = true)) {
-            sds.spawnLocationZ = spawnLocation.getDouble("z").toFloat()
+            sds.originCoordZ = spawnLocation.getDouble("z").toFloat()
         }
     }
 

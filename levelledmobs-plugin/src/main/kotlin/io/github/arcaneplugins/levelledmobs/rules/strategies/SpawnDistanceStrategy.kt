@@ -1,8 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.rules.strategies
 
-import java.lang.reflect.Modifier
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.debug.DebugManager
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Location
 import kotlin.math.ceil
@@ -16,13 +17,13 @@ import kotlin.math.floor
  * @since 3.0.0
  */
 class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
-    var startDistance: Float? = null
-    var increaseLevelDistance: Float? = null
-    var spawnLocationX: Float? = null
-    var spawnLocationZ: Float? = null
-    var blendedLevellingEnabled: Boolean? = null
+    var bufferDistance: Float? = null
+    var ringedTiers: Float? = null
+    var originCoordX: Float? = null
+    var originCoordZ: Float? = null
+    var enableHeightMod: Boolean? = null
     var transitionYheight: Float? = null
-    var multiplierPeriod: Float? = null
+    var yHeightPeriod: Float? = null
     var lvlMultiplier: Float? = null
     var scaleDownward: Boolean? = null
 
@@ -35,11 +36,11 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
     ): Float {
         var spawnLocation = lmEntity.world.spawnLocation
 
-        if (this.spawnLocationZ != null || this.spawnLocationX != null) {
+        if (this.originCoordZ != null || this.originCoordX != null) {
             val useX =
-                if (this.spawnLocationX == null) spawnLocation.x else spawnLocationX!!.toDouble()
+                if (this.originCoordX == null) spawnLocation.x else originCoordX!!.toDouble()
             val useZ =
-                if (this.spawnLocationZ == null) spawnLocation.x else spawnLocationZ!!.toDouble()
+                if (this.originCoordZ == null) spawnLocation.x else originCoordZ!!.toDouble()
 
             spawnLocation = Location(
                 lmEntity.livingEntity.world,
@@ -49,31 +50,41 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             )
         }
 
-        val startDistance = if (this.startDistance == null) 0f else startDistance!!
+        val bufferDistance = if (this.bufferDistance == null) 0f else bufferDistance!!
         val distanceFromSpawn = spawnLocation.distance(lmEntity.location).toFloat()
-        val levelDistance = ((distanceFromSpawn - startDistance)).coerceAtLeast(0f)
+        val levelDistance = (distanceFromSpawn - bufferDistance).coerceAtLeast(0f)
         val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(lmEntity)
         var varianceAdded = 0
         if (variance != null) {
             varianceAdded = ThreadLocalRandom.current().nextInt(0, variance + 1)
         }
 
-        var increaseLevelDistance =
-            if (this.increaseLevelDistance == null) 1f else increaseLevelDistance!!
-        if (increaseLevelDistance == 0f) {
-            increaseLevelDistance = 1f
+        var ringedTiers =
+            if (this.ringedTiers == null) 1f else ringedTiers!!
+        if (ringedTiers == 0f) {
+            ringedTiers = 1f
         }
 
         //Get the level thats meant to be at a given distance
-        val spawnDistanceAssignment =
-            ((levelDistance / increaseLevelDistance) + varianceAdded)
+        var spawnDistanceAssignment =
+            ((levelDistance / ringedTiers) + varianceAdded)
 
-        if (this.blendedLevellingEnabled == null || !blendedLevellingEnabled!!) {
+        if (spawnDistanceAssignment.isNaN()){
+            DebugManager.log(DebugType.STRATEGY_RESULT, lmEntity) {
+                "SpawnDistanceStrategy generated NaN, levelDistance: $levelDistance, increaseLevelDistance: $ringedTiers"
+            }
+            spawnDistanceAssignment = 0f
+        }
+
+        if (!heightModIsEnabled) {
             return spawnDistanceAssignment
         }
 
         return generateBlendedLevel(lmEntity, spawnDistanceAssignment)
     }
+
+    private val heightModIsEnabled: Boolean
+        get() = enableHeightMod != null && enableHeightMod!!
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy == null) return
@@ -89,12 +100,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
 
         try {
             for (f in sds.javaClass.declaredFields) {
-                if (!Modifier.isPublic(f.modifiers)) {
-                    continue
-                }
-                if (f[sds] == null) {
-                    continue
-                }
+                if (f.name == "strategyType") continue
+                if (f[sds] == null) continue
 
                 this.javaClass.getDeclaredField(f.name)[this] = f[sds]
             }
@@ -107,36 +114,28 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
 
     override fun toString(): String {
         val sb = StringBuilder()
-        if (blendedLevellingEnabled != null && blendedLevellingEnabled!!) {
+        if (heightModIsEnabled) {
             sb.append(
-                String.format(
-                    "blended, sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
-                    if (startDistance == null) 0 else startDistance,
-                    if (increaseLevelDistance == null) 0 else increaseLevelDistance,
-                    if (transitionYheight == null) 0 else transitionYheight,
-                    if (multiplierPeriod == null) 0 else multiplierPeriod,
-                    if (lvlMultiplier == null) 0.0 else lvlMultiplier,
-                    scaleDownward == null || scaleDownward!!
-                )
+                "blended, dro: ${if (bufferDistance == null) 0 else bufferDistance}, " +
+                "rt: ${if (ringedTiers == null) 0 else ringedTiers}, " +
+                "t_yHght: ${if (transitionYheight == null) 0 else transitionYheight}, " +
+                "yhp: ${if (yHeightPeriod == null) 0 else yHeightPeriod}, " +
+                "lvlMlp: ${if (lvlMultiplier == null) 0.0 else lvlMultiplier}, " +
+                "scdown: ${scaleDownward == null || scaleDownward!!}"
             )
         } else {
             sb.append(
-                String.format(
-                    "spawn distance, sd: %s, ild: %s",
-                    if (startDistance == null) 0 else startDistance,
-                    if (increaseLevelDistance == null) 0 else increaseLevelDistance
-                )
+                "spawn distance, dro: ${if (bufferDistance == null) 0 else bufferDistance}, " +
+                "rt: ${if (ringedTiers == null) 0 else ringedTiers}"
             )
         }
 
-        if (this.spawnLocationX != null) {
-            sb.append(" x: ")
-            sb.append(this.spawnLocationX)
+        if (this.originCoordX != null) {
+            sb.append(" x: ").append(this.originCoordX)
         }
 
-        if (this.spawnLocationZ != null) {
-            sb.append(" z: ")
-            sb.append(this.spawnLocationZ)
+        if (this.originCoordZ != null) {
+            sb.append(" z: ").append(this.originCoordZ)
         }
 
         return sb.toString()
@@ -150,21 +149,29 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         var result: Float
         val transitionYHeight =
             if (this.transitionYheight == null) 0f else transitionYheight!!.toFloat()
-        val multiplierPeriod = if (this.multiplierPeriod == null) 0f else multiplierPeriod!!.toFloat()
+        val yHeightPeriod = if (this.yHeightPeriod == null) 0f else yHeightPeriod!!.toFloat()
         val lvlMultiplier = if (this.lvlMultiplier == null) 0f else lvlMultiplier!!
 
         result = if (this.scaleDownward == null || scaleDownward!!) {
             ((((transitionYHeight - currentYPos) /
-                    multiplierPeriod) * lvlMultiplier)
+                    yHeightPeriod) * lvlMultiplier)
                     * spawnDistanceLevelAssignment)
         } else {
             ((((transitionYHeight - currentYPos) /
-                    multiplierPeriod) * (lvlMultiplier * -1f))
+                    yHeightPeriod) * (lvlMultiplier * -1f))
                     * spawnDistanceLevelAssignment)
         }
 
+        if (result.isNaN()){
+            DebugManager.log(DebugType.STRATEGY_RESULT, lmEntity) {
+                "BlendedLevel generated NaN, returning 0. transitionYHeight: $transitionYHeight, yPos: $currentYPos, " +
+                        "yHeightPeriod: $yHeightPeriod, lvlMultiplier: $lvlMultiplier, sda: $spawnDistanceLevelAssignment"
+            }
+            result = 0f
+        }
+
         result =
-            if (result < 0.0) ceil(result) + spawnDistanceLevelAssignment else floor(result) + spawnDistanceLevelAssignment
+            if (result < 0f) ceil(result) + spawnDistanceLevelAssignment else floor(result) + spawnDistanceLevelAssignment
         val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(
             lmEntity
         )

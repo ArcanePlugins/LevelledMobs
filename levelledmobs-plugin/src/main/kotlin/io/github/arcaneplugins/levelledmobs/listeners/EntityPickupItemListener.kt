@@ -37,7 +37,10 @@ class EntityPickupItemListener : Listener {
         val pickedUpEquipment = PickedUpEquipment(lmEntity)
         val wrapper = SchedulerWrapper(lmEntity.livingEntity) {
             pickedUpEquipment.checkEquipment(itemStack)
+            lmEntity.free()
         }
+
+        lmEntity.inUseCount.getAndIncrement()
         wrapper.runDelayed(1L)
     }
 }
