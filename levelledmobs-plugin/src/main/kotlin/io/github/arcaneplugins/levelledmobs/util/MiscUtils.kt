@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.nametag
+package io.github.arcaneplugins.levelledmobs.util
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import org.bukkit.entity.LivingEntity
@@ -72,7 +72,7 @@ object MiscUtils {
             val tagsMap = tagsField.get(compoundTag) as MutableMap<String, Any>
 
             // NBTTagCompound.java
-            val bukkitValues = tagsMap["BukkitValues"]
+            val bukkitValues = tagsMap["BukkitValues"] ?: return results
 
             // private final Map<String, NBTBase> tags; (again)
             val bukkitValuesMap = tagsField.get(bukkitValues) as MutableMap<String, Any>

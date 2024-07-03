@@ -35,8 +35,6 @@ class PickedUpEquipment(
         if (slotNumber >= 0) {
             storeItemInPDC(slotNumber)
         }
-
-        lmEntity.free()
     }
 
     fun getMobPickedUpItems(): MutableList<ItemStack> {

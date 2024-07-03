@@ -7,5 +7,5 @@ package io.github.arcaneplugins.levelledmobs.annotations
  * @author stumper66
  * @since 3.2.0
  */
-@Target(AnnotationTarget.PROPERTY)
+@Target(AnnotationTarget.FIELD)
 annotation class DoNotMerge

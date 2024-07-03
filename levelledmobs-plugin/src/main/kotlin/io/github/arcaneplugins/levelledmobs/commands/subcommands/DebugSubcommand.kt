@@ -14,7 +14,7 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugCreator
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
-import io.github.arcaneplugins.levelledmobs.nametag.MiscUtils
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
@@ -321,15 +321,23 @@ object DebugSubcommand {
             sb.append("key: &b${items.key}&r, ${items.value}")
         }
 
-        val message = formatDumpMessage(
-            "Showing PDC keys for",
-            lmEntity,
-            sb.toString()
-        )
+        val message = if (results.isEmpty()){
+            formatDumpMessage(
+                "No PDC keys were found for",
+                lmEntity,
+                null
+            )
+        } else{
+            formatDumpMessage(
+                "Showing PDC keys for",
+                lmEntity,
+                sb.toString()
+            )
+        }
 
         lmEntity.free()
 
-        if (showOnConsole) {
+        if (showOnConsole && results.isNotEmpty()) {
             Log.inf(message)
             sender.sendMessage("PDC keys have been printed in the console")
         }
@@ -418,7 +426,7 @@ object DebugSubcommand {
     private fun formatDumpMessage(
         messageStart: String,
         lmEntity: LivingEntityWrapper,
-        values: String
+        values: String?
     ): String {
         var entityName = lmEntity.nameIfBaby
         if (ExternalCompatibilityManager.hasMythicMobsInstalled
@@ -435,11 +443,12 @@ object DebugSubcommand {
                     "${lmEntity.livingEntity.location.blockZ}"
 
         val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
+        val showValues = if (values != null) "\n$values" else ""
 
         return if (lmEntity.nameIfBaby.equals(entityName, ignoreCase = true))
-            "$messageStart: $entityName (lvl $mobLevel) in ${lmEntity.worldName}, $locationStr&r\n$values"
+            "$messageStart: $entityName (lvl $mobLevel) in ${lmEntity.worldName}, $locationStr&r$showValues"
         else
-            "$messageStart: $entityName (lvl $mobLevel ${lmEntity.typeName}) in ${lmEntity.worldName}, $locationStr&r\n$values"
+            "$messageStart: $entityName (lvl $mobLevel ${lmEntity.typeName}) in ${lmEntity.worldName}, $locationStr&r$showValues"
     }
 
     private fun parseEnableTimer(sender: CommandSender, args: CommandArguments) {

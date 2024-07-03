@@ -443,7 +443,7 @@ class CustomDropsHandler {
                         info.dropInstance = groupIdToInstance[drop.groupId]
                         info.groupLimits = groupLimitsMap.getOrDefault(drop.groupId, defaultLimits)
                         maxRetries =
-                            info.groupLimits!!.retries.coerceAtMost(retriesHardcodedMax)
+                            info.groupLimits?.retries?.coerceAtMost(retriesHardcodedMax) ?: 0
                     } else {
                         info.dropInstance = null
                         info.groupLimits = null
@@ -764,7 +764,7 @@ class CustomDropsHandler {
 
                 info.addDebugMessage(
                     "&8 - &7item: &b${newItem.type.name}&7, amount: &b${dropBase.amountAsString}&7, newAmount: &b$newDropAmount&7, " +
-                            "chance: &b{dropBase.chance?.showMatchedChance()}&7, chanceRole: " +
+                            "chance: &b${dropBase.chance?.showMatchedChance()}&7, chanceRole: " +
                             "&b${Utils.round(chanceRole.toDouble(), 4)}&7, dropped: &btrue&7$retryMsg."
                 )
             }

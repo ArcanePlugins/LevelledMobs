@@ -56,7 +56,8 @@ object SpawnerEggCommand : SpawnerBaseClass() {
             })
             .withOptionalArguments(
                 ListArgumentBuilder<String>("values")
-                    .skipListValidation(true)
+                    .allowAnyValue(true)
+                    .allowDuplicates(true)
                     .withList { info -> buildTabSuggestions(allEggOptions, info) }
                     .withStringMapper()
                     .buildGreedy()

@@ -40,4 +40,5 @@ enum class DeathCause {
     VOID,
     WITHER,
     PLAYER_CAUSED,
+    CAMPFIRE
 }

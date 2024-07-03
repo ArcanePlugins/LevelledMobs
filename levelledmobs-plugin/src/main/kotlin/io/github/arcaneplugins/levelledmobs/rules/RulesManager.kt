@@ -512,11 +512,7 @@ class RulesManager {
                     result = ruleInfo.nametagVisibilityEnum
                 }
             }
-        } catch (e: ConcurrentModificationException) {
-            Log.war(
-                "Got ConcurrentModificationException in getRule_CreatureNametagVisbility"
-            )
-        }
+        } catch (_: ConcurrentModificationException) { }
 
         return if (result.isNullOrEmpty()) {
             mutableListOf(NametagVisibilityEnum.MELEE)

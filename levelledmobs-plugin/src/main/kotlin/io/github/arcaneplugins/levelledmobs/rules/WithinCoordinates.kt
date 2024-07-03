@@ -1,8 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
+import io.github.arcaneplugins.levelledmobs.annotations.DoNotShow
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.declaredMemberProperties
 
 /**
  * Specifies a region based on coordinates that can be
@@ -18,9 +17,9 @@ class WithinCoordinates {
     var endX: Int? = null
     var endY: Int? = null
     var endZ: Int? = null
-    private var infinityDirectionX = InfinityDirection.NONE
-    private var infinityDirectionY = InfinityDirection.NONE
-    private var infinityDirectionZ = InfinityDirection.NONE
+    @DoNotShow private var infinityDirectionX = InfinityDirection.NONE
+    @DoNotShow private var infinityDirectionY = InfinityDirection.NONE
+    @DoNotShow private var infinityDirectionZ = InfinityDirection.NONE
 
     fun parseAxis(
         number: String?,
@@ -66,11 +65,13 @@ class WithinCoordinates {
 
     val isEmpty: Boolean
         get() {
-            for (p in this::class.declaredMemberProperties) {
-                if (p.visibility == KVisibility.PRIVATE) continue
+            for (f in this::class.java.declaredFields) {
+                f.trySetAccessible()
+
+                if (f.isAnnotationPresent(DoNotShow::class.java)) continue
 
                 try {
-                    if (p.getter.call(this) != null) return false
+                    if (f.get(this) != null) return false
                 } catch (e: IllegalAccessException) {
                     e.printStackTrace()
                 }

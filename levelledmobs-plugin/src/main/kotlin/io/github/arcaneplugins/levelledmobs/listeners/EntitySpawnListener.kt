@@ -55,6 +55,7 @@ class EntitySpawnListener : Listener{
         lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
         lmEntity.populateShowShowLMNametag()
+        lmEntity.buildCacheIfNeeded()
         MobDataManager.populateAttributeCache(lmEntity, null)
 
         if (event is CreatureSpawnEvent) {
@@ -447,9 +448,7 @@ class EntitySpawnListener : Listener{
             )
 
             lmEntity.playerForLevelling = closestPlayer
-            val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
-                lmEntity
-            )
+            val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
             if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
                 lmEntity.livingEntity.hasLineOfSight(closestPlayer)
             ) {

@@ -258,6 +258,10 @@ class LevelManager : LevelInterface2 {
         val evalResult = MobDataManager.evaluateExpression(formula)
         if (evalResult.hadError){
             NotifyManager.notifyOfError("Error evaluating formula for construct-level on mob: ${lmEntity.nameIfBaby}, ${evalResult.error}")
+            DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
+                "result (error, ${evalResult.error})\n" +
+                        "   formulaPre: '$formulaPre'\n" +
+                        "   formula: '$formula'" }
             throw EvaluationException()
         }
 
@@ -1238,9 +1242,7 @@ class LevelManager : LevelInterface2 {
             if (!lmEntity.isPopulated) {
                 return
             }
-            val nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
-                lmEntity
-            )
+            val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
             val nametagVisibleTime = lmEntity.getNametagCooldownTime()
             if (nametagVisibleTime > 0L &&
                 nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&

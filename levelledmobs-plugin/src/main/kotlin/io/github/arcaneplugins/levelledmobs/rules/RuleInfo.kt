@@ -4,13 +4,13 @@ import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotShow
 import io.github.arcaneplugins.levelledmobs.annotations.ExcludeFromHash
 import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
+import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
-import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
@@ -19,12 +19,7 @@ import java.util.TreeMap
 import org.bukkit.Particle
 import org.bukkit.block.Biome
 import org.bukkit.generator.structure.Structure
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty1
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
+
 
 /**
  * Holds rules parsed from rules.yml to make up a list of rules
@@ -37,149 +32,149 @@ class RuleInfo(
     @DoNotMerge @ExcludeFromHash @DoNotShow
     internal var ruleName: String = "Unnamed"
 ) {
-    @DoNotMerge @DoNotShow
+    @field:DoNotMerge @field:DoNotShow
     var ruleIsEnabled = true
-    @RuleFieldInfo("construct level", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("construct level", RuleType.APPLY_SETTING)
     var constructLevel: String? = null
-    @DoNotMerge @ExcludeFromHash @RuleFieldInfo("is temp disabled", RuleType.MISC)
+    @field:DoNotMerge @field:ExcludeFromHash @field:RuleFieldInfo("is temp disabled", RuleType.MISC)
     var isTempDisabled = false
-    @ExcludeFromHash @RuleFieldInfo("use no spawner particles", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("use no spawner particles", RuleType.APPLY_SETTING)
     var useNoSpawnerParticles = false
-    @RuleFieldInfo("baby mobs inherit adult settings", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("baby mobs inherit adult settings", RuleType.APPLY_SETTING)
     var babyMobsInheritAdultSetting: Boolean? = null
-    @RuleFieldInfo("mob level inheritance", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("mob level inheritance", RuleType.APPLY_SETTING)
     var mobLevelInheritance: Boolean? = null
-    @ExcludeFromHash @RuleFieldInfo("use custom drops", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("use custom drops", RuleType.APPLY_SETTING)
     var customDropsUseForMobs: Boolean? = null
-    @RuleFieldInfo("stop proessing rules", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("stop proessing rules", RuleType.APPLY_SETTING)
     var stopProcessingRules: Boolean? = null
-    @ExcludeFromHash @DoNotShow
+    @field:ExcludeFromHash @field:DoNotShow
     var mergeEntityNameOverrides: Boolean? = null
-    @RuleFieldInfo("passenger match level", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("passenger match level", RuleType.APPLY_SETTING)
     var passengerMatchLevel: Boolean? = null
-    @ExcludeFromHash @RuleFieldInfo("lock entity", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("lock entity", RuleType.APPLY_SETTING)
     var lockEntity: Boolean? = null
-    @ExcludeFromHash @RuleFieldInfo("spawner particles count", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("spawner particles count", RuleType.APPLY_SETTING)
     var spawnerParticlesCount: Int? = null
     @RuleFieldInfo("max random variance", RuleType.STRATEGY)
     var maxRandomVariance: Int? = null
-    @ExcludeFromHash @RuleFieldInfo("creeper max damage radius", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("creeper max damage radius", RuleType.APPLY_SETTING)
     var creeperMaxDamageRadius: Int? = null
-    @RuleFieldInfo("minlevel", RuleType.CONDITION)
+    @field:RuleFieldInfo("minlevel", RuleType.CONDITION)
     var conditionsMinLevel: Int? = null
-    @RuleFieldInfo("maxlevel", RuleType.CONDITION)
+    @field:RuleFieldInfo("maxlevel", RuleType.CONDITION)
     var conditionsMaxLevel: Int? = null
-    @RuleFieldInfo("minlevel", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("minlevel", RuleType.APPLY_SETTING)
     var restrictionsMinLevel: Int? = null
-    @RuleFieldInfo("maxlevel", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("maxlevel", RuleType.APPLY_SETTING)
     var restrictionsMaxLevel: Int? = null
-    @RuleFieldInfo("apply above Y", RuleType.CONDITION)
+    @field:RuleFieldInfo("apply above Y", RuleType.CONDITION)
     var conditionsApplyAboveY: Int? = null
-    @RuleFieldInfo("apply below Y", RuleType.CONDITION)
+    @field:RuleFieldInfo("apply below Y", RuleType.CONDITION)
     var conditionsApplyBelowY: Int? = null
-    @RuleFieldInfo("min distance from spawn", RuleType.CONDITION)
+    @field:RuleFieldInfo("min distance from spawn", RuleType.CONDITION)
     var conditionsMinDistanceFromSpawn: Int? = null
-    @RuleFieldInfo("max distance from spawn", RuleType.CONDITION)
+    @field:RuleFieldInfo("max distance from spawn", RuleType.CONDITION)
     var conditionsMaxDistanceFromSpawn: Int? = null
-    @ExcludeFromHash @RuleFieldInfo("nametag visible time", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("nametag visible time", RuleType.APPLY_SETTING)
     var nametagVisibleTime: Long? = null
-    @ExcludeFromHash @RuleFieldInfo("max death in chunk threshold", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("max death in chunk threshold", RuleType.APPLY_SETTING)
     var maximumDeathInChunkThreshold: Int? = null
-    @ExcludeFromHash @RuleFieldInfo("chunk max cooldown time", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("chunk max cooldown time", RuleType.APPLY_SETTING)
     var chunkMaxCoolDownTime: Int? = null
-    @ExcludeFromHash @RuleFieldInfo("max adjacent chunks", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("max adjacent chunks", RuleType.APPLY_SETTING)
     var maxAdjacentChunks: Int? = null
-    @ExcludeFromHash @RuleFieldInfo("cooldown time", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("cooldown time", RuleType.APPLY_SETTING)
     var conditionsCooldownTime: Long? = null
-    @ExcludeFromHash @RuleFieldInfo("times to cooldown activation", RuleType.CONDITION)
+    @field:ExcludeFromHash @field:RuleFieldInfo("times to cooldown activation", RuleType.CONDITION)
     var conditionsTimesToCooldownActivation: Int? = null
-    @ExcludeFromHash @RuleFieldInfo("rule chance", RuleType.CONDITION)
+    @field:ExcludeFromHash @field:RuleFieldInfo("rule chance", RuleType.CONDITION)
     var conditionsChance: Float? = null
-    @ExcludeFromHash @RuleFieldInfo("sunlight burn amount", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("sunlight burn amount", RuleType.APPLY_SETTING)
     var sunlightBurnAmount: Double? = null
-    @ExcludeFromHash @RuleFieldInfo("nametag", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("nametag", RuleType.APPLY_SETTING)
     var nametag: String? = null
-    @ExcludeFromHash @RuleFieldInfo("creature death nametag", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("creature death nametag", RuleType.APPLY_SETTING)
     var nametagCreatureDeath: String? = null
-    @ExcludeFromHash @RuleFieldInfo("nametag placeholder levelled", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("nametag placeholder levelled", RuleType.APPLY_SETTING)
     var nametagPlaceholderLevelled: String? = null
-    @ExcludeFromHash @RuleFieldInfo("nametag placeholder unlevelled", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("nametag placeholder unlevelled", RuleType.APPLY_SETTING)
     var nametagPlaceholderUnlevelled: String? = null
-    @DoNotMerge @ExcludeFromHash @DoNotShow
+    @field:DoNotMerge @field:ExcludeFromHash @field:DoNotShow
     var presetName: String? = null
-    @ExcludeFromHash @RuleFieldInfo("drop table ids", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("drop table ids", RuleType.APPLY_SETTING)
     val customDropDropTableIds = mutableListOf<String>()
-    @ExcludeFromHash @RuleFieldInfo("health indicator", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("health indicator", RuleType.APPLY_SETTING)
     var healthIndicator: HealthIndicator? = null
-    @RuleFieldInfo("mob customname", RuleType.CONDITION)
+    @field:RuleFieldInfo("mob customname", RuleType.CONDITION)
     var conditionsMobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED
-    @RuleFieldInfo("mob tamed status", RuleType.CONDITION)
+    @field:RuleFieldInfo("mob tamed status", RuleType.CONDITION)
     var conditionsMobTamedStatus = MobTamedStatus.NOT_SPECIFIED
-    @RuleFieldInfo("levelling strategy", RuleType.STRATEGY)
+    @field:RuleFieldInfo("levelling strategy", RuleType.STRATEGY)
     val levellingStrategy = mutableMapOf<StrategyType, LevellingStrategy>()
-    @RuleFieldInfo("custom strategy", RuleType.STRATEGY)
+    @field:RuleFieldInfo("custom strategy", RuleType.STRATEGY)
     val customStrategy: MutableMap<String, CustomStrategy> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-    @ExcludeFromHash @RuleFieldInfo("entity name overrides with level", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("entity name overrides with level", RuleType.APPLY_SETTING)
     var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
-    @ExcludeFromHash @RuleFieldInfo("entity name overrides", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("entity name overrides", RuleType.APPLY_SETTING)
     var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
-    @ExcludeFromHash @RuleFieldInfo("custom death messages", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("custom death messages", RuleType.APPLY_SETTING)
     var deathMessages: DeathMessages? = null
-    @ExcludeFromHash @RuleFieldInfo("nametag visibility options", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("nametag visibility options", RuleType.APPLY_SETTING)
     var nametagVisibilityEnum: MutableList<NametagVisibilityEnum>? = null
-    @DoNotMerge @ExcludeFromHash @DoNotShow
+    @field:DoNotMerge @field:ExcludeFromHash @field:DoNotShow
     val ruleSourceNames = mutableMapOf<String, String>()
-    @ExcludeFromHash @RuleFieldInfo("spawner particle", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("spawner particle", RuleType.APPLY_SETTING)
     var spawnerParticle: Particle? = null
-    @ExcludeFromHash @RuleFieldInfo("tiered coloring info", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("tiered coloring info", RuleType.APPLY_SETTING)
     var tieredColoringInfos: MutableList<TieredColoringInfo>? = null
-    @ExcludeFromHash @RuleFieldInfo("enabled compatibilities", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("enabled compatibilities", RuleType.APPLY_SETTING)
     var enabledExtCompats: MutableMap<ExternalCompatibility, Boolean>? = null
-    @RuleFieldInfo("mob nbt data", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("mob nbt data", RuleType.APPLY_SETTING)
     var mobNBTData: MergeableStringList? = null
-    @RuleFieldInfo("skylight level", RuleType.CONDITION)
+    @field:RuleFieldInfo("skylight level", RuleType.CONDITION)
     var conditionsSkyLightLevel: MinAndMax? = null
-    @RuleFieldInfo("allowed worlds", RuleType.CONDITION)
+    @field:RuleFieldInfo("allowed worlds", RuleType.CONDITION)
     var conditionsWorlds: CachedModalList<String>? = null
-    @RuleFieldInfo("allowed entities", RuleType.CONDITION)
+    @field:RuleFieldInfo("allowed entities", RuleType.CONDITION)
     var conditionsEntities: CachedModalList<String>? = null
-    @RuleFieldInfo("allowed biomes", RuleType.CONDITION)
+    @field:RuleFieldInfo("allowed biomes", RuleType.CONDITION)
     var conditionsBiomes: CachedModalList<Biome>? = null
-    @RuleFieldInfo("external plugins", RuleType.CONDITION)
+    @field:RuleFieldInfo("external plugins", RuleType.CONDITION)
     var conditionsExternalPlugins: CachedModalList<String>? = null
-    @RuleFieldInfo("custom names", RuleType.CONDITION)
+    @field:RuleFieldInfo("custom names", RuleType.CONDITION)
     var conditionsCustomNames: CachedModalList<String>? = null
-    @RuleFieldInfo("no drop entities", RuleType.CONDITION)
+    @field:RuleFieldInfo("no drop entities", RuleType.CONDITION)
     var conditionsNoDropEntities: CachedModalList<String>? = null
-    @RuleFieldInfo("worldguard regions", RuleType.CONDITION)
+    @field:RuleFieldInfo("worldguard regions", RuleType.CONDITION)
     var conditionsWGregions: CachedModalList<String>? = null
-    @RuleFieldInfo("worldguard region owners", RuleType.CONDITION)
+    @field:RuleFieldInfo("worldguard region owners", RuleType.CONDITION)
     var conditionsWGregionOwners: CachedModalList<String>? = null
-    @RuleFieldInfo("mythic mobs names", RuleType.CONDITION)
+    @field:RuleFieldInfo("mythic mobs names", RuleType.CONDITION)
     var conditionsMMnames: CachedModalList<String>? = null
-    @RuleFieldInfo("spawner names", RuleType.CONDITION)
+    @field:RuleFieldInfo("spawner names", RuleType.CONDITION)
     var conditionsSpawnerNames: CachedModalList<String>? = null
-    @RuleFieldInfo("spawner egg names", RuleType.CONDITION)
+    @field:RuleFieldInfo("spawner egg names", RuleType.CONDITION)
     var conditionsSpawnegEggNames: CachedModalList<String>? = null
-    @RuleFieldInfo("scoreboard tags", RuleType.CONDITION)
+    @field:RuleFieldInfo("scoreboard tags", RuleType.CONDITION)
     var conditionsScoreboardTags: CachedModalList<String>? = null
-    @RuleFieldInfo("world tick time", RuleType.CONDITION)
+    @field:RuleFieldInfo("world tick time", RuleType.CONDITION)
     var conditionsWorldTickTime: CachedModalList<MinAndMax>? = null
-    @RuleFieldInfo("vanilla bonuses", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("vanilla bonuses", RuleType.APPLY_SETTING)
     var vanillaBonuses: CachedModalList<VanillaBonusEnum>? = null
-    @RuleFieldInfo("spawn reasons", RuleType.CONDITION)
+    @field:RuleFieldInfo("spawn reasons", RuleType.CONDITION)
     var conditionsSpawnReasons: CachedModalList<LevelledMobSpawnReason>? = null
-    @RuleFieldInfo("structures", RuleType.CONDITION)
+    @field:RuleFieldInfo("structures", RuleType.CONDITION)
     var conditionsStructure: CachedModalList<Structure>? = null
-    @RuleFieldInfo("player permissions", RuleType.CONDITION)
+    @field:RuleFieldInfo("player permissions", RuleType.CONDITION)
     var conditionsPermission: CachedModalList<String>? = null
-    @RuleFieldInfo("within coordinates", RuleType.CONDITION)
+    @field:RuleFieldInfo("within coordinates", RuleType.CONDITION)
     var conditionsWithinCoords: WithinCoordinates? = null
-    @RuleFieldInfo("all mob multipliers", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("all mob multipliers", RuleType.APPLY_SETTING)
     var allMobMultipliers: FineTuningAttributes? = null
-    @RuleFieldInfo("mob specific multipliers", RuleType.APPLY_SETTING)
+    @field:RuleFieldInfo("mob specific multipliers", RuleType.APPLY_SETTING)
     var specificMobMultipliers: MutableMap<String, FineTuningAttributes>? = null
-    @ExcludeFromHash @RuleFieldInfo("chunk kill options", RuleType.APPLY_SETTING)
+    @field:ExcludeFromHash @field:RuleFieldInfo("chunk kill options", RuleType.APPLY_SETTING)
     var chunkKillOptions: ChunkKillOptions? = null
 
     fun mergePresetRules(preset: RuleInfo?) {
@@ -188,15 +183,18 @@ class RuleInfo(
         }
 
         try {
-            for (p in preset::class.declaredMemberProperties) {
-                if (p.visibility == KVisibility.PRIVATE) continue
-                if (p.hasAnnotation<DoNotMerge>()) continue
-                var presetValue = p.getter.call(preset) ?: continue
-                val ruleValue = p.getter.call(this)
+            for (f in preset::javaClass.get().declaredFields) {
+                f.trySetAccessible()
+
+                if (f.isAnnotationPresent(DoNotMerge::class.java)) continue
+                if (f.get(preset) == null) continue
+
+                var presetValue = f.get(preset)
+                val ruleValue = this::javaClass.get().getDeclaredField(f.name).get(this)
                 var skipSettingValue = false
                 val mergableRule = presetValue as? MergableRule
 
-                if (p.name == "entityNameOverrides" && this.entityNameOverrides != null && presetValue is MutableMap<*, *>) {
+                if (f.name == "entityNameOverrides" && this.entityNameOverrides != null && presetValue is MutableMap<*, *>) {
                     entityNameOverrides!!.putAll(presetValue as MutableMap<String, LevelTierMatching>)
                     skipSettingValue = true
                 } else if (mergableRule != null) {
@@ -206,12 +204,12 @@ class RuleInfo(
                     } else {
                         presetValue = mergableRule.cloneItem()
                     }
-                } else if (p.name == "entityNameOverrides_Level" && this.entityNameOverridesLevel != null) {
+                } else if (f.name == "entityNameOverrides_Level" && this.entityNameOverridesLevel != null) {
                     entityNameOverridesLevel!!.putAll(
                         presetValue as MutableMap<String, MutableList<LevelTierMatching>>
                     )
                     skipSettingValue = true
-                } else if (p.name == "specificMobMultipliers") {
+                } else if (f.name == "specificMobMultipliers") {
                     val mergingPreset = presetValue as MutableMap<String, FineTuningAttributes>
                     if (this.specificMobMultipliers == null) {
                         this.specificMobMultipliers = mutableMapOf()
@@ -222,7 +220,7 @@ class RuleInfo(
                     }
 
                     skipSettingValue = true
-                } else if (p.name == "customDrop_DropTableIds") {
+                } else if (f.name == "customDropDropTableIds") {
                     val mergingPreset = presetValue as MutableList<String>
                     customDropDropTableIds.addAll(mergingPreset)
 
@@ -243,12 +241,13 @@ class RuleInfo(
                     if (thisCachedModalList != null && presetValue.doMerge) {
                         thisCachedModalList.mergeCachedModal(presetValue)
                     } else {
-                        updatePropertyValue(p, presetValue.clone())
+                        this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
+                        //updatePropertyValue(p, presetValue.clone())
                     }
 
                     skipSettingValue = true
                 }
-                if (p.name == "levellingStrategy") {
+                if (f.name == "levellingStrategy") {
                     val mergingStrategies = presetValue as MutableMap<StrategyType, LevellingStrategy>
 
                     for (strategy in mergingStrategies){
@@ -260,7 +259,7 @@ class RuleInfo(
 
                     skipSettingValue = true
                 }
-                if (p.name == "customStrategy"){
+                if (f.name == "customStrategy"){
                     val mergingStrategies = presetValue as MutableMap<String, CustomStrategy>
 
                     if (mergingStrategies.isNotEmpty()){
@@ -292,21 +291,13 @@ class RuleInfo(
                 }
 
                 if (!skipSettingValue) {
-                    updatePropertyValue(p, presetValue)
+                    this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
                 }
-                ruleSourceNames[p.name] = preset.ruleName
+                ruleSourceNames[f.name] = preset.ruleName
             }
         } catch (e: IllegalAccessException) {
             e.printStackTrace()
         }
-    }
-
-    private fun updatePropertyValue(
-        property: KProperty1<*, *>,
-        newValue: Any?
-    ) {
-        if (property is KMutableProperty<*>)
-            property.setter.call(this, newValue)
     }
 
     data class RuleSortingInfo(
@@ -340,14 +331,18 @@ class RuleInfo(
             sb.append("&r")
 
         try {
-            for (f in this::class.declaredMemberProperties) {
-                if (f.visibility == KVisibility.PRIVATE) continue
-                if (isForHash && f.findAnnotation<ExcludeFromHash>() != null) continue
-                if (!isForHash && f.hasAnnotation<DoNotShow>()) continue
-                val value = f.getter.call(this) ?: continue
+            for (f in this::javaClass.get().declaredFields) {
+                if (isForHash && f.isAnnotationPresent(ExcludeFromHash::class.java)) {
+                    continue
+                }
+                if (!isForHash && f.isAnnotationPresent(DoNotShow::class.java)) {
+                    continue
+                }
+
+                val value = f.get(this) ?: continue
                 var ruleName = f.name
                 var ruleInfoType = RuleType.MISC
-                val ruleTypeInfo = f.findAnnotation<RuleFieldInfo>()
+                val ruleTypeInfo = f.getAnnotation(RuleFieldInfo::class.java)
                 if (ruleTypeInfo != null) {
                     ruleInfoType = ruleTypeInfo.ruleType
                     ruleName = ruleTypeInfo.value

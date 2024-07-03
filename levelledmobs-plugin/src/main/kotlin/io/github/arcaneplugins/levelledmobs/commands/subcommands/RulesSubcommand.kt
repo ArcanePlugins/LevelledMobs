@@ -44,10 +44,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 
 /**
  * Shows the current rules as parsed from the various config files
@@ -568,17 +564,18 @@ object RulesSubcommand {
             for (i in effectiveRules.indices) {
                 val pi = effectiveRules[i]
 
-                for (f in pi::class.declaredMemberProperties) {
-                    if (f.visibility == KVisibility.PRIVATE) continue
-                    if (f.hasAnnotation<DoNotMerge>()) continue
-                    if (f.hasAnnotation<DoNotShow>()) continue
-                    val value = f.getter.call(pi) ?: continue
+                for (f in pi::class.java.declaredFields) {
+                    f.trySetAccessible()
+
+                    if (f.isAnnotationPresent(DoNotMerge::class.java)) continue
+                    if (f.isAnnotationPresent(DoNotShow::class.java)) continue
+                    val value = f.get(pi) ?: continue
                     if (value.toString().isEmpty()) continue
 
                     var ruleName = f.name
                     var showValue: String? = null
                     var ruleInfoType = RuleType.MISC
-                    val ruleTypeInfo = f.findAnnotation<RuleFieldInfo>()
+                    val ruleTypeInfo = f.getAnnotation(RuleFieldInfo::class.java)
                     if (ruleTypeInfo != null) {
                         ruleInfoType = ruleTypeInfo.ruleType
                         ruleName = ruleTypeInfo.value
