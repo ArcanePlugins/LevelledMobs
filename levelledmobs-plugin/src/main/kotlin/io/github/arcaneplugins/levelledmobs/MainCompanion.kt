@@ -31,6 +31,7 @@ import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.UpdateChecker
 import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
@@ -483,7 +484,6 @@ class MainCompanion{
                         updateResult = replaceAllInList(
                             updateResult, "%latestVersion%", latestVersion
                         )
-                        updateResult = colorizeAllInList(updateResult)
 
                         if (main.messagesCfg.getBoolean(
                                 "other.update-notice.send-in-console",
@@ -503,7 +503,7 @@ class MainCompanion{
                                     )
                                 ) {
                                     for (msg in updateResult) {
-                                        onlinePlayer.sendMessage(msg)
+                                        onlinePlayer.sendMessage(MessageUtils.colorizeAll(msg))
                                     }
                                     //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
                                 }

@@ -740,7 +740,7 @@ class LevelManager : LevelInterface2 {
 
         // ignore if 'disabled'
         if (nametag.isEmpty) {
-            val useCustomNameForNametags: Boolean = main.helperSettings.getBoolean(
+            val useCustomNameForNametags = main.helperSettings.getBoolean(
                 "use-customname-for-mob-nametags"
             )
             return if (useCustomNameForNametags) {
@@ -775,7 +775,7 @@ class LevelManager : LevelInterface2 {
             false
         ) else lmEntity.lockedOverrideName!!
 
-        replaceStringPlaceholders(nametag, lmEntity, false, null, preserveMobName)
+        replaceStringPlaceholders(nametag, lmEntity, true, null, preserveMobName)
 
         var indicatorStr = ""
         var colorOnly = ""

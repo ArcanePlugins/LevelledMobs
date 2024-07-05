@@ -66,7 +66,6 @@ class LevelledMobs : JavaPlugin() {
     val random = Random()
     var placeholderApiIntegration: PlaceholderApiIntegration? = null
         internal set
-    var migratedFromPre30 = false
     val helperSettings = YmlParsingHelper(YamlConfiguration())
     var playerLevellingMinRelevelTime = 0L
         internal set
@@ -158,7 +157,6 @@ class LevelledMobs : JavaPlugin() {
     }
 
     fun reloadLM(sender: CommandSender) {
-        migratedFromPre30 = false
         NotifyManager.clearLastError()
         customDropsHandler.customDropsParser.invalidExternalItems.clear()
         var reloadStartedMsg = messagesCfg.getStringList(
