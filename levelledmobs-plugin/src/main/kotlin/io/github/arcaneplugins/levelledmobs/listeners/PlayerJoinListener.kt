@@ -8,7 +8,6 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
-import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
@@ -41,6 +40,7 @@ class PlayerJoinListener : Listener {
             main.debugManager.playerThatEnabledDebug = event.player
         }
 
+        main.mainCompanion.checkSettingsWithMaxPlayerOptions()
         main.mainCompanion.addRecentlyJoinedPlayer(event.player)
         checkForNetherPortalCoords(event.player)
         main.nametagTimerChecker.addPlayerToQueue(PlayerQueueItem(event.player, true))
@@ -120,6 +120,8 @@ class PlayerJoinListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+        main.mainCompanion.checkSettingsWithMaxPlayerOptions(true)
+
         if (main.placeholderApiIntegration != null) {
             main.placeholderApiIntegration!!.playedLoggedOut(event.player)
         }

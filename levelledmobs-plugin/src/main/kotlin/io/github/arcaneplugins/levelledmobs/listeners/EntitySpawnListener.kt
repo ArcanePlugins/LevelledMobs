@@ -42,7 +42,11 @@ import org.bukkit.persistence.PersistentDataType
  * @version 2.5.0
  */
 class EntitySpawnListener : Listener{
-    var processMobSpawns: Boolean = false
+    var processMobSpawns = true
+
+    init {
+        instance = this
+    }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntitySpawn(event: EntitySpawnEvent) {
@@ -381,6 +385,10 @@ class EntitySpawnListener : Listener{
     }
 
     companion object{
+        @JvmStatic
+        lateinit var instance: EntitySpawnListener
+            private set
+
         fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
             val onlinePlayerCount = lmEntity.world.players.size
             val checkDistance = LevelledMobs.instance.helperSettings.getInt(

@@ -70,8 +70,16 @@ async-task-max-blocks-from-player: 320
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  Enables the on-spawn listener to apply levels to entities.
-# ||  If false, entities will no longer be levelled when they spawn in.
-level-mobs-upon-spawn: true
+# ||  Will be enabled until number of online players exceed this value.
+level-mobs-upon-spawn-max-players: 10
+
+# ||  ADVANCED USERS ONLY
+# ||  Do not touch this unless a LM developer tells you to.
+# ||  When enabled mobs will received nametag update packets when they
+# ||  receive damage from any source. If disabled only player caused
+# ||  damage will send a nametag packet.
+# ||  Will be enabled until number of online players exceed this value.
+update-mobs-upon-nonplayer-damage-max-players: 5
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
@@ -170,4 +178,4 @@ exclude-players-in-creative: false
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point
 #   ---------------  -  ------------------------------
 #
-file-version: 36
+file-version: 37

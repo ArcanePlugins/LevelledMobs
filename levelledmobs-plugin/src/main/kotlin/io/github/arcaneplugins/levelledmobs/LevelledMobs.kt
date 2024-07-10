@@ -130,6 +130,7 @@ class LevelledMobs : JavaPlugin() {
         }
 
         prepareToLoadCustomDrops()
+        mainCompanion.checkSettingsWithMaxPlayerOptions()
         mainCompanion.startCleanupTask()
         mainCompanion.setupMetrics()
         mainCompanion.checkUpdates()
@@ -204,10 +205,6 @@ class LevelledMobs : JavaPlugin() {
             ))
         }
 
-        levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(
-            "level-mobs-upon-spawn", true
-        )
-
         rulesManager.clearTempDisabledRulesCounts()
         definitions.useTranslationComponents = helperSettings.getBoolean(
             "use-translation-components", true
@@ -217,6 +214,7 @@ class LevelledMobs : JavaPlugin() {
                 "use-legacy-serializer", true
             )
         )
+        mainCompanion.checkSettingsWithMaxPlayerOptions()
         nametagQueueManager.nametagSenderHandler.refresh()
 
         reloadFinishedMsg.forEach(Consumer { s: String ->

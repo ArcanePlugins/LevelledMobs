@@ -775,7 +775,7 @@ class LevelManager : LevelInterface2 {
             false
         ) else lmEntity.lockedOverrideName!!
 
-        replaceStringPlaceholders(nametag, lmEntity, true, null, preserveMobName)
+        replaceStringPlaceholders(nametag, lmEntity, false, null, preserveMobName)
 
         var indicatorStr = ""
         var colorOnly = ""

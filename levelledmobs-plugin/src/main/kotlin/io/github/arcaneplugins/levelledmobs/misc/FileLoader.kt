@@ -17,11 +17,11 @@ import org.yaml.snakeyaml.Yaml
  * @since 2.4.0
  */
 object FileLoader {
-    const val SETTINGS_FILE_VERSION: Int = 36 // Last changed: v4.0.0 b1
-    const val MESSAGES_FILE_VERSION: Int = 9 // Last changed: v4.0.0 b1
-    const val CUSTOMDROPS_FILE_VERSION: Int = 11 // Last changed: v4.0.0 b1
-    const val RULES_FILE_VERSION: Int = 5 // Last changed: v4.0.0 b1
-    const val EXTERNALPLUGINS_FILE_VERSION: Int = 1 // Last changed: v4.0.0
+    const val SETTINGS_FILE_VERSION = 37 // Last changed: v4.1.0 b37
+    const val MESSAGES_FILE_VERSION = 9 // Last changed: v4.0.0 b1
+    const val CUSTOMDROPS_FILE_VERSION = 11 // Last changed: v4.0.0 b1
+    const val RULES_FILE_VERSION = 5 // Last changed: v4.0.0 b1
+    const val EXTERNALPLUGINS_FILE_VERSION = 1 // Last changed: v4.0.0
 
     fun loadFile(
         plugin: Plugin,
@@ -74,8 +74,7 @@ object FileLoader {
             // copy to old file
             FileUtil.copy(file, backedupFile)
             Log.inf(
-                "&fFile Loader: &8(Migration) &b$useCfgName backed up to "
-                        + backedupFile.name
+                "&fFile Loader: &8(Migration) &b$useCfgName backed up to ${backedupFile.name}"
             )
             // overwrite the file from new version
             if (!isRules) {

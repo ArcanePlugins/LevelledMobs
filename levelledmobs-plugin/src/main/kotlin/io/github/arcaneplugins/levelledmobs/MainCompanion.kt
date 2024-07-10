@@ -23,6 +23,7 @@ import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManage
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
 import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
 import io.github.arcaneplugins.levelledmobs.listeners.ServerLoadEvent
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
@@ -200,6 +201,20 @@ class MainCompanion{
         this.showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
     }
 
+    fun checkSettingsWithMaxPlayerOptions(playerJustLeft: Boolean = false){
+        val levelMobsUponSpawnMaxPlayers = LevelledMobs.instance.helperSettings.getInt(
+            "level-mobs-upon-spawn-max-players", 10
+        )
+        val updateMobsUponNonplayerDamageMaxPlayers = LevelledMobs.instance.helperSettings.getInt(
+            "update-mobs-upon-nonplayer-damage-max-players", 5
+        )
+        var currentPlayerCount = Bukkit.getOnlinePlayers().size
+        if (playerJustLeft) currentPlayerCount--
+
+        EntitySpawnListener.instance.processMobSpawns = currentPlayerCount <= levelMobsUponSpawnMaxPlayers
+        EntityDamageListener.instance.updateMobsOnNonPlayerdamage = currentPlayerCount <= updateMobsUponNonplayerDamageMaxPlayers
+    }
+
     fun registerListeners() {
         Log.inf("&fListeners: &7Registering event listeners...")
 
@@ -207,9 +222,6 @@ class MainCompanion{
         main.levelManager.load()
         main.mobsQueueManager.start()
         main.nametagQueueManager.start()
-        main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(
-            "level-mobs-upon-spawn", true
-        )
         main.entityDamageDebugListener = EntityDamageDebugListener()
         main.blockPlaceListener = BlockPlaceListener()
 

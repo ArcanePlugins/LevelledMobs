@@ -1,4 +1,4 @@
-<div align="center">
+<td style="text-align: center;">
 
 <img src="https://i.ibb.co/ySgMPd0/Levelled-Mobs-Banner-v2-0.png" width="600" height="300" alt="LevelledMobs Banner" />
 
@@ -29,7 +29,7 @@
 
 ### Also see: [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
 
-</div>
+</td>
 
 <br /><hr />
 
@@ -71,10 +71,10 @@ Remember to give these projects a star. :)
 
 <br /><hr />
 
-<div align="center">
+<td style="text-align: center;">
 
 ## Learn More at [✈️ HangarMC](https://hangar.papermc.io/ArcanePlugins/LevelledMobs) or [🚰 SpigotMC](https://www.spigotmc.org/resources/levelledmobs.74304/)
 
 ### Also see: [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
 
-</div>
+</td>
