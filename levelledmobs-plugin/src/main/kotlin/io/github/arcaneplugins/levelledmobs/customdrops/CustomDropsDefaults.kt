@@ -16,7 +16,7 @@ class CustomDropsDefaults {
     var playerCausedOnly = false
     var onlyDropIfEquipped = false
     var amount = 1
-    var amountExpression: String? = null
+    var amountFormula: String? = null
     var priority = 0
     var minLevel = -1
     var maxLevel = -1
@@ -69,8 +69,8 @@ class CustomDropsDefaults {
         this.causeOfDeathReqs = dropBase.causeOfDeathReqs
 
         if (dropBase is CustomDropItem) {
-            if (dropBase.amountExpression.isNullOrEmpty())
-                this.amountExpression = dropBase.amountExpression
+            if (dropBase.amountFormula.isNullOrEmpty())
+                this.amountFormula = dropBase.amountFormula
             this.customModelData = dropBase.customModelDataId
             if (this.equippedChance != null)
                 this.equippedChance!!.setFromInstance(dropBase.equippedChance)

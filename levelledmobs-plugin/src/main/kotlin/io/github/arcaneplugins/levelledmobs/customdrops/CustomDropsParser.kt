@@ -560,7 +560,7 @@ class CustomDropsParser(
         item.maxItems = ymlHelper.getInt("max-items", 1)
         item.allowedList = ymlHelper.getStringOrList("allowed-list")
         item.excludedList = ymlHelper.getStringOrList("excluded-list")
-        item.amountExpression = ymlHelper.getString("amount-formula")
+        item.amountFormula = ymlHelper.getString("amount-formula")
 
         dropInstance!!.overrideStockDrops = ymlHelper.getBoolean2(
              "override",defaults.override

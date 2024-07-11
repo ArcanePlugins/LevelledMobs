@@ -703,7 +703,7 @@ class CustomDropsHandler {
             newDropAmount = dropBase.amountRangeMin + change
         }
 
-        if (!dropBase.amountExpression.isNullOrEmpty()){
+        if (!dropBase.amountFormula.isNullOrEmpty()){
             newDropAmount = evaluateAmountExpression(dropBase, info.lmEntity!!).roundToInt()
         }
 
@@ -878,9 +878,9 @@ class CustomDropsHandler {
         item: CustomDropItem,
         lmEntity: LivingEntityWrapper
     ): Double{
-        if (item.amountExpression.isNullOrEmpty()) return 1.0
+        if (item.amountFormula.isNullOrEmpty()) return 1.0
 
-        val formulaPre = item.amountExpression!!
+        val formulaPre = item.amountFormula!!
         val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
         val evalResult = MobDataManager.evaluateExpression(formula)
         if (evalResult.hadError){
