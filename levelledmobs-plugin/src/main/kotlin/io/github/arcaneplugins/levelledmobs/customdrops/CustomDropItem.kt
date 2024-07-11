@@ -16,6 +16,7 @@ class CustomDropItem() : CustomDropBase(
         LevelledMobs.instance.customDropsHandler.customDropsParser.defaults),
         Cloneable {
     var customModelDataId = 0
+    var amountExpression: String? = null
     var equippedChance: SlidingChance? = null
     var noMultiplier = false
     var onlyDropIfEquipped = false

@@ -253,7 +253,7 @@ class LevelManager : LevelInterface2 {
         input: Float,
         lmEntity: LivingEntityWrapper
     ): Int{
-        val formulaPre = LevelledMobs.instance.rulesManager.getRuleConstructLevel(lmEntity) ?: return input.toInt()
+        val formulaPre = LevelledMobs.instance.rulesManager.getRuleConstructLevel(lmEntity) ?: return input.roundToInt()
         val formula = replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
         val evalResult = MobDataManager.evaluateExpression(formula)
         if (evalResult.hadError){
@@ -265,7 +265,7 @@ class LevelManager : LevelInterface2 {
             throw EvaluationException()
         }
 
-        val result = evalResult.result.toInt()
+        val result = evalResult.result.roundToInt()
 
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
             "result $result\n" +

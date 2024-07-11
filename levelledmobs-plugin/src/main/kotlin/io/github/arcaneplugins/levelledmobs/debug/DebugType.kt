@@ -142,5 +142,7 @@ enum class DebugType {
 
     LEVEL_RATIO,
 
-    ENCHANTMENT_CHANCES
+    ENCHANTMENT_CHANCES,
+
+    AMOUNT_FORMULA
 }

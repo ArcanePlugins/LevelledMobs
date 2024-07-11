@@ -10,6 +10,8 @@ import io.github.arcaneplugins.levelledmobs.enums.DropInstanceBuildResult
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
+import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
@@ -30,6 +32,7 @@ import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.roundToInt
 
 /**
  * The main CustomDropsclass that holds useful functions for parsing, instantizing and more of
@@ -700,6 +703,10 @@ class CustomDropsHandler {
             newDropAmount = dropBase.amountRangeMin + change
         }
 
+        if (!dropBase.amountExpression.isNullOrEmpty()){
+            newDropAmount = evaluateAmountExpression(dropBase, info.lmEntity!!).roundToInt()
+        }
+
         if (dropBase.hasGroupId && info.groupLimits != null) {
             val gl = info.groupLimits!!
 
@@ -865,6 +872,33 @@ class CustomDropsHandler {
         }
 
         return true
+    }
+
+    fun evaluateAmountExpression(
+        item: CustomDropItem,
+        lmEntity: LivingEntityWrapper
+    ): Double{
+        if (item.amountExpression.isNullOrEmpty()) return 1.0
+
+        val formulaPre = item.amountExpression!!
+        val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
+        val evalResult = MobDataManager.evaluateExpression(formula)
+        if (evalResult.hadError){
+            NotifyManager.notifyOfError("Error evaluating formula for amount-expression on mob: ${lmEntity.nameIfBaby}, lvl: ${lmEntity.getMobLevel}, ${evalResult.error}")
+            DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
+                "result (error, ${evalResult.error})\n" +
+                        "   formulaPre: '$formulaPre'\n" +
+                        "   formula: '$formula'" }
+        }
+
+        val result = evalResult.result
+
+        DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
+            "result $result\n" +
+                    "   formulaPre: '$formulaPre'\n" +
+                    "   formula: '$formula'" }
+
+        return result
     }
 
     private fun checkOverallChance(info: CustomDropProcessingInfo): Boolean {
