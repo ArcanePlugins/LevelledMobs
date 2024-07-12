@@ -33,7 +33,6 @@ import org.bukkit.Particle
 import org.bukkit.Registry
 import org.bukkit.block.Biome
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
@@ -518,7 +517,7 @@ class RulesParser {
         }
 
         for (hashMap in rulesSection as MutableList<MutableMap<String, Any>>) {
-            val cs = objToCS2(hashMap)
+            val cs = YmlParsingHelper.objToCS2(hashMap)
             if (cs == null) {
                 Log.war("cs was null (parsing custom-rules)")
                 continue
@@ -1601,31 +1600,5 @@ class RulesParser {
         for (i in minLevel..maxLevel) rls.weightedRandom["$i-$i"] = maxLevel - i + 1
 
         rls.populateWeightedRandom(minLevel, maxLevel)
-    }
-
-    private fun objToCS2(
-        obj: Any?
-    ): ConfigurationSection? {
-        if (obj == null) return null
-
-        when (obj) {
-            is ConfigurationSection -> {
-                return obj
-            }
-
-            is Map<*, *> -> {
-                val result = MemoryConfiguration()
-                result.addDefaults((obj as Map<String, Any>))
-                return result.defaultSection
-            }
-
-            else -> {
-                Log.war(
-                    "couldn't parse config of type: " + obj.javaClass.simpleName +
-                            ", value: $obj"
-                )
-                return null
-            }
-        }
     }
 }

@@ -80,6 +80,14 @@ class CustomDropItem() : CustomDropBase(
         return copy
     }
 
+    override val amountAsString: String
+        get() {
+            return if (amountFormula.isNullOrEmpty())
+                super.amountAsString
+            else
+                "'${amountFormula!!}'"
+        }
+
     fun setDamageRangeFromString(numberOrNumberRange: String?): Boolean {
         if (numberOrNumberRange.isNullOrEmpty()) {
             return false

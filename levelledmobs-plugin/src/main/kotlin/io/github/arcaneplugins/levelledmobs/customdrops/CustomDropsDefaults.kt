@@ -69,7 +69,7 @@ class CustomDropsDefaults {
         this.causeOfDeathReqs = dropBase.causeOfDeathReqs
 
         if (dropBase is CustomDropItem) {
-            if (dropBase.amountFormula.isNullOrEmpty())
+            if (!dropBase.amountFormula.isNullOrEmpty())
                 this.amountFormula = dropBase.amountFormula
             this.customModelData = dropBase.customModelDataId
             if (this.equippedChance != null)

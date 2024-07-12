@@ -27,7 +27,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.enchantments.Enchantment
@@ -49,7 +48,7 @@ class CustomDropsParser(
     private var hasMentionedNBTAPIMissing = false
     var dropsUtilizeNBTAPI: Boolean = false
     val invalidExternalItems = mutableListOf<String>()
-    private var dropInstance: CustomDropInstance? = null
+    private var dropInstance: CustomDropInstance = CustomDropInstance(EntityType.AREA_EFFECT_CLOUD)
     private val defaultName = "default"
     private val invalidEntityTypesToIgnore = mutableListOf<String>()
     var hadParsingError = false
@@ -68,9 +67,7 @@ class CustomDropsParser(
 
     fun loadDrops(customDropsCfg: YamlConfiguration?) {
         this.dropsUtilizeNBTAPI = false
-        if (customDropsCfg == null) {
-            return
-        }
+        if (customDropsCfg == null) return
 
         var isDropsEnabledForAnyRule = false
         hadParsingError = false
@@ -112,23 +109,23 @@ class CustomDropsParser(
         drop.material = Material.AIR
         drop.isDefaultDrop = true
         dropInstance = CustomDropInstance(EntityType.AREA_EFFECT_CLOUD)
-        dropInstance!!.customItems.add(drop)
+        dropInstance.customItems.add(drop)
 
         // this sets the drop and dropinstance defaults
         parseCustomDropsAttributes(drop, ymlParser)
 
         // now we'll use the attributes here for defaults
         defaults.setDefaultsFromDropItem(drop)
-        defaults.override = dropInstance!!.getOverrideStockDrops
-        defaults.overallChance = dropInstance!!.overallChance
-        defaults.overallPermissions.addAll(dropInstance!!.overallPermissions)
-        handler.customDropIDs[defaults.groupId!!] = dropInstance!!
+        defaults.override = dropInstance.getOverrideStockDrops
+        defaults.overallChance = dropInstance.overallChance
+        defaults.overallPermissions.addAll(dropInstance.overallPermissions)
+        handler.customDropIDs[defaults.groupId!!] = dropInstance
     }
 
     private fun parseCustomDrops(config: ConfigurationSection) {
         handler.customItemGroups = mutableMapOf()
 
-        processDefaults(objectToConfigurationSection2(config, "defaults"))
+        processDefaults(YmlParsingHelper.objToCS(config, "defaults"))
 
         val dropTableKey: String = YmlParsingHelper.getKeyNameFromConfig(config, "drop-table")
         if (config[dropTableKey] != null) {
@@ -137,30 +134,25 @@ class CustomDropsParser(
                 val itemGroups = ms.getValues(true)
 
                 for ((itemGroupName, value) in itemGroups) {
-                    dropInstance = CustomDropInstance(
-                        EntityType.AREA_EFFECT_CLOUD
-                    ) // entity type doesn't matter
+                    dropInstance = CustomDropInstance(EntityType.AREA_EFFECT_CLOUD) // entity type doesn't matter
                     parseCustomDrops2(value as List<*>)
-                    if (dropInstance!!.customItems.isNotEmpty() || dropInstance!!.getOverrideStockDrops) {
-                        handler.customItemGroups[itemGroupName] = dropInstance!!
-                        handler.customDropIDs[itemGroupName] = dropInstance!!
+                    if (dropInstance.customItems.isNotEmpty() || dropInstance.getOverrideStockDrops) {
+                        handler.customItemGroups[itemGroupName] = dropInstance
+                        handler.customDropIDs[itemGroupName] = dropInstance
                     }
                 }
             }
         }
 
         for (item in config.getKeys(false)) {
-            var entityType: EntityType? = null
+            var entityType = EntityType.AREA_EFFECT_CLOUD
             val mobTypeOrGroups = item.split(";")
 
             for (mobTypeOrGroupPre in mobTypeOrGroups) {
                 var mobTypeOrGroup = mobTypeOrGroupPre.trim { it <= ' ' }
-                if (mobTypeOrGroup.isEmpty()) {
+                if (mobTypeOrGroup.isEmpty()) continue
+                if (mobTypeOrGroup.lowercase(Locale.getDefault()).startsWith("file-version"))
                     continue
-                }
-                if (mobTypeOrGroup.lowercase(Locale.getDefault()).startsWith("file-version")) {
-                    continue
-                }
 
                 var universalGroup: CustomUniversalGroups? = null
                 val isEntityTable = (mobTypeOrGroup.equals("drop-table", ignoreCase = true))
@@ -177,9 +169,8 @@ class CustomDropsParser(
                     }
                     dropInstance = CustomDropInstance(universalGroup)
                 } else if (!isEntityTable) {
-                    if (mobTypeOrGroup.equals("defaults", ignoreCase = true)) {
+                    if (mobTypeOrGroup.equals("defaults", ignoreCase = true))
                         continue
-                    }
 
                     var isBabyMob = false
                     if (mobTypeOrGroup.lowercase(Locale.getDefault()).startsWith("baby_")) {
@@ -190,9 +181,9 @@ class CustomDropsParser(
                     try {
                         entityType = EntityType.valueOf(mobTypeOrGroup.uppercase(Locale.getDefault()))
                     } catch (e: Exception) {
-                        if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.uppercase(Locale.getDefault()))) {
+                        if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.uppercase(Locale.getDefault())))
                             hadError("invalid mob type in customdrops.yml: $mobTypeOrGroup")
-                        }
+
                         continue
                     }
                     dropInstance = CustomDropInstance(entityType, isBabyMob)
@@ -201,8 +192,8 @@ class CustomDropsParser(
                     continue
                 }
 
-                dropInstance!!.overrideStockDrops = defaults.override
-                dropInstance!!.overallChance = defaults.overallChance
+                dropInstance.overrideStockDrops = defaults.override
+                dropInstance.overallChance = defaults.overallChance
 
                 if (!isEntityTable) {
                     if (config.getList(item) != null) {
@@ -210,33 +201,29 @@ class CustomDropsParser(
                         parseCustomDrops2(config.getList(item))
                     } else if (config[item] is MemorySection) {
                         // drop is using a item group
-                        val csItem = objectToConfigurationSection2(config,item) ?: continue
-
+                        val csItem = YmlParsingHelper.objToCS(config, item) ?: continue
                         val useEntityDropId = YmlParsingHelper.getString(csItem, "usedroptable")
-                        if (useEntityDropId != null && !handler.customItemGroups.containsKey(
-                                useEntityDropId
-                            )
-                        ) {
+
+                        if (useEntityDropId != null && !handler.customItemGroups.containsKey(useEntityDropId))
                             hadError("Did not find droptable id match for name: $useEntityDropId")
-                        } else if (useEntityDropId == null) {
+                        else if (useEntityDropId == null)
                             hadError("Found a drop-table reference with no id!")
-                        } else {
-                            val refDrop = handler.customItemGroups[useEntityDropId]
-                            for (itemDrop in refDrop!!.customItems) {
-                                dropInstance!!.customItems.add((if (itemDrop is CustomDropItem) itemDrop.cloneItem() else (itemDrop as CustomCommand).cloneItem())!!)
+                        else {
+                            val refDrop = handler.customItemGroups[useEntityDropId]!!
+                            for (itemDrop in refDrop.customItems) {
+                                dropInstance.customItems.add((if (itemDrop is CustomDropItem) itemDrop.cloneItem() else (itemDrop as CustomCommand).cloneItem())!!)
                             }
-                            if (refDrop.utilizesGroupIds) {
-                                dropInstance!!.utilizesGroupIds = true
-                            }
-                            if (refDrop.getOverrideStockDrops) {
-                                dropInstance!!.overrideStockDrops = true
-                            }
+                            if (refDrop.utilizesGroupIds)
+                                dropInstance.utilizesGroupIds = true
+
+                            if (refDrop.getOverrideStockDrops)
+                                dropInstance.overrideStockDrops = true
                         }
                     }
                 } // end if not entity table
 
 
-                if (dropInstance!!.customItems.isNotEmpty() || dropInstance!!.getOverrideStockDrops) {
+                if (dropInstance.customItems.isNotEmpty() || dropInstance.getOverrideStockDrops) {
                     if (isUniversalGroup) {
                         if (handler.getCustomDropsitemsGroups().containsKey(
                                 universalGroup.toString()
@@ -245,17 +232,17 @@ class CustomDropsParser(
                             handler.getCustomDropsitemsGroups()[universalGroup.toString()]
                                 ?.combineDrop(dropInstance)
                         } else {
-                            handler.addCustomDropGroup(universalGroup.toString(), dropInstance!!)
+                            handler.addCustomDropGroup(universalGroup.toString(), dropInstance)
                         }
                     } else {
                         val dropMap: MutableMap<EntityType, CustomDropInstance> =
-                            if (dropInstance!!.isBabyMob) handler.customDropsitemsBabies else handler.getCustomDropsitems()
+                            if (dropInstance.isBabyMob) handler.customDropsitemsBabies else handler.getCustomDropsitems()
 
                         if (dropMap.containsKey(entityType)) {
                             dropMap[entityType]!!.combineDrop(dropInstance)
                         } else {
-                            dropMap[entityType!!] = dropInstance!!
-                            handler.addCustomDropItem(entityType, dropInstance!!)
+                            dropMap[entityType] = dropInstance
+                            handler.addCustomDropItem(entityType, dropInstance)
                         }
                     }
                 }
@@ -264,9 +251,7 @@ class CustomDropsParser(
     }
 
     private fun parseCustomDrops2(itemConfigurations: List<*>?) {
-        if (itemConfigurations == null) {
-            return
-        }
+        if (itemConfigurations == null) return
 
         for (itemObject in itemConfigurations) {
             if (itemObject is String) {
@@ -274,22 +259,15 @@ class CustomDropsParser(
                 val item = CustomDropItem(this.defaults)
 
                 if ("override".equals(itemObject, ignoreCase = true)) {
-                    dropInstance!!.overrideStockDrops = true
+                    dropInstance.overrideStockDrops = true
                     continue
                 }
 
                 addMaterialToDrop(itemObject, item)
                 continue
             }
-            val itemConfiguration = objectToConfigurationSectionOld(
-                itemObject
-            )
-            if (itemConfiguration == null) {
-                continue
-            }
-
-            val itemsToCheck = itemConfiguration.getValues(false)
-                .entries
+            val itemConfiguration = YmlParsingHelper.objToCS2(itemObject) ?: continue
+            val itemsToCheck = itemConfiguration.getValues(false).entries
 
             if (itemsToCheck.isEmpty() && itemObject!!.javaClass == LinkedHashMap::class.java) {
                 // empty list means a material name was provided with no attributes
@@ -303,92 +281,81 @@ class CustomDropsParser(
                         break
                     }
                 }
-                if (needsContinue) {
-                    continue
-                }
+                if (needsContinue) continue
             }
 
             for (itemEntry in itemsToCheck) {
-                val materialName = itemEntry.key
-
-                if (checkForMobOverride(itemEntry)) {
-                    continue
-                }
-
-                if ("overall_chance".equals(materialName, ignoreCase = true)) {
-                    dropInstance!!.overallChance = parseSlidingChance(
-                        YmlParsingHelper(itemConfiguration),
-                        "overall_chance", defaults.overallChance
-                    )
-                    continue
-                } else if ("overall_permission".equals(materialName, ignoreCase = true)) {
-                    if (itemEntry.value is String) {
-                        dropInstance!!.overallPermissions.add((itemEntry.value as String?)!!)
-                    } else if (itemEntry.value is ArrayList<*>) {
-                        dropInstance!!.overallPermissions.addAll(
-                            itemEntry.value as ArrayList<String>
-                        )
-                    }
-
-                    continue
-                }
-
-                if ("usedroptable".equals(materialName, ignoreCase = true)) {
-                    if (itemEntry.value == null) {
-                        hadError("Found a drop-table reference with no id!")
-                        continue
-                    }
-
-                    val useEntityDropId = itemEntry.value.toString()
-
-                    if (!handler.customItemGroups.containsKey(
-                            useEntityDropId
-                        )
-                    ) {
-                        hadError("Did not find droptable id match for name: $useEntityDropId")
-                    } else {
-                        val refDrop = handler.customItemGroups[useEntityDropId]
-                        for (itemDrop in refDrop!!.customItems) {
-                            dropInstance!!.customItems.add((if (itemDrop is CustomDropItem) itemDrop.cloneItem() else (itemDrop as CustomCommand).cloneItem())!!)
-                        }
-                        if (refDrop.utilizesGroupIds) {
-                            dropInstance!!.utilizesGroupIds = true
-                        }
-                        if (refDrop.getOverrideStockDrops) {
-                            dropInstance!!.overrideStockDrops = true
-                        }
-                    }
-                    continue
-                }
-
-                val itemInfoConfiguration = objectToConfigurationSectionOld(
-                    itemEntry.value
-                ) ?: continue
-
-                val ymlHelper = YmlParsingHelper(itemInfoConfiguration)
-                var dropBase: CustomDropBase
-                if ("customCommand".equals(materialName, ignoreCase = true)) {
-                    dropBase = CustomCommand(defaults)
-                } else {
-                    val item = CustomDropItem(this.defaults)
-                    item.externalType = ymlHelper.getString(
-                        "type", defaults.externalType
-                    )
-                    item.externalAmount = ymlHelper.getDouble2(
-                        "external-amount", defaults.externalAmount
-                    )
-                    item.externalExtras = parseExternalExtras(itemInfoConfiguration)
-
-                    if (!addMaterialToDrop(materialName, item)) {
-                        continue
-                    }
-
-                    dropBase = item
-                }
-
-                parseCustomDropsAttributes(dropBase, ymlHelper)
+                parseItem(itemEntry, itemConfiguration)
             }
         } // next item
+    }
+
+    private fun parseItem(
+        itemEntry: MutableMap.MutableEntry<String, Any>,
+        cs: ConfigurationSection
+    ){
+        val materialName = itemEntry.key
+
+        if (checkForMobOverride(itemEntry)) return
+
+        if ("overall_chance".equals(materialName, ignoreCase = true)) {
+            dropInstance.overallChance = parseSlidingChance(
+                YmlParsingHelper(cs),
+                "overall_chance", defaults.overallChance
+            )
+            return
+        } else if ("overall_permission".equals(materialName, ignoreCase = true)) {
+            if (itemEntry.value is String)
+                dropInstance.overallPermissions.add((itemEntry.value as String?)!!)
+            else if (itemEntry.value is ArrayList<*>) {
+                dropInstance.overallPermissions.addAll(
+                    itemEntry.value as ArrayList<String>
+                )
+            }
+
+            return
+        }
+
+        if ("usedroptable".equals(materialName, ignoreCase = true)) {
+            val useEntityDropId = itemEntry.value.toString()
+
+            if (!handler.customItemGroups.containsKey(useEntityDropId))
+                hadError("Did not find droptable id match for name: $useEntityDropId")
+            else {
+                val refDrop = handler.customItemGroups[useEntityDropId]!!
+                for (itemDrop in refDrop.customItems)
+                    dropInstance.customItems.add(itemDrop)
+
+                if (refDrop.utilizesGroupIds)
+                    dropInstance.utilizesGroupIds = true
+
+                if (refDrop.getOverrideStockDrops)
+                    dropInstance.overrideStockDrops = true
+            }
+            return
+        }
+
+        val cs2 = YmlParsingHelper.objToCS2(itemEntry.value) ?: return
+
+        val ymlHelper = YmlParsingHelper(cs2)
+        val dropBase: CustomDropBase
+        if ("customCommand".equals(materialName, ignoreCase = true))
+            dropBase = CustomCommand(defaults)
+        else {
+            val item = CustomDropItem(this.defaults)
+            item.externalType = ymlHelper.getString(
+                "type", defaults.externalType
+            )
+            item.externalAmount = ymlHelper.getDouble2(
+                "external-amount", defaults.externalAmount
+            )
+            item.externalExtras = parseExternalExtras(cs2)
+
+            if (!addMaterialToDrop(materialName, item)) return
+            dropBase = item
+        }
+
+        parseCustomDropsAttributes(dropBase, ymlHelper)
     }
 
     private fun parseExternalExtras(
@@ -438,16 +405,16 @@ class CustomDropsParser(
             dropBase.groupId = ymlHelper.getString("groupid")
 
         if (dropBase.hasGroupId)
-            handler.setDropInstanceFromId(dropBase.groupId!!, dropInstance!!)
+            handler.setDropInstanceFromId(dropBase.groupId!!, dropInstance)
 
-        dropInstance!!.utilizesGroupIds = dropBase.hasGroupId
+        dropInstance.utilizesGroupIds = dropBase.hasGroupId
         parseGroupLimits(dropBase, ymlHelper.cs)
 
         if (!ymlHelper.getString( "amount").isNullOrEmpty()) {
             if (!dropBase.setAmountRangeFromString(ymlHelper.getString( "amount"))) {
                 hadError(
                     "Invalid number or number range for amount on " +
-                            "${dropInstance!!.getMobOrGroupName()}, ${ymlHelper.getString( "amount")}"
+                            "${dropInstance.getMobOrGroupName()}, ${ymlHelper.getString( "amount")}"
                 )
             }
         }
@@ -455,12 +422,12 @@ class CustomDropsParser(
         val overallChance = parseSlidingChance(ymlHelper, "overall_chance", null)
         if (!ymlHelper.getString("overall_chance").isNullOrEmpty()) {
             if (overallChance == null || !overallChance.isDefault) {
-                dropInstance!!.overallChance = null
+                dropInstance.overallChance = null
             }
         }
 
         if (ymlHelper.cs[YmlParsingHelper.getKeyNameFromConfig(ymlHelper.cs, "overall_permission")] != null) {
-            dropInstance!!.overallPermissions.addAll(
+            dropInstance.overallPermissions.addAll(
                 ymlHelper.getStringSet( "overall_permission")
             )
         }
@@ -562,14 +529,14 @@ class CustomDropsParser(
         item.excludedList = ymlHelper.getStringOrList("excluded-list")
         item.amountFormula = ymlHelper.getString("amount-formula")
 
-        dropInstance!!.overrideStockDrops = ymlHelper.getBoolean2(
+        dropInstance.overrideStockDrops = ymlHelper.getBoolean2(
              "override",defaults.override
         )
 
         if (!ymlHelper.getString("damage").isNullOrEmpty()) {
             if (!item.setDamageRangeFromString(ymlHelper.getString( "damage"))) {
                 hadError(
-                    "Invalid number range for damage on ${dropInstance!!.getMobOrGroupName()}, ${ymlHelper.getString("damage")}"
+                    "Invalid number range for damage on ${dropInstance.getMobOrGroupName()}, ${ymlHelper.getString("damage")}"
                 )
             }
         }
@@ -584,14 +551,14 @@ class CustomDropsParser(
             }
         }
 
-        parseEnchantments(objectToConfigurationSection2(ymlHelper.cs, "enchantments"), item)
+        parseEnchantments(ymlHelper.objToCS("enchantments"), item)
         item.nbtData = ymlHelper.getString("nbt-data", defaults.nbtData)
         if (item.material != Material.AIR && !item.nbtData.isNullOrEmpty()) {
             if (ExternalCompatibilityManager.hasNbtApiInstalled) {
                 val result: NBTApplyResult = NBTManager.applyNBTDataItem(item, item.nbtData!!)
-                if (result.hadException) {
-                    "custom drop ${item.material} for ${dropInstance!!.getMobOrGroupName()} has invalid NBT data: ${result.exceptionMessage}"
-                } else if (result.itemStack != null) {
+                if (result.hadException)
+                    "custom drop ${item.material} for ${dropInstance.getMobOrGroupName()} has invalid NBT data: ${result.exceptionMessage}"
+                else if (result.itemStack != null) {
                     item.itemStack = result.itemStack
                     this.dropsUtilizeNBTAPI = true
                 }
@@ -621,9 +588,8 @@ class CustomDropsParser(
         limits.capSelect = ymlHelper.getInt( "cap-select")
         limits.retries = ymlHelper.getInt( "retries")
 
-        if (!limits.isEmpty || base.isDefaultDrop) {
+        if (!limits.isEmpty || base.isDefaultDrop)
             handler.groupLimitsMap[base.groupId!!] = limits
-        }
     }
 
     private fun parseCustomCommand(
@@ -638,11 +604,10 @@ class CustomDropsParser(
         customCommand.mobScale = ymlHelper.getDouble2( "mob-scale", null)
         parseRangedVariables(customCommand, ymlHelper.cs)
 
-        if (customCommand.commands.isEmpty()) {
+        if (customCommand.commands.isEmpty())
             hadError("no command was specified for custom command")
-        } else {
-            dropInstance!!.customItems.add(customCommand)
-        }
+        else
+            dropInstance.customItems.add(customCommand)
     }
 
     private fun buildCachedModalListOfDamageCause(
@@ -656,28 +621,23 @@ class CustomDropsParser(
         var cs2: ConfigurationSection? = null
         var useList: MutableList<String>? = null
 
-        if (simpleStringOrArray is java.util.ArrayList<*>) {
+        if (simpleStringOrArray is java.util.ArrayList<*>)
             useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
-        } else if (simpleStringOrArray is String) {
+        else if (simpleStringOrArray is String)
             useList = mutableListOf(simpleStringOrArray)
-        }
 
-        if (useList == null) {
+        if (useList == null)
             cs2 = YmlParsingHelper.objToCS(ymlHelper.cs, useKeyName)
-        }
-        if (cs2 == null && useList == null) {
+        if (cs2 == null && useList == null)
             return defaultValue
-        }
 
         cachedModalList.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
-        if (cs2 != null) {
+        if (cs2 != null)
             useList = YmlParsingHelper.getListFromConfigItem(cs2, "allowed-list")
-        }
 
         for (item in useList!!) {
-            if (item.trim { it <= ' ' }.isEmpty()) {
-                continue
-            }
+            if (item.trim { it <= ' ' }.isEmpty()) continue
+
             if ("*" == item.trim { it <= ' ' }) {
                 cachedModalList.includeAll = true
                 continue
@@ -689,14 +649,11 @@ class CustomDropsParser(
                 hadError("Invalid damage cause: $item")
             }
         }
-        if (cs2 == null) {
-            return cachedModalList
-        }
+        if (cs2 == null)  return cachedModalList
 
         for (item in YmlParsingHelper.getListFromConfigItem(cs2, "excluded-list")) {
-            if (item.trim { it <= ' ' }.isEmpty()) {
-                continue
-            }
+            if (item.trim { it <= ' ' }.isEmpty()) continue
+
             if ("*" == item.trim { it <= ' ' }) {
                 cachedModalList.excludeAll = true
                 continue
@@ -709,17 +666,17 @@ class CustomDropsParser(
             }
         }
 
-        if (cachedModalList.isEmpty() && !cachedModalList.includeAll && !cachedModalList.excludeAll) {
+        if (cachedModalList.isEmpty() && !cachedModalList.includeAll && !cachedModalList.excludeAll)
             return defaultValue
-        }
 
         return cachedModalList
     }
 
-    private fun parseEnchantments(cs: ConfigurationSection?, item: CustomDropItem) {
-        if (cs == null) {
-            return
-        }
+    private fun parseEnchantments(
+        cs: ConfigurationSection?,
+        item: CustomDropItem
+    ) {
+        if (cs == null) return
 
         val enchantMap = cs.getValues(false)
 
@@ -736,15 +693,14 @@ class CustomDropsParser(
                     continue
                 }
 
-                val enchantments = value as Map<Any, Any>
+                val enchantments = value as MutableMap<Any, Any>
                 parseEnchantmentChances(en, enchantments, item)
                 continue
             }
 
             var enchantLevel = 1
-            if (value != null && Utils.isInteger(value.toString())) {
+            if (value != null && Utils.isInteger(value.toString()))
                 enchantLevel = value.toString().toInt()
-            }
 
             val en = Registry.ENCHANTMENT.get(
                 NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
@@ -755,18 +711,18 @@ class CustomDropsParser(
                         ?.itemMeta as EnchantmentStorageMeta
                     meta.addStoredEnchant(en, enchantLevel, true)
                     item.itemStack!!.setItemMeta(meta)
-                } else {
-                    item.itemStack!!.addUnsafeEnchantment(en, enchantLevel)
                 }
-            } else {
-                hadError("Invalid enchantment: $enchantName")
+                else
+                    item.itemStack!!.addUnsafeEnchantment(en, enchantLevel)
             }
+            else
+                hadError("Invalid enchantment: $enchantName")
         }
     }
 
     private fun parseEnchantmentChances(
         enchantment: Enchantment,
-        enchantmentsMap: Map<Any, Any>,
+        enchantmentsMap: MutableMap<Any, Any>,
         item: CustomDropItem
     ) {
         val items = mutableMapOf<Int, Float>()
@@ -831,14 +787,11 @@ class CustomDropsParser(
         cs: ConfigurationSection
     ) {
         for (key in cs.getKeys(false)) {
-            if (!key.lowercase(Locale.getDefault()).startsWith("ranged")) {
+            if (!key.lowercase(Locale.getDefault()).startsWith("ranged"))
                 continue
-            }
 
             val value = cs.getString(key)
-            if (value.isNullOrEmpty()) {
-                continue
-            }
+            if (value.isNullOrEmpty()) continue
 
             cc.rangedEntries[key] = value
         }
@@ -863,9 +816,7 @@ class CustomDropsParser(
             madeChanges = true
         }
 
-        if (madeChanges) {
-            item.itemStack!!.setItemMeta(meta)
-        }
+        if (madeChanges) item.itemStack!!.setItemMeta(meta)
     }
 
     private fun parseItemFlags(
@@ -874,25 +825,23 @@ class CustomDropsParser(
     ) {
         item.itemFlagsStrings = ymlHelper.getStringList("item_flags")
 
-        if (item.itemFlagsStrings!!.isEmpty() && defaults.itemFlagsStrings != null) {
+        if (item.itemFlagsStrings!!.isEmpty() && defaults.itemFlagsStrings != null)
             item.itemFlagsStrings = defaults.itemFlagsStrings
-        }
 
         var itemFlags: String? = null
 
         if (item.itemFlagsStrings!!.isEmpty()) {
             itemFlags = ymlHelper.getString( "itemflags")
-            if (itemFlags.isNullOrEmpty()) {
+            if (itemFlags.isNullOrEmpty())
                 itemFlags = ymlHelper.getString( "item_flags")
-            }
-            if (itemFlags.isNullOrEmpty()) {
+
+            if (itemFlags.isNullOrEmpty())
                 itemFlags = ymlHelper.getString("item-flags")
-            }
         }
 
-        if (item.itemFlagsStrings!!.isEmpty() && itemFlags.isNullOrEmpty()) {
+        if (item.itemFlagsStrings!!.isEmpty() && itemFlags.isNullOrEmpty())
             return
-        }
+
         val results = mutableListOf<ItemFlag>()
 
         item.itemFlagsStrings = if (item.itemFlagsStrings!!.isEmpty())
@@ -904,13 +853,12 @@ class CustomDropsParser(
                 val newFlag = ItemFlag.valueOf(flag.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                 results.add(newFlag)
             } catch (e: Exception) {
-                hadError("Invalid itemflag: $flag, item: ${item.material.name}, mobOrGroup: ${dropInstance!!.getMobOrGroupName()}")
+                hadError("Invalid itemflag: $flag, item: ${item.material.name}, mobOrGroup: ${dropInstance.getMobOrGroupName()}")
             }
         }
 
-        if (results.isNotEmpty()) {
+        if (results.isNotEmpty())
             item.itemFlags = results
-        }
     }
 
     private fun checkEquippedChance(
@@ -923,70 +871,12 @@ class CustomDropsParser(
             item.equippedChance != null && !item.equippedChance!!.isDefault
         ) return
         val temp = ymlHelper.getString( "equipped")
-        if (temp.isNullOrEmpty()) {
-            return
-        }
+        if (temp.isNullOrEmpty()) return
 
-        if ("false".equals(temp, ignoreCase = true)) {
+        if ("false".equals(temp, ignoreCase = true))
             item.equippedChance!!.chance = 0.0f
-        } else if ("true".equals(temp, ignoreCase = true)) {
+        else if ("true".equals(temp, ignoreCase = true))
             item.equippedChance!!.chance = 1.0f
-        }
-    }
-
-    private fun objectToConfigurationSection2(
-        cs: ConfigurationSection?,
-        path: String
-    ): ConfigurationSection? {
-        if (cs == null) return null
-
-        val useKey: String = YmlParsingHelper.getKeyNameFromConfig(cs, path)
-        val obj = cs[useKey] ?: return null
-
-        when (obj) {
-            is ConfigurationSection -> {
-                return obj
-            }
-
-            is Map<*, *> -> {
-                val result = MemoryConfiguration()
-                result.addDefaults((obj as Map<String, Any>))
-                return result.defaultSection
-            }
-
-            else -> {
-                val currentPath = if (cs.currentPath.isNullOrEmpty()) path else cs.currentPath + "." + path
-                hadError("$currentPath: couldn't parse Config of type: ${obj.javaClass.simpleName}, value: $obj")
-                return null
-            }
-        }
-    }
-
-    private fun objectToConfigurationSectionOld(
-        obj: Any?
-    ): ConfigurationSection? {
-        if (obj == null) {
-            return null
-        }
-
-        when (obj) {
-            is ConfigurationSection -> {
-                return obj
-            }
-
-            is Map<*, *> -> {
-                val result = MemoryConfiguration()
-                result.addDefaults((obj as Map<String?, Any?>?)!!)
-                return result.defaultSection
-            }
-
-            else -> {
-                hadError(
-                    "couldn't parse Config of type: ${obj.javaClass.simpleName}, value: $obj"
-                )
-                return null
-            }
-        }
     }
 
     private fun addMaterialToDrop(
@@ -1000,34 +890,34 @@ class CustomDropsParser(
         if (useMaterialName.contains(":")) {
             // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
             if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
-                if (!handler.lmItemsParser!!.parseExternalItemAttributes(useMaterialName, item)) {
+                if (!handler.lmItemsParser!!.parseExternalItemAttributes(useMaterialName, item))
                     return false
-                }
-            } else {
-                if (ExternalCompatibilityManager.hasLMItemsInstalled) {
+            }
+            else {
+                if (ExternalCompatibilityManager.hasLMItemsInstalled)
                     hadError("Custom drop '$useMaterialName' requires plugin LM_Items but it is an old version")
-                } else {
+                else
                     hadError("Custom drop '$useMaterialName' requires plugin LM_Items but it is not installed")
-                }
+
                 return false
             }
         } else {
             val material: Material
             if ("override".equals(useMaterialName, ignoreCase = true)) {
-                dropInstance!!.overrideStockDrops = true
+                dropInstance.overrideStockDrops = true
                 return true
             }
             try {
                 material = Material.valueOf(useMaterialName.uppercase(Locale.getDefault()))
             } catch (e: Exception) {
-                hadError("Invalid material type specified in customdrops.yml for: ${dropInstance!!.getMobOrGroupName()}, $useMaterialName")
+                hadError("Invalid material type specified in customdrops.yml for: ${dropInstance.getMobOrGroupName()}, $useMaterialName")
                 return false
             }
 
             item.material = material
         }
 
-        dropInstance!!.customItems.add(item)
+        dropInstance.customItems.add(item)
 
         return true
     }
@@ -1036,7 +926,7 @@ class CustomDropsParser(
         if (itemEntry.key.equals("override", ignoreCase = true)) {
             val value = itemEntry.value
             if (value.javaClass == Boolean::class.java) {
-                dropInstance!!.overrideStockDrops = value as Boolean
+                dropInstance.overrideStockDrops = value as Boolean
                 return true
             }
         }
@@ -1052,11 +942,10 @@ class CustomDropsParser(
         var commandsCount = 0
         for (cdi in handler.getCustomDropsitems().values) {
             for (base in cdi.customItems) {
-                if (base is CustomDropItem) {
+                if (base is CustomDropItem)
                     dropsCount++
-                } else if (base is CustomCommand) {
+                else if (base is CustomCommand)
                     commandsCount++
-                }
             }
         }
 
@@ -1121,9 +1010,8 @@ class CustomDropsParser(
             val override = if (value.getOverrideStockDrops) " (override)" else ""
             val overallChance = if (value.overallChance != null) (" (overall_chance: "
                     + value.overallChance + ")") else ""
-            if (sbMain.isNotEmpty()) {
-                sbMain.append("\n")
-            }
+            if (sbMain.isNotEmpty()) sbMain.append("\n")
+
             sbMain.append("group: ").append(key)
             sbMain.append(override).append(overallChance)
             for (baseItem in value.customItems) {
@@ -1212,36 +1100,27 @@ class CustomDropsParser(
             return sb.toString()
         }
 
-        if (item == null) {
+        if (item == null)
             return sb.toString() // this shuts up the IDE for possible null reference
-        }
 
-        if (item.noMultiplier) {
-            sb.append(", nomultp")
-        }
-        if (item.lore != null && item.lore!!.isNotEmpty()) {
-            sb.append(", hasLore")
-        }
-        if (item.customName != null && item.customName!!.isNotEmpty()) {
-            sb.append(", hasName")
-        }
+        if (item.noMultiplier) sb.append(", nomultp")
+        if (item.lore != null && item.lore!!.isNotEmpty()) sb.append(", hasLore")
+        if (item.customName != null && item.customName!!.isNotEmpty()) sb.append(", hasName")
+
         if (item.damage != 0 || item.hasDamageRange) {
             sb.append(", dmg: &b")
             sb.append(item.getDamageAsString()).append("&r")
         }
-        if (item.excludedMobs.isNotEmpty()) {
-            sb.append(", hasExcludes")
-        }
+        if (item.excludedMobs.isNotEmpty()) sb.append(", hasExcludes")
+
         if (item.equippedChance != null && !item.equippedChance!!.isDefault) {
             sb.append(", equipChance: &b")
             sb.append(item.equippedChance).append("&r")
         }
-        if (item.onlyDropIfEquipped) {
-            sb.append(", &bonlyDropIfEquipped&r")
-        }
-        if (item.equipOnHelmet) {
-            sb.append(", &bequipHelmet&r")
-        }
+
+        if (item.onlyDropIfEquipped) sb.append(", &bonlyDropIfEquipped&r")
+        if (item.equipOnHelmet) sb.append(", &bequipHelmet&r")
+
         if (item.itemFlags != null && item.itemFlags!!.isNotEmpty()) {
             sb.append(", itemflags: &b")
             sb.append(item.itemFlags!!.size).append("&r")
@@ -1293,8 +1172,7 @@ class CustomDropsParser(
                 }
             }
 
-            sb.append(System.lineSeparator())
-            sb.append("    ")
+            sb.append("\n    ")
             sb.append(enchantmentLevels)
         }
 
@@ -1311,9 +1189,7 @@ class CustomDropsParser(
                 }
             }
 
-            if (sb2.isNotEmpty()) {
-                sb.append("\n    ").append(sb2)
-            }
+            if (sb2.isNotEmpty()) sb.append("\n    ").append(sb2)
         }
 
         return sb.toString()

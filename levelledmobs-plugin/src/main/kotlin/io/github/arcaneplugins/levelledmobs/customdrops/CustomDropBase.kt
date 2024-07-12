@@ -49,7 +49,7 @@ abstract class CustomDropBase(
         get() = !this.groupId.isNullOrEmpty()
 
 
-    val amountAsString: String
+    open val amountAsString: String
         get() {
             return if (this.hasAmountRange) {
                 "$amountRangeMin-$amountRangeMax"
