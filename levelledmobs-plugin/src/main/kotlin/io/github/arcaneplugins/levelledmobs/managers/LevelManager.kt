@@ -1477,7 +1477,8 @@ class LevelManager : LevelInterface2 {
 
     private fun applyLevelledAttributes(
         lmEntity: LivingEntityWrapper,
-        additions: MutableList<Addition>
+        additions: MutableList<Addition>,
+        nbtDatas: MutableList<String>
     ) {
         if (!lmEntity.isLevelled) return
         val modInfo = mutableListOf<AttributePreMod>()
@@ -1515,6 +1516,32 @@ class LevelManager : LevelInterface2 {
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity){
             MobDataManager.instance.setAttributeMods(lmEntity, modInfo)
+
+            if (lmEntity.lockEntitySettings) {
+                lmEntity.pdc
+                    .set(NamespacedKeys.lockSettings, PersistentDataType.INTEGER, 1)
+                if (lmEntity.lockedNametag != null) {
+                    lmEntity.pdc
+                        .set(
+                            NamespacedKeys.lockedNametag, PersistentDataType.STRING,
+                            lmEntity.lockedNametag!!
+                        )
+                }
+                if (lmEntity.lockedOverrideName != null) {
+                    lmEntity.pdc
+                        .set(
+                            NamespacedKeys.lockedNameOverride, PersistentDataType.STRING,
+                            lmEntity.lockedOverrideName!!
+                        )
+                }
+            }
+
+            applyNbtData(lmEntity, nbtDatas)
+
+            if (lmEntity.livingEntity is Creeper) {
+                lmEntity.main.levelManager.applyCreeperBlastRadius(lmEntity)
+            }
+
             lmEntity.free()
         }
         lmEntity.inUseCount.getAndIncrement()
@@ -2005,33 +2032,7 @@ class LevelManager : LevelInterface2 {
         else if (lmEntity.livingEntity is Horse)
             attribs.add(Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH)
 
-        main.levelManager.applyLevelledAttributes(lmEntity, attribs)
-
-        // TODO: move the rest of this function to a synchronous thread
-        if (lmEntity.lockEntitySettings) {
-            lmEntity.pdc
-                .set(NamespacedKeys.lockSettings, PersistentDataType.INTEGER, 1)
-            if (lmEntity.lockedNametag != null) {
-                lmEntity.pdc
-                    .set(
-                        NamespacedKeys.lockedNametag, PersistentDataType.STRING,
-                        lmEntity.lockedNametag!!
-                    )
-            }
-            if (lmEntity.lockedOverrideName != null) {
-                lmEntity.pdc
-                    .set(
-                        NamespacedKeys.lockedNameOverride, PersistentDataType.STRING,
-                        lmEntity.lockedOverrideName!!
-                    )
-            }
-        }
-
-        applyNbtData(lmEntity, nbtDatas)
-
-        if (lmEntity.livingEntity is Creeper) {
-            main.levelManager.applyCreeperBlastRadius(lmEntity)
-        }
+        main.levelManager.applyLevelledAttributes(lmEntity, attribs, nbtDatas)
     }
 
     private fun applyNbtData(
