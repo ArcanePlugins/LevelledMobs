@@ -989,6 +989,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%entity-health-rounded%", entityHealthRounded)
         text.replace("%entity-max-health%", roundedMaxHealth)
         text.replace("%entity-max-health-rounded%", roundedMaxHealthInt)
+        getHealthPercentRemaining(entityHealth, maxHealth, text)
         text.replaceIfExists("%base-health%"){
             val baseHealth = lmEntity.livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue
             if (baseHealth != null) return@replaceIfExists baseHealth.toString()
@@ -1022,6 +1023,30 @@ class LevelManager : LevelInterface2 {
         }
 
         return text.text
+    }
+
+    private fun getHealthPercentRemaining(
+        currentHealth: Double,
+        maxHealth: Double,
+        text: StringReplacer
+    ){
+        val start = text.text.indexOf("%entity-max-health-percent")
+        if (start < 0) return
+
+        val end = text.text.indexOf("%", start + 25)
+        if (end < 0) return
+
+        val percentHealth = (currentHealth.toFloat() / maxHealth.toFloat() * 100f)
+        val fullText = text.text.substring(start, end)
+        val optional = fullText.substring(fullText.length - 2)
+        var digits = 2
+        if (optional[0] == '-' && optional[1].isDigit())
+            digits = optional[1].digitToInt()
+
+        text.text = text.text.replace(fullText, (
+            if (digits == 0) percentHealth.roundToInt().toString()
+            else Utils.round(percentHealth.toDouble(), digits).toString()
+        ))
     }
 
     fun updateNametagWithDelay(lmEntity: LivingEntityWrapper) {
