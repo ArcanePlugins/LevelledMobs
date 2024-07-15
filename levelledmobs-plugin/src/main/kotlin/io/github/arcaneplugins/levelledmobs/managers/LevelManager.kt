@@ -796,7 +796,7 @@ class LevelManager : LevelInterface2 {
         nametag.replace("%health-indicator-color%", colorOnly)
 
         if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
-            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag.text)
+            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(lmEntity.associatedPlayer, nametag.text)
         }
 
         val result = NametagResult(nametag.text)

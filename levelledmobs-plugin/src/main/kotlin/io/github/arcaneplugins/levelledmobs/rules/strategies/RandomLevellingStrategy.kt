@@ -23,7 +23,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     var autoGenerate = false
     var enabled = true
 
-    override var strategyType = StrategyType.WEIGHTED_RANDOM
+    override var strategyType = StrategyType.RANDOM
 
     override fun generateNumber(
         lmEntity: LivingEntityWrapper,
@@ -61,6 +61,8 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
                 weightedRandom["$i"] = test
             }
         }
+        else
+            this.strategyType = StrategyType.WEIGHTED_RANDOM
 
         this.minLevel = minLevel
         this.maxLevel = maxLevel
@@ -178,6 +180,10 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         if (levellingStrategy.doMerge && levellingStrategy.enabled) {
             weightedRandom.putAll(levellingStrategy.weightedRandom)
         }
+
+        this.strategyType =
+            if (weightedRandom.isEmpty()) StrategyType.RANDOM
+            else StrategyType.WEIGHTED_RANDOM
     }
 
     override fun cloneItem(): RandomLevellingStrategy {

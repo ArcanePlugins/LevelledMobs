@@ -1175,7 +1175,7 @@ class RulesParser {
             } else {
                 randomLevelling.autoGenerate = true
             }
-            parsingInfo.levellingStrategy[StrategyType.RANDOM] = randomLevelling
+            parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] = randomLevelling
 
             return
         }
