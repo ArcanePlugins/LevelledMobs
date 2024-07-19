@@ -877,7 +877,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
-                "mob lvl: &b${lmEntity.getMobLevel}&7, rule minlvl: &b${ri.conditionsMinLevel}&7"
+                "rule minlvl: &b${ri.conditionsMinLevel}&7"
             }
             if (!result) return false
         }
@@ -888,7 +888,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_MAXLEVEL, ri, lmEntity, result
             ) {
-                "mob lvl: &b${lmEntity.getMobLevel}&7, rule maxlvl: &b${ri.conditionsMaxLevel}&7"
+                "rule maxlvl: &b${ri.conditionsMaxLevel}&7"
             }
             if (!result) return false
         }

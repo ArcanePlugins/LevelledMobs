@@ -280,13 +280,15 @@ class DebugManager {
         }
 
         if (lmInterface != null){
-            val useName = if (lmInterface is LivingEntityWrapper)
-                lmInterface.nameIfBaby else lmInterface.typeName
+            val lmEntity = lmInterface as? LivingEntityWrapper
+            val useName = lmEntity?.nameIfBaby ?: lmInterface.typeName
+            val lvl = lmEntity?.getMobLevel ?: (lmInterface.summonedLevel?: 0)
+            val lvlInfo = " (&7lvl $lvl&r)"
 
             msg = if (msg.isEmpty())
-                "mob: &b$useName&7"
+                "mob: &b$useName&7$lvlInfo"
             else
-                "mob: &b$useName&7, $msg"
+                "mob: &b$useName&7$lvlInfo, $msg"
         }
         else if (entity != null){
             msg = if (msg.isEmpty())

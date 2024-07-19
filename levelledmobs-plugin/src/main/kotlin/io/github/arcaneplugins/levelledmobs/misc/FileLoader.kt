@@ -19,7 +19,7 @@ import org.yaml.snakeyaml.Yaml
 object FileLoader {
     const val SETTINGS_FILE_VERSION = 37 // Last changed: v4.1.0 b37
     const val MESSAGES_FILE_VERSION = 9 // Last changed: v4.0.0 b1
-    const val CUSTOMDROPS_FILE_VERSION = 11 // Last changed: v4.0.0 b1
+    const val CUSTOMDROPS_FILE_VERSION = 12 // Last changed: v4.1.0 b44
     const val RULES_FILE_VERSION = 5 // Last changed: v4.0.0 b1
     const val EXTERNALPLUGINS_FILE_VERSION = 1 // Last changed: v4.0.0
 

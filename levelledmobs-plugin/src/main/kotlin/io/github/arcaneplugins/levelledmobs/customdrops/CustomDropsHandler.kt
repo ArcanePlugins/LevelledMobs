@@ -12,6 +12,7 @@ import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
 import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
+import io.github.arcaneplugins.levelledmobs.result.EvaluationResult
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
@@ -80,6 +81,33 @@ class CustomDropsHandler {
         groupIdToInstance.clear()
         customItemGroups.clear()
         groupLimitsMap.clear()
+    }
+
+    companion object{
+        fun evaluateAmountExpression(
+            amountFormula: String?,
+            friendlyName: String,
+            lmEntity: LivingEntityWrapper
+        ): EvaluationResult {
+            if (amountFormula.isNullOrEmpty()) return EvaluationResult(1.0, null)
+
+            val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(amountFormula, lmEntity)
+            val evalResult = MobDataManager.evaluateExpression(formula)
+            if (evalResult.hadError){
+                NotifyManager.notifyOfError("Error evaluating formula for $friendlyName on mob: ${lmEntity.nameIfBaby}, lvl: ${lmEntity.getMobLevel}, ${evalResult.error}")
+                DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
+                    "result (error, ${evalResult.error})\n" +
+                            "   formulaPre: '$amountFormula'\n" +
+                            "   formula: '$formula'" }
+            }
+
+            DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
+                "$friendlyName, result: ${evalResult.result}\n" +
+                        "   formulaPre: '$amountFormula'\n" +
+                        "   formula: '$formula'" }
+
+            return evalResult
+        }
     }
 
     fun getCustomDropsitems(): MutableMap<EntityType, CustomDropInstance> {
@@ -194,19 +222,6 @@ class CustomDropsHandler {
                         damageCause == EntityDamageEvent.DamageCause.LAVA)
         }
 
-        if (!equippedOnly) {
-            val mobLevel =
-                if (lmEntity.getMobLevel > 0) "&r (level ${lmEntity.getMobLevel})" else ""
-            processingInfo.addDebugMessage(
-                DebugType.CUSTOM_DROPS,
-                "&7Custom drops for &b${lmEntity.nameIfBaby} $mobLevel"
-            )
-
-            DebugManager.log(DebugType.MOB_GROUPS, lmEntity){
-                "&8- &7Groups: &b" + lmEntity.getApplicableGroups().joinToString("&7, &b") + "&7."
-            }
-        }
-
         val groupsList = mutableListOf<String>()
         for (group in lmEntity.getApplicableGroups()) {
             if (!getCustomDropsitemsGroups().containsKey(group))
@@ -215,27 +230,36 @@ class CustomDropsHandler {
             groupsList.add(group)
         }
 
-        val buildResult: DropInstanceBuildResult = buildDropsListFromGroupsAndEntity(
-            groupsList, lmEntity.entityType, processingInfo
-        )
+        val buildResult = buildDropsListFromGroupsAndEntity(groupsList, processingInfo)
         if (buildResult != DropInstanceBuildResult.SUCCESSFUL) {
             // didn't make overall chance
             if (buildResult == DropInstanceBuildResult.DID_NOT_MAKE_CHANCE) {
                 processingInfo.addDebugMessage(
                     DebugType.CUSTOM_DROPS,
-                    "&7${lmEntity.typeName} (${lmEntity.getMobLevel}) - didn't make overall chance"
+                    "didn't make overall chance${processingInfo.overallChanceDebugMessage}"
                 )
             }
             else {
                 val mobKiller = if (processingInfo.mobKiller == null) "(null)" else processingInfo.mobKiller!!.name
                 processingInfo.addDebugMessage(
                     DebugType.CUSTOM_DROPS,
-                    "lvl: ${lmEntity.getMobLevel}, didn't make overall chance permission for player: &b$mobKiller&r"
+                    "didn't make overall chance permission for player: &b$mobKiller&r"
                 )
             }
             processingInfo.writeAnyDebugMessages()
 
             return CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride, false)
+        }
+
+        if (!equippedOnly) {
+            processingInfo.addDebugMessage(
+                DebugType.CUSTOM_DROPS,
+                "&7Custom drops${processingInfo.overallChanceDebugMessage}:"
+            )
+
+            DebugManager.log(DebugType.MOB_GROUPS, lmEntity){
+                "&8- &7Groups: &b" + lmEntity.getApplicableGroups().joinToString("&7, &b") + "&7."
+            }
         }
 
         getCustomItemsFromDropInstance(processingInfo) // payload
@@ -276,7 +300,6 @@ class CustomDropsHandler {
 
     private fun buildDropsListFromGroupsAndEntity(
         groups: MutableList<String>,
-        entityType: EntityType,
         info: CustomDropProcessingInfo
     ): DropInstanceBuildResult {
         info.prioritizedDrops = mutableMapOf()
@@ -320,6 +343,7 @@ class CustomDropsHandler {
                     info.hasOverride = true
             }
 
+            val entityType = info.lmEntity!!.entityType
             val dropMap: Map<EntityType, CustomDropInstance> =
                 if (info.lmEntity!!.isBabyMob && customDropsitemsBabies.containsKey(entityType)) customDropsitemsBabies else getCustomDropsitems()
 
@@ -570,7 +594,7 @@ class CustomDropsHandler {
         }
 
         val dropChance =
-            if (dropBase.chance != null) dropBase.chance!!.getSlidingChance(info.lmEntity!!.getMobLevel) else 0.0f
+            if (dropBase.chance != null) dropBase.chance!!.getSlidingChance("chance-formula", info.lmEntity!!) else 0.0f
         if ((!info.equippedOnly || runOnSpawn) && dropChance < 1.0f) {
             chanceRole =
                 if (dropChance > 0.0f) ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f else 0.0f
@@ -673,7 +697,11 @@ class CustomDropsHandler {
         }
 
         if (!dropBase.amountFormula.isNullOrEmpty())
-            newDropAmount = evaluateAmountExpression(dropBase, info.lmEntity!!).roundToInt()
+            newDropAmount = evaluateAmountExpression(
+                dropBase.amountFormula,
+                "amount-formula",
+                info.lmEntity!!
+            ).result.roundToInt()
 
         if (dropBase.hasGroupId && info.groupLimits != null) {
             val gl = info.groupLimits!!
@@ -810,7 +838,7 @@ class CustomDropsHandler {
     ): Boolean {
         if (!info.equippedOnly) return true
         val equippedChance = if (dropItem.equippedChance != null) dropItem.equippedChance!!.getSlidingChance(
-            info.lmEntity!!.getMobLevel
+            "equipped-formula", info.lmEntity!!
         ) else 0.0f
         if (equippedChance >= 1.0f) return true
 
@@ -829,33 +857,6 @@ class CustomDropsHandler {
         }
 
         return true
-    }
-
-    fun evaluateAmountExpression(
-        item: CustomDropItem,
-        lmEntity: LivingEntityWrapper
-    ): Double{
-        if (item.amountFormula.isNullOrEmpty()) return 1.0
-
-        val formulaPre = item.amountFormula!!
-        val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
-        val evalResult = MobDataManager.evaluateExpression(formula)
-        if (evalResult.hadError){
-            NotifyManager.notifyOfError("Error evaluating formula for amount-expression on mob: ${lmEntity.nameIfBaby}, lvl: ${lmEntity.getMobLevel}, ${evalResult.error}")
-            DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
-                "result (error, ${evalResult.error})\n" +
-                        "   formulaPre: '$formulaPre'\n" +
-                        "   formula: '$formula'" }
-        }
-
-        val result = evalResult.result
-
-        DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
-            "result $result\n" +
-                    "   formulaPre: '$formulaPre'\n" +
-                    "   formula: '$formula'" }
-
-        return result
     }
 
     private fun checkOverallChance(info: CustomDropProcessingInfo): Boolean {
@@ -880,8 +881,14 @@ class CustomDropsHandler {
             // we'll roll the dice to see if we get any drops at all and store it in the PDC
             val chanceRole =
                 ThreadLocalRandom.current().nextInt(0, 100001).toFloat() * 0.00001f
-            val madeChance =
-                1.0f - chanceRole < dropInstance.overallChance!!.getSlidingChance(info.lmEntity!!.getMobLevel)
+            val effectiveChance = dropInstance.overallChance!!.getSlidingChance(
+                "overall-chance-formula",
+                info.lmEntity!!
+            )
+            // 1f - chanceRole < effectiveChance
+            val madeChance = chanceRole >= effectiveChance
+            info.overallChanceDebugMessage = " (minimum: &b${Utils.round(effectiveChance.toDouble(), 4)}&7, " +
+                    "chanceRole: &b${Utils.round(chanceRole.toDouble(), 4)}&7)"
             if (info.equippedOnly) {
                 synchronized(info.lmEntity!!.livingEntity.persistentDataContainer) {
                     info.lmEntity!!.pdc

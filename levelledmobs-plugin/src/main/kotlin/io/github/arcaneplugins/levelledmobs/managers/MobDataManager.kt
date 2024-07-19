@@ -219,13 +219,8 @@ class MobDataManager {
             attrib.addModifier(info.attributeModifier)
 
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                String.format(
-                    "lvl: %s, attrib: %s, base: %s, addtion: %s",
-                    lmEntity.getMobLevel,
-                    info.attribute.name,
-                    Utils.round(attrib.baseValue, 3),
-                    Utils.round(additionValue.toDouble(), 3)
-                )
+                "attrib: ${info.attribute.name}, base: ${Utils.round(attrib.baseValue, 3)}, " +
+                        "addtion: ${Utils.round(additionValue.toDouble(), 3)}"
             }
 
             // MAX_HEALTH specific: set health to max health
@@ -269,7 +264,7 @@ class MobDataManager {
             if (!existingMod.name.startsWith("GENERIC_")) {
                 DebugManager.log(DebugType.REMOVED_MULTIPLIERS, lmEntity) {
                     val locationStr = "${lmEntity.location.blockX},${lmEntity.location.blockY},${lmEntity.location.blockZ}"
-                    "Removing ${existingMod.name} from (lvl ${lmEntity.getMobLevel}) at $locationStr"
+                    "Removing ${existingMod.name} at $locationStr"
                 }
             }
 
@@ -326,7 +321,7 @@ class MobDataManager {
                     Log.war("Error evaluating formula for ${lmEntity.nameIfBaby}: '$formulaStr', ${evalResult.error}")
 
                 DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity, !evalResult.hadError) {
-                    "lvl: ${lmEntity.getMobLevel}, ${multiplier.addition.name}, formulaPre: '${multiplier.formula}'\nformula: " +
+                    "${multiplier.addition.name}, formulaPre: '${multiplier.formula}'\nformula: " +
                             "'$formulaStr', result: '$multiplierValue'" }
             }
             else if (multiplier != null)
@@ -358,12 +353,12 @@ class MobDataManager {
 
         if (fineTuning!!.getUseStacked() || multiplier!!.useStacked) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "lvl: ${lmEntity.getMobLevel}, attrib: ${addition.name}, stkd formula, ${multiplier!!.value}"
+                "attrib: ${addition.name}, stkd formula, ${multiplier!!.value}"
             }
             return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "lvl: ${lmEntity.getMobLevel}, attrib: ${addition.name}, std formula, ${multiplier.value}"
+                "attrib: ${addition.name}, std formula, ${multiplier.value}"
             }
 
             multiplierValue = if (attributeMax > 0.0) {

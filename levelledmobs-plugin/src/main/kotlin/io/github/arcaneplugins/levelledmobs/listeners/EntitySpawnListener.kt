@@ -274,7 +274,7 @@ class EntitySpawnListener : Listener{
             val levelAssignment = main.levelInterface.generateLevel(lmEntity)
             if (shouldDenyLevel(lmEntity, levelAssignment)) {
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                    "lvl: ${lmEntity.getMobLevel}&r, denied relevelling to &b$levelAssignment&r due to decrease-level disabled"
+                    "denied relevelling to &b$levelAssignment&r due to decrease-level disabled"
                 }
             } else {
                 if (lmEntity.reEvaluateLevel && main.rulesManager.isPlayerLevellingEnabled()) {

@@ -35,7 +35,7 @@ dependencies {
     //implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
     implementation("nomaven:CommandAPI:9.6.0-snapshot") // https://github.com/JorelAli/CommandAPI
     // stumper66's fork: https://github.com/stumper66/CommandAPI
-    compileOnly("LibsDisguises:LibsDisguises:10.0.44-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
+    compileOnly("LibsDisguises:LibsDisguises:10.0.43-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
     compileOnly("net.essentialsx:EssentialsX:2.20.1") // https://repo.essentialsx.net/#/releases/net/essentialsx/EssentialsX
     compileOnly("me.clip:placeholderapi:2.11.5") // https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.1.0-SNAPSHOT") // https://maven.enginehub.org/repo/com/sk89q/worldguard/worldguard-bukkit/

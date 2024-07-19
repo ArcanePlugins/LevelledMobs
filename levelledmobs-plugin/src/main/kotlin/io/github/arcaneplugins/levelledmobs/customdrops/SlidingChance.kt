@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
+import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 
 /**
  * Holds values that are used for a variable chance based on either
@@ -11,6 +12,9 @@ import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
  */
 class SlidingChance : Cloneable {
     var chance = 0f
+    var formula: String? = null
+    private var lastFormulaResult = 0f
+    private var formulaHadError = false
     var changeRange: MutableMap<MinAndMax, MinAndMax>? = null
     private var lastMatchedTier: MinAndMax? = null
     private var lastResult = 0f
@@ -20,11 +24,25 @@ class SlidingChance : Cloneable {
         get() = chance == 0.0f && (changeRange == null || changeRange!!.isEmpty())
 
     val isAssuredChance: Boolean
-        get() = chance >= 1.0f && !isDefault
+        get() = formula.isNullOrEmpty() && chance >= 1.0f && !isDefault
 
     fun getSlidingChance(
-        mobLevel: Int
+        formulaFriendlyName: String,
+        lmEntity: LivingEntityWrapper
     ): Float {
+        if (!formula.isNullOrEmpty()){
+            // run formula
+            val evalResult = CustomDropsHandler.evaluateAmountExpression(
+                formula,
+                formulaFriendlyName,
+                lmEntity
+            )
+            formulaHadError = evalResult.hadError
+            lastFormulaResult = evalResult.result.toFloat()
+            if (!evalResult.hadError) return lastFormulaResult
+            // error has been thrown gracefully fall back on normal sliding chance if present
+        }
+
         var result: Float? = null
 
         for (i in 0..1) {
@@ -33,7 +51,7 @@ class SlidingChance : Cloneable {
             val slidingChance = if (i == 0) this else defaults
 
             if (slidingChance == null) continue
-            result = getSlidingChance2(mobLevel, slidingChance)
+            result = getSlidingChance2(lmEntity.getMobLevel, slidingChance)
             if (result != null) break
         }
 
@@ -94,9 +112,13 @@ class SlidingChance : Cloneable {
         val copy = slidingChance.clone() as SlidingChance
         this.chance = copy.chance
         this.changeRange = copy.changeRange
+        this.formula = copy.formula
     }
 
     fun showMatchedChance(): String {
+        if (!formula.isNullOrEmpty() && !formulaHadError)
+            return lastFormulaResult.toString()
+
         return if (this.lastMatchedTier != null) {
             if (lastMatchedTier!!.min == lastMatchedTier!!.max) {
                 lastResult.toString()
@@ -120,6 +142,9 @@ class SlidingChance : Cloneable {
     }
 
     override fun toString(): String {
+        if (!formula.isNullOrEmpty())
+            return "'$formula'"
+
         return if (changeRange == null || changeRange!!.isEmpty())
             chance.toString()
         else

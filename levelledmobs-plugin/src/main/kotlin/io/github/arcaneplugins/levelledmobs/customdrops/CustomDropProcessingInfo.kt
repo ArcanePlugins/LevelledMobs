@@ -42,6 +42,7 @@ class CustomDropProcessingInfo {
     var newDrops: MutableList<ItemStack>? = null
     var dropInstance: CustomDropInstance? = null
     var equippedItemsInfo: EquippedItemsInfo? = null
+    var overallChanceDebugMessage: String = ""
     private val groupIDsDroppedAlready: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     private val itemsDroppedById = mutableMapOf<UUID, Int>()
     var prioritizedDrops: MutableMap<Int, MutableList<CustomDropBase>>? = null

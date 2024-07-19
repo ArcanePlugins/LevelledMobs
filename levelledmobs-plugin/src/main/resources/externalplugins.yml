@@ -73,6 +73,22 @@ Deadly-Disasters:
   key-type: 'PDC'
   requirement: 'exists'
 
+gadgets-menu:
+  friendly-name: 'gadgets-menu'
+  plugin-name: 'GadgetsMenu'
+  key-name: 'GadgetsMenu-Pet'
+  key-type: 'metadata'
+  requirement: 'exists'
+#  placeholder-name: '%gadgets-menu-name%'
+
+my-pet:
+  friendly-name: 'my-pet'
+  plugin-name: 'MyPet'
+  key-name: 'MyPet'
+  key-type: 'metadata'
+  requirement: 'exists'
+#  placeholder-name: '%mypet-menu-name%'
+
 #
 #   ---------------  -  ------------------------------
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point

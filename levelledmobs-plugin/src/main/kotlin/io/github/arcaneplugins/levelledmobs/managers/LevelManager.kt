@@ -485,7 +485,7 @@ class LevelManager : LevelInterface2 {
             ).amount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-                    "mob-lvl: &b${lmEntity.getMobLevel}&7, removing any drops present"
+                    "removing any drops present"
                 }
                 currentDrops.clear()
                 return
@@ -524,7 +524,7 @@ class LevelManager : LevelInterface2 {
         val nameWithOverride = if (hasOverride) " (override), " else ""
         val additionUsedFinal = additionUsed
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-            "${nameWithOverride}mob-lvl: &b${lmEntity.getMobLevel}&7, vanilla drops: &b$vanillaDrops&7, all drops: &b${currentDrops.size}&7, addition: &b$additionUsedFinal&7."
+            "${nameWithOverride}, vanilla drops: &b$vanillaDrops&7, all drops: &b${currentDrops.size}&7, addition: &b$additionUsedFinal&7."
         }
     }
 
@@ -673,7 +673,7 @@ class LevelManager : LevelInterface2 {
 
             if (dropAddition == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                    "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b0&7"
+                    "xp-vanilla: &b$xp&7, new-xp: &b0&7"
                 }
                 return 0
             }
@@ -684,7 +684,7 @@ class LevelManager : LevelInterface2 {
 
             val newXpFinal = newXp.toInt()
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
+                "xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
             }
             return newXp.toInt()
         } else {
@@ -1585,7 +1585,7 @@ class LevelManager : LevelInterface2 {
             }
             DebugManager.log(
                 DebugType.CREEPER_BLAST_RADIUS, lmEntity
-            ) { "lvl: ${lmEntity.getMobLevel}, mulp: null, result: 3" }
+            ) { "mulp: null, result: 3" }
             return
         }
 
@@ -1608,7 +1608,7 @@ class LevelManager : LevelInterface2 {
 
         val blastRadiusFinal = blastRadius
         DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) {
-            "lvl: ${lmEntity.getMobLevel}, mulp: ${Utils.round(damage.toDouble(), 3)}, max: $maxRadius, result: $blastRadiusFinal"
+            "mulp: ${Utils.round(damage.toDouble(), 3)}, max: $maxRadius, result: $blastRadiusFinal"
         }
 
         if (blastRadius < 0) {

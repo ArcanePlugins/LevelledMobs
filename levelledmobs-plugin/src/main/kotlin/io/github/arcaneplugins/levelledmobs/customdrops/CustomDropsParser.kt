@@ -298,13 +298,15 @@ class CustomDropsParser(
 
         if (checkForMobOverride(itemEntry)) return
 
-        if ("overall_chance".equals(materialName, ignoreCase = true)) {
+        if ("overall-chance".equals(materialName, ignoreCase = true)) {
             dropInstance.overallChance = parseSlidingChance(
                 YmlParsingHelper(cs),
-                "overall_chance", defaults.overallChance
+                "overall-chance",
+                "overall-chance-formula",
+                defaults.overallChance
             )
             return
-        } else if ("overall_permission".equals(materialName, ignoreCase = true)) {
+        } else if ("overall-permission".equals(materialName, ignoreCase = true)) {
             if (itemEntry.value is String)
                 dropInstance.overallPermissions.add((itemEntry.value as String?)!!)
             else if (itemEntry.value is ArrayList<*>) {
@@ -377,7 +379,12 @@ class CustomDropsParser(
         dropBase: CustomDropBase,
         ymlHelper: YmlParsingHelper
     ) {
-        dropBase.chance = parseSlidingChance(ymlHelper, "chance", defaults.chance)
+        dropBase.chance = parseSlidingChance(
+            ymlHelper,
+            "chance",
+            "chance-formula",
+            defaults.chance
+        )
         dropBase.useChunkKillMax = ymlHelper.getBoolean(
             "use-chunk-kill-max", defaults.useChunkKillMax
         )
@@ -419,16 +426,20 @@ class CustomDropsParser(
             }
         }
 
-        val overallChance = parseSlidingChance(ymlHelper, "overall_chance", null)
-        if (!ymlHelper.getString("overall_chance").isNullOrEmpty()) {
-            if (overallChance == null || !overallChance.isDefault) {
+        dropInstance.overallChance = parseSlidingChance(
+            ymlHelper,
+            "overall-chance",
+            "overall-chance-formula",
+            dropInstance.overallChance
+        )
+        if (!ymlHelper.getString("overall-chance").isNullOrEmpty()) {
+            if (dropInstance.overallChance == null || dropInstance.overallChance!!.isDefault)
                 dropInstance.overallChance = null
-            }
         }
 
-        if (ymlHelper.cs[YmlParsingHelper.getKeyNameFromConfig(ymlHelper.cs, "overall_permission")] != null) {
+        if (ymlHelper.cs[YmlParsingHelper.getKeyNameFromConfig(ymlHelper.cs, "overall-permission")] != null) {
             dropInstance.overallPermissions.addAll(
-                ymlHelper.getStringSet( "overall_permission")
+                ymlHelper.getStringSet( "overall-permission")
             )
         }
 
@@ -447,10 +458,12 @@ class CustomDropsParser(
     private fun parseSlidingChance(
         ymlHelper: YmlParsingHelper,
         keyName: String,
+        formulaKey: String,
         defaultValue: SlidingChance?
     ): SlidingChance? {
         val chanceOptsMap = ymlHelper.cs[keyName]
         var chanceOpts: ConfigurationSection? = null
+        val formula = ymlHelper.getString(formulaKey)
 
         if (chanceOptsMap is LinkedHashMap<*, *> || chanceOptsMap is MemorySection) {
             chanceOpts = YmlParsingHelper.objToCS(ymlHelper.cs, keyName)
@@ -468,6 +481,8 @@ class CustomDropsParser(
                 result.setFromInstance(defaultValue)
 
             result.defaults = defaultValue
+            if (formula.isNullOrEmpty()) result.formula = defaultValue?.formula
+            else result.formula = formula
             return result
         }
 
@@ -498,6 +513,8 @@ class CustomDropsParser(
         }
 
         result.defaults = defaultValue
+        if (formula.isNullOrEmpty()) result.formula = null
+        else result.formula = formula
         return result
     }
 
@@ -865,7 +882,12 @@ class CustomDropsParser(
         item: CustomDropItem,
         ymlHelper: YmlParsingHelper
     ) {
-        item.equippedChance = parseSlidingChance(ymlHelper, "equipped", defaults.equippedChance)
+        item.equippedChance = parseSlidingChance(
+            ymlHelper,
+            "equipped",
+            "equipped-formula",
+            defaults.equippedChance
+        )
 
         if (defaults.equippedChance == null ||
             item.equippedChance != null && !item.equippedChance!!.isDefault
@@ -985,7 +1007,7 @@ class CustomDropsParser(
             else handler.getCustomDropsitems()[ent]!!
 
             val override = if (dropInstance.getOverrideStockDrops) " (override)" else ""
-            val overallChance = if (dropInstance.overallChance != null) (" (overall_chance: "
+            val overallChance = if (dropInstance.overallChance != null) (" (overall-chance: "
                     + dropInstance.overallChance + ")") else ""
             sbMain.append("\nmob: &b")
             if (isBaby) {
@@ -1008,7 +1030,7 @@ class CustomDropsParser(
 
         for ((key, value) in allGroups) {
             val override = if (value.getOverrideStockDrops) " (override)" else ""
-            val overallChance = if (value.overallChance != null) (" (overall_chance: "
+            val overallChance = if (value.overallChance != null) (" (overall-chance: "
                     + value.overallChance + ")") else ""
             if (sbMain.isNotEmpty()) sbMain.append("\n")
 

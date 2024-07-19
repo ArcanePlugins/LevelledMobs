@@ -230,7 +230,7 @@ class EntityDamageListener : Listener {
                 Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.damage.toFloat()
             ).amount
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, shooter) {
-            "lvl: &b${shooter.getMobLevel}&7, damage: &b${event.damage}&7, new damage: &b$newDamage&7"
+            "damage: &b${event.damage}&7, new damage: &b$newDamage&7"
         }
         event.damage = newDamage.toDouble()
     }

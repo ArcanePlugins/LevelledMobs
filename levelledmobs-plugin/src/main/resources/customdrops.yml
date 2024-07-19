@@ -27,7 +27,7 @@
 #
 defaults:
   chance: 0.2
-  overall_chance: 1.0
+  overall-chance: 1.0
   amount: 1
   equipped: 1.0
   equip-offhand: true
@@ -37,7 +37,7 @@ defaults:
   nomultiplier: true
   nospawner: false
   use-chunk-kill-max: true
-  overall_permission: ''
+  overall-permission: ''
   override: false
   minLevel: -1
   maxLevel: -1
@@ -377,4 +377,4 @@ drop-table:
 #        Section 05  |  Developer Settings / Do Not Edit Beyond This Point
 #   ---------------  -  ------------------------------
 #
-file-version: 11
+file-version: 12
