@@ -973,7 +973,7 @@ class LevelManager : LevelInterface2 {
             }
 
             if (lmEntity.livingEntity.customName != null)
-                return@replaceIfExists lmEntity.livingEntity.customName
+                return@replaceIfExists if (LevelledMobs.instance.ver.isRunningPaper) "{CustomName}" else lmEntity.livingEntity.customName
             return@replaceIfExists if (preserveMobName)
                 "{DisplayName}"
             else

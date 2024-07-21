@@ -74,8 +74,6 @@ object MessageUtils {
         val startTag = "&#"
         val endTag = ""
 
-        if (ver.minecraftVersion < 1.16 || !ver.isRunningSpigot) return message
-
         val hexPattern = Pattern.compile("$startTag([A-Fa-f0-9]{6})$endTag")
         val matcher = hexPattern.matcher(message)
         val buffer = StringBuilder(message.length + 4 * 8)

@@ -40,7 +40,7 @@ object KyoriNametags {
         }
 
         // replace placeholders and set the new death message
-        val result = if (def.getUseLegacySerializer()) {
+        var result = if (def.getUseLegacySerializer()) {
             LegacyComponentSerializer
                 .legacyAmpersand()
                 .deserialize(nametag)
@@ -59,6 +59,12 @@ object KyoriNametags {
                         .replacement(mobNameComponent).build()
                 )
         }
+
+        result = result.replaceText(
+            TextReplacementConfig.builder()
+                .matchLiteral("{CustomName}")
+                .replacement(livingEntity.name()).build()
+        )
 
         // PaperAdventure.asVanilla(kyoriComponent)
         try {
