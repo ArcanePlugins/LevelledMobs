@@ -5,7 +5,6 @@ import io.github.arcaneplugins.levelledmobs.annotations.DoNotShow
 import io.github.arcaneplugins.levelledmobs.annotations.ExcludeFromHash
 import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
@@ -163,7 +162,7 @@ class RuleInfo(
     @field:RuleFieldInfo("vanilla bonuses", RuleType.APPLY_SETTING)
     var vanillaBonuses: CachedModalList<VanillaBonusEnum>? = null
     @field:RuleFieldInfo("spawn reasons", RuleType.CONDITION)
-    var conditionsSpawnReasons: CachedModalList<LevelledMobSpawnReason>? = null
+    var conditionsSpawnReasons: CachedModalList<String>? = null
     @field:RuleFieldInfo("structures", RuleType.CONDITION)
     var conditionsStructure: CachedModalList<Structure>? = null
     @field:RuleFieldInfo("player permissions", RuleType.CONDITION)

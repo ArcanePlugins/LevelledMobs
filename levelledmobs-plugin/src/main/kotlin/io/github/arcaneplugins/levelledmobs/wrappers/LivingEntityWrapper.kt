@@ -13,8 +13,8 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.rules.ApplicableRulesResult
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
+import io.github.arcaneplugins.levelledmobs.misc.LMSpawnReason
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -66,7 +66,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private var _sourceSpawnEggName: String? = null
     private val applicableRules = mutableListOf<RuleInfo>()
     private var spawnedWGRegions: List<String>? = null
-    private var _spawnReason: LevelledMobSpawnReason? = null
+    val spawnReason = LMSpawnReason()
     private var _nametagVisibilityEnum = mutableListOf<NametagVisibilityEnum>()
     private val cacheLock = ReentrantLock()
     private val pdcLock = ReentrantLock()
@@ -191,7 +191,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         mobExternalTypes.clear()
         this._spawnedTimeOfDay = null
         this._shouldShowLMNametag = null
-        this._spawnReason = null
+        this.spawnReason.clear()
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM
         this.isBuildingCache = false
         this.hasCache = false
@@ -523,64 +523,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             return false
         }
 
-    var spawnReason: LevelledMobSpawnReason
-        set(value) { setSpawnReason(value, false) }
-        get() {
-        if (this._spawnReason != null) {
-            return _spawnReason!!
-        }
-
-        if (!getPDCLock()) {
-            return LevelledMobSpawnReason.DEFAULT
-        }
-        var hadError = false
-        var succeeded = false
-
-        try {
-            for (i in 0..1) {
-                try {
-                    if (livingEntity.persistentDataContainer
-                            .has(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING)
-                    ) {
-                        this._spawnReason = LevelledMobSpawnReason.valueOf(
-                            pdc[NamespacedKeys.spawnReasonKey, PersistentDataType.STRING]!!
-                        )
-                    }
-                    succeeded = true
-                    break
-                } catch (ignored: ConcurrentModificationException) {
-                    hadError = true
-                    try {
-                        Thread.sleep(5)
-                    } catch (ignored2: InterruptedException) {
-                        return LevelledMobSpawnReason.DEFAULT
-                    }
-                } finally {
-                    releasePDCLock()
-                }
-            }
-        } finally {
-            releasePDCLock()
-        }
-
-        if (hadError) {
-            if (succeeded) {
-                Log.war(
-                    "Got ConcurrentModificationException in LivingEntityWrapper getting spawn reason, succeeded on retry"
-                )
-            } else {
-                Log.war(
-                    "Got ConcurrentModificationException (2x) in LivingEntityWrapper getting spawn reason"
-                )
-            }
-        }
-
-        return if (this._spawnReason != null)
-            this._spawnReason!!
-        else
-            LevelledMobSpawnReason.DEFAULT
-    }
-
     var skylightLevel: Int
         set(value) {
             this._skylightLevelAtSpawn = value
@@ -660,28 +602,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     val currentSkyLightLevel: Int
         get() = location.block.lightFromSky.toInt()
-
-    fun setSpawnReason(
-        spawnReason: LevelledMobSpawnReason,
-        doForce: Boolean
-    ) {
-        this._spawnReason = spawnReason
-
-        if (!getPDCLock()) {
-            return
-        }
-
-        try {
-            if (doForce || !pdc.has(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING)) {
-                pdc.set(
-                        NamespacedKeys.spawnReasonKey, PersistentDataType.STRING,
-                        spawnReason.toString()
-                    )
-            }
-        } finally {
-            releasePDCLock()
-        }
-    }
 
     var sourceSpawnerName: String?
         set(value) {

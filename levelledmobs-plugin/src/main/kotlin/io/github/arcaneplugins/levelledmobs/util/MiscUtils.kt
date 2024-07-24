@@ -69,6 +69,7 @@ object MiscUtils {
             var methodName = if (ver.majorVersion >= 21) "tags" else "x"
 
             val tagsField = compoundTagClazz.getDeclaredField(methodName)
+            tagsField.trySetAccessible()
             val tagsMap = tagsField.get(compoundTag) as MutableMap<String, Any>
 
             // NBTTagCompound.java

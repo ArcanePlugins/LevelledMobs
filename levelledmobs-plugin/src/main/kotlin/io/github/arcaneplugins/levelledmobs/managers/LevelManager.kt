@@ -8,8 +8,8 @@ import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
@@ -63,6 +63,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Vehicle
 import org.bukkit.entity.Zombie
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.floor
@@ -1245,8 +1246,9 @@ class LevelManager : LevelInterface2 {
 
         val main = LevelledMobs.instance
         if (lmEntity.isLevelled) {
-            var skipLevelling = (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER ||
-                    lmEntity.spawnReason == LevelledMobSpawnReason.LM_SUMMON
+            val internalSpawnReason = lmEntity.spawnReason.getInternalSpawnReason(lmEntity)
+            var skipLevelling = (internalSpawnReason == InternalSpawnReason.LM_SPAWNER ||
+                    internalSpawnReason == InternalSpawnReason.LM_SUMMON
                     )
             if (main.rulesManager.isPlayerLevellingEnabled() && !lmEntity.isRulesForceAll && !checkIfReadyForRelevelling(
                     lmEntity
@@ -1525,7 +1527,7 @@ class LevelManager : LevelInterface2 {
                 Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK
                 Addition.ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE
                 Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
-                    if (lmEntity.spawnReason == LevelledMobSpawnReason.REINFORCEMENTS)
+                    if (lmEntity.spawnReason.getMinecraftSpawnReason(lmEntity) == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS)
                         continue
 
                     attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
@@ -1915,7 +1917,7 @@ class LevelManager : LevelInterface2 {
         }
 
         if (isSummoned) {
-            lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SUMMON, true)
+            lmEntity.spawnReason.setInternalSpawnReason(lmEntity, InternalSpawnReason.LM_SUMMON, true)
             val summonedMobPreLevelEvent = SummonedMobPreLevelEvent(
                 lmEntity.livingEntity, useLevel
             )

@@ -12,7 +12,6 @@ import io.github.arcaneplugins.levelledmobs.managers.NBTManager
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
@@ -31,6 +30,7 @@ import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 
@@ -629,9 +629,9 @@ class CustomDropsParser(
 
     private fun buildCachedModalListOfDamageCause(
         ymlHelper: YmlParsingHelper,
-        defaultValue: CachedModalList<DeathCause>?
-    ): CachedModalList<DeathCause>? {
-        val cachedModalList = CachedModalList<DeathCause>()
+        defaultValue: CachedModalList<String>?
+    ): CachedModalList<String>? {
+        val cachedModalList = CachedModalList<String>()
         val useKeyName = ymlHelper.getKeyNameFromConfig("cause-of-death")
 
         val simpleStringOrArray = ymlHelper.cs[useKeyName]
@@ -660,7 +660,10 @@ class CustomDropsParser(
                 continue
             }
             try {
-                val cause = DeathCause.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                val cause = if (item.trim().equals("PLAYER_CAUSED", ignoreCase = true))
+                    "PLAYER_CAUSED"
+                else
+                    EntityDamageEvent.DamageCause.valueOf(item.trim().uppercase()).toString()
                 cachedModalList.includedList.add(cause)
             } catch (ignored: IllegalArgumentException) {
                 hadError("Invalid damage cause: $item")
@@ -669,14 +672,17 @@ class CustomDropsParser(
         if (cs2 == null)  return cachedModalList
 
         for (item in YmlParsingHelper.getListFromConfigItem(cs2, "excluded-list")) {
-            if (item.trim { it <= ' ' }.isEmpty()) continue
+            if (item.trim().isEmpty()) continue
 
-            if ("*" == item.trim { it <= ' ' }) {
+            if ("*" == item.trim()) {
                 cachedModalList.excludeAll = true
                 continue
             }
             try {
-                val cause = DeathCause.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                val cause = if (item.trim().equals("PLAYER_CAUSED", ignoreCase = true))
+                    "PLAYER_CAUSED"
+                else
+                    EntityDamageEvent.DamageCause.valueOf(item.trim().uppercase()).toString()
                 cachedModalList.excludedList.add(cause)
             } catch (ignored: IllegalArgumentException) {
                 hadError("Invalid damage cause: $item")

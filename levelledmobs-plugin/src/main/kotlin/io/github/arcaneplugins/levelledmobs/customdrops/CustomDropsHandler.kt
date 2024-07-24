@@ -5,11 +5,9 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.enums.DropInstanceBuildResult
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerLevelSourceResult
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.result.EvaluationResult
@@ -28,6 +26,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.EntityType
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
@@ -181,7 +180,7 @@ class CustomDropsHandler {
         synchronized(lmEntity.livingEntity.persistentDataContainer) {
             processingInfo.isSpawner = (lmEntity.pdc
                 .has(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING) &&
-                    LevelledMobSpawnReason.SPAWNER.toString() == lmEntity.pdc
+                    CreatureSpawnEvent.SpawnReason.SPAWNER.toString() == lmEntity.pdc
                         .get(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING)
                     )
             if (lmEntity.pdc
@@ -199,12 +198,8 @@ class CustomDropsHandler {
         } else
             processingInfo.wasKilledByPlayer = false
 
-        if (lmEntity.livingEntity.lastDamageCause != null) {
-            processingInfo.deathCause = DeathCause.valueOf(
-                lmEntity.livingEntity.lastDamageCause!!.cause.toString()
-                    .uppercase(Locale.getDefault())
-            )
-        }
+        if (lmEntity.livingEntity.lastDamageCause != null)
+            processingInfo.deathCause = lmEntity.livingEntity.lastDamageCause!!.cause.toString()
 
         processingInfo.addition = (
             main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount
@@ -510,6 +505,13 @@ class CustomDropsHandler {
         if (!info.equippedOnly && dropBase.playerCausedOnly && (dropBase.causeOfDeathReqs == null
                     || dropBase.causeOfDeathReqs!!.isEmpty()) && !info.wasKilledByPlayer
         ){
+            if (!info.equippedOnly && LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+                val itemName = if (dropBase is CustomDropItem) dropBase.material.name else "(command)"
+                info.addDebugMessage(
+                    "&8 - &7item: &b$itemName&7, death-cause: &b${info.deathCause}&7, was not player caused" +
+                            ", dropped: &bfalse&7."
+                )
+            }
             return
         }
 
@@ -540,7 +542,7 @@ class CustomDropsHandler {
 
                     info.addDebugMessage(
                         "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, fromSpawner: &b${info.isSpawner}&7, item: &b${itemStack.type.name}&7, " +
-                                "minL: &b${dropBase.minLevel}&7, maxL: &b${dropBase.maxLevel}}&7, nospawner: &b${dropBase.noSpawner}&7, dropped: &bfalse"
+                                "minL: &b${dropBase.minLevel}&7, maxL: &b${dropBase.maxLevel}&7, nospawner: &b${dropBase.noSpawner}&7, dropped: &bfalse"
                     )
                 }
             } else if (dropBase is CustomCommand) {
@@ -995,16 +997,23 @@ class CustomDropsHandler {
         if (dropBase.causeOfDeathReqs == null || info.deathCause == null)
             return false
 
-        if (info.wasKilledByPlayer && Utils.isDamageCauseInModalList(
-                dropBase.causeOfDeathReqs!!,
-                DeathCause.PLAYER_CAUSED
+        val test = dropBase.causeOfDeathReqs!!.isIncludedInList(
+            "PLAYER_CAUSED",
+            info.lmEntity
+        )
+
+        Log.infTemp("wasKilledByPlayer: ${info.wasKilledByPlayer}, $test")
+
+        if (info.wasKilledByPlayer && dropBase.causeOfDeathReqs!!.isIncludedInList(
+                "PLAYER_CAUSED",
+                info.lmEntity
             )
         ) {
             return false
         }
 
         if (!Utils.isDamageCauseInModalList(dropBase.causeOfDeathReqs!!, info.deathCause!!)) {
-            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
+            if (!info.equippedOnly && LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 val itemName = if (dropBase is CustomDropItem) dropBase.material.name else "(command)"
                 info.addDebugMessage(
                     "&8 - &7item: &b$itemName&7, death-cause: &b${info.deathCause}&7, death-cause-req: " +

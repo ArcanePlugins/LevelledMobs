@@ -5,11 +5,11 @@ import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.enums.EquipmentClass
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -23,7 +23,7 @@ class CustomDropProcessingInfo {
     var lmEntity: LivingEntityWrapper? = null
     var mobKiller: Player? = null
     val playerLevelVariableCache = mutableMapOf<String, Int>()
-    var deathCause: DeathCause? = null
+    var deathCause: String? = null
     var addition = 0f
     var isSpawner = false
     var equippedOnly = false

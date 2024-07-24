@@ -4,12 +4,13 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
+import io.github.arcaneplugins.levelledmobs.misc.LMSpawnReason
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
@@ -29,6 +30,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.SpawnerSpawnEvent
 import org.bukkit.event.world.ChunkLoadEvent
@@ -65,9 +67,8 @@ class EntitySpawnListener : Listener{
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason
 
-            lmEntity.spawnReason = Utils.adaptVanillaSpawnReason(spawnReason)
-            if ((spawnReason == CreatureSpawnEvent.SpawnReason.CUSTOM
-                        || spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) &&
+            lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, spawnReason)
+            if ((spawnReason == SpawnReason.CUSTOM || spawnReason == SpawnReason.SPAWNER_EGG) &&
                 !lmEntity.isLevelled
             ) {
                 if (main.rulesManager.isPlayerLevellingEnabled()
@@ -80,9 +81,8 @@ class EntitySpawnListener : Listener{
                 lmEntity.free()
                 return
             }
-        } else if (event is SpawnerSpawnEvent) {
-            lmEntity.spawnReason = LevelledMobSpawnReason.SPAWNER
-        }
+        } else if (event is SpawnerSpawnEvent)
+            lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, SpawnReason.SPAWNER)
 
         if (!processMobSpawns) {
             lmEntity.free()
@@ -164,7 +164,7 @@ class EntitySpawnListener : Listener{
         }
 
         lmEntity.sourceSpawnerName = spawnerName
-        lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER, true)
+        lmEntity.spawnReason.setInternalSpawnReason(lmEntity, InternalSpawnReason.LM_SPAWNER, true)
 
         val customDropIdFinal = customDropId
         DebugManager.log(DebugType.LM_MOB_SPAWNER, lmEntity) {
@@ -219,7 +219,7 @@ class EntitySpawnListener : Listener{
                     .persistentDataContainer
                     .has(NamespacedKeys.keySpawner, PersistentDataType.INTEGER)
             ) {
-                lmEntity.spawnReason = LevelledMobSpawnReason.LM_SPAWNER
+                lmEntity.spawnReason.setInternalSpawnReason(lmEntity, InternalSpawnReason.LM_SPAWNER, true)
                 lmSpawnerSpawn(lmEntity, event)
                 return
             }
@@ -229,14 +229,14 @@ class EntitySpawnListener : Listener{
                 lmEntity
             ) { "Spawned mob from vanilla spawner" }
         } else if (event is CreatureSpawnEvent) {
-            if (event.spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER ||
-                event.spawnReason == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT
+            if (event.spawnReason == SpawnReason.SPAWNER ||
+                event.spawnReason == SpawnReason.SLIME_SPLIT
             ) {
                 return
             }
 
-            if (event.spawnReason == CreatureSpawnEvent.SpawnReason.CUSTOM ||
-                event.spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG
+            if (event.spawnReason == SpawnReason.CUSTOM ||
+                event.spawnReason == SpawnReason.SPAWNER_EGG
             ) {
                 synchronized(LevelManager.summonedOrSpawnEggs_Lock) {
                     if (main.levelManager.summonedOrSpawnEggs.containsKey(
@@ -249,12 +249,10 @@ class EntitySpawnListener : Listener{
                 }
             }
 
-            if (!lmEntity.reEvaluateLevel) {
-                lmEntity.spawnReason = Utils.adaptVanillaSpawnReason(event.spawnReason)
-            }
-        } else if (event is ChunkLoadEvent) {
+            if (!lmEntity.reEvaluateLevel)
+                lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, event.spawnReason)
+        } else if (event is ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER
-        }
 
         if (lmEntity.reEvaluateLevel && main.rulesManager.isPlayerLevellingEnabled()
             && lmEntity.isRulesForceAll

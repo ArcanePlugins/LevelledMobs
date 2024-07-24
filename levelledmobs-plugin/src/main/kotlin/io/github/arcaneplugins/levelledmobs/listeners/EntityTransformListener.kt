@@ -4,14 +4,15 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.EntityTransformEvent
 
@@ -82,9 +83,9 @@ class EntityTransformListener : Listener {
             ) { "entity was transformed" }
 
             if (useInheritance) {
-                if (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER) {
-                    transformedLmEntity.spawnReason = LevelledMobSpawnReason.SPAWNER
-                }
+                val internalSpawnReason = lmEntity.spawnReason.getInternalSpawnReason(lmEntity)
+                if (internalSpawnReason == InternalSpawnReason.LM_SPAWNER)
+                    transformedLmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, CreatureSpawnEvent.SpawnReason.SPAWNER)
 
                 main.levelInterface.applyLevelToMob(
                     transformedLmEntity,
@@ -109,8 +110,9 @@ class EntityTransformListener : Listener {
 
     private fun checkForSlimeSplit(livingEntity: LivingEntity, transformedEntities: List<Entity>) {
         val parent = LivingEntityWrapper.getInstance(livingEntity)
-        if (parent.spawnReason == LevelledMobSpawnReason.DEFAULT ||
-            parent.spawnReason == LevelledMobSpawnReason.SLIME_SPLIT
+        val minecraftSpawnReason = parent.spawnReason.getMinecraftSpawnReason(parent)
+        if (minecraftSpawnReason == CreatureSpawnEvent.SpawnReason.DEFAULT ||
+            minecraftSpawnReason == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT
         ) {
             parent.free()
             return
@@ -120,7 +122,7 @@ class EntityTransformListener : Listener {
             if (transformedEntity !is LivingEntity) continue
 
             val lew = LivingEntityWrapper.getInstance(transformedEntity)
-            lew.spawnReason = parent.spawnReason
+            lew.spawnReason.setLMSpawnReason(parent)
             lew.free()
         }
 

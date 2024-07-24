@@ -916,8 +916,9 @@ class RulesManager {
         }
 
         if (ri.conditionsSpawnReasons != null) {
+            lmEntity.spawnReason.checkPDCKey(lmEntity)
             val result = ri.conditionsSpawnReasons!!.isIncludedInList(
-                lmEntity.spawnReason, lmEntity
+                lmEntity.spawnReason.toString(), lmEntity
             )
             DebugManager.log(
                 DebugType.CONDITION_SPAWN_REASON, ri, lmEntity, result
