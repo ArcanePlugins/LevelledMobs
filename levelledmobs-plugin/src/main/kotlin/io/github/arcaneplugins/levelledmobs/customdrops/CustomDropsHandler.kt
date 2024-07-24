@@ -997,13 +997,6 @@ class CustomDropsHandler {
         if (dropBase.causeOfDeathReqs == null || info.deathCause == null)
             return false
 
-        val test = dropBase.causeOfDeathReqs!!.isIncludedInList(
-            "PLAYER_CAUSED",
-            info.lmEntity
-        )
-
-        Log.infTemp("wasKilledByPlayer: ${info.wasKilledByPlayer}, $test")
-
         if (info.wasKilledByPlayer && dropBase.causeOfDeathReqs!!.isIncludedInList(
                 "PLAYER_CAUSED",
                 info.lmEntity
