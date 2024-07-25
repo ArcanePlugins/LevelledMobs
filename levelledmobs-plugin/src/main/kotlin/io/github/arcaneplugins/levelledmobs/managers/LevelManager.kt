@@ -260,18 +260,26 @@ class LevelManager : LevelInterface2 {
         if (evalResult.hadError){
             NotifyManager.notifyOfError("Error evaluating formula for construct-level on mob: ${lmEntity.nameIfBaby}, ${evalResult.error}")
             DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
-                "result (error, ${evalResult.error})\n" +
-                        "   formulaPre: '$formulaPre'\n" +
-                        "   formula: '$formula'" }
+                val msg = if (formula == formulaPre)
+                    "   formula: '$formula'"
+                else
+                    "   formulaPre: '$formulaPre'\n" +
+                    "   formula: '$formula'"
+
+                "result (error, ${evalResult.error})\n$msg" }
             throw EvaluationException()
         }
 
         val result = evalResult.result.roundToInt()
 
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
-            "result $result\n" +
-            "   formulaPre: '$formulaPre'\n" +
-            "   formula: '$formula'" }
+            val msg = if (formula == formulaPre)
+                "   formula: '$formula'"
+            else
+                "   formulaPre: '$formulaPre'\n" +
+                        "   formula: '$formula'"
+
+            "result $result\n$msg"}
 
         return result
     }

@@ -3,7 +3,6 @@ package io.github.arcaneplugins.levelledmobs.managers
 import java.time.Instant
 import java.util.WeakHashMap
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
@@ -36,6 +35,7 @@ class NametagQueueManager {
     private var hasLibsDisguisesInstalled = false
     private val queue = LinkedBlockingQueue<QueueItem>()
     val nametagSenderHandler = NametagSenderHandler()
+    private val queueLock = Any()
 
     fun load(){
         hasLibsDisguisesInstalled = ExternalCompatibilityManager.hasLibsDisguisesInstalled
@@ -46,19 +46,25 @@ class NametagQueueManager {
         get() = this.nametagSender != null
 
     fun start() {
-        if (isRunning) {
-            return
-        }
+        if (isRunning) return
+
         doThread = true
         isRunning = true
 
         val scheduler = SchedulerWrapper {
+            var hadError = false
             try {
                 mainThread()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
+            } catch (e: Exception) {
+                if (e !is InterruptedException){
+                    hadError = true
+                    e.printStackTrace()
+                }
             }
-            Log.inf("Nametag update queue Manager has exited")
+            if (hadError)
+                Log.sev("Nametag update queue Manager has exited with error")
+            else
+                Log.inf("Nametag update queue Manager has exited")
         }
         scheduler.run()
     }
@@ -74,13 +80,32 @@ class NametagQueueManager {
             return
 
         item.lmEntity.inUseCount.getAndIncrement()
-        queue.offer(item)
+        synchronized(queueLock){
+            queue.offer(item)
+        }
+    }
+
+    fun showNumberQueued(): Int{
+        val size: Int
+        synchronized(queueLock){
+            size = queue.size
+        }
+
+        return size
     }
 
     @Throws(InterruptedException::class)
     private fun mainThread() {
         while (doThread) {
-            val item = queue.poll(200, TimeUnit.MILLISECONDS) ?: continue
+            val item: QueueItem?
+
+            synchronized(queueLock){
+                item = queue.poll()
+            }
+            if (item == null) {
+                Thread.sleep(2L)
+                continue
+            }
 
             val scheduler = SchedulerWrapper(
                 item.lmEntity.livingEntity

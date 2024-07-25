@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
-import org.bukkit.event.entity.EntityDamageEvent
 
 /**
  * Holds all default values for either all custom drop items

@@ -67,11 +67,12 @@ combat-pets:
 #  placeholder-name: '%combat-pets-name%'
 
 Deadly-Disasters:
-  friendly-name: 'Deadly-Disasters'
+  friendly-name: 'deadly-disasters'
   plugin-name: 'DeadlyDisasters'
   key-name: 'customentity'
   key-type: 'PDC'
   requirement: 'exists'
+#  placeholder-name: '%deadly-disasters-name%'
 
 gadgets-menu:
   friendly-name: 'gadgets-menu'

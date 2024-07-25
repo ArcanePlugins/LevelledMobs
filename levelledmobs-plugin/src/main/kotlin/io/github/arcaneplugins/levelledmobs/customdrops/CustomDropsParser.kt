@@ -46,9 +46,9 @@ class CustomDropsParser(
     var defaults = CustomDropsDefaults()
         private set
     private var hasMentionedNBTAPIMissing = false
-    var dropsUtilizeNBTAPI: Boolean = false
+    var dropsUtilizeNBTAPI = false
     val invalidExternalItems = mutableListOf<String>()
-    private var dropInstance: CustomDropInstance = CustomDropInstance(EntityType.AREA_EFFECT_CLOUD)
+    private var dropInstance = CustomDropInstance(EntityType.AREA_EFFECT_CLOUD)
     private val defaultName = "default"
     private val invalidEntityTypesToIgnore = mutableListOf<String>()
     var hadParsingError = false
@@ -298,15 +298,14 @@ class CustomDropsParser(
 
         if (checkForMobOverride(itemEntry)) return
 
-        if ("overall-chance".equals(materialName, ignoreCase = true)) {
-            dropInstance.overallChance = parseSlidingChance(
-                YmlParsingHelper(cs),
-                "overall-chance",
-                "overall-chance-formula",
-                defaults.overallChance
-            )
-            return
-        } else if ("overall-permission".equals(materialName, ignoreCase = true)) {
+        dropInstance.overallChance = parseSlidingChance(
+            YmlParsingHelper(cs),
+            "overall-chance",
+            "overall-chance-formula",
+            defaults.overallChance
+        )
+
+        if ("overall-permission".equals(materialName, ignoreCase = true)) {
             if (itemEntry.value is String)
                 dropInstance.overallPermissions.add((itemEntry.value as String?)!!)
             else if (itemEntry.value is ArrayList<*>) {

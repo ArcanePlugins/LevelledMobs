@@ -32,7 +32,7 @@ class SlidingChance : Cloneable {
     ): Float {
         if (!formula.isNullOrEmpty()){
             // run formula
-            val evalResult = CustomDropsHandler.evaluateAmountExpression(
+            val evalResult = CustomDropsHandler.evaluateNumberFormula(
                 formula,
                 formulaFriendlyName,
                 lmEntity

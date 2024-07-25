@@ -139,5 +139,5 @@ enum class DebugType {
 
     ENCHANTMENT_CHANCES,
 
-    AMOUNT_FORMULA
+    CUSTOM_DROPS_FORMULA
 }

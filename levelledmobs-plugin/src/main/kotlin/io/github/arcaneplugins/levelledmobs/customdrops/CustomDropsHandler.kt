@@ -18,7 +18,6 @@ import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
-import java.util.Locale
 import java.util.TreeMap
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
@@ -32,7 +31,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.persistence.PersistentDataType
-import kotlin.math.roundToInt
+import kotlin.math.floor
 
 /**
  * The main CustomDropsclass that holds useful functions for parsing, instantizing and more of
@@ -83,27 +82,35 @@ class CustomDropsHandler {
     }
 
     companion object{
-        fun evaluateAmountExpression(
-            amountFormula: String?,
+        fun evaluateNumberFormula(
+            numberFormula: String?,
             friendlyName: String,
             lmEntity: LivingEntityWrapper
         ): EvaluationResult {
-            if (amountFormula.isNullOrEmpty()) return EvaluationResult(1.0, null)
+            if (numberFormula.isNullOrEmpty()) return EvaluationResult(1.0, null)
 
-            val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(amountFormula, lmEntity)
+            val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(numberFormula, lmEntity)
             val evalResult = MobDataManager.evaluateExpression(formula)
             if (evalResult.hadError){
                 NotifyManager.notifyOfError("Error evaluating formula for $friendlyName on mob: ${lmEntity.nameIfBaby}, lvl: ${lmEntity.getMobLevel}, ${evalResult.error}")
-                DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
-                    "result (error, ${evalResult.error})\n" +
-                            "   formulaPre: '$amountFormula'\n" +
-                            "   formula: '$formula'" }
+                DebugManager.log(DebugType.CUSTOM_DROPS_FORMULA, lmEntity){
+                    val msg = if (formula == numberFormula)
+                        "   formula: '$formula'"
+                    else
+                        "   formulaPre: '$numberFormula'\n" +
+                        "   formula: '$formula'"
+
+                    "result (error, ${evalResult.error})\n$msg"}
             }
 
-            DebugManager.log(DebugType.AMOUNT_FORMULA, lmEntity){
-                "$friendlyName, result: ${evalResult.result}\n" +
-                        "   formulaPre: '$amountFormula'\n" +
-                        "   formula: '$formula'" }
+            DebugManager.log(DebugType.CUSTOM_DROPS_FORMULA, lmEntity){
+                val msg = if (formula == numberFormula)
+                    "   formula: '$formula'"
+                else
+                    "   formulaPre: '$numberFormula'\n" +
+                            "   formula: '$formula'"
+
+                "$friendlyName, result: ${evalResult.result}\n$msg"}
 
             return evalResult
         }
@@ -541,13 +548,13 @@ class CustomDropsHandler {
                         else dropBase.itemStack!!
 
                     info.addDebugMessage(
-                        "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, fromSpawner: &b${info.isSpawner}&7, item: &b${itemStack.type.name}&7, " +
+                        "fromSpawner: &b${info.isSpawner}&7, item: &b${itemStack.type.name}&7, " +
                                 "minL: &b${dropBase.minLevel}&7, maxL: &b${dropBase.maxLevel}&7, nospawner: &b${dropBase.noSpawner}&7, dropped: &bfalse"
                     )
                 }
             } else if (dropBase is CustomCommand) {
                 info.addDebugMessage(
-                    "&8- custom-cmd: &7level: &b${info.lmEntity?.getMobLevel}&7, fromSpawner: &b${info.isSpawner}&7, minL: &b${dropBase.minLevel}&7, " +
+                    "&8- custom-cmd, fromSpawner: &b${info.isSpawner}&7, minL: &b${dropBase.minLevel}&7, " +
                             "maxL: &b${dropBase.maxLevel}&7, nospawner: &b${dropBase.noSpawner}&7, executed: &bfalse"
                 )
             }
@@ -582,13 +589,12 @@ class CustomDropsHandler {
             if (dropBase is CustomDropItem) {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS,
-                        "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, item: &b${dropBase.material.name}&7, " +
-                                "gId: &b${dropBase.groupId}&7, chunk kill count reached"
+                        "item: &b${dropBase.material.name}&7, gId: &b${dropBase.groupId}&7, chunk kill count reached"
                 )
             } else {
                 info.addDebugMessage(
                     DebugType.CUSTOM_DROPS,
-                        "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, item: custom command, gId: &b${dropBase.groupId}&7, chunk kill count reached"
+                        "item: custom command, gId: &b${dropBase.groupId}&7, chunk kill count reached"
                 )
             }
 
@@ -643,12 +649,12 @@ class CustomDropsHandler {
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                     if (dropBase is CustomDropItem) {
                         info.addDebugMessage(
-                            "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, item: &b${dropBase.material.name}&7, gId: &b${dropBase.groupId}&7, " +
+                            "item: &b${dropBase.material.name}&7, gId: &b${dropBase.groupId}&7, " +
                                     "maxDropGroup: &b${info.getItemsDropsByGroup(dropBase)}&7, groupDropCount: &b$groupDroppedCount&7, dropped: &bfalse"
                         )
                     } else {
                         info.addDebugMessage(
-                            "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, item: custom command, gId: &b${info.getItemsDropsByGroup(dropBase)}&7, " +
+                            "item: custom command, gId: &b${info.getItemsDropsByGroup(dropBase)}&7, " +
                                     "maxDropGroup: &b${dropBase.maxDropGroup}&7, groupDropCount: &b$groupDroppedCount&7, executed: &bfalse"
                         )
                     }
@@ -664,7 +670,7 @@ class CustomDropsHandler {
             if (dropBase.hasGroupId) {
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                     val count = info.getItemsDropsByGroup(dropBase)
-                    var msg = "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, item: command, gId: &b${dropBase.groupId}&7, maxDropGroup: &b${dropBase.maxDropGroup}&7, " +
+                    var msg = "item: command, gId: &b${dropBase.groupId}&7, maxDropGroup: &b${dropBase.maxDropGroup}&7, " +
                             "groupDropCount: &b$count&7, executed: &btrue"
                     if (info.retryNumber > 0)
                         msg += ", retry: ${info.retryNumber}"
@@ -673,7 +679,7 @@ class CustomDropsHandler {
                 }
             } else if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 var msg =
-                    "&8- &7level: &b${info.lmEntity?.getMobLevel}&7, item: custom command, gId: &b${dropBase.groupId}&7, maxDropGroup: &b${dropBase.maxDropGroup}&7, executed: &btrue"
+                    "item: custom command, gId: &b${dropBase.groupId}&7, maxDropGroup: &b${dropBase.maxDropGroup}&7, executed: &btrue"
 
                 if (info.retryNumber > 0)
                     msg += ", retry: ${info.retryNumber}"
@@ -699,11 +705,11 @@ class CustomDropsHandler {
         }
 
         if (!dropBase.amountFormula.isNullOrEmpty())
-            newDropAmount = evaluateAmountExpression(
+            newDropAmount = floor(evaluateNumberFormula(
                 dropBase.amountFormula,
                 "amount-formula",
                 info.lmEntity!!
-            ).result.roundToInt()
+            ).result).toInt()
 
         if (dropBase.hasGroupId && info.groupLimits != null) {
             val gl = info.groupLimits!!
@@ -754,7 +760,7 @@ class CustomDropsHandler {
             if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
                 val equippedChance =
                     if (dropBase.equippedChance != null) dropBase.equippedChance!!.showMatchedChance() else "0.0"
-                info.addDebugMessage(
+                info.addDebugMessage(DebugType.CUSTOM_EQUIPS,
                     "&8 - &7item: &b${newItem.type.name}&7, equipChance: &b$equippedChance&7, chanceRole: " +
                             "&b${Utils.round(info.equippedChanceRole.toDouble(), 4)}&7, equipped: &btrue&7."
                 )
@@ -849,8 +855,8 @@ class CustomDropsHandler {
 
         if (equippedChance <= 0.0f || 1.0f - info.equippedChanceRole >= equippedChance) {
             if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
-                info.addDebugMessage(
-                    "&7level: &b${info.lmEntity?.getMobLevel}&7, item: &b${dropItem.material.name}&7, equipchance: " +
+                info.addDebugMessage(DebugType.CUSTOM_EQUIPS,
+                    "item: &b${dropItem.material.name}&7, equipchance: " +
                             "&b${dropItem.equippedChance?.showMatchedChance()}&7, chancerole: " +
                             "&b${Utils.round(info.equippedChanceRole.toDouble(), 4)}&7, did not make equipped chance"
                 )
@@ -1033,7 +1039,7 @@ class CustomDropsHandler {
                 val itemDescription = if ((dropBase is CustomDropItem)) dropBase.itemStack?.type?.name
                     else "custom command"
                 info.addDebugMessage(
-                    "&8 - &7item: &b$itemDescription&7, not player was provided for item permissions"
+                    "&8 - &7item: &b$itemDescription&7, no player was provided for item permissions"
                 )
             }
             return false
@@ -1138,11 +1144,11 @@ class CustomDropsHandler {
                     if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                         if (dropBase is CustomDropItem) {
                             info.addDebugMessage(
-                                "&8 - &7Mob: &b${info.lmEntity?.typeName}&7, item: ${dropBase.material}, PAPI val: $papiResult, matched: $resultStr"
+                                "item: ${dropBase.material}, PAPI val: $papiResult, matched: $resultStr"
                             )
                         } else {
                             info.addDebugMessage(
-                                "&8 - &7Mob: &b${info.lmEntity?.typeName}&7, (customCommand), PAPI val: $, matched: $resultStr"
+                                "(customCommand), PAPI val: $, matched: $resultStr"
                             )
                         }
                     }
@@ -1154,11 +1160,11 @@ class CustomDropsHandler {
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                     if (dropBase is CustomDropItem) {
                         info.addDebugMessage(
-                            "&8 - &7Mob: &b${info.lmEntity?.typeName}&7, item: ${dropBase.material}, PAPI val: $papiResult, no matches found"
+                            "item: ${dropBase.material}, PAPI val: $papiResult, no matches found"
                         )
                     } else {
                         info.addDebugMessage(
-                            "&8 - &7Mob: &b${info.lmEntity?.typeName}&7, (customCommand), PAPI val: $papiResult, no matches found",
+                            "(customCommand), PAPI val: $papiResult, no matches found",
                         )
                     }
                 }

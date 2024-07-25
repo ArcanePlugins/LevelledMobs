@@ -10,7 +10,6 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
-import io.github.arcaneplugins.levelledmobs.misc.LMSpawnReason
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
@@ -356,18 +355,14 @@ class EntitySpawnListener : Listener{
     ): LevellableState {
         val levellableState = LevelledMobs.instance.levelInterface.getLevellableState(lmEntity)
 
-        if (levellableState != LevellableState.ALLOWED) {
+        if (levellableState != LevellableState.ALLOWED)
             return levellableState
-        }
 
         if (event is CreatureSpawnEvent) {
             // the mob gets processed via SpawnerSpawnEvent
 
-            if (event.spawnReason
-                == CreatureSpawnEvent.SpawnReason.SPAWNER
-            ) {
+            if (event.spawnReason == SpawnReason.SPAWNER)
                 return LevellableState.DENIED_OTHER
-            }
 
             DebugManager.log(DebugType.ENTITY_SPAWN, lmEntity) {
                 "instanceof CreatureSpawnListener: &b${event.entityType}" +

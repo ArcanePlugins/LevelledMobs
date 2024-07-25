@@ -81,7 +81,7 @@ class LMItemsParser {
         itemRequest.itemType = item.externalType
         itemRequest.amount = item.externalAmount
         if (info != null && !item.amountFormula.isNullOrEmpty()){
-            itemRequest.amount = CustomDropsHandler.evaluateAmountExpression(
+            itemRequest.amount = CustomDropsHandler.evaluateNumberFormula(
                 item.amountFormula,
                 "amount-formula",
                 info.lmEntity!!
