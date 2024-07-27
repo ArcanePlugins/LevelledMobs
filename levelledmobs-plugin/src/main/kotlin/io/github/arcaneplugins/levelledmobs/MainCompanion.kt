@@ -23,6 +23,7 @@ import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManage
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
 import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
 import io.github.arcaneplugins.levelledmobs.listeners.ServerLoadEvent
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
@@ -31,6 +32,7 @@ import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.UpdateChecker
 import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
@@ -199,6 +201,20 @@ class MainCompanion{
         this.showCustomDrops = main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)
     }
 
+    fun checkSettingsWithMaxPlayerOptions(playerJustLeft: Boolean = false){
+        val levelMobsUponSpawnMaxPlayers = LevelledMobs.instance.helperSettings.getInt(
+            "level-mobs-upon-spawn-max-players", 10
+        )
+        val updateMobsUponNonplayerDamageMaxPlayers = LevelledMobs.instance.helperSettings.getInt(
+            "update-mobs-upon-nonplayer-damage-max-players", 5
+        )
+        var currentPlayerCount = Bukkit.getOnlinePlayers().size
+        if (playerJustLeft) currentPlayerCount--
+
+        EntitySpawnListener.instance.processMobSpawns = currentPlayerCount <= levelMobsUponSpawnMaxPlayers
+        EntityDamageListener.instance.updateMobsOnNonPlayerdamage = currentPlayerCount <= updateMobsUponNonplayerDamageMaxPlayers
+    }
+
     fun registerListeners() {
         Log.inf("&fListeners: &7Registering event listeners...")
 
@@ -206,9 +222,6 @@ class MainCompanion{
         main.levelManager.load()
         main.mobsQueueManager.start()
         main.nametagQueueManager.start()
-        main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(
-            "level-mobs-upon-spawn", true
-        )
         main.entityDamageDebugListener = EntityDamageDebugListener()
         main.blockPlaceListener = BlockPlaceListener()
 
@@ -483,7 +496,6 @@ class MainCompanion{
                         updateResult = replaceAllInList(
                             updateResult, "%latestVersion%", latestVersion
                         )
-                        updateResult = colorizeAllInList(updateResult)
 
                         if (main.messagesCfg.getBoolean(
                                 "other.update-notice.send-in-console",
@@ -503,7 +515,7 @@ class MainCompanion{
                                     )
                                 ) {
                                     for (msg in updateResult) {
-                                        onlinePlayer.sendMessage(msg)
+                                        onlinePlayer.sendMessage(MessageUtils.colorizeAll(msg))
                                     }
                                     //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
                                 }

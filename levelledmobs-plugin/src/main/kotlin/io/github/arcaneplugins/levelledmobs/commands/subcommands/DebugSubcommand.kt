@@ -150,6 +150,10 @@ object DebugSubcommand {
                         .includeSuggestions(ArgumentSuggestions.strings("enable", "disable")))
                     .executes(CommandExecutor { sender, args -> processDamageDebugOutput(sender, args) })
             )
+            .withSubcommands(
+                CommandAPICommand("view-queues")
+                    .executes(CommandExecutor { sender, _ -> viewQueues(sender) })
+            )
     }
 
     private fun processDamageDebugOutput(
@@ -247,6 +251,13 @@ object DebugSubcommand {
                 CommandAPICommand("clear-all-filters")
                     .executes(CommandExecutor { sender, _ -> clearFilters(sender) })
             )
+    }
+
+    private fun viewQueues(sender: CommandSender){
+        val nametagQueueNum = LevelledMobs.instance.nametagQueueManager.showNumberQueued()
+        val mobQueueNum = LevelledMobs.instance.mobsQueueManager.showNumberQueued()
+
+        sender.sendMessage("Nametag Manager items: $nametagQueueNum, Mob Queue Manager items: $mobQueueNum")
     }
 
     private fun getListenForValues(): MutableList<String>{
@@ -887,7 +898,6 @@ object DebugSubcommand {
             "location is ${l.blockX}, ${l.blockY}, ${l.blockZ} in ${l.world.name}"
 
         sender.sendMessage("Your location: $locationStr")
-        Log.inf("Player ${sender.getName()}, location: $locationStr")
     }
 
     private fun getDebugTypes(): MutableList<String> {
@@ -900,9 +910,7 @@ object DebugSubcommand {
 
     private fun getOutputToTypes(): Array<String>{
         val values = mutableListOf<String>()
-        Log.inf("current output type: ${LevelledMobs.instance.debugManager.outputType}")
         for (outputType in DebugManager.OutputTypes.entries) {
-            Log.inf("checking: $outputType")
             if (LevelledMobs.instance.debugManager.outputType != outputType)
                 values.add(outputType.name.replace("_", "-").lowercase())
         }

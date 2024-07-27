@@ -5,7 +5,6 @@ import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.enums.EquipmentClass
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -23,7 +22,7 @@ class CustomDropProcessingInfo {
     var lmEntity: LivingEntityWrapper? = null
     var mobKiller: Player? = null
     val playerLevelVariableCache = mutableMapOf<String, Int>()
-    var deathCause: DeathCause? = null
+    var deathCause: String? = null
     var addition = 0f
     var isSpawner = false
     var equippedOnly = false
@@ -42,6 +41,8 @@ class CustomDropProcessingInfo {
     var newDrops: MutableList<ItemStack>? = null
     var dropInstance: CustomDropInstance? = null
     var equippedItemsInfo: EquippedItemsInfo? = null
+    var overallChanceDebugMessage: String = ""
+    private var debugTypeToUse = DebugType.CUSTOM_DROPS
     private val groupIDsDroppedAlready: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     private val itemsDroppedById = mutableMapOf<UUID, Int>()
     var prioritizedDrops: MutableMap<Int, MutableList<CustomDropBase>>? = null
@@ -62,9 +63,8 @@ class CustomDropProcessingInfo {
         val count = itemsDroppedById.getOrDefault(dropBase.uid, 0) + amountDropped
         itemsDroppedById[dropBase.uid] = count
 
-        if (equipmentClass != null && dropBase is CustomDropItem && equippedItemsInfo != null){
+        if (equipmentClass != null && dropBase is CustomDropItem && equippedItemsInfo != null)
             EquippedItemsInfo.droppedEquipmentByClass.add(equipmentClass!!)
-        }
     }
 
     fun getDropItemsCountForGroup(dropBase: CustomDropBase): Int {
@@ -84,31 +84,29 @@ class CustomDropProcessingInfo {
     }
 
     fun addDebugMessage(debugType: DebugType, message: String?) {
-        if (!LevelledMobs.instance.debugManager.isDebugTypeEnabled(debugType)) {
+        if (!LevelledMobs.instance.debugManager.isDebugTypeEnabled(debugType))
             return
-        }
 
+        this.debugTypeToUse = debugType
         addDebugMessage(message)
     }
 
     fun addDebugMessage(message: String?) {
-        if (this.debugMessages == null) {
+        if (this.debugMessages == null)
             this.debugMessages = StringBuilder()
-        }
 
-        if (debugMessages!!.isNotEmpty()) {
-            debugMessages!!.append(System.lineSeparator())
-        }
+        if (debugMessages!!.isNotEmpty())
+            debugMessages!!.append("\n")
 
         debugMessages!!.append(message)
     }
 
     fun writeAnyDebugMessages() {
-        if (this.debugMessages == null || debugMessages!!.isEmpty()) {
+        if (this.debugMessages == null || debugMessages!!.isEmpty())
             return
-        }
 
-        DebugManager.log(DebugType.CUSTOM_DROPS, lmEntity) { debugMessages.toString() }
+        DebugManager.logNoComma(debugTypeToUse, lmEntity) { "\n$debugMessages" }
         debugMessages!!.setLength(0)
+        this.debugTypeToUse = DebugType.CUSTOM_DROPS
     }
 }

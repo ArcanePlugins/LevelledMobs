@@ -48,7 +48,7 @@ class EntityTargetListener : Listener {
 
         // Must be a levelled entity
         if (!lmEntity.isLevelled) {
-            if (main.levelManager.entitySpawnListener.processMobSpawns) {
+            if (EntitySpawnListener.instance.processMobSpawns) {
                 lmEntity.free()
                 return
             }

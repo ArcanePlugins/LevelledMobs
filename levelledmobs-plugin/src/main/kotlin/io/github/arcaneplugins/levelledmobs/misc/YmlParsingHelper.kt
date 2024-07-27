@@ -313,6 +313,33 @@ class YmlParsingHelper(
             }
         }
 
+        fun objToCS2(
+            obj: Any?
+        ): ConfigurationSection? {
+            if (obj == null) return null
+
+            when (obj) {
+                is ConfigurationSection -> {
+                    return obj
+                }
+
+                is Map<*, *> -> {
+                    val result = MemoryConfiguration()
+                    @Suppress("UNCHECKED_CAST")
+                    result.addDefaults((obj as Map<String, Any>))
+                    return result.defaultSection
+                }
+
+                else -> {
+                    Log.war(
+                        "couldn't parse config of type: " + obj.javaClass.simpleName +
+                                ", value: $obj"
+                    )
+                    return null
+                }
+            }
+        }
+
         fun getKeyNameFromConfig(
             cs: ConfigurationSection,
             key: String

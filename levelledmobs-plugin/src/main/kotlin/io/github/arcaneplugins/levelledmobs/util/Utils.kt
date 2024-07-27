@@ -7,13 +7,11 @@ import java.util.Locale
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -26,7 +24,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.annotations.Contract
 import kotlin.math.max
@@ -303,8 +300,8 @@ object Utils {
     }
 
     fun isDamageCauseInModalList(
-        list: CachedModalList<DeathCause>,
-        cause: DeathCause
+        list: CachedModalList<String>,
+        cause: String
     ): Boolean {
         if (list.includeAll) {
             return true
@@ -373,12 +370,6 @@ object Utils {
     @Contract(value = "_, _ -> new", pure = true)
     fun <T, U> getPair(first: T, second: U): Map.Entry<T, U> {
         return AbstractMap.SimpleEntry(first, second)
-    }
-
-    fun adaptVanillaSpawnReason(
-        spawnReason: CreatureSpawnEvent.SpawnReason
-    ): LevelledMobSpawnReason {
-        return LevelledMobSpawnReason.valueOf(spawnReason.toString())
     }
 
     fun matchWildcardString(

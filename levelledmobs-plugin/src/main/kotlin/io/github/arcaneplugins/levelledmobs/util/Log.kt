@@ -32,13 +32,13 @@ object Log {
 
     fun war(msg: String) {
         LevelledMobs.instance.logger.warning(
-            MessageUtils.colorizeAll(msg)
+            MessageUtils.removeColorCodes(msg)
         )
     }
 
     fun sev(msg: String) {
         LevelledMobs.instance.logger.severe(
-            MessageUtils.colorizeAll(msg)
+            MessageUtils.removeColorCodes(msg)
         )
     }
 }

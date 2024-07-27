@@ -37,6 +37,27 @@ object MessageUtils {
         return colorizeStandardCodes(colorizeHexCodes(msg))
     }
 
+    fun removeColorCodes(msg: String?): String {
+        if (msg == null) return "" +
+                ""
+        val sb = StringBuilder()
+        var foundCode = false
+        for (char in msg.toCharArray()){
+            if (foundCode){
+                foundCode = false
+                continue
+            }
+            if (char == '&' || char == '§'){
+                foundCode = true
+                continue
+            }
+
+            sb.append(char)
+        }
+
+        return sb.toString()
+    }
+
     /**
      * This defaults the 'startTag' to '&#' and endTag to '' (nothing) to colorizeHexCodes.
      *
@@ -52,8 +73,6 @@ object MessageUtils {
         val ver = LevelledMobs.instance.ver
         val startTag = "&#"
         val endTag = ""
-
-        if (ver.minecraftVersion < 1.16 || !ver.isRunningSpigot) return message
 
         val hexPattern = Pattern.compile("$startTag([A-Fa-f0-9]{6})$endTag")
         val matcher = hexPattern.matcher(message)

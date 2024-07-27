@@ -66,7 +66,6 @@ class LevelledMobs : JavaPlugin() {
     val random = Random()
     var placeholderApiIntegration: PlaceholderApiIntegration? = null
         internal set
-    var migratedFromPre30 = false
     val helperSettings = YmlParsingHelper(YamlConfiguration())
     var playerLevellingMinRelevelTime = 0L
         internal set
@@ -131,6 +130,7 @@ class LevelledMobs : JavaPlugin() {
         }
 
         prepareToLoadCustomDrops()
+        mainCompanion.checkSettingsWithMaxPlayerOptions()
         mainCompanion.startCleanupTask()
         mainCompanion.setupMetrics()
         mainCompanion.checkUpdates()
@@ -158,7 +158,6 @@ class LevelledMobs : JavaPlugin() {
     }
 
     fun reloadLM(sender: CommandSender) {
-        migratedFromPre30 = false
         NotifyManager.clearLastError()
         customDropsHandler.customDropsParser.invalidExternalItems.clear()
         var reloadStartedMsg = messagesCfg.getStringList(
@@ -206,10 +205,6 @@ class LevelledMobs : JavaPlugin() {
             ))
         }
 
-        levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(
-            "level-mobs-upon-spawn", true
-        )
-
         rulesManager.clearTempDisabledRulesCounts()
         definitions.useTranslationComponents = helperSettings.getBoolean(
             "use-translation-components", true
@@ -219,6 +214,7 @@ class LevelledMobs : JavaPlugin() {
                 "use-legacy-serializer", true
             )
         )
+        mainCompanion.checkSettingsWithMaxPlayerOptions()
         nametagQueueManager.nametagSenderHandler.refresh()
 
         reloadFinishedMsg.forEach(Consumer { s: String ->

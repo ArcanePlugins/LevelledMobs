@@ -103,98 +103,25 @@ object FileMigrator {
         return result
     }
 
-    private fun compileListFromArray(list: List<String>): String {
-        val sb = StringBuilder()
-        sb.append("[")
-        for (item in list) {
-            if (sb.length > 1) {
-                sb.append(", ")
-            }
-            sb.append("'")
-            sb.append(item)
-            sb.append("'")
-        }
-        sb.append("]")
-
-        return sb.toString()
-    }
-
     fun copyCustomDrops(
         from: File, to: File,
         fileVersion: Int
     ) {
-        val keysectionsOld: Map<String, KeySectionInfo>
-        var keysectionsNew: Map<String, KeySectionInfo>
-
         try {
-            val oldConfigLines = Files.readAllLines(
+            val content = StringReplacer(Files.readString(
                 from.toPath(),
                 StandardCharsets.UTF_8
-            )
-            val newConfigLines = Files.readAllLines(
-                to.toPath(),
-                StandardCharsets.UTF_8
-            )
+            ))
 
-            keysectionsOld = buildKeySections(oldConfigLines)
-            keysectionsNew = buildKeySections(newConfigLines)
-
-            for ((key, oldSection) in keysectionsOld) {
-                if (key.lowercase(Locale.getDefault()).startsWith("file-version")) {
-                    continue
-                }
-
-                if (keysectionsNew.containsKey(key)) {
-                    // overwrite new section if different
-                    val newSection = keysectionsNew[key]!!
-
-                    if (!doSectionsContainSameLines(oldSection, newSection)) {
-                        for (i in newSection.lines.indices) {
-                            newConfigLines.removeAt(newSection.lineNumber + 1)
-                        }
-
-                        for (i in oldSection.lines.indices.reversed()) {
-                            newConfigLines.add(newSection.lineNumber + 1, oldSection.lines[i])
-                        }
-
-                        keysectionsNew = buildKeySections(newConfigLines)
-                    }
-                } else {
-                    // write the section into the new config, starting in corresponding new section
-                    var insertAt = newConfigLines.size
-                    if (fileVersion < 6) {
-                        if (key.uppercase(Locale.getDefault()).startsWith("ALL_")) {
-                            oldSection.sectionNumber = 2 // universal groups section
-                        } else {
-                            oldSection.sectionNumber = 3 // entity types section
-                        }
-                    }
-
-                    if (oldSection.sectionNumber > 0) {
-                        for (tempSection in keysectionsNew.values) {
-                            if (tempSection.sectionNumber == oldSection.sectionNumber
-                                && tempSection.sectionStartingLine > 0
-                            ) {
-                                insertAt = tempSection.sectionStartingLine
-                            }
-                        }
-                    }
-
-                    newConfigLines.add(insertAt, key)
-                    // for (int i = oldSection.lines.size() - 1; i >= 0; i--) {
-                    for (i in oldSection.lines.indices) {
-                        insertAt++
-                        newConfigLines.add(insertAt, oldSection.lines[i])
-                    }
-                    newConfigLines.add(insertAt + 1, "")
-
-                    keysectionsNew = buildKeySections(newConfigLines)
-                }
+            content.replace("overall_chance:", "overall-chance:")
+            content.replace("overall_permission:", "overall-permission:")
+            val foundFileVersion = "file-version:.*?\\d+".toRegex().find(content.text)
+            if (foundFileVersion != null){
+                content.replace(foundFileVersion.value, "file-version: 12")
             }
 
-            // build an index so we can modify the collection as we enumerate thru it
-            Files.write(
-                to.toPath(), newConfigLines, StandardCharsets.UTF_8,
+            Files.writeString(
+                to.toPath(), content.text, StandardCharsets.UTF_8,
                 StandardOpenOption.TRUNCATE_EXISTING
             )
             Log.inf(

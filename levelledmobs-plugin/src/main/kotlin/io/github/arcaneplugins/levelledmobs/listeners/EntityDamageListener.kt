@@ -34,21 +34,40 @@ import org.bukkit.persistence.PersistentDataType
  * @since 2.4.0
  */
 class EntityDamageListener : Listener {
+    var updateMobsOnNonPlayerdamage = true
+
+    companion object {
+        @JvmStatic
+        lateinit var instance: EntityDamageListener
+            private set
+    }
+
+    init {
+        instance = this
+    }
+
     // When the mob is damaged, update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntityDamageEvent(event: EntityDamageEvent) {
-        if (event.entity !is LivingEntity) {
-            return
-        }
+        if (event.entity !is LivingEntity) return
 
         val isCritical = event.finalDamage == 0.0
 
-        if (event is EntityDamageByEntityEvent && isCritical &&
-            event.damager is Player
+        if (event is EntityDamageByEntityEvent
         ) {
-            // this is so custom drops can associate the killer if the mob was
-            // killed via a custom projectile such as magic
-            LevelledMobs.instance.entityDeathListener.damageMappings[event.getEntity().uniqueId] = (event.damager as Player)
+            if (isCritical && event.damager is Player){
+                // this is so custom drops can associate the killer if the mob was
+                // killed via a custom projectile such as magic
+                LevelledMobs.instance.entityDeathListener.damageMappings[event.getEntity().uniqueId] = (event.damager as Player)
+                return
+            }
+            if (!updateMobsOnNonPlayerdamage && !isCritical && event.entity !is Player && event.damager !is Player){
+                // we only care about player caused damage
+                return
+            }
+        }
+        else if (!updateMobsOnNonPlayerdamage){
+            // we only care about player caused damage
             return
         }
 
@@ -87,7 +106,7 @@ class EntityDamageListener : Listener {
 
         //Make sure the mob is levelled
         if (!lmEntity.isLevelled) {
-            if (lmEntity.main.levelManager.entitySpawnListener.processMobSpawns) {
+            if (EntitySpawnListener.instance.processMobSpawns) {
                 lmEntity.free()
                 return
             }
@@ -197,7 +216,7 @@ class EntityDamageListener : Listener {
             return
         }
         if (!shooter.isLevelled) {
-            if (shooter.main.levelManager.entitySpawnListener.processMobSpawns) {
+            if (EntitySpawnListener.instance.processMobSpawns) {
                 return
             }
 
@@ -211,7 +230,7 @@ class EntityDamageListener : Listener {
                 Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.damage.toFloat()
             ).amount
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, shooter) {
-            "lvl: &b${shooter.getMobLevel}&7, damage: &b${event.damage}&7, new damage: &b$newDamage&7"
+            "damage: &b${event.damage}&7, new damage: &b$newDamage&7"
         }
         event.damage = newDamage.toDouble()
     }

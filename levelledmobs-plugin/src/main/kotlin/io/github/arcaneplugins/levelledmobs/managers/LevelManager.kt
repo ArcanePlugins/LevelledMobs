@@ -8,8 +8,8 @@ import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
@@ -63,6 +63,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Vehicle
 import org.bukkit.entity.Zombie
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.floor
@@ -253,24 +254,32 @@ class LevelManager : LevelInterface2 {
         input: Float,
         lmEntity: LivingEntityWrapper
     ): Int{
-        val formulaPre = LevelledMobs.instance.rulesManager.getRuleConstructLevel(lmEntity) ?: return input.toInt()
+        val formulaPre = LevelledMobs.instance.rulesManager.getRuleConstructLevel(lmEntity) ?: return input.roundToInt()
         val formula = replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
         val evalResult = MobDataManager.evaluateExpression(formula)
         if (evalResult.hadError){
             NotifyManager.notifyOfError("Error evaluating formula for construct-level on mob: ${lmEntity.nameIfBaby}, ${evalResult.error}")
             DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
-                "result (error, ${evalResult.error})\n" +
-                        "   formulaPre: '$formulaPre'\n" +
-                        "   formula: '$formula'" }
+                val msg = if (formula == formulaPre)
+                    "   formula: '$formula'"
+                else
+                    "   formulaPre: '$formulaPre'\n" +
+                    "   formula: '$formula'"
+
+                "result (error, ${evalResult.error})\n$msg" }
             throw EvaluationException()
         }
 
-        val result = evalResult.result.toInt()
+        val result = evalResult.result.roundToInt()
 
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
-            "result $result\n" +
-            "   formulaPre: '$formulaPre'\n" +
-            "   formula: '$formula'" }
+            val msg = if (formula == formulaPre)
+                "   formula: '$formula'"
+            else
+                "   formulaPre: '$formulaPre'\n" +
+                        "   formula: '$formula'"
+
+            "result $result\n$msg"}
 
         return result
     }
@@ -485,7 +494,7 @@ class LevelManager : LevelInterface2 {
             ).amount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-                    "mob-lvl: &b${lmEntity.getMobLevel}&7, removing any drops present"
+                    "removing any drops present"
                 }
                 currentDrops.clear()
                 return
@@ -524,7 +533,7 @@ class LevelManager : LevelInterface2 {
         val nameWithOverride = if (hasOverride) " (override), " else ""
         val additionUsedFinal = additionUsed
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
-            "${nameWithOverride}mob-lvl: &b${lmEntity.getMobLevel}&7, vanilla drops: &b$vanillaDrops&7, all drops: &b${currentDrops.size}&7, addition: &b$additionUsedFinal&7."
+            "${nameWithOverride}, vanilla drops: &b$vanillaDrops&7, all drops: &b${currentDrops.size}&7, addition: &b$additionUsedFinal&7."
         }
     }
 
@@ -673,7 +682,7 @@ class LevelManager : LevelInterface2 {
 
             if (dropAddition == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                    "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b0&7"
+                    "xp-vanilla: &b$xp&7, new-xp: &b0&7"
                 }
                 return 0
             }
@@ -684,7 +693,7 @@ class LevelManager : LevelInterface2 {
 
             val newXpFinal = newXp.toInt()
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
-                "lvl: &b${lmEntity.getMobLevel}&7, xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
+                "xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
             }
             return newXp.toInt()
         } else {
@@ -740,7 +749,7 @@ class LevelManager : LevelInterface2 {
 
         // ignore if 'disabled'
         if (nametag.isEmpty) {
-            val useCustomNameForNametags: Boolean = main.helperSettings.getBoolean(
+            val useCustomNameForNametags = main.helperSettings.getBoolean(
                 "use-customname-for-mob-nametags"
             )
             return if (useCustomNameForNametags) {
@@ -796,7 +805,7 @@ class LevelManager : LevelInterface2 {
         nametag.replace("%health-indicator-color%", colorOnly)
 
         if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
-            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag.text)
+            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(lmEntity.associatedPlayer, nametag.text)
         }
 
         val result = NametagResult(nametag.text)
@@ -973,7 +982,7 @@ class LevelManager : LevelInterface2 {
             }
 
             if (lmEntity.livingEntity.customName != null)
-                return@replaceIfExists lmEntity.livingEntity.customName
+                return@replaceIfExists if (LevelledMobs.instance.ver.isRunningPaper) "{CustomName}" else lmEntity.livingEntity.customName
             return@replaceIfExists if (preserveMobName)
                 "{DisplayName}"
             else
@@ -989,6 +998,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%entity-health-rounded%", entityHealthRounded)
         text.replace("%entity-max-health%", roundedMaxHealth)
         text.replace("%entity-max-health-rounded%", roundedMaxHealthInt)
+        getHealthPercentRemaining(entityHealth, maxHealth, text)
         text.replaceIfExists("%base-health%"){
             val baseHealth = lmEntity.livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue
             if (baseHealth != null) return@replaceIfExists baseHealth.toString()
@@ -1022,6 +1032,30 @@ class LevelManager : LevelInterface2 {
         }
 
         return text.text
+    }
+
+    private fun getHealthPercentRemaining(
+        currentHealth: Double,
+        maxHealth: Double,
+        text: StringReplacer
+    ){
+        val start = text.text.indexOf("%entity-max-health-percent")
+        if (start < 0) return
+
+        val end = text.text.indexOf("%", start + 25)
+        if (end < 0) return
+
+        val percentHealth = (currentHealth.toFloat() / maxHealth.toFloat() * 100f)
+        val fullText = text.text.substring(start, end)
+        val optional = fullText.substring(fullText.length - 2)
+        var digits = 2
+        if (optional[0] == '-' && optional[1].isDigit())
+            digits = optional[1].digitToInt()
+
+        text.text = text.text.replace(fullText, (
+            if (digits == 0) percentHealth.roundToInt().toString()
+            else Utils.round(percentHealth.toDouble(), digits).toString()
+        ))
     }
 
     fun updateNametagWithDelay(lmEntity: LivingEntityWrapper) {
@@ -1220,8 +1254,9 @@ class LevelManager : LevelInterface2 {
 
         val main = LevelledMobs.instance
         if (lmEntity.isLevelled) {
-            var skipLevelling = (lmEntity.spawnReason == LevelledMobSpawnReason.LM_SPAWNER ||
-                    lmEntity.spawnReason == LevelledMobSpawnReason.LM_SUMMON
+            val internalSpawnReason = lmEntity.spawnReason.getInternalSpawnReason(lmEntity)
+            var skipLevelling = (internalSpawnReason == InternalSpawnReason.LM_SPAWNER ||
+                    internalSpawnReason == InternalSpawnReason.LM_SUMMON
                     )
             if (main.rulesManager.isPlayerLevellingEnabled() && !lmEntity.isRulesForceAll && !checkIfReadyForRelevelling(
                     lmEntity
@@ -1477,7 +1512,8 @@ class LevelManager : LevelInterface2 {
 
     private fun applyLevelledAttributes(
         lmEntity: LivingEntityWrapper,
-        additions: MutableList<Addition>
+        additions: MutableList<Addition>,
+        nbtDatas: MutableList<String>
     ) {
         if (!lmEntity.isLevelled) return
         val modInfo = mutableListOf<AttributePreMod>()
@@ -1499,7 +1535,7 @@ class LevelManager : LevelInterface2 {
                 Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK
                 Addition.ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE
                 Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
-                    if (lmEntity.spawnReason == LevelledMobSpawnReason.REINFORCEMENTS)
+                    if (lmEntity.spawnReason.getMinecraftSpawnReason(lmEntity) == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS)
                         continue
 
                     attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
@@ -1515,6 +1551,32 @@ class LevelManager : LevelInterface2 {
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity){
             MobDataManager.instance.setAttributeMods(lmEntity, modInfo)
+
+            if (lmEntity.lockEntitySettings) {
+                lmEntity.pdc
+                    .set(NamespacedKeys.lockSettings, PersistentDataType.INTEGER, 1)
+                if (lmEntity.lockedNametag != null) {
+                    lmEntity.pdc
+                        .set(
+                            NamespacedKeys.lockedNametag, PersistentDataType.STRING,
+                            lmEntity.lockedNametag!!
+                        )
+                }
+                if (lmEntity.lockedOverrideName != null) {
+                    lmEntity.pdc
+                        .set(
+                            NamespacedKeys.lockedNameOverride, PersistentDataType.STRING,
+                            lmEntity.lockedOverrideName!!
+                        )
+                }
+            }
+
+            applyNbtData(lmEntity, nbtDatas)
+
+            if (lmEntity.livingEntity is Creeper) {
+                lmEntity.main.levelManager.applyCreeperBlastRadius(lmEntity)
+            }
+
             lmEntity.free()
         }
         lmEntity.inUseCount.getAndIncrement()
@@ -1533,7 +1595,7 @@ class LevelManager : LevelInterface2 {
             }
             DebugManager.log(
                 DebugType.CREEPER_BLAST_RADIUS, lmEntity
-            ) { "lvl: ${lmEntity.getMobLevel}, mulp: null, result: 3" }
+            ) { "mulp: null, result: 3" }
             return
         }
 
@@ -1556,7 +1618,7 @@ class LevelManager : LevelInterface2 {
 
         val blastRadiusFinal = blastRadius
         DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) {
-            "lvl: ${lmEntity.getMobLevel}, mulp: ${Utils.round(damage.toDouble(), 3)}, max: $maxRadius, result: $blastRadiusFinal"
+            "mulp: ${Utils.round(damage.toDouble(), 3)}, max: $maxRadius, result: $blastRadiusFinal"
         }
 
         if (blastRadius < 0) {
@@ -1863,7 +1925,7 @@ class LevelManager : LevelInterface2 {
         }
 
         if (isSummoned) {
-            lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SUMMON, true)
+            lmEntity.spawnReason.setInternalSpawnReason(lmEntity, InternalSpawnReason.LM_SUMMON, true)
             val summonedMobPreLevelEvent = SummonedMobPreLevelEvent(
                 lmEntity.livingEntity, useLevel
             )
@@ -2005,33 +2067,7 @@ class LevelManager : LevelInterface2 {
         else if (lmEntity.livingEntity is Horse)
             attribs.add(Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH)
 
-        main.levelManager.applyLevelledAttributes(lmEntity, attribs)
-
-        // TODO: move the rest of this function to a synchronous thread
-        if (lmEntity.lockEntitySettings) {
-            lmEntity.pdc
-                .set(NamespacedKeys.lockSettings, PersistentDataType.INTEGER, 1)
-            if (lmEntity.lockedNametag != null) {
-                lmEntity.pdc
-                    .set(
-                        NamespacedKeys.lockedNametag, PersistentDataType.STRING,
-                        lmEntity.lockedNametag!!
-                    )
-            }
-            if (lmEntity.lockedOverrideName != null) {
-                lmEntity.pdc
-                    .set(
-                        NamespacedKeys.lockedNameOverride, PersistentDataType.STRING,
-                        lmEntity.lockedOverrideName!!
-                    )
-            }
-        }
-
-        applyNbtData(lmEntity, nbtDatas)
-
-        if (lmEntity.livingEntity is Creeper) {
-            main.levelManager.applyCreeperBlastRadius(lmEntity)
-        }
+        main.levelManager.applyLevelledAttributes(lmEntity, attribs, nbtDatas)
     }
 
     private fun applyNbtData(

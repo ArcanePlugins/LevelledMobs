@@ -8,7 +8,6 @@ import java.util.TreeSet
 import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.enums.Addition
-import io.github.arcaneplugins.levelledmobs.enums.LevelledMobSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
 import io.github.arcaneplugins.levelledmobs.enums.MobTamedStatus
 import io.github.arcaneplugins.levelledmobs.enums.ModalListParsingTypes
@@ -17,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
+import io.github.arcaneplugins.levelledmobs.misc.LMSpawnReason
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.rules.FineTuningAttributes.Multiplier
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
@@ -33,7 +33,6 @@ import org.bukkit.Particle
 import org.bukkit.Registry
 import org.bukkit.block.Biome
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
@@ -191,7 +190,8 @@ class RulesParser {
         private fun buildCachedModalOfType(
             cs: ConfigurationSection?,
             defaultValue: CachedModalList<*>?,
-            type: ModalListParsingTypes
+            type: ModalListParsingTypes,
+            ruleInfo: RuleInfo
         ): CachedModalList<*>? {
             if (cs == null) {
                 return defaultValue
@@ -211,7 +211,7 @@ class RulesParser {
                 ModalListParsingTypes.SPAWN_REASON -> {
                     mlpi.configurationKey = "spawn-reasons"
                     mlpi.itemName = "spawn reason"
-                    mlpi.cachedModalList = CachedModalList<LevelledMobSpawnReason>()
+                    mlpi.cachedModalList = CachedModalList<String>()
                 }
 
                 ModalListParsingTypes.VANILLA_BONUSES -> {
@@ -226,13 +226,14 @@ class RulesParser {
                     mlpi.cachedModalList = CachedModalList<Structure>()
                 }
             }
-            return buildCachedModal(cs, defaultValue, mlpi)
+            return buildCachedModal(cs, defaultValue, mlpi, ruleInfo)
         }
 
         private fun buildCachedModal(
             cs: ConfigurationSection?,
             defaultValue: CachedModalList<*>?,
-            mlpi: ModalListParsingInfo
+            mlpi: ModalListParsingInfo,
+            ruleInfo: RuleInfo
         ): CachedModalList<*>? {
             if (cs == null) return defaultValue
 
@@ -323,13 +324,14 @@ class RulesParser {
                                 modalList.add(biome)
                             }
                             ModalListParsingTypes.SPAWN_REASON -> {
-                                val spawnReasonModalList = cachedModalList as CachedModalList<LevelledMobSpawnReason>
+                                val spawnReasonModalList = cachedModalList as CachedModalList<String>
                                 val modalList =
                                     if (i == 0) spawnReasonModalList.includedList else spawnReasonModalList.excludedList
 
-                                val spawnReason =
-                                    LevelledMobSpawnReason.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
-                                modalList.add(spawnReason)
+                                if (LMSpawnReason.validateSpawnReason(item.trim().uppercase()))
+                                    modalList.add(item.trim().uppercase())
+                                else
+                                    Log.war("rule: ${ruleInfo.ruleName}, invalid spawn reason: $item")
                             }
                             ModalListParsingTypes.VANILLA_BONUSES -> {
                                 val vanillaBonusModalList = cachedModalList as CachedModalList<VanillaBonusEnum>
@@ -518,7 +520,7 @@ class RulesParser {
         }
 
         for (hashMap in rulesSection as MutableList<MutableMap<String, Any>>) {
-            val cs = objToCS2(hashMap)
+            val cs = YmlParsingHelper.objToCS2(hashMap)
             if (cs == null) {
                 Log.war("cs was null (parsing custom-rules)")
                 continue
@@ -911,7 +913,7 @@ class RulesParser {
 
         parsingInfo.conditionsStructure = buildCachedModalOfType(
             cs,
-            parsingInfo.conditionsStructure, ModalListParsingTypes.STRUCTURE
+            parsingInfo.conditionsStructure, ModalListParsingTypes.STRUCTURE, parsingInfo
         ) as CachedModalList<Structure>?
 
         val mobCustomNameStatus = ymlHelper.getString( "mob-customname-status")
@@ -966,8 +968,9 @@ class RulesParser {
         )
         parsingInfo.conditionsSpawnReasons = buildCachedModalOfType(
             cs,
-            parsingInfo.conditionsSpawnReasons, ModalListParsingTypes.SPAWN_REASON
-        ) as CachedModalList<LevelledMobSpawnReason>?
+            parsingInfo.conditionsSpawnReasons, ModalListParsingTypes.SPAWN_REASON,
+            parsingInfo
+        ) as CachedModalList<String>?
         parsingInfo.conditionsCustomNames = buildCachedModalListOfString(
             cs, "custom-names",
             parsingInfo.conditionsCustomNames
@@ -978,7 +981,8 @@ class RulesParser {
         )
         parsingInfo.conditionsBiomes = buildCachedModalOfType(
             cs,
-            parsingInfo.conditionsBiomes, ModalListParsingTypes.BIOME
+            parsingInfo.conditionsBiomes, ModalListParsingTypes.BIOME,
+            parsingInfo
         ) as CachedModalList<Biome>?
         parsingInfo.conditionsExternalPlugins = buildCachedModalListOfString(
             cs,
@@ -1176,7 +1180,7 @@ class RulesParser {
             } else {
                 randomLevelling.autoGenerate = true
             }
-            parsingInfo.levellingStrategy[StrategyType.RANDOM] = randomLevelling
+            parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] = randomLevelling
 
             return
         }
@@ -1425,7 +1429,8 @@ class RulesParser {
 
         parsingInfo.vanillaBonuses = buildCachedModalOfType(
             cs,
-            parsingInfo.vanillaBonuses, ModalListParsingTypes.VANILLA_BONUSES
+            parsingInfo.vanillaBonuses, ModalListParsingTypes.VANILLA_BONUSES,
+            parsingInfo
         ) as CachedModalList<VanillaBonusEnum>?
         parsingInfo.allMobMultipliers = parseFineTuningValues(cs, parsingInfo.allMobMultipliers)
 
@@ -1601,31 +1606,5 @@ class RulesParser {
         for (i in minLevel..maxLevel) rls.weightedRandom["$i-$i"] = maxLevel - i + 1
 
         rls.populateWeightedRandom(minLevel, maxLevel)
-    }
-
-    private fun objToCS2(
-        obj: Any?
-    ): ConfigurationSection? {
-        if (obj == null) return null
-
-        when (obj) {
-            is ConfigurationSection -> {
-                return obj
-            }
-
-            is Map<*, *> -> {
-                val result = MemoryConfiguration()
-                result.addDefaults((obj as Map<String, Any>))
-                return result.defaultSection
-            }
-
-            else -> {
-                Log.war(
-                    "couldn't parse config of type: " + obj.javaClass.simpleName +
-                            ", value: $obj"
-                )
-                return null
-            }
-        }
     }
 }

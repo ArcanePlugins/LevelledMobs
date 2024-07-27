@@ -16,6 +16,7 @@ class CustomDropItem() : CustomDropBase(
         LevelledMobs.instance.customDropsHandler.customDropsParser.defaults),
         Cloneable {
     var customModelDataId = 0
+    var amountFormula: String? = null
     var equippedChance: SlidingChance? = null
     var noMultiplier = false
     var onlyDropIfEquipped = false
@@ -78,6 +79,14 @@ class CustomDropItem() : CustomDropBase(
 
         return copy
     }
+
+    override val amountAsString: String
+        get() {
+            return if (amountFormula.isNullOrEmpty())
+                super.amountAsString
+            else
+                "'${amountFormula!!}'"
+        }
 
     fun setDamageRangeFromString(numberOrNumberRange: String?): Boolean {
         if (numberOrNumberRange.isNullOrEmpty()) {

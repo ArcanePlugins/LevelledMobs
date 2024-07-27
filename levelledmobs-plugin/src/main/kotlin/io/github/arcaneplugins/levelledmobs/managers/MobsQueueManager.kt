@@ -51,6 +51,15 @@ class MobsQueueManager {
         }
     }
 
+    fun showNumberQueued(): Int{
+        val size: Int
+        synchronized(queueLock){
+            size = queue.size
+        }
+
+        return size
+    }
+
     fun clearQueue(){
         synchronized(queueLock){
             queue.clear()
@@ -126,9 +135,6 @@ class MobsQueueManager {
     private fun processItem(item: QueueItem) {
         if (!item.lmEntity.isPopulated) return
 
-        if (!item.lmEntity.shouldShowLMNametag) {
-            return
-        }
         try{
             LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)
         }

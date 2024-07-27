@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import java.util.TreeSet
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
@@ -36,7 +35,7 @@ abstract class CustomDropBase(
     val permissions = mutableListOf<String>()
     val playeerVariableMatches = mutableListOf<String>()
     val excludedMobs: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-    var causeOfDeathReqs: CachedModalList<DeathCause>? = null
+    var causeOfDeathReqs: CachedModalList<String>? = null
 
     var amount: Int = 1
         set(value) {
@@ -49,7 +48,7 @@ abstract class CustomDropBase(
         get() = !this.groupId.isNullOrEmpty()
 
 
-    val amountAsString: String
+    open val amountAsString: String
         get() {
             return if (this.hasAmountRange) {
                 "$amountRangeMin-$amountRangeMax"

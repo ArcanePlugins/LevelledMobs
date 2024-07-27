@@ -39,11 +39,6 @@ enum class DebugType {
     SET_LEVELLED_XP_DROPS,
 
     /**
-     * Logged when LM is adjusting the nametag of a levelled mob, but fails to do so
-     */
-    PL_UPDATE_NAMETAG,
-
-    /**
      * Misc events related to an entity
      */
     ENTITY_MISC,
@@ -142,5 +137,7 @@ enum class DebugType {
 
     LEVEL_RATIO,
 
-    ENCHANTMENT_CHANCES
+    ENCHANTMENT_CHANCES,
+
+    CUSTOM_DROPS_FORMULA
 }

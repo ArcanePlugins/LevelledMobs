@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
-import io.github.arcaneplugins.levelledmobs.enums.DeathCause
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 
 /**
@@ -16,6 +15,7 @@ class CustomDropsDefaults {
     var playerCausedOnly = false
     var onlyDropIfEquipped = false
     var amount = 1
+    var amountFormula: String? = null
     var priority = 0
     var minLevel = -1
     var maxLevel = -1
@@ -35,7 +35,7 @@ class CustomDropsDefaults {
     var itemFlagsStrings: MutableList<String>? = null
     var permissions = mutableListOf<String>()
     var overallPermissions = mutableListOf<String>()
-    var causeOfDeathReqs: CachedModalList<DeathCause>? = null
+    var causeOfDeathReqs: CachedModalList<String>? = null
     var externalType: String? = null
     var externalItemId: String? = null
     var externalAmount: Double? = null
@@ -68,6 +68,8 @@ class CustomDropsDefaults {
         this.causeOfDeathReqs = dropBase.causeOfDeathReqs
 
         if (dropBase is CustomDropItem) {
+            if (!dropBase.amountFormula.isNullOrEmpty())
+                this.amountFormula = dropBase.amountFormula
             this.customModelData = dropBase.customModelDataId
             if (this.equippedChance != null)
                 this.equippedChance!!.setFromInstance(dropBase.equippedChance)

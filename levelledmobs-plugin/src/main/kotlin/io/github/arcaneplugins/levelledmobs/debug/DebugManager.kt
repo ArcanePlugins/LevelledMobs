@@ -138,6 +138,14 @@ class DebugManager {
             instance.logInstance(debugType, null, lmEntity, null, null, msg.get()!!)
         }
 
+        fun logNoComma(
+            debugType: DebugType,
+            lmEntity: LivingEntityWrapper?,
+            msg: Supplier<String?>
+        ) {
+            instance.logInstance(debugType, null, lmEntity, null, null, msg.get()!!, false)
+        }
+
         fun log(
             debugType: DebugType,
             lmEntity: LivingEntityWrapper?,
@@ -218,7 +226,8 @@ class DebugManager {
         lmInterface: LivingEntityInterface?,
         entity: Entity?,
         ruleResult: Boolean?,
-        origMsg: String
+        origMsg: String,
+        useComma: Boolean = true
     ) {
         if (!isEnabled) return
         var msg = origMsg
@@ -280,19 +289,24 @@ class DebugManager {
         }
 
         if (lmInterface != null){
-            val useName = if (lmInterface is LivingEntityWrapper)
-                lmInterface.nameIfBaby else lmInterface.typeName
+            val lmEntity = lmInterface as? LivingEntityWrapper
+            val useName = lmEntity?.nameIfBaby ?: lmInterface.typeName
+            val lvl = lmEntity?.getMobLevel ?: (lmInterface.summonedLevel?: 0)
+            val lvlInfo = " (&7lvl $lvl&r)"
+            val addedComma = if (useComma) ", " else ""
 
             msg = if (msg.isEmpty())
-                "mob: &b$useName&7"
+                "mob: &b$useName&7$lvlInfo"
             else
-                "mob: &b$useName&7, $msg"
+                "mob: &b$useName&7$lvlInfo$addedComma$msg"
         }
         else if (entity != null){
+            val addedComma = if (useComma) ", " else ""
+
             msg = if (msg.isEmpty())
                 "mob: &b${entity.type}&7"
             else
-                "mob: &b${entity.type}&7, $msg"
+                "mob: &b${entity.type}&7$addedComma$msg"
         }
 
         if (ruleResult != null) {

@@ -8,7 +8,6 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
-import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeStandardCodes
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
@@ -41,6 +40,7 @@ class PlayerJoinListener : Listener {
             main.debugManager.playerThatEnabledDebug = event.player
         }
 
+        main.mainCompanion.checkSettingsWithMaxPlayerOptions()
         main.mainCompanion.addRecentlyJoinedPlayer(event.player)
         checkForNetherPortalCoords(event.player)
         main.nametagTimerChecker.addPlayerToQueue(PlayerQueueItem(event.player, true))
@@ -52,14 +52,6 @@ class PlayerJoinListener : Listener {
         if (event.player.isOp) {
             if (main.mainCompanion.hadRulesLoadError) {
                 event.player.sendMessage(FileLoader.getFileLoadErrorMessage())
-            }
-
-            if (main.migratedFromPre30) {
-                event.player.sendMessage(
-                    colorizeStandardCodes(
-                        "&b&lLevelledMobs: &cWARNING &7You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml"
-                    )
-                )
             }
 
             if (NotifyManager.opHasMessage){
@@ -128,6 +120,8 @@ class PlayerJoinListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+        main.mainCompanion.checkSettingsWithMaxPlayerOptions(true)
+
         if (main.placeholderApiIntegration != null) {
             main.placeholderApiIntegration!!.playedLoggedOut(event.player)
         }
@@ -151,7 +145,7 @@ class PlayerJoinListener : Listener {
         // on spigot API .getTo is nullable but not Paper
         // only update tags if teleported to a different world
         @Suppress("SENSELESS_COMPARISON")
-        if (event.to != null && event.to.world != null && event.from.world != null && event.from.world !== event.to.world) {
+        if (event.to != null && event.to.world != null && event.from.world != null && event.from.world != event.to.world) {
             updateNametagsInWorldAsync(event.player, event.to.world.entities)
         }
     }
@@ -195,7 +189,9 @@ class PlayerJoinListener : Listener {
         if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)
             && player.hasPermission("levelledmobs.receive-update-notifications")
         ) {
-            main.mainCompanion.updateResult.forEach(player::sendMessage)
+            main.mainCompanion.updateResult.forEach{ msg ->
+                player.sendMessage(MessageUtils.colorizeAll(msg))
+            }
         }
     }
 }
