@@ -535,10 +535,9 @@ class RulesParser {
     }
 
     private fun parseValues(ymlHelper: YmlParsingHelper) {
-        val ruleName = ymlHelper.getString( "name")
-        if (ruleName != null) {
-            parsingInfo.ruleName = ruleName
-        }
+        var ruleName = ymlHelper.getString( "name")
+        if (ruleName == null) ruleName = ymlHelper.cs.get("custom-rule").toString()
+        parsingInfo.ruleName = ruleName
 
         mergePreset(ymlHelper)
 
@@ -557,6 +556,7 @@ class RulesParser {
 
         for (checkName: String in presets) {
             val checkNameTrimmed = checkName.trim { it <= ' ' }
+
             if (!rulePresets.containsKey(checkNameTrimmed)) {
                 val ruleName = parsingInfo.presetName?: parsingInfo.ruleName
                 Log.war(
