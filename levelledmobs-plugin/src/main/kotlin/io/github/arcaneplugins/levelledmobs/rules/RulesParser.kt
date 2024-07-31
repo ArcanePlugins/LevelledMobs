@@ -537,11 +537,10 @@ class RulesParser {
     private fun parseValues(ymlHelper: YmlParsingHelper) {
         var ruleName = ymlHelper.getString( "name")
         if (ruleName == null) ruleName = ymlHelper.cs.get("custom-rule").toString()
-        parsingInfo.ruleName = ruleName
+        if (parsingInfo.ruleName != "defaults") parsingInfo.ruleName = ruleName
 
         mergePreset(ymlHelper)
-
-        parsingInfo.ruleName = ymlHelper.getString( "custom-rule", parsingInfo.ruleName)!!
+        
         parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "is-enabled", true)
 
         parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
