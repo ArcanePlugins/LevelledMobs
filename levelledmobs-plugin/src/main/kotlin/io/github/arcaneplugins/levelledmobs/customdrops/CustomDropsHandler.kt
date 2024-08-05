@@ -893,8 +893,8 @@ class CustomDropsHandler {
                 "overall-chance-formula",
                 info.lmEntity!!
             )
-            // 1f - chanceRole < effectiveChance
-            val madeChance = chanceRole >= effectiveChance
+
+            val madeChance = (1f - chanceRole) < effectiveChance
             info.overallChanceDebugMessage = " (minimum: &b${Utils.round(effectiveChance.toDouble(), 4)}&7, " +
                     "chanceRole: &b${Utils.round(chanceRole.toDouble(), 4)}&7)"
             if (info.equippedOnly) {
