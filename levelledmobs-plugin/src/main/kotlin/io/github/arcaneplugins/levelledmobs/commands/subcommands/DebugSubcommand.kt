@@ -255,9 +255,13 @@ object DebugSubcommand {
 
     private fun viewQueues(sender: CommandSender){
         val nametagQueueNum = LevelledMobs.instance.nametagQueueManager.showNumberQueued()
+        val nametagQueueTask = LevelledMobs.instance.nametagQueueManager.queueTask
         val mobQueueNum = LevelledMobs.instance.mobsQueueManager.showNumberQueued()
+        val isTaskRunning = if (nametagQueueTask != null) Bukkit.getScheduler().isCurrentlyRunning(nametagQueueTask.taskId) else false
+        val taskStatus = if (nametagQueueTask == null) "(null)" else "id: ${nametagQueueTask.taskId}, is running: $isTaskRunning, is cancelled: ${nametagQueueTask.isCancelled}"
 
-        sender.sendMessage("Nametag Manager items: $nametagQueueNum, Mob Queue Manager items: $mobQueueNum")
+        sender.sendMessage("Nametag Manager items: $nametagQueueNum, Mob Queue Manager items: $mobQueueNum\n" +
+            "Nametag task status: $taskStatus")
     }
 
     private fun getListenForValues(): MutableList<String>{

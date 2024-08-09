@@ -27,7 +27,7 @@ idea {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = "2.0.0"))
+    implementation(kotlin("stdlib", version = "2.0.10"))
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
