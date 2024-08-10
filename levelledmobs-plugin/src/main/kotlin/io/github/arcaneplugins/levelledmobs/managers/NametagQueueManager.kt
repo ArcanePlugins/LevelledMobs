@@ -75,6 +75,19 @@ class NametagQueueManager {
         doThread = false
     }
 
+    fun taskChecker(){
+        val qt = queueTask ?: return
+        
+        if (!qt.isCancelled || Bukkit.getScheduler().isCurrentlyRunning(qt.taskId)) return
+        val status = if (qt.isCancelled) "cancelled"
+        else "not running"
+
+        Log.war("Restarting Nametag Queue Manager task, status was $status")
+        qt.cancel()
+        isRunning = false
+        start()
+    }
+
     fun addToQueue(item: QueueItem) {
         if (!item.lmEntity.shouldShowLMNametag) return
         if (Bukkit.getOnlinePlayers().isEmpty()) return
