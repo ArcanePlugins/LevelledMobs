@@ -51,9 +51,7 @@ class EntitySpawnListener : Listener{
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntitySpawn(event: EntitySpawnEvent) {
-        if (event.entity !is LivingEntity) {
-            return
-        }
+        if (event.entity !is LivingEntity)  return
 
         val main = LevelledMobs.instance
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)

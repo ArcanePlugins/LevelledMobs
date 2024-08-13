@@ -681,7 +681,7 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.spawnerParticle != null) {
                 result = ruleInfo.spawnerParticle
-            } else if (ruleInfo.useNoSpawnerParticles) {
+            } else if (ruleInfo.useNoSpawnerParticles != null && ruleInfo.useNoSpawnerParticles!!) {
                 result = null
             }
         }
