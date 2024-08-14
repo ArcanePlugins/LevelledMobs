@@ -254,14 +254,21 @@ object DebugSubcommand {
     }
 
     private fun viewQueues(sender: CommandSender){
-        val nametagQueueNum = LevelledMobs.instance.nametagQueueManager.showNumberQueued()
+        val nametagQueueNum = LevelledMobs.instance.nametagQueueManager.getNumberQueued()
         val nametagQueueTask = LevelledMobs.instance.nametagQueueManager.queueTask
-        val mobQueueNum = LevelledMobs.instance.mobsQueueManager.showNumberQueued()
-        val isTaskRunning = if (nametagQueueTask != null) Bukkit.getScheduler().isCurrentlyRunning(nametagQueueTask.taskId) else false
-        val taskStatus = if (nametagQueueTask == null) "(null)" else "id: ${nametagQueueTask.taskId}, is running: $isTaskRunning, is cancelled: ${nametagQueueTask.isCancelled}"
+        val mobQueueNum = LevelledMobs.instance.mobsQueueManager.getNumberQueued()
+        val isNametagTaskRunning = if (nametagQueueTask != null) Bukkit.getScheduler().isCurrentlyRunning(nametagQueueTask.taskId) else false
+        val nametagtaskStatus = if (nametagQueueTask == null) "(null)" else "id: ${nametagQueueTask.taskId}, is running: $isNametagTaskRunning, is cancelled: ${nametagQueueTask.isCancelled}"
+        val mobsTaskStatus = StringBuilder()
+        for (task in LevelledMobs.instance.mobsQueueManager.queueTasks.values){
+            val isRunning = Bukkit.getScheduler().isCurrentlyRunning(task.taskId)
+            mobsTaskStatus.append("\n   ")
+            mobsTaskStatus.append("id: ${task.taskId}, is running: $isRunning, is cancelled: ${task.isCancelled}")
+        }
 
         sender.sendMessage("Nametag Manager items: $nametagQueueNum, Mob Queue Manager items: $mobQueueNum\n" +
-            "Nametag task status: $taskStatus")
+            "Mobs queue statuses: $mobsTaskStatus\n" +
+            "Nametag task status: $nametagtaskStatus")
     }
 
     private fun getListenForValues(): MutableList<String>{

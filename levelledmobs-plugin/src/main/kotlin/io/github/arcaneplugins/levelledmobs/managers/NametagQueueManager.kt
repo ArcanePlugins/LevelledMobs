@@ -77,10 +77,13 @@ class NametagQueueManager {
 
     fun taskChecker(){
         val qt = queueTask ?: return
-        
-        if (!qt.isCancelled || Bukkit.getScheduler().isCurrentlyRunning(qt.taskId)) return
+
+        val queueSize = getNumberQueued()
+
+        if (queueSize < 1000 && !qt.isCancelled || Bukkit.getScheduler().isCurrentlyRunning(qt.taskId)) return
         val status = if (qt.isCancelled) "cancelled"
-        else "not running"
+        else if (queueSize < 1000) "not running"
+        else "queue size was $queueSize"
 
         Log.war("Restarting Nametag Queue Manager task, status was $status")
         qt.cancel()
@@ -100,7 +103,7 @@ class NametagQueueManager {
         }
     }
 
-    fun showNumberQueued(): Int{
+    fun getNumberQueued(): Int{
         val size: Int
         synchronized(queueLock){
             size = queue.size

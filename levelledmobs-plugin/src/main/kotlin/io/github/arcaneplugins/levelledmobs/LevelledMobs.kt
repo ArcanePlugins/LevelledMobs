@@ -128,7 +128,10 @@ class LevelledMobs : JavaPlugin() {
         if (nametagQueueManager.hasNametagSupport) {
             levelManager.startNametagAutoUpdateTask()
             levelManager.startNametagTimer()
-            val scheduler = SchedulerWrapper {  nametagQueueManager.taskChecker() }
+            val scheduler = SchedulerWrapper {
+                nametagQueueManager.taskChecker()
+                mobsQueueManager.taskChecker()
+            }
             scheduler.runTaskTimerAsynchronously(50000, 5000)
         }
 
