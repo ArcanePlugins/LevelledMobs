@@ -1439,6 +1439,9 @@ class LevelManager : LevelInterface2 {
         val mob = lmEntity.livingEntity
         val main = LevelledMobs.instance
 
+        if (lmEntity.spawnReason.getInternalSpawnReason(lmEntity) == InternalSpawnReason.LM_SUMMON)
+            return false
+
         if (main.playerLevellingMinRelevelTime > 0L && main.playerLevellingEntities.containsKey(
                 mob
             )
