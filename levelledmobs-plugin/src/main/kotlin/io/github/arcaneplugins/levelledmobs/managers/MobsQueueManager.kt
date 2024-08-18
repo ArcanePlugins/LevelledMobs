@@ -89,8 +89,10 @@ class MobsQueueManager {
         val queueSize = getNumberQueued()
         val stopAll = queueSize >= 1000
         var threadsNeeded = 0
+        val enumerator = queueTasks.iterator()
 
-        for (taskEntry in queueTasks){
+        while (enumerator.hasNext()){
+            val taskEntry = enumerator.next()
             val taskId = taskEntry.key
             val task = taskEntry.value
             if (!stopAll && (!task.isCancelled || Bukkit.getScheduler().isCurrentlyRunning(taskId))) continue
@@ -100,7 +102,7 @@ class MobsQueueManager {
 
             Log.war("Restarting Nametag Queue Manager task, status was $status")
             task.cancel()
-            queueTasks.remove(taskId)
+            enumerator.remove()
             threadsCount.getAndDecrement()
             threadsNeeded++
         }
