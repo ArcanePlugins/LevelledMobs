@@ -30,6 +30,9 @@ class MobsQueueManager {
     private val queueLock = Any()
 
     fun start() {
+        // folia will run directly
+        if (LevelledMobs.instance.ver.isRunningFolia) return
+
         if (isRunning) {
             return
         }
@@ -117,15 +120,10 @@ class MobsQueueManager {
         item.lmEntity.inUseCount.getAndIncrement()
 
         if (LevelledMobs.instance.ver.isRunningFolia) {
-            val wrapper = SchedulerWrapper(
-                item.lmEntity.livingEntity
-            ) {
-                processItem(item)
-                item.lmEntity.free()
-            }
-
-            wrapper.run()
-        } else {
+            processItem(item)
+            item.lmEntity.free()
+        }
+        else {
             var offeredItem = false
             synchronized(queueLock){
                 if (!processingList.contains(item.entityId)) {

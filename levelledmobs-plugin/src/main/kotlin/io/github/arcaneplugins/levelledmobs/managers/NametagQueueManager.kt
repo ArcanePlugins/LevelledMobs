@@ -45,6 +45,9 @@ class NametagQueueManager {
         get() = this.nametagSender != null
 
     fun start() {
+        // folia will run directly
+        if (LevelledMobs.instance.ver.isRunningFolia) return
+
         if (isRunning) return
 
         doThread = true
@@ -98,8 +101,15 @@ class NametagQueueManager {
             return
 
         item.lmEntity.inUseCount.getAndIncrement()
-        synchronized(queueLock){
-            queue.offer(item)
+
+        if (LevelledMobs.instance.ver.isRunningFolia){
+            // folia runs directly
+            preProcessItem(item)
+        }
+        else{
+            synchronized(queueLock){
+                queue.offer(item)
+            }
         }
     }
 

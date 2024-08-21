@@ -51,7 +51,7 @@ class EntitySpawnListener : Listener{
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntitySpawn(event: EntitySpawnEvent) {
-        if (event.entity !is LivingEntity)  return
+        if (event.entity !is LivingEntity) return
 
         val main = LevelledMobs.instance
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
@@ -91,11 +91,10 @@ class EntitySpawnListener : Listener{
 
         val mobProcessDelay = main.helperSettings.getInt("mob-process-delay", 0)
 
-        if (mobProcessDelay > 0) {
+        if (mobProcessDelay > 0)
             delayedAddToQueue(lmEntity, event, mobProcessDelay)
-        } else {
+        else
             main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
-        }
 
         lmEntity.free()
     }
@@ -282,16 +281,10 @@ class EntitySpawnListener : Listener{
                     scheduler.run()
                 }
 
-                val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
-                    main.levelInterface.applyLevelToMob(
-                        lmEntity, levelAssignment,
-                        isSummoned = false, bypassLimits = false, additionalLevelInformation = additionalLevelInfo
-                    )
-                    lmEntity.free()
-                }
-                scheduler.runDirectlyInBukkit = true
-                lmEntity.inUseCount.getAndIncrement()
-                scheduler.run()
+                main.levelInterface.applyLevelToMob(
+                    lmEntity, levelAssignment,
+                    isSummoned = false, bypassLimits = false, additionalLevelInformation = additionalLevelInfo
+                )
             }
         } else {
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false) {
@@ -386,7 +379,7 @@ class EntitySpawnListener : Listener{
                 "async-task-max-blocks-from-player", 100
             )
 
-            if (!LevelledMobs.instance.ver.isRunningFolia && Bukkit.isPrimaryThread()){
+            if (LevelledMobs.instance.ver.isRunningFolia || Bukkit.isPrimaryThread()){
                 // run directly if we're in the main thread already
                 updateMobForPlayerLevellingNonAsync(
                     lmEntity,
@@ -404,6 +397,7 @@ class EntitySpawnListener : Listener{
                 )
                 lmEntity.free()
             }
+
             lmEntity.inUseCount.getAndIncrement()
             wrapper.run()
         }
@@ -421,23 +415,19 @@ class EntitySpawnListener : Listener{
 
             var closestPlayer: Player? = null
             for (player in playerList) {
-                if (ExternalCompatibilityManager.isMobOfCitizens(player)) {
-                    continue
-                }
+                if (ExternalCompatibilityManager.isMobOfCitizens(player)) continue
 
                 closestPlayer = player
                 break
             }
 
-            if (closestPlayer == null) {
-                return
-            }
+            if (closestPlayer == null) return
+
             // if player has been logged in for less than 5 seconds then ignore
             val logonTime = main.mainCompanion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
             if (logonTime != null) {
-                if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) {
-                    return
-                }
+                if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) return
+
                 main.mainCompanion.removeRecentlyJoinedPlayer(closestPlayer)
             }
 

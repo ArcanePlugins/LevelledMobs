@@ -1583,6 +1583,7 @@ class LevelManager : LevelInterface2 {
             lmEntity.free()
         }
         lmEntity.inUseCount.getAndIncrement()
+        scheduler.runDirectlyInFolia = true
         scheduler.run()
     }
 
@@ -1659,13 +1660,18 @@ class LevelManager : LevelInterface2 {
             return
         }
 
+        if (LevelledMobs.instance.ver.isRunningFolia){
+            applyLevelledEquipmentNonAsync(lmEntity, customDropsRuleSet)
+            return
+        }
+
         val scheduler = SchedulerWrapper {
             applyLevelledEquipmentNonAsync(lmEntity, customDropsRuleSet)
             lmEntity.free()
         }
 
-        scheduler.entity = lmEntity.livingEntity
         lmEntity.inUseCount.getAndIncrement()
+        scheduler.entity = lmEntity.livingEntity
         scheduler.run()
     }
 
@@ -1684,9 +1690,7 @@ class LevelManager : LevelInterface2 {
             lmEntity,
             items, true
         )
-        if (items.isEmpty()) {
-            return
-        }
+        if (items.isEmpty()) return
 
         val equipment = lmEntity.livingEntity.equipment ?: return
 
