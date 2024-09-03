@@ -18,7 +18,7 @@ import io.github.arcaneplugins.levelledmobs.util.Utils
  * @author stumper66
  * @since 2.4.0
  */
-object FileMigrator {
+object  FileMigrator {
     private fun getFieldDepth(
         line: String
     ): Int {

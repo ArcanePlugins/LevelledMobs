@@ -66,6 +66,7 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -998,6 +999,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%entity-health-rounded%", entityHealthRounded)
         text.replace("%entity-max-health%", roundedMaxHealth)
         text.replace("%entity-max-health-rounded%", roundedMaxHealthInt)
+        text.replaceIfExists("%entity-max-health-rounded-up%"){ ceil(maxHealth).toString() }
         getHealthPercentRemaining(entityHealth, maxHealth, text)
         text.replaceIfExists("%base-health%"){
             val baseHealth = lmEntity.livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue

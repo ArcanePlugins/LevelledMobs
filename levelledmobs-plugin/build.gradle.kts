@@ -7,7 +7,7 @@ version = version
 plugins {
     id("java")
     kotlin("jvm") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
     id("idea")
     id("maven-publish")
 }
@@ -15,7 +15,7 @@ plugins {
 apply(plugin = "java")
 apply(plugin = "java-library")
 apply(plugin = "kotlin")
-apply(plugin = "com.github.johnrengelman.shadow")
+apply(plugin = "com.gradleup.shadow")
 apply(plugin = "maven-publish")
 apply(plugin = "org.jetbrains.dokka")
 
@@ -27,7 +27,7 @@ idea {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = "2.0.10"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.20")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
