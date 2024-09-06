@@ -12,7 +12,8 @@ import io.github.arcaneplugins.levelledmobs.result.NametagResult
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.util.LibsDisguisesUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
-import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
+import io.github.arcaneplugins.levelledmobs.util.MessageUtils
+import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
@@ -291,7 +292,13 @@ class NametagQueueManager {
             }
 
             if (hasLibsDisguisesInstalled && LibsDisguisesUtils.isMobUsingLibsDisguises(lmEntity)) {
-                val useNametag = if (nametag.nametag != null) colorizeAll(nametag.nametag) else null
+                var useNametag: String? = null
+                if (nametag.nametag != null){
+                    useNametag = MessageUtils.colorizeAll(nametag.nametagNonNull
+                        .replace("{DisplayName}", Utils.capitalize(lmEntity.typeName.replace("_", " ")))
+                        .replace("{CustomName}", lmEntity.livingEntity.customName ?: ""))
+                }
+
                 LibsDisguisesUtils.updateLibsDisguiseNametag(lmEntity, useNametag)
             }
         }
