@@ -997,6 +997,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%entity-name-raw%", lmEntity.typeName)
         text.replace("%entity-health%", Utils.round(entityHealth))
         text.replace("%entity-health-rounded%", entityHealthRounded)
+        text.replaceIfExists("%entity-health-rounded-up%"){ ceil(entityHealth).toInt().toString() }
         text.replace("%entity-max-health%", roundedMaxHealth)
         text.replace("%entity-max-health-rounded%", roundedMaxHealthInt)
         text.replaceIfExists("%entity-max-health-rounded-up%"){ ceil(maxHealth).toInt().toString() }
