@@ -5,6 +5,7 @@ import io.github.arcaneplugins.levelledmobs.enums.EquipmentClass
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.WeakHashMap
+import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -94,29 +95,37 @@ class EquippedItemsInfo {
     private fun saveEquipmentToPDC(
         lmEntity: LivingEntityWrapper
     ){
-        if (mainHand != null){
+        if (isItemAllowedForSerialization(mainHand)){
             val serialized = mainHand!!.serializeAsBytes()
             lmEntity.pdc.set(NamespacedKeys.equipment0, PersistentDataType.BYTE_ARRAY, serialized)
         }
-        if (offhand != null){
+        if (isItemAllowedForSerialization(offhand)){
             val serialized = offhand!!.serializeAsBytes()
             lmEntity.pdc.set(NamespacedKeys.equipment1, PersistentDataType.BYTE_ARRAY, serialized)
         }
-        if (helmet != null){
+        if (isItemAllowedForSerialization(helmet)){
             val serialized = helmet!!.serializeAsBytes()
             lmEntity.pdc.set(NamespacedKeys.equipment2, PersistentDataType.BYTE_ARRAY, serialized)
         }
-        if (chestplate != null){
+        if (isItemAllowedForSerialization(chestplate)){
             val serialized = chestplate!!.serializeAsBytes()
             lmEntity.pdc.set(NamespacedKeys.equipment3, PersistentDataType.BYTE_ARRAY, serialized)
         }
-        if (leggings != null){
+        if (isItemAllowedForSerialization(leggings)){
             val serialized = leggings!!.serializeAsBytes()
             lmEntity.pdc.set(NamespacedKeys.equipment4, PersistentDataType.BYTE_ARRAY, serialized)
         }
-        if (boots != null){
+        if (isItemAllowedForSerialization(boots)){
             val serialized = boots!!.serializeAsBytes()
             lmEntity.pdc.set(NamespacedKeys.equipment5, PersistentDataType.BYTE_ARRAY, serialized)
         }
+    }
+
+    private fun isItemAllowedForSerialization(itemStack: ItemStack?): Boolean{
+        if (itemStack == null) return false
+        // maybe there will be more types later
+        if (itemStack.type == Material.AIR) return false
+
+        return true
     }
 }
