@@ -394,9 +394,9 @@ class ExternalCompatibilityManager {
 
         fun getWGRegionsAtLocation(
             lmInterface: LivingEntityInterface
-        ): MutableList<String> {
+        ): MutableSet<String> {
             if (!hasWorldGuardInstalled) {
-                return mutableListOf()
+                return mutableSetOf()
             }
 
             return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface)

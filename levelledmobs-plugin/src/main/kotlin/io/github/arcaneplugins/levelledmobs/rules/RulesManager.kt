@@ -1206,9 +1206,11 @@ class RulesManager {
             && ExternalCompatibilityManager.hasWorldGuardInstalled
         ) {
             var isInList = false
-            val wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(
-                lmInterface
-            )
+            val wgRegions = if (lmInterface is LivingEntityWrapper)
+                lmInterface.spawnedWGRegions
+            else
+                ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface)
+
             if (wgRegions.isEmpty()) {
                 wgRegions.add("(none)")
             }

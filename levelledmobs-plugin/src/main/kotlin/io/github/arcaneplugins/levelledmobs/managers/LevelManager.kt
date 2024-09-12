@@ -1013,7 +1013,7 @@ class LevelManager : LevelInterface2 {
         text.replace("%world%", lmEntity.worldName)
         text.replaceIfExists("%location%") {
                 "${lmEntity.livingEntity.location.blockX} " +
-                "${lmEntity.livingEntity.location.blockX} " +
+                "${lmEntity.livingEntity.location.blockY} " +
                 "${lmEntity.livingEntity.location.blockZ}"
         }
         text.replace("%health%-percent%", percentHealth)

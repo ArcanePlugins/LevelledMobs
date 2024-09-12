@@ -16,14 +16,14 @@ import org.bukkit.Bukkit
 object WorldGuardIntegration {
     fun getWorldGuardRegionsForLocation(
         lmInterface: LivingEntityInterface
-    ): MutableList<String> {
-        val wgRegions = mutableListOf<String>()
+    ): MutableSet<String> {
+        val wgRegions = mutableSetOf<String>()
 
         if (lmInterface.world == null) {
             return wgRegions
         }
 
-        val regions: Set<ProtectedRegion> = getRegionSet(lmInterface)
+        val regions = getRegionSet(lmInterface)
             ?: return wgRegions
 
         for (region in regions) {

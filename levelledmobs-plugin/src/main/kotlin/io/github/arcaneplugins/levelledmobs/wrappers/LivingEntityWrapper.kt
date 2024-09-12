@@ -65,7 +65,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     private var _sourceSpawnerName: String? = null
     private var _sourceSpawnEggName: String? = null
     private val applicableRules = mutableListOf<RuleInfo>()
-    private var spawnedWGRegions: List<String>? = null
+    var spawnedWGRegions = mutableSetOf<String>()
+        private set
     val spawnReason = LMSpawnReason()
     private var _nametagVisibilityEnum = mutableListOf<NametagVisibilityEnum>()
     private val cacheLock = ReentrantLock()
@@ -196,7 +197,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.isBuildingCache = false
         this.hasCache = false
         this.mobLevel = null
-        this.spawnedWGRegions = null
+        this.spawnedWGRegions.clear()
         this.fineTuningAttributes = null
         this.reEvaluateLevel = false
         this.isRulesForceAll = false
@@ -765,10 +766,10 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     val wgRegionName: String
         get() {
-            if (this.spawnedWGRegions == null || spawnedWGRegions!!.isEmpty()) {
+            if (spawnedWGRegions.isEmpty()) {
                 return ""
             }
-            return spawnedWGRegions!![0]
+            return spawnedWGRegions.first()
         }
 
     fun populateShowShowLMNametag(){
