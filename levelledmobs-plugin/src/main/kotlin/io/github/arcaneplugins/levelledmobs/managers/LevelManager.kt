@@ -420,30 +420,12 @@ class LevelManager : LevelInterface2 {
         // if called from summon command then lmEntity is null
 
         val main = LevelledMobs.instance
-        var minLevel: Int = main.rulesManager.getRuleMobMinLevel(lmInterface)
-        var maxLevel: Int = main.rulesManager.getRuleMobMaxLevel(lmInterface)
+        //if (lmInterface is LivingEntityWrapper) lmInterface.invalidateCache()
+        var minLevel = main.rulesManager.getRuleMobMinLevel(lmInterface)
+        var maxLevel = main.rulesManager.getRuleMobMaxLevel(lmInterface)
 
-//        if (main.configUtils.playerLevellingEnabled && lmInterface is LivingEntityWrapper && lmInterface.playerForLevelling != null) {
-//            val options = main.rulesManager.getRulePlayerLevellingOptions(
-//                lmInterface
-//            )
-//
-//            var playerLevellingResults: MinAndMaxHolder? = null
-//            if (options != null && options.getEnabled) {
-//                playerLevellingResults = options.getPlayerLevels(lmInterface)
-//            }
-//
-//            if (playerLevellingResults != null) {
-//                // this will only be false if no tiers were met and there was a cap specified
-//                if (playerLevellingResults.useMin) minLevel = playerLevellingResults.minAsInt
-//                maxLevel = playerLevellingResults.maxAsInt
-//            }
-//        }
-
-        // this will prevent an unhandled exception:
-        minLevel = max(minLevel.toDouble(), 1.0).toInt()
-        maxLevel = max(maxLevel.toDouble(), 1.0).toInt()
-        minLevel = min(minLevel.toDouble(), maxLevel.toDouble()).toInt()
+        maxLevel = maxLevel.coerceAtLeast(0)
+        minLevel = minLevel.coerceAtMost(maxLevel)
 
         return MinAndMaxHolder(minLevel, maxLevel)
     }

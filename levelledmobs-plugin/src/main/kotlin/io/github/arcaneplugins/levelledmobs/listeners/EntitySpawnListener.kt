@@ -58,13 +58,16 @@ class EntitySpawnListener : Listener{
         lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
         lmEntity.populateShowShowLMNametag()
-        lmEntity.buildCacheIfNeeded()
-        MobDataManager.populateAttributeCache(lmEntity, null)
+        var hasBuiltCache = false
 
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason
-
             lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, spawnReason)
+
+            lmEntity.buildCacheIfNeeded()
+            MobDataManager.populateAttributeCache(lmEntity, null)
+            hasBuiltCache = true
+
             if ((spawnReason == SpawnReason.CUSTOM || spawnReason == SpawnReason.SPAWNER_EGG) &&
                 !lmEntity.isLevelled
             ) {
@@ -84,6 +87,11 @@ class EntitySpawnListener : Listener{
         if (!processMobSpawns) {
             lmEntity.free()
             return
+        }
+
+        if (!hasBuiltCache) {
+            lmEntity.buildCacheIfNeeded()
+            MobDataManager.populateAttributeCache(lmEntity, null)
         }
 
         if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.playerForLevelling == null)
