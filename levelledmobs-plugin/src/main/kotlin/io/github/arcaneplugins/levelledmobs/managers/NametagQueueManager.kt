@@ -256,6 +256,7 @@ class NametagQueueManager {
         updateNametag(item.lmEntity, item.nametag!!, item.players!!)
     }
 
+    @Suppress("DEPRECATION")
     private fun updateNametag(
         lmEntity: LivingEntityWrapper,
         nametag: NametagResult,
