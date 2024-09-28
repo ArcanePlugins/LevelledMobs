@@ -947,16 +947,15 @@ class LevelManager : LevelInterface2 {
         val percentHealth = if (percentHealthTemp < 1.0) 1 else percentHealthTemp.toInt()
         val playerId = player?.uniqueId?.toString() ?: ""
         val playerName = player?.name ?: ""
+        val rm = LevelledMobs.instance.rulesManager
 
-        var tieredPlaceholder = LevelledMobs.instance.rulesManager.getRuleTieredPlaceholder(lmEntity)
-        if (tieredPlaceholder == null) {
-            tieredPlaceholder = ""
-        }
+        var tieredPlaceholder = rm.getRuleTieredPlaceholder(lmEntity)
+        if (tieredPlaceholder == null) tieredPlaceholder = ""
 
         // replace them placeholders ;)
         text.replaceIfExists("%displayname%") {
             val overridenName = if (lmEntity.lockedOverrideName == null)
-                LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(lmEntity, false)
+                rm.getRuleEntityOverriddenName(lmEntity, false)
             else
                 lmEntity.lockedOverrideName
 
@@ -998,6 +997,8 @@ class LevelManager : LevelInterface2 {
                 "${lmEntity.livingEntity.location.blockY} " +
                 "${lmEntity.livingEntity.location.blockZ}"
         }
+        text.replaceIfExists("%min-level%"){ rm.getRuleMobMinLevel(lmEntity).toString() }
+        text.replaceIfExists("%max-level%"){ rm.getRuleMobMaxLevel(lmEntity).toString() }
         text.replace("%health%-percent%", percentHealth)
         text.replace("%x%", lmEntity.livingEntity.location.blockX)
         text.replace("%y%", lmEntity.livingEntity.location.blockY)
