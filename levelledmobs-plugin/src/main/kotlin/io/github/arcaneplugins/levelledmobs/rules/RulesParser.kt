@@ -1369,8 +1369,6 @@ class RulesParser {
 
             if ("default".equals(key, ignoreCase = true))
                 isDefault = true
-            else if (!csTiers.isString(key))
-                continue
 
             val value = csTiers.getString(key)
             val info = LevelTierMatching()
