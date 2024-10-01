@@ -7,7 +7,7 @@ version = version
 plugins {
     id("java")
     kotlin("jvm") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
     id("idea")
     id("maven-publish")
 }
@@ -15,7 +15,7 @@ plugins {
 apply(plugin = "java")
 apply(plugin = "java-library")
 apply(plugin = "kotlin")
-apply(plugin = "com.github.johnrengelman.shadow")
+apply(plugin = "com.gradleup.shadow")
 apply(plugin = "maven-publish")
 apply(plugin = "org.jetbrains.dokka")
 
@@ -27,20 +27,20 @@ idea {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = "2.0.0"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.20")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
-    implementation("org.bstats:bstats-bukkit:3.0.2") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
+    implementation("org.bstats:bstats-bukkit:3.1.0") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
     // implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
     // stumper66's fork: https://github.com/stumper66/CommandAPI
     // now found in the lib directory
 
-    compileOnly("LibsDisguises:LibsDisguises:10.0.43-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
+    compileOnly("LibsDisguises:LibsDisguises:10.0.44-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
     compileOnly("net.essentialsx:EssentialsX:2.20.1") // https://repo.essentialsx.net/#/releases/net/essentialsx/EssentialsX
-    compileOnly("me.clip:placeholderapi:2.11.5") // https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/
+    compileOnly("me.clip:placeholderapi:2.11.6") // https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.1.0-SNAPSHOT") // https://maven.enginehub.org/repo/com/sk89q/worldguard/worldguard-bukkit/
-    compileOnly("de.tr7zw:item-nbt-api-plugin:2.12.4") // https://mvnrepository.com/artifact/de.tr7zw/item-nbt-api-plugin
+    compileOnly("de.tr7zw:item-nbt-api-plugin:2.13.1") // https://mvnrepository.com/artifact/de.tr7zw/item-nbt-api-plugin
     compileOnly("io.github.stumper66:LM_Items:1.3.0") // https://mvnrepository.com/artifact/io.github.stumper66/LM_Items
 
     implementation(fileTree("lib") { include("*.jar") })

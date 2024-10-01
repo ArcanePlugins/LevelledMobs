@@ -60,7 +60,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 else 1f
 
         applyValueToPdc(lmEntity, playerLevelSourceResult)
-        val levelSource = origLevelSource * scale.coerceAtLeast(1f)
+        val levelSource = (origLevelSource * scale).coerceAtLeast(0f)
 
         val results = MinAndMaxHolder(0f, 0f)
         var tierMatched: String? = null

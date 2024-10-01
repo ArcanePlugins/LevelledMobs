@@ -28,15 +28,12 @@ class ChunkKillOptions : MergableRule, Cloneable {
     }
 
     override fun merge(mergableRule: MergableRule?) {
-        if (mergableRule !is ChunkKillOptions) {
-            return
-        }
+        if (mergableRule !is ChunkKillOptions) return
+        if (mergableRule.isDefault) return
 
-        if (isDefault) return
-
-        if (disableVanillaDrops != null) this.disableVanillaDrops = disableVanillaDrops!!
-        if (disableItemBoost != null) this.disableItemBoost = disableItemBoost!!
-        if (disableXpDrops != null) this.disableXpDrops = disableXpDrops!!
+        if (disableVanillaDrops != null) this.disableVanillaDrops = mergableRule.disableVanillaDrops
+        if (disableItemBoost != null) this.disableItemBoost = mergableRule.disableItemBoost
+        if (disableXpDrops != null) this.disableXpDrops = mergableRule.disableXpDrops
     }
 
     override val doMerge = true
@@ -56,16 +53,19 @@ class ChunkKillOptions : MergableRule, Cloneable {
         if (this.isDefault) return "Default"
 
         val sb = StringBuilder()
-        if (disableVanillaDrops != null && disableVanillaDrops!!) {
-            sb.append("disableVanillaDrops")
+        if (disableVanillaDrops != null) {
+            if (getDisableVanillaDrops()) sb.append("disableVanillaDrops")
+            else sb.append("disableVanillaDrops: false")
         }
-        if (disableItemBoost != null && disableItemBoost!!) {
+        if (disableItemBoost != null) {
             if (sb.isNotEmpty()) sb.append(", ")
-            sb.append("disableItemBoost")
+            if (getDisableItemBoost()) sb.append("disableItemBoost")
+            else sb.append("disableItemBoost: false")
         }
-        if (disableXpDrops != null && disableXpDrops!!) {
+        if (disableXpDrops != null) {
             if (sb.isNotEmpty()) sb.append(", ")
-            sb.append("disableXpDrops")
+            if (getDisableXpDrops()) sb.append("disableXpDrops")
+            else sb.append("disableXpDrops: false")
         }
 
         return sb.toString()

@@ -81,8 +81,10 @@ class EntityDeathListener : Listener {
         if (lmEntity.isLevelled && killer != null && main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity) > 0) {
             // Only counts if mob is killed by player
 
-            if (hasReachedEntityDeathChunkMax(lmEntity, killer)) {
-                val opts = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).chunkKillOptions!!
+            val opts = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).chunkKillOptions!!
+            val isAnyOptionEnabled = opts.getDisableXpDrops() || opts.getDisableVanillaDrops() || opts.getDisableItemBoost()
+
+            if (isAnyOptionEnabled && hasReachedEntityDeathChunkMax(lmEntity, killer)) {
                 if (opts.getDisableVanillaDrops()) {
                     event.drops.clear()
                     disableXpDrops = true
@@ -153,34 +155,27 @@ class EntityDeathListener : Listener {
         var numberOfEntityDeathInChunk =
             if (pairList.containsKey(lmEntity.entityType)) pairList[lmEntity.entityType]!!.count else 0
 
-        val adjacentChunksResult = getNumberOfEntityDeathsInAdjacentChunks(
-            lmEntity
-        )
+        val adjacentChunksResult = getNumberOfEntityDeathsInAdjacentChunks(lmEntity )
         if (adjacentChunksResult != null) {
             numberOfEntityDeathInChunk += adjacentChunksResult.entities
             adjacentChunksResult.chunkKeys.add(chunkKey)
         }
 
         lmEntity.chunkKillcount = numberOfEntityDeathInChunk
-        val maximumDeathInChunkThreshold: Int = main.rulesManager.getMaximumDeathInChunkThreshold(
-            lmEntity
-        )
-        val maxCooldownTime: Int = main.rulesManager.getMaxChunkCooldownTime(lmEntity)
+        val maximumDeathInChunkThreshold = main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity)
+        val maxCooldownTime = main.rulesManager.getMaxChunkCooldownTime(lmEntity)
 
         if (numberOfEntityDeathInChunk < maximumDeathInChunkThreshold) {
-            val chunkKillInfo: ChunkKillInfo = pairList.computeIfAbsent(lmEntity.entityType
-            ) { ChunkKillInfo() }
+            val chunkKillInfo = pairList.computeIfAbsent(lmEntity.entityType) { ChunkKillInfo() }
             chunkKillInfo.entityCounts[Instant.now()] = maxCooldownTime
             return false
         }
 
         if (main.helperSettings.getBoolean("exceed-kill-in-chunk-message",true)
         ) {
-            val chunkKeys =
-                adjacentChunksResult?.chunkKeys ?: mutableListOf(chunkKey)
-            if (main.mainCompanion.doesUserHaveCooldown(chunkKeys, player.uniqueId)) {
+            val chunkKeys = adjacentChunksResult?.chunkKeys ?: mutableListOf(chunkKey)
+            if (main.mainCompanion.doesUserHaveCooldown(chunkKeys, player.uniqueId))
                 return true
-            }
 
             DebugManager.log(DebugType.CHUNK_KILL_COUNT, lmEntity) {
                 "${Utils.displayChunkLocation(lmEntity.location)}: player: ${player.name}, reached chunk kill limit, max: $maximumDeathInChunkThreshold"
@@ -189,9 +184,8 @@ class EntityDeathListener : Listener {
             val prefix = main.configUtils.prefix
             val msg = main.messagesCfg.getString("other.no-drop-in-chunk")
 
-            if (msg != null) {
+            if (msg != null)
                 player.sendMessage(colorizeAll(msg.replace("%prefix%", prefix)))
-            }
 
             main.mainCompanion.addUserCooldown(chunkKeys, player.uniqueId)
         }

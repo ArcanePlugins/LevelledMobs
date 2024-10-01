@@ -26,6 +26,7 @@ import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.QuickTimer
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.time.Instant
 import java.util.Random
 import java.util.Stack
@@ -127,6 +128,14 @@ class LevelledMobs : JavaPlugin() {
         if (nametagQueueManager.hasNametagSupport) {
             levelManager.startNametagAutoUpdateTask()
             levelManager.startNametagTimer()
+
+            if (!ver.isRunningFolia){
+                val scheduler = SchedulerWrapper {
+                    nametagQueueManager.taskChecker()
+                    mobsQueueManager.taskChecker()
+                }
+                scheduler.runTaskTimerAsynchronously(50000, 5000)
+            }
         }
 
         prepareToLoadCustomDrops()

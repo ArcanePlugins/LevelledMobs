@@ -30,14 +30,16 @@ class NmsNametagSender : NametagSender {
         player: Player,
         alwaysVisible: Boolean
     ) {
-        if (!player.isOnline || !player.isValid) {
-            return
-        }
+        if (!player.isOnline || !player.isValid) return
 
-        val scheduler = SchedulerWrapper(
-            livingEntity
-        ) { sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible) }
-        scheduler.run()
+        if (LevelledMobs.instance.ver.isRunningFolia)
+            sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
+        else{
+            val scheduler = SchedulerWrapper(livingEntity) {
+                sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
+            }
+            scheduler.run()
+        }
     }
 
     fun refresh() {

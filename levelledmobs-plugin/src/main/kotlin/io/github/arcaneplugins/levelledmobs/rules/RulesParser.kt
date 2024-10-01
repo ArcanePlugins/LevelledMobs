@@ -535,14 +535,12 @@ class RulesParser {
     }
 
     private fun parseValues(ymlHelper: YmlParsingHelper) {
-        val ruleName = ymlHelper.getString( "name")
-        if (ruleName != null) {
-            parsingInfo.ruleName = ruleName
-        }
+        var ruleName = ymlHelper.getString( "name")
+        if (ruleName == null) ruleName = ymlHelper.cs.get("custom-rule").toString()
+        if (parsingInfo.ruleName != "defaults") parsingInfo.ruleName = ruleName
 
         mergePreset(ymlHelper)
-
-        parsingInfo.ruleName = ymlHelper.getString( "custom-rule", parsingInfo.ruleName)!!
+        
         parsingInfo.ruleIsEnabled = ymlHelper.getBoolean( "is-enabled", true)
 
         parseStrategies(YmlParsingHelper.objToCS(ymlHelper.cs, "strategies"))
@@ -557,6 +555,7 @@ class RulesParser {
 
         for (checkName: String in presets) {
             val checkNameTrimmed = checkName.trim { it <= ' ' }
+
             if (!rulePresets.containsKey(checkNameTrimmed)) {
                 val ruleName = parsingInfo.presetName?: parsingInfo.ruleName
                 Log.war(
@@ -1370,8 +1369,6 @@ class RulesParser {
 
             if ("default".equals(key, ignoreCase = true))
                 isDefault = true
-            else if (!csTiers.isString(key))
-                continue
 
             val value = csTiers.getString(key)
             val info = LevelTierMatching()

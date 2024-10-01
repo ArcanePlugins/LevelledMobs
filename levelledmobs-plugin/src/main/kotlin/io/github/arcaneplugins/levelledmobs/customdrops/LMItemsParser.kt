@@ -8,7 +8,10 @@ import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
+import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -101,8 +104,14 @@ class LMItemsParser {
             itemRequest.extras = Hashtable(item.externalExtras!!.size)
 
             for (key in item.externalExtras!!.keys) {
-                var value = item.externalExtras!![key]
-                if (value is String && value.contains("%")) {
+                var useKey = key
+                var value = item.externalExtras!![useKey]
+
+                if (useKey.endsWith("-formula", ignoreCase = true)) {
+                    value = evaluateFormula(useKey, value, info?.lmEntity)
+                    useKey = useKey.substring(0, useKey.length - 8)
+                }
+                else if (value is String && value.contains("%")) {
                     if (info != null) {
                         value = main.levelManager.replaceStringPlaceholders(
                             value, info.lmEntity!!,true,info.mobKiller,false)
@@ -111,7 +120,7 @@ class LMItemsParser {
                     }
                 }
 
-                (itemRequest.extras as Hashtable<String, Any>)[key] = value
+                (itemRequest.extras as Hashtable<String, Any>)[useKey] = value
             }
         }
 
@@ -166,5 +175,43 @@ class LMItemsParser {
         }
 
         return true
+    }
+
+    private fun evaluateFormula(
+        name: String,
+        value: Any?,
+        lmEntity: LivingEntityWrapper?
+    ): Any?{
+        if (value == null) return null
+        if (lmEntity == null) return 1 // maybe an hack but do you have any better ideas?
+
+        val formulaPre = value.toString()
+        val formula = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(formulaPre, lmEntity)
+        val evalResult = MobDataManager.evaluateExpression(formula)
+        if (evalResult.hadError){
+            NotifyManager.notifyOfError("Error evaluating formula for custom drop extras for '$name' on mob: ${lmEntity.nameIfBaby}, ${evalResult.error}")
+            DebugManager.log(DebugType.CUSTOM_DROPS_FORMULA, lmEntity){
+                val msg = if (formula == formulaPre)
+                    "   formula: '$formula'"
+                else
+                    "   formulaPre: '$formulaPre'\n" +
+                            "   formula: '$formula'"
+
+                "result (error, ${evalResult.error})\n$msg" }
+            return null
+        }
+
+        val result = evalResult.result
+
+        DebugManager.log(DebugType.CUSTOM_DROPS_FORMULA, lmEntity){
+            val msg = if (formula == formulaPre)
+                "   formula: '$formula'"
+            else
+                "   formulaPre: '$formulaPre'\n" +
+                        "   formula: '$formula'"
+
+            "result $result\n$msg"}
+
+        return result
     }
 }

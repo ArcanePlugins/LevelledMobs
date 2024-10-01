@@ -7,6 +7,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
+import org.bukkit.scheduler.BukkitTask
 
 /**
  * This class is used for when code needs to be executed in a specific thread context.
@@ -20,6 +21,8 @@ import org.bukkit.entity.Entity
 class SchedulerWrapper {
     var runnable: Runnable? = null
     var entity: Entity? = null
+    var bukkitTask: BukkitTask? = null
+        private set
 
     constructor(runnable: Runnable){
         this.runnable = runnable
@@ -65,7 +68,7 @@ class SchedulerWrapper {
 
             // if you provided an entity in the constructor, it is assumed the main thread needs to be used
             // since accessing entities asynchronously will usually result in an error
-            if (entity != null) {
+            bukkitTask = if (entity != null) {
                 Bukkit.getScheduler().runTask(main, runnable!!)
             } else {
                 Bukkit.getScheduler().runTaskAsynchronously(main, runnable!!)

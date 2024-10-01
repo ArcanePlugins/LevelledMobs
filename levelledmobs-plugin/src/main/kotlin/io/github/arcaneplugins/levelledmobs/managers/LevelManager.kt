@@ -34,6 +34,7 @@ import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomVarianceGenerator
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -66,9 +67,8 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -419,30 +419,12 @@ class LevelManager : LevelInterface2 {
         // if called from summon command then lmEntity is null
 
         val main = LevelledMobs.instance
-        var minLevel: Int = main.rulesManager.getRuleMobMinLevel(lmInterface)
-        var maxLevel: Int = main.rulesManager.getRuleMobMaxLevel(lmInterface)
+        //if (lmInterface is LivingEntityWrapper) lmInterface.invalidateCache()
+        var minLevel = main.rulesManager.getRuleMobMinLevel(lmInterface)
+        var maxLevel = main.rulesManager.getRuleMobMaxLevel(lmInterface)
 
-//        if (main.configUtils.playerLevellingEnabled && lmInterface is LivingEntityWrapper && lmInterface.playerForLevelling != null) {
-//            val options = main.rulesManager.getRulePlayerLevellingOptions(
-//                lmInterface
-//            )
-//
-//            var playerLevellingResults: MinAndMaxHolder? = null
-//            if (options != null && options.getEnabled) {
-//                playerLevellingResults = options.getPlayerLevels(lmInterface)
-//            }
-//
-//            if (playerLevellingResults != null) {
-//                // this will only be false if no tiers were met and there was a cap specified
-//                if (playerLevellingResults.useMin) minLevel = playerLevellingResults.minAsInt
-//                maxLevel = playerLevellingResults.maxAsInt
-//            }
-//        }
-
-        // this will prevent an unhandled exception:
-        minLevel = max(minLevel.toDouble(), 1.0).toInt()
-        maxLevel = max(maxLevel.toDouble(), 1.0).toInt()
-        minLevel = min(minLevel.toDouble(), maxLevel.toDouble()).toInt()
+        maxLevel = maxLevel.coerceAtLeast(0)
+        minLevel = minLevel.coerceAtMost(maxLevel)
 
         return MinAndMaxHolder(minLevel, maxLevel)
     }
@@ -964,16 +946,15 @@ class LevelManager : LevelInterface2 {
         val percentHealth = if (percentHealthTemp < 1.0) 1 else percentHealthTemp.toInt()
         val playerId = player?.uniqueId?.toString() ?: ""
         val playerName = player?.name ?: ""
+        val rm = LevelledMobs.instance.rulesManager
 
-        var tieredPlaceholder = LevelledMobs.instance.rulesManager.getRuleTieredPlaceholder(lmEntity)
-        if (tieredPlaceholder == null) {
-            tieredPlaceholder = ""
-        }
+        var tieredPlaceholder = rm.getRuleTieredPlaceholder(lmEntity)
+        if (tieredPlaceholder == null) tieredPlaceholder = ""
 
         // replace them placeholders ;)
         text.replaceIfExists("%displayname%") {
             val overridenName = if (lmEntity.lockedOverrideName == null)
-                LevelledMobs.instance.rulesManager.getRuleEntityOverriddenName(lmEntity, false)
+                rm.getRuleEntityOverriddenName(lmEntity, false)
             else
                 lmEntity.lockedOverrideName
 
@@ -996,8 +977,10 @@ class LevelManager : LevelInterface2 {
         text.replace("%entity-name-raw%", lmEntity.typeName)
         text.replace("%entity-health%", Utils.round(entityHealth))
         text.replace("%entity-health-rounded%", entityHealthRounded)
+        text.replaceIfExists("%entity-health-rounded-up%"){ ceil(entityHealth).toInt().toString() }
         text.replace("%entity-max-health%", roundedMaxHealth)
         text.replace("%entity-max-health-rounded%", roundedMaxHealthInt)
+        text.replaceIfExists("%entity-max-health-rounded-up%"){ ceil(maxHealth).toInt().toString() }
         getHealthPercentRemaining(entityHealth, maxHealth, text)
         text.replaceIfExists("%base-health%"){
             val baseHealth = lmEntity.livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue
@@ -1010,9 +993,11 @@ class LevelManager : LevelInterface2 {
         text.replace("%world%", lmEntity.worldName)
         text.replaceIfExists("%location%") {
                 "${lmEntity.livingEntity.location.blockX} " +
-                "${lmEntity.livingEntity.location.blockX} " +
+                "${lmEntity.livingEntity.location.blockY} " +
                 "${lmEntity.livingEntity.location.blockZ}"
         }
+        text.replaceIfExists("%min-level%"){ rm.getRuleMobMinLevel(lmEntity).toString() }
+        text.replaceIfExists("%max-level%"){ rm.getRuleMobMaxLevel(lmEntity).toString() }
         text.replace("%health%-percent%", percentHealth)
         text.replace("%x%", lmEntity.livingEntity.location.blockX)
         text.replace("%y%", lmEntity.livingEntity.location.blockY)
@@ -1439,6 +1424,9 @@ class LevelManager : LevelInterface2 {
         val mob = lmEntity.livingEntity
         val main = LevelledMobs.instance
 
+        if (lmEntity.spawnReason.getInternalSpawnReason(lmEntity) == InternalSpawnReason.LM_SUMMON)
+            return false
+
         if (main.playerLevellingMinRelevelTime > 0L && main.playerLevellingEntities.containsKey(
                 mob
             )
@@ -1580,6 +1568,7 @@ class LevelManager : LevelInterface2 {
             lmEntity.free()
         }
         lmEntity.inUseCount.getAndIncrement()
+        scheduler.runDirectlyInFolia = true
         scheduler.run()
     }
 
@@ -1656,13 +1645,18 @@ class LevelManager : LevelInterface2 {
             return
         }
 
+        if (LevelledMobs.instance.ver.isRunningFolia){
+            applyLevelledEquipmentNonAsync(lmEntity, customDropsRuleSet)
+            return
+        }
+
         val scheduler = SchedulerWrapper {
             applyLevelledEquipmentNonAsync(lmEntity, customDropsRuleSet)
             lmEntity.free()
         }
 
-        scheduler.entity = lmEntity.livingEntity
         lmEntity.inUseCount.getAndIncrement()
+        scheduler.entity = lmEntity.livingEntity
         scheduler.run()
     }
 
@@ -1681,9 +1675,7 @@ class LevelManager : LevelInterface2 {
             lmEntity,
             items, true
         )
-        if (items.isEmpty()) {
-            return
-        }
+        if (items.isEmpty()) return
 
         val equipment = lmEntity.livingEntity.equipment ?: return
 
@@ -2102,67 +2094,9 @@ class LevelManager : LevelInterface2 {
 
         if (hadSuccess) {
             DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
-                "Applied NBT data, ${getNBTDebugMessage(allResults)}"
+                "Applied NBT data, ${MiscUtils.getNBTDebugMessage(allResults)}"
             }
         }
-    }
-
-    private fun getNBTDebugMessage(
-        results: MutableList<NBTApplyResult>
-    ): String {
-        val sb = StringBuilder()
-
-        for (result in results) {
-            if (result.objectsAdded == null) {
-                continue
-            }
-
-            for (i in 0 until result.objectsAdded!!.size) {
-                if (i > 0) {
-                    sb.append(", ")
-                } else {
-                    sb.append("added: ")
-                }
-
-                sb.append(result.objectsAdded!![i])
-            }
-        }
-
-        for (result in results) {
-            if (result.objectsUpdated == null) {
-                continue
-            }
-
-            for (i in 0 until result.objectsUpdated!!.size) {
-                if (i > 0 || sb.isNotEmpty()) {
-                    sb.append(", ")
-                }
-                if (i == 0) {
-                    sb.append("updated: ")
-                }
-
-                sb.append(result.objectsUpdated!![i])
-            }
-        }
-
-        for (result in results) {
-            if (result.objectsRemoved == null) {
-                continue
-            }
-
-            for (i in 0 until result.objectsRemoved!!.size) {
-                if (i > 0 || sb.isNotEmpty()) {
-                    sb.append(", ")
-                }
-                if (i == 0) {
-                    sb.append("removed: ")
-                }
-
-                sb.append(result.objectsRemoved!![i])
-            }
-        }
-
-        return if (sb.isEmpty()) "" else sb.toString()
     }
 
     /**

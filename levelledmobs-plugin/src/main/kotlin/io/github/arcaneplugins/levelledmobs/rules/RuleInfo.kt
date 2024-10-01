@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.rules
 
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotShow
+import io.github.arcaneplugins.levelledmobs.annotations.DoNotShowFalse
 import io.github.arcaneplugins.levelledmobs.annotations.ExcludeFromHash
 import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
@@ -35,10 +36,10 @@ class RuleInfo(
     var ruleIsEnabled = true
     @field:RuleFieldInfo("construct level", RuleType.APPLY_SETTING)
     var constructLevel: String? = null
-    @field:DoNotMerge @field:ExcludeFromHash @field:RuleFieldInfo("is temp disabled", RuleType.MISC)
+    @field:DoNotShowFalse @field:DoNotMerge @field:ExcludeFromHash @field:RuleFieldInfo("is temp disabled", RuleType.MISC)
     var isTempDisabled = false
-    @field:ExcludeFromHash @field:RuleFieldInfo("use no spawner particles", RuleType.APPLY_SETTING)
-    var useNoSpawnerParticles = false
+    @field:DoNotShowFalse @field:ExcludeFromHash @field:RuleFieldInfo("use no spawner particles", RuleType.APPLY_SETTING)
+    var useNoSpawnerParticles: Boolean? = null
     @field:RuleFieldInfo("baby mobs inherit adult settings", RuleType.APPLY_SETTING)
     var babyMobsInheritAdultSetting: Boolean? = null
     @field:RuleFieldInfo("mob level inheritance", RuleType.APPLY_SETTING)
@@ -278,17 +279,6 @@ class RuleInfo(
                     continue
                 }
 
-                // skip default values such as false, 0, 0.0
-                if (presetValue is Boolean && !presetValue) {
-                    continue
-                }
-                if (presetValue is Int && (presetValue == 0)) {
-                    continue
-                }
-                if (presetValue is Double && (presetValue == 0.0)) {
-                    continue
-                }
-
                 if (!skipSettingValue) {
                     this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
                 }
@@ -331,12 +321,10 @@ class RuleInfo(
 
         try {
             for (f in this::javaClass.get().declaredFields) {
-                if (isForHash && f.isAnnotationPresent(ExcludeFromHash::class.java)) {
+                if (isForHash && f.isAnnotationPresent(ExcludeFromHash::class.java))
                     continue
-                }
-                if (!isForHash && f.isAnnotationPresent(DoNotShow::class.java)) {
+                if (!isForHash && f.isAnnotationPresent(DoNotShow::class.java))
                     continue
-                }
 
                 val value = f.get(this) ?: continue
                 var ruleName = f.name
@@ -347,15 +335,17 @@ class RuleInfo(
                     ruleName = ruleTypeInfo.value
                 }
 
+                if (!isForHash && f.isAnnotationPresent(DoNotShowFalse::class.java) &&
+                        value is Boolean && !value) continue
                 if (value.toString().isEmpty()) continue
                 if (excludedKeys != null && excludedKeys.contains(f.name)) continue
                 if (value.toString() == "NOT_SPECIFIED") continue
                 if (value.toString() == "{}") continue
                 if (value.toString() == "[]") continue
-                if (value.toString() == "0") continue
-                if (value.toString() == "0.0") continue
+                //if (value.toString() == "0") continue
+                //if (value.toString() == "0.0") continue
                 if (value.toString().equals("NONE", ignoreCase = true)) continue
-                if (value.toString().equals("false", ignoreCase = true)) continue
+                //if (value.toString().equals("false", ignoreCase = true)) continue
 
                 if (value is CachedModalList<*>) {
                     if (value.isEmpty() && !value.includeAll && !value.excludeAll) {

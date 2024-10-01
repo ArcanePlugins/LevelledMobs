@@ -681,7 +681,7 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.spawnerParticle != null) {
                 result = ruleInfo.spawnerParticle
-            } else if (ruleInfo.useNoSpawnerParticles) {
+            } else if (ruleInfo.useNoSpawnerParticles != null && ruleInfo.useNoSpawnerParticles!!) {
                 result = null
             }
         }
@@ -1206,9 +1206,11 @@ class RulesManager {
             && ExternalCompatibilityManager.hasWorldGuardInstalled
         ) {
             var isInList = false
-            val wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(
-                lmInterface
-            )
+            val wgRegions = if (lmInterface is LivingEntityWrapper)
+                lmInterface.spawnedWGRegions
+            else
+                ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface)
+
             if (wgRegions.isEmpty()) {
                 wgRegions.add("(none)")
             }

@@ -63,7 +63,7 @@ object RandomVarianceGenerator {
             useMax = split[1].toInt()
 
         useMin = useMin.coerceAtMost(useMax)
-        useMax = useMax.coerceAtLeast(useMin + 1)
+        useMax = useMax.coerceAtLeast(useMin) + 1
 
         val result = ThreadLocalRandom.current().nextInt(useMin, useMax)
         DebugManager.log(DebugType.RANDOM_NUMBER, lmEntity){
