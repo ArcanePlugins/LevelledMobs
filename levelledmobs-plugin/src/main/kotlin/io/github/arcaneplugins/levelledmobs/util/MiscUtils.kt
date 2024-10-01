@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.util
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -113,5 +114,63 @@ object MiscUtils {
         }
 
         return results.toSortedMap()
+    }
+
+    fun getNBTDebugMessage(
+        results: MutableList<NBTApplyResult>
+    ): String {
+        val sb = StringBuilder()
+
+        for (result in results) {
+            if (result.objectsAdded == null) {
+                continue
+            }
+
+            for (i in 0 until result.objectsAdded!!.size) {
+                if (i > 0) {
+                    sb.append(", ")
+                } else {
+                    sb.append("added: ")
+                }
+
+                sb.append(result.objectsAdded!![i])
+            }
+        }
+
+        for (result in results) {
+            if (result.objectsUpdated == null) {
+                continue
+            }
+
+            for (i in 0 until result.objectsUpdated!!.size) {
+                if (i > 0 || sb.isNotEmpty()) {
+                    sb.append(", ")
+                }
+                if (i == 0) {
+                    sb.append("updated: ")
+                }
+
+                sb.append(result.objectsUpdated!![i])
+            }
+        }
+
+        for (result in results) {
+            if (result.objectsRemoved == null) {
+                continue
+            }
+
+            for (i in 0 until result.objectsRemoved!!.size) {
+                if (i > 0 || sb.isNotEmpty()) {
+                    sb.append(", ")
+                }
+                if (i == 0) {
+                    sb.append("removed: ")
+                }
+
+                sb.append(result.objectsRemoved!![i])
+            }
+        }
+
+        return if (sb.isEmpty()) "" else sb.toString()
     }
 }

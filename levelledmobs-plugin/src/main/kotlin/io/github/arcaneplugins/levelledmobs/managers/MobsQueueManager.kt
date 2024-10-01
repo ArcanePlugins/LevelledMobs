@@ -7,7 +7,6 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.EvaluationException
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
-import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import org.bukkit.Bukkit

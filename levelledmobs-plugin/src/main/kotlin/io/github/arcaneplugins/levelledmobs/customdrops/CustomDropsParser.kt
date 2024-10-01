@@ -13,10 +13,10 @@ import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.CustomUniversalGroups
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
-import io.github.arcaneplugins.levelledmobs.result.NBTApplyResult
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import java.util.Locale
 import java.util.SortedMap
@@ -571,17 +571,19 @@ class CustomDropsParser(
         item.nbtData = ymlHelper.getString("nbt-data", defaults.nbtData)
         if (item.material != Material.AIR && !item.nbtData.isNullOrEmpty()) {
             if (ExternalCompatibilityManager.hasNbtApiInstalled) {
-                val result: NBTApplyResult = NBTManager.applyNBTDataItem(item, item.nbtData!!)
+                val result = NBTManager.applyNBTDataItem(item, item.nbtData!!)
                 if (result.hadException)
-                    "custom drop ${item.material} for ${dropInstance.getMobOrGroupName()} has invalid NBT data: ${result.exceptionMessage}"
+                    hadError("custom drop ${item.material} for ${dropInstance.getMobOrGroupName()} has invalid NBT data: ${result.exceptionMessage}")
                 else if (result.itemStack != null) {
                     item.itemStack = result.itemStack
                     this.dropsUtilizeNBTAPI = true
+
+                    DebugManager.log(DebugType.NBT_APPLICATION) {
+                        "Applied NBT data, ${MiscUtils.getNBTDebugMessage(mutableListOf(result))}"
+                    }
                 }
             } else if (!hasMentionedNBTAPIMissing) {
-                hadError(
-                    "NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!"
-                )
+                hadError("NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!")
                 hasMentionedNBTAPIMissing = true
             }
         }

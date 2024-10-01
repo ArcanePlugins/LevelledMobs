@@ -1,9 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.managers
 
 import com.google.gson.JsonParser
-import de.tr7zw.nbtapi.NBTContainer
-import de.tr7zw.nbtapi.NBTEntity
-import de.tr7zw.nbtapi.NBTItem
+import de.tr7zw.nbtapi.NBT
+import de.tr7zw.nbtapi.iface.ReadWriteNBT
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.customdrops.CustomDropItem
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
@@ -20,11 +19,25 @@ object NBTManager {
         nbtStuff: String
     ): NBTApplyResult {
         val result = NBTApplyResult()
-        val nbtent = NBTItem(item.itemStack)
+        var itemNbt: ReadWriteNBT? = null
+        var jsonBefore: String? = null
+
+        if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.NBT_APPLICATION)){
+            itemNbt = NBT.createNBTObject()
+            NBT.get(item.itemStack, itemNbt::mergeCompound)
+            jsonBefore = itemNbt.toString()
+        }
 
         try {
-            nbtent.mergeCompound(NBTContainer(nbtStuff))
-            result.itemStack = nbtent.item
+            NBT.modify(item.itemStack){ nbt -> nbt.mergeCompound(NBT.parseNBT(nbtStuff)) }
+
+            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.NBT_APPLICATION)){
+                NBT.get(item.itemStack, itemNbt!!::mergeCompound)
+                result.itemStack = item.itemStack
+
+                val jsonAfter = itemNbt.toString()
+                formulateChangedJson(jsonBefore!!, jsonAfter, result)
+            }
         } catch (e: Exception) {
             result.exceptionMessage = e.message
         }
@@ -37,22 +50,25 @@ object NBTManager {
         nbtStuff: String
     ): NBTApplyResult {
         val result = NBTApplyResult()
+        var jsonBefore: String? = null
+        var entityNbt: ReadWriteNBT? = null
 
         try {
-            val nbtent = NBTEntity(lmEntity.livingEntity)
-            val jsonBefore = nbtent.toString()
-            nbtent.mergeCompound(NBTContainer(nbtStuff))
-            val jsonAfter = nbtent.toString()
-
-            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(
-                    DebugType.NBT_APPLICATION
-                )
-            ) {
-                showChangedJson(jsonBefore, jsonAfter, result)
+            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.NBT_APPLICATION)){
+                entityNbt = NBT.createNBTObject()
+                NBT.get(lmEntity.livingEntity, entityNbt::mergeCompound)
+                jsonBefore = entityNbt.toString()
             }
 
-            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.NBT_APPLICATION) && jsonBefore == jsonAfter) {
-                result.exceptionMessage = "No NBT data changed.  Make sure you have used proper NBT strings"
+            NBT.modify(lmEntity.livingEntity){ nbt -> nbt.mergeCompound(NBT.parseNBT(nbtStuff)) }
+
+            if (LevelledMobs.instance.debugManager.isDebugTypeEnabled(DebugType.NBT_APPLICATION)){
+                NBT.get(lmEntity.livingEntity, entityNbt!!::mergeCompound)
+                val jsonAfter = entityNbt.toString()
+                formulateChangedJson(jsonBefore!!, jsonAfter, result)
+
+                if (jsonBefore == jsonAfter)
+                    result.exceptionMessage = "No NBT data changed.  Make sure you have used proper NBT strings"
             }
         } catch (e: Exception) {
             result.exceptionMessage = e.message
@@ -61,7 +77,7 @@ object NBTManager {
         return result
     }
 
-    private fun showChangedJson(
+    private fun formulateChangedJson(
         jsonBefore: String,
         jsonAfter: String,
         applyResult: NBTApplyResult

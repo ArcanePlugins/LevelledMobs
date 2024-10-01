@@ -34,6 +34,7 @@ import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomVarianceGenerator
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.MythicMobUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
@@ -68,8 +69,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -2095,67 +2094,9 @@ class LevelManager : LevelInterface2 {
 
         if (hadSuccess) {
             DebugManager.log(DebugType.NBT_APPLICATION, lmEntity, true) {
-                "Applied NBT data, ${getNBTDebugMessage(allResults)}"
+                "Applied NBT data, ${MiscUtils.getNBTDebugMessage(allResults)}"
             }
         }
-    }
-
-    private fun getNBTDebugMessage(
-        results: MutableList<NBTApplyResult>
-    ): String {
-        val sb = StringBuilder()
-
-        for (result in results) {
-            if (result.objectsAdded == null) {
-                continue
-            }
-
-            for (i in 0 until result.objectsAdded!!.size) {
-                if (i > 0) {
-                    sb.append(", ")
-                } else {
-                    sb.append("added: ")
-                }
-
-                sb.append(result.objectsAdded!![i])
-            }
-        }
-
-        for (result in results) {
-            if (result.objectsUpdated == null) {
-                continue
-            }
-
-            for (i in 0 until result.objectsUpdated!!.size) {
-                if (i > 0 || sb.isNotEmpty()) {
-                    sb.append(", ")
-                }
-                if (i == 0) {
-                    sb.append("updated: ")
-                }
-
-                sb.append(result.objectsUpdated!![i])
-            }
-        }
-
-        for (result in results) {
-            if (result.objectsRemoved == null) {
-                continue
-            }
-
-            for (i in 0 until result.objectsRemoved!!.size) {
-                if (i > 0 || sb.isNotEmpty()) {
-                    sb.append(", ")
-                }
-                if (i == 0) {
-                    sb.append("removed: ")
-                }
-
-                sb.append(result.objectsRemoved!![i])
-            }
-        }
-
-        return if (sb.isEmpty()) "" else sb.toString()
     }
 
     /**
