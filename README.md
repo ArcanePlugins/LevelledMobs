@@ -6,20 +6,20 @@
 
 *An ArcanePlugins Resource • by PenalBuffalo, UltimaOath, and lokka30*
 
-<a href="https://www.discord.io/arcaneplugins">
+<a href="https://discord.gg/arcaneplugins-752310043214479462">
 <img src="https://img.shields.io/badge/Chat%20%2F%20Support-on%20Discord-skyblue?style=for-the-badge&logo=discord&logoColor=white" alt="Support available on Discord">
 </a>
-<a href="https://www.spigotmc.org/conversations/add?to=lokka30">
+<a href="https://www.spigotmc.org/threads/levelledmobs.412953/">
 <img src="https://img.shields.io/badge/Chat%20%2F%20Support-Spigot%20PM-skyblue?style=for-the-badge&logo=googlemessages" alt="Support available through Spigot PMs">
 </a>
 
 <br />
 
-<a href="https://github.com/lokka30/LevelledMobs/wiki">
+<a href="https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution">
 <img src="https://img.shields.io/badge/Documentation-on%20Wiki-skyblue?style=for-the-badge&logo=github" alt="Documentation available on the Wiki">
 </a>
 
-<a href="https://github.com/lokka30/LevelledMobs/wiki/Credits">
+<a href="https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/credits-and-misc/developers-and-contributors">
     <img src="https://img.shields.io/badge/Contributors-View%20Credits-skyblue?style=for-the-badge" alt="Contributors listed in Credits Page">
 </a>
 
@@ -27,7 +27,7 @@
 
 ## Learn More at [✈️ HangarMC](https://hangar.papermc.io/ArcanePlugins/LevelledMobs) or [🚰 SpigotMC](https://www.spigotmc.org/resources/levelledmobs.74304/)
 
-### Also see: [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
+### Also see: [Errors and Running LM](https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/levelledmobs-v4.0/errors-and-running-lm) • [Installation Instructions](https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/levelledmobs-v4.0/installation)
 
 </td>
 
@@ -75,6 +75,6 @@ Remember to give these projects a star. :)
 
 ## Learn More at [✈️ HangarMC](https://hangar.papermc.io/ArcanePlugins/LevelledMobs) or [🚰 SpigotMC](https://www.spigotmc.org/resources/levelledmobs.74304/)
 
-### Also see: [Server Compatibility](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities) • [Installation Instructions](https://github.com/lokka30/LevelledMobs/wiki/Installation)
+### Also see: [Server Compatibility](https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/levelledmobs-v4.0/installation#are-you-running-a-compatible-server-software) • [Installation Instructions](https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/levelledmobs-v4.0/installation)
 
 </td>
