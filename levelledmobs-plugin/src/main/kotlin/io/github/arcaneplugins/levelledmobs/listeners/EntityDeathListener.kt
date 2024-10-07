@@ -45,12 +45,8 @@ class EntityDeathListener : Listener {
             damageMappings.remove(event.entity.uniqueId)
         }
 
-        if (event.entity is Player) {
-            return
-        }
-        if (bypassEntity.contains(event.entityType)) {
-            return
-        }
+        if (event.entity is Player) return
+        if (bypassEntity.contains(event.entityType)) return
 
         val main = LevelledMobs.instance
         val killer = damagingPlayer ?: event.entity.killer
@@ -64,9 +60,7 @@ class EntityDeathListener : Listener {
         lmEntity.associatedPlayer = killer
         val damage = lmEntity.livingEntity.lastDamageCause
 
-        if (damage != null) {
-            lmEntity.deathCause = damage.cause
-        }
+        if (damage != null) lmEntity.deathCause = damage.cause
 
         if (killer != null && main.placeholderApiIntegration != null) {
             main.placeholderApiIntegration!!.putPlayerOrMobDeath(
@@ -89,12 +83,8 @@ class EntityDeathListener : Listener {
                     event.drops.clear()
                     disableXpDrops = true
                 }
-                if (opts.getDisableItemBoost()) {
-                    doNotMultiplyDrops = true
-                }
-                if (opts.getDisableXpDrops()) {
-                    doNotBoostXp = true
-                }
+                if (opts.getDisableItemBoost()) doNotMultiplyDrops = true
+                if (opts.getDisableXpDrops()) doNotBoostXp = true
             }
         }
 
@@ -120,12 +110,11 @@ class EntityDeathListener : Listener {
             main.levelManager.setLevelledItemDrops(lmEntity, event.drops, doNotMultiplyDrops)
 
             // Set levelled exp drops
-            if (disableXpDrops) {
+            if (disableXpDrops)
                 event.droppedExp = 0
-            } else if (!doNotBoostXp) {
-                if (event.droppedExp > 0) {
+            else if (!doNotBoostXp) {
+                if (event.droppedExp > 0)
                     event.droppedExp = main.levelManager.getLevelledExpDrops(lmEntity, event.droppedExp.toDouble())
-                }
             }
         } else if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
             val drops = mutableListOf<ItemStack>()
@@ -133,9 +122,8 @@ class EntityDeathListener : Listener {
                 lmEntity,
                 drops, false
             )
-            if (result.hasOverride) {
+            if (result.hasOverride)
                 main.levelManager.removeVanillaDrops(lmEntity, event.drops)
-            }
 
             event.drops.addAll(drops)
         }

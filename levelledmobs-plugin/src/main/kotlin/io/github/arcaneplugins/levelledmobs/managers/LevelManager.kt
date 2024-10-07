@@ -289,24 +289,22 @@ class LevelManager : LevelInterface2 {
         lmEntity: LivingEntityWrapper,
         variableToUse: String
     ): PlayerLevelSourceResult {
-        if (player == null) {
-            return PlayerLevelSourceResult(1f)
-        }
+        if (player == null) return PlayerLevelSourceResult(1f)
 
         val origLevelSource: Float
         var homeNameUsed = "spawn"
 
-        if ("%level%".equals(variableToUse, ignoreCase = true)) {
+        if ("%level%".equals(variableToUse, ignoreCase = true))
             origLevelSource = player.level.toFloat()
-        } else if ("%exp%".equals(variableToUse, ignoreCase = true)) {
+        else if ("%exp%".equals(variableToUse, ignoreCase = true))
             origLevelSource = player.exp
-        } else if ("%exp-to-level%".equals(variableToUse, ignoreCase = true)) {
+        else if ("%exp-to-level%".equals(variableToUse, ignoreCase = true))
             origLevelSource = player.expToLevel.toFloat()
-        } else if ("%total-exp%".equals(variableToUse, ignoreCase = true)) {
+        else if ("%total-exp%".equals(variableToUse, ignoreCase = true))
             origLevelSource = player.totalExperience.toFloat()
-        } else if ("%world-time-ticks%".equals(variableToUse, ignoreCase = true)) {
+        else if ("%world-time-ticks%".equals(variableToUse, ignoreCase = true))
             origLevelSource = player.world.time.toFloat()
-        } else if ("%home-distance%".equals(variableToUse, ignoreCase = true)
+        else if ("%home-distance%".equals(variableToUse, ignoreCase = true)
             || "%home-distance-with-bed%".equals(variableToUse, ignoreCase = true)
         ) {
             val allowBed = "%home-distance-with-bed%".equals(variableToUse, ignoreCase = true)
@@ -314,26 +312,23 @@ class LevelManager : LevelInterface2 {
             val result = ExternalCompatibilityManager.getPlayerHomeLocation(
                 player, allowBed
             )
-            if (result.homeNameUsed != null) {
+            if (result.homeNameUsed != null)
                 homeNameUsed = result.homeNameUsed!!
-            }
 
             var useLocation = result.location
             if (useLocation == null || useLocation.world != player.world) {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(player)
                 useLocation = netherOrWorldSpawnResult.location
-                homeNameUsed = if (netherOrWorldSpawnResult.isWorldPortalLocation) {
+                homeNameUsed = if (netherOrWorldSpawnResult.isWorldPortalLocation)
                     "world-portal"
-                } else if (netherOrWorldSpawnResult.isNetherPortalLocation) {
+                else if (netherOrWorldSpawnResult.isNetherPortalLocation)
                     "nether-portal"
-                } else {
+                else
                     "spawn"
-                }
             }
 
-            if (result.resultMessage != null) {
+            if (result.resultMessage != null)
                 DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) { result.resultMessage }
-            }
 
             origLevelSource = useLocation!!.distance(player.location).toFloat()
         } else if ("%bed-distance%".equals(variableToUse, ignoreCase = true)) {
@@ -341,17 +336,14 @@ class LevelManager : LevelInterface2 {
             homeNameUsed = "bed"
 
             if (useLocation == null || useLocation.world !== player.world) {
-                val result: PlayerNetherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(
-                    player
-                )
+                val result = Utils.getPortalOrWorldSpawn(player)
                 useLocation = result.location
-                homeNameUsed = if (result.isWorldPortalLocation) {
+                homeNameUsed = if (result.isWorldPortalLocation)
                     "world-portal"
-                } else if (result.isNetherPortalLocation) {
+                else if (result.isNetherPortalLocation)
                     "nether-portal"
-                } else {
+                else
                     "spawn"
-                }
             }
 
             origLevelSource = useLocation!!.distance(player.location).toFloat()
@@ -369,9 +361,7 @@ class LevelManager : LevelInterface2 {
                     usePlayerLevel = true
                 }
             } else {
-                Log.war(
-                    "PlaceHolderAPI is not installed, unable to get variable $variableToUse"
-                )
+                Log.war("PlaceHolderAPI is not installed, unable to get variable $variableToUse" )
                 usePlayerLevel = true
             }
 
@@ -405,9 +395,8 @@ class LevelManager : LevelInterface2 {
 
         if (maxRandomVariance != null) {
             sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance.toInt() + 1).toFloat()
-            if (ThreadLocalRandom.current().nextBoolean()) {
+            if (ThreadLocalRandom.current().nextBoolean())
                 sourceResult.randomVarianceResult = sourceResult.randomVarianceResult!! * -1
-            }
         }
 
         sourceResult.homeNameUsed = homeNameUsed
@@ -419,7 +408,6 @@ class LevelManager : LevelInterface2 {
         // if called from summon command then lmEntity is null
 
         val main = LevelledMobs.instance
-        //if (lmInterface is LivingEntityWrapper) lmInterface.invalidateCache()
         var minLevel = main.rulesManager.getRuleMobMinLevel(lmInterface)
         var maxLevel = main.rulesManager.getRuleMobMaxLevel(lmInterface)
 
@@ -432,13 +420,14 @@ class LevelManager : LevelInterface2 {
     // This sets the levelled currentDrops on a levelled mob that just died.
     fun setLevelledItemDrops(
         lmEntity: LivingEntityWrapper,
-        currentDrops: MutableList<ItemStack>, disableItemBoost: Boolean
+        currentDrops: MutableList<ItemStack>,
+        disableItemBoost: Boolean
     ) {
         val vanillaDrops = currentDrops.size
         // this accomodates chested animals, saddles and armor on ridable creatures
-        val dropsToMultiply = getDropsToMultiply(lmEntity, currentDrops)
+        //val dropsToMultiply = getDropsToMultiply(lmEntity, currentDrops)
         val customDrops = mutableListOf<ItemStack>()
-        currentDrops.clear()
+        //currentDrops.clear()
 
         val main = LevelledMobs.instance
         val doNotMultiplyDrops = disableItemBoost ||
@@ -453,22 +442,18 @@ class LevelManager : LevelInterface2 {
             )
 
             val mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity)
-            if (mmInfo != null && mmInfo.preventOtherDrops) {
+            if (mmInfo != null && mmInfo.preventOtherDrops)
                 hasOverride = true
-            }
 
-            if (dropResult.hasOverride) {
-                hasOverride = true
-            }
+            if (dropResult.hasOverride) hasOverride = true
+            //if (hasOverride) removeVanillaDrops(lmEntity)
+            if (hasOverride) removeVanillaDrops(lmEntity, currentDrops)
 
-            if (hasOverride) {
-                removeVanillaDrops(lmEntity, dropsToMultiply)
-            }
         }
 
         var additionUsed = 0
 
-        if (!doNotMultiplyDrops && dropsToMultiply.isNotEmpty()) {
+        if (!doNotMultiplyDrops && currentDrops.isNotEmpty()) {
             // Get currentDrops added per level valu
             val additionValue = main.mobDataManager.getAdditionsForLevel(
                 lmEntity,
@@ -478,7 +463,7 @@ class LevelManager : LevelInterface2 {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
                     "removing any drops present"
                 }
-                currentDrops.clear()
+                removeVanillaDrops(lmEntity, currentDrops)
                 return
             }
 
@@ -487,11 +472,11 @@ class LevelManager : LevelInterface2 {
 
             if (lmEntity.livingEntity.equipment != null){
                 // make sure we don't multiply anything it has picked up
-                itemsToNotMultiply.addAll(removePickedUpItems(lmEntity, dropsToMultiply))
+                itemsToNotMultiply.addAll(removePickedUpItems(lmEntity, currentDrops))
             }
 
             // Modify current drops
-            for (currentDrop in dropsToMultiply) {
+            for (currentDrop in currentDrops) {
                 var skipItem = false
                 val iterator = itemsToNotMultiply.iterator()
                 while (iterator.hasNext()){
@@ -506,12 +491,8 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        if (customDrops.isNotEmpty()) {
-            currentDrops.addAll(customDrops)
-        }
-        if (dropsToMultiply.isNotEmpty()) {
-            currentDrops.addAll(dropsToMultiply)
-        }
+        if (customDrops.isNotEmpty()) currentDrops.addAll(customDrops)
+
         val nameWithOverride = if (hasOverride) " (override), " else ""
         val additionUsedFinal = additionUsed
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
@@ -530,57 +511,14 @@ class LevelManager : LevelInterface2 {
         }
 
         val oldAmount = currentDrop.amount
-        var useAmount = (currentDrop.amount + (currentDrop.amount.toFloat() * addition)).roundToInt()
-        if (useAmount > currentDrop.maxStackSize) {
-            useAmount = currentDrop.maxStackSize
-        }
+        val useAmount = ((currentDrop.amount + (currentDrop.amount.toFloat() * addition)).roundToInt())
+            .coerceAtMost(currentDrop.maxStackSize)
+
         currentDrop.amount = useAmount
         DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
             "&7Drop: &b${currentDrop.type}&7, old amount: &b$oldAmount&7, addition value: &b$addition&7, " +
                     "new amount: &b${currentDrop.amount}&7."
         }
-    }
-
-    private fun getDropsToMultiply(
-        lmEntity: LivingEntityWrapper,
-        drops: MutableList<ItemStack>
-    ): MutableList<ItemStack> {
-        val results = mutableListOf<ItemStack>()
-        results.addAll(drops)
-
-        // we only need to check for chested animals and 'vehicles' since they can have saddles and armor
-        // those items shouldn't get multiplied
-        if (lmEntity.livingEntity is ChestedHorse
-            && (lmEntity.livingEntity as ChestedHorse).isCarryingChest
-        ) {
-            val inv = (lmEntity.livingEntity as ChestedHorse).inventory
-            val chestItems = inv.contents
-            // look thru the animal's inventory for leather. That is the only item that will get duplicated
-            for (item in chestItems) {
-                if (item != null && item.type == Material.LEATHER) {
-                    return mutableListOf(item)
-                }
-            }
-
-            // if we made it here it didn't drop leather so don't return anything
-            results.clear()
-            return results
-        }
-
-        if (lmEntity.livingEntity !is Vehicle) {
-            return results
-        }
-
-        for (i in results.indices.reversed()) {
-            // remove horse armor or saddles
-            val item = results[i]
-            if (vehicleNoMultiplierItems.contains(item.type)) // saddle or horse armor
-            {
-                results.removeAt(i)
-            }
-        }
-
-        return results
     }
 
     private fun removePickedUpItems(
@@ -619,8 +557,10 @@ class LevelManager : LevelInterface2 {
             && (lmEntity.livingEntity as ChestedHorse).isCarryingChest
         ) {
             val inv = (lmEntity.livingEntity as ChestedHorse).inventory
-            inv.contents.plus(itemsToKeep)
             itemsToKeep.add(ItemStack(Material.CHEST))
+            for (item in inv.contents){
+                if (item != null) itemsToKeep.add(item)
+            }
         } else if (lmEntity.livingEntity is Vehicle) {
             for (itemStack in drops) {
                 if (itemStack.type == Material.SADDLE) {
@@ -631,23 +571,13 @@ class LevelManager : LevelInterface2 {
         }
 
         if (LevelledMobs.instance.ver.isRunningPaper) {
-            val pickedUpItems: List<ItemStack> = PickedUpEquipment(lmEntity).getMobPickedUpItems()
-
-            for (mobItem in drops) {
-                for (foundItem in pickedUpItems) {
-                    if (mobItem.isSimilar(foundItem)) {
-                        itemsToKeep.add(mobItem)
-                        break
-                    }
-                }
-            }
+            val pickedUpItems = PickedUpEquipment(lmEntity).getMobPickedUpItems()
+            itemsToKeep.addAll(pickedUpItems)
         }
 
         drops.clear()
         drops.addAll(itemsToKeep)
-        if (hadSaddle) {
-            drops.add(ItemStack(Material.SADDLE))
-        }
+        if (hadSaddle) drops.add(ItemStack(Material.SADDLE))
     }
 
     //Calculates the XP dropped when a levellable creature dies.
@@ -669,18 +599,16 @@ class LevelManager : LevelInterface2 {
                 return 0
             }
 
-            if (dropAddition > -1) {
-                newXp = Math.round(xp + (xp * dropAddition)).toDouble()
-            }
+            if (dropAddition > -1) newXp = Math.round(xp + (xp * dropAddition)).toDouble()
 
             val newXpFinal = newXp.toInt()
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
                 "xp-vanilla: &b$xp&7, new-xp: &b$newXpFinal&7"
             }
             return newXp.toInt()
-        } else {
-            return xp.toInt()
         }
+        else
+            return xp.toInt()
     }
 
     fun getNametag(
@@ -734,16 +662,14 @@ class LevelManager : LevelInterface2 {
             val useCustomNameForNametags = main.helperSettings.getBoolean(
                 "use-customname-for-mob-nametags"
             )
-            return if (useCustomNameForNametags) {
+            return if (useCustomNameForNametags)
                 NametagResult(lmEntity.typeName)
-            } else {
+            else {
                 @Suppress("DEPRECATION")
                 NametagResult(lmEntity.livingEntity.customName) // CustomName can be null, that is meant to be the case.
             }
         }
-        if (!lmEntity.isLevelled) {
-            nametag.text = ""
-        }
+        if (!lmEntity.isLevelled) nametag.text = ""
 
         return updateNametag(lmEntity, nametag, usePreserveMobName, customDeathMessage)
     }
@@ -786,9 +712,8 @@ class LevelManager : LevelInterface2 {
         nametag.replace("%health-indicator%", indicatorStr)
         nametag.replace("%health-indicator-color%", colorOnly)
 
-        if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
+        if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled)
             nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(lmEntity.associatedPlayer, nametag.text)
-        }
 
         val result = NametagResult(nametag.text)
         // this field is only used for sending nametags to client
@@ -1402,13 +1327,8 @@ class LevelManager : LevelInterface2 {
         ) {
             // mob is tamed with a level but the rules don't allow it, remove the level
             main.levelInterface.removeLevel(lmEntity)
-        } else if (lmEntity.livingEntity.isValid &&
-            !main.helperSettings.getBoolean(
-                "use-customname-for-mob-nametags",false
-            ) && location.world != null && location.world == lmEntity.world && lmEntity.location.distanceSquared(
-                location
-            ) <= maxDistance
-        ) {
+        } else if (lmEntity.livingEntity.isValid && location.world != null && location.world == lmEntity.world
+            && lmEntity.location.distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
             val nametag = main.levelManager.getNametag(lmEntity, isDeathNametag = false, preserveMobName = true)
             main.nametagQueueManager.addToQueue(
