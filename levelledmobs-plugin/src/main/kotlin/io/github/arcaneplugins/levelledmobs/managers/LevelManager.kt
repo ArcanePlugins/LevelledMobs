@@ -1062,7 +1062,7 @@ class LevelManager : LevelInterface2 {
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (LevelledMobs.instance.ver.isRunningFolia) {
-                val test = Runnable {
+                val runnable = Runnable {
                     if (asyncRunningCount.get() == 0) runNametagCheckASync()
                 }
 
@@ -1080,7 +1080,7 @@ class LevelManager : LevelInterface2 {
                         asyncRunningCount.getAndDecrement()
                         if (asyncRunningCount.get() == 0) runNametagCheckASync()
                     }
-                player.scheduler.run(LevelledMobs.instance, task, test)
+                player.scheduler.run(LevelledMobs.instance, task, runnable)
             } else {
                 val entities = player.getNearbyEntities(
                     checkDistance.toDouble(),
