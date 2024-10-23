@@ -325,7 +325,7 @@ class MobDataManager {
                             "'$formulaStr', result: '$multiplierValue'" }
             }
             else if (multiplier != null)
-                multiplierValue = multiplier.value
+                multiplierValue = multiplier.useValue
 
             attributeMax = when (addition) {
                 Addition.ATTRIBUTE_ARMOR_BONUS -> 30.0f
