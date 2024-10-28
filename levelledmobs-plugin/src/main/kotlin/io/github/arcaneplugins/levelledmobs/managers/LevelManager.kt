@@ -270,7 +270,7 @@ class LevelManager : LevelInterface2 {
             throw EvaluationException()
         }
 
-        val result = evalResult.result.roundToInt()
+        val result = floor(evalResult.result).toInt()
 
         DebugManager.log(DebugType.CONSTRUCT_LEVEL, lmEntity){
             val msg = if (formula == formulaPre)
