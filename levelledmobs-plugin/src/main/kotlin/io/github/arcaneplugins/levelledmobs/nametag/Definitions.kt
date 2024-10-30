@@ -9,6 +9,9 @@ import java.util.UUID
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -56,6 +59,7 @@ class Definitions{
     var clazzPaperAdventure: Class<*>? = null
         private set
     private var clazzEntityTypes: Class<*>? = null
+    var clazzEquipmentSlotGroup: Class<*>? = null
 
     // mythic mobs:
     private var clazzMMmobExecutor: Class<*>? = null
@@ -109,6 +113,8 @@ class Definitions{
         private set
     var methodDataWatcherItemValue: Method? = null
         private set
+    var methodAttributeValues: Method? = null
+        private set
 
     // mythic mobs:
     var methodMMgetActiveMob: Method? = null
@@ -122,6 +128,8 @@ class Definitions{
     var fieldConnection: Field? = null
         private set
     var fieldInt2ObjectMap: Field? = null
+        private set
+    var fieldEQuipmentSlotAny: Field? = null
         private set
 
     // mythic mobs:
@@ -145,6 +153,7 @@ class Definitions{
         private set
     var ctorPacket: Constructor<*>? = null
         private set
+    var ctorAttributeModifier: Constructor<*>? = null
 
     fun load(){
         ver = LevelledMobs.instance.ver
@@ -292,6 +301,12 @@ class Definitions{
         this.clazzEntityTypes = Class.forName(
             "net.minecraft.world.entity.EntityTypes"
         )
+
+        if (!ver.useOldEnums){
+            this.clazzEquipmentSlotGroup = Class.forName(
+                "org.bukkit.inventory.EquipmentSlotGroup"
+            )
+        }
 
         if (hasKiori) {
             try {
@@ -542,6 +557,11 @@ class Definitions{
             //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
             this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod("e")
         }
+
+        if (!ver.useOldEnums){
+            // static Attribute[] values()
+            methodAttributeValues = Attribute::class.java.getDeclaredMethod("values")
+        }
     }
 
     @Throws(NoSuchFieldException::class)
@@ -581,6 +601,9 @@ class Definitions{
             this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             fieldInt2ObjectMap!!.setAccessible(true)
         }
+
+        if (!ver.useOldEnums)
+            fieldEQuipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
     }
 
     @Throws(NoSuchMethodException::class)
@@ -605,6 +628,13 @@ class Definitions{
             // up to 1.19.2 use this one:
             this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
                 Int::class.javaPrimitiveType, clazzDataWatcher, Boolean::class.javaPrimitiveType
+            )
+        }
+
+        if (!ver.useOldEnums){
+            // AttributeModifier(attribute.key, additionValue.toDouble(), modifierOperation, EquipmentSlotGroup.ANY)
+            this.ctorAttributeModifier = AttributeModifier::class.java.getConstructor(
+                NamespacedKey::class.java, Double::class.java, AttributeModifier.Operation::class.java, clazzEquipmentSlotGroup
             )
         }
     }

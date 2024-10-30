@@ -556,8 +556,10 @@ class MainCompanion{
         // include interfaces: Animals, WaterMob
         passiveMobsGroup.addAll(mutableListOf(
             EntityType.IRON_GOLEM,
-            EntityType.SNOWMAN
         ))
+        val snowGolem = if (versionInfo.useOldEnums) EntityType.valueOf("SNOWMAN")
+            else EntityType.valueOf("SNOW_GOLEM")
+
 
         if (versionInfo.minorVersion >= 19) {
             passiveMobsGroup.addAll(Compat119.getPassiveMobs())

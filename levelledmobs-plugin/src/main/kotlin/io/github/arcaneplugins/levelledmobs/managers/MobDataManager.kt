@@ -75,7 +75,12 @@ class MobDataManager {
 
         fun populateAttributeCache(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
             val result = mutableMapOf<Attribute, AttributeInstance>()
-            val useList = whichOnes ?: Attribute.entries
+            @Suppress("UNCHECKED_CAST")
+            val useList: MutableList<Attribute> = whichOnes
+                ?: if (LevelledMobs.instance.ver.useOldEnums)
+                       Attribute.entries.toMutableList()
+                   else
+                        (LevelledMobs.instance.definitions.methodAttributeValues!!.invoke(null) as Array<Attribute>).toMutableList()
 
             for (attribute in useList){
                 val attribInstance = lmEntity.livingEntity.getAttribute(attribute)
@@ -168,12 +173,24 @@ class MobDataManager {
         else
             AttributeModifier.Operation.MULTIPLY_SCALAR_1
 
-        val mod = AttributeModifier(
-            attribute.name, additionValue.toDouble(), modifierOperation
-        )
+        @Suppress("removal", "DEPRECATION")
+        val mod: AttributeModifier = if (LevelledMobs.instance.ver.useOldEnums)
+            AttributeModifier(attribute.name, additionValue.toDouble(), modifierOperation)
+        else{
+            val equipmentSlotGroupANY = LevelledMobs.instance.definitions.fieldEQuipmentSlotAny!!.get(null)
+            LevelledMobs.instance.definitions.ctorAttributeModifier!!.newInstance(
+                attribute.key, additionValue.toDouble(), modifierOperation, equipmentSlotGroupANY
+            ) as AttributeModifier
+        }
 
         // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
-        if (attribute == Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+
+        // 1.21.3 renamed ZOMBIE_SPAWN_REINFORCEMENTS to SPAWN_REINFORCEMENTS
+        val spawnReinforcements =
+            if (LevelledMobs.instance.ver.useOldEnums) Attribute.ZOMBIE_SPAWN_REINFORCEMENTS.toString()
+            else Attribute.valueOf("SPAWN_REINFORCEMENTS")
+
+        if (attribute.toString() == spawnReinforcements
             && lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN
         ) {
             return null
@@ -196,15 +213,23 @@ class MobDataManager {
             val attrib = lmEntity.livingEntity.getAttribute(info.attribute) ?: return
 
             // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
-            if (info.attribute == Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+            // 1.21.3 renamed ZOMBIE_SPAWN_REINFORCEMENTS to SPAWN_REINFORCEMENTS
+            val spawnReinforcements = if (LevelledMobs.instance.ver.useOldEnums) Attribute.ZOMBIE_SPAWN_REINFORCEMENTS.toString()
+            else Attribute.valueOf("SPAWN_REINFORCEMENTS")
+
+            if (info.attribute.toString() == spawnReinforcements
                 && lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN
             ) {
                 return
             }
 
+            val genericMaxHealth =
+                if (LevelledMobs.instance.ver.useOldEnums) Attribute.GENERIC_MAX_HEALTH
+                else Attribute.valueOf("MAX_HEALTH")
             var hasExistingDamage = false
             var existingDamagePercent = 0f
-            if (info.attribute == Attribute.GENERIC_MAX_HEALTH){
+
+            if (info.attribute == genericMaxHealth){
                 val maxHealth = lmEntity.livingEntity.getAttribute(info.attribute)
                 if (maxHealth != null){
                     val existingDamage = maxHealth.value - lmEntity.livingEntity.health
@@ -219,12 +244,12 @@ class MobDataManager {
             attrib.addModifier(info.attributeModifier)
 
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "attrib: ${info.attribute.name}, base: ${Utils.round(attrib.baseValue, 3)}, " +
+                "attrib: ${info.attribute}, base: ${Utils.round(attrib.baseValue, 3)}, " +
                         "addtion: ${Utils.round(additionValue.toDouble(), 3)}"
             }
 
             // MAX_HEALTH specific: set health to max health
-            if (info.attribute == Attribute.GENERIC_MAX_HEALTH) {
+            if (info.attribute == genericMaxHealth) {
                 val newHealth = if (hasExistingDamage)
                     (attrib.value * existingDamagePercent).toFloat()
                 else

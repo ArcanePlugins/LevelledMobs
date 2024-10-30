@@ -137,20 +137,20 @@ class LevelManager : LevelInterface2 {
         this.forcedBlockedEntityTypes.addAll(
             mutableListOf(
                 EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW, EntityType.BOAT,
-                EntityType.DRAGON_FIREBALL, EntityType.DROPPED_ITEM, EntityType.EGG,
-                EntityType.ENDER_CRYSTAL,
-                EntityType.ENDER_PEARL, EntityType.ENDER_SIGNAL, EntityType.EXPERIENCE_ORB,
+                EntityType.DRAGON_FIREBALL, EntityType.ITEM_DISPLAY, EntityType.EGG,
+                EntityType.END_CRYSTAL,
+                EntityType.ENDER_PEARL, EntityType.EYE_OF_ENDER, EntityType.EXPERIENCE_ORB,
                 EntityType.FALLING_BLOCK,
-                EntityType.FIREBALL, EntityType.FIREWORK, EntityType.FISHING_HOOK,
-                EntityType.ITEM_FRAME, EntityType.LEASH_HITCH, EntityType.LIGHTNING,
+                EntityType.FIREBALL, EntityType.FIREWORK_ROCKET, EntityType.FISHING_BOBBER,
+                EntityType.ITEM_FRAME, EntityType.LEASH_KNOT, EntityType.LIGHTNING_BOLT,
                 EntityType.LLAMA_SPIT,
-                EntityType.MINECART, EntityType.MINECART_CHEST, EntityType.MINECART_COMMAND,
-                EntityType.MINECART_FURNACE,
-                EntityType.MINECART_HOPPER, EntityType.MINECART_MOB_SPAWNER, EntityType.MINECART_TNT,
+                EntityType.MINECART, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART,
+                EntityType.FURNACE_MINECART,
+                EntityType.HOPPER_MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART,
                 EntityType.PAINTING,
-                EntityType.PRIMED_TNT, EntityType.SMALL_FIREBALL, EntityType.SNOWBALL,
+                EntityType.TNT, EntityType.SMALL_FIREBALL, EntityType.SNOWBALL,
                 EntityType.SPECTRAL_ARROW,
-                EntityType.SPLASH_POTION, EntityType.THROWN_EXP_BOTTLE, EntityType.TRIDENT,
+                EntityType.POTION, EntityType.EXPERIENCE_BOTTLE, EntityType.TRIDENT,
                 EntityType.UNKNOWN,
                 EntityType.WITHER_SKULL, EntityType.SHULKER_BULLET, EntityType.PLAYER
             )
@@ -1435,7 +1435,7 @@ class LevelManager : LevelInterface2 {
                 Addition.ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH
                 Addition.ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE
                 Addition.ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED
-                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.HORSE_JUMP_STRENGTH
+                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.GENERIC_JUMP_STRENGTH
                 Addition.ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR
                 Addition.ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS
                 Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE

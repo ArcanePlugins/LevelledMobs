@@ -35,7 +35,7 @@ class EntityDeathListener : Listener {
 
     // These entity types will be forced not to be processed
     private val bypassEntity = mutableListOf(
-        EntityType.ARMOR_STAND,EntityType.ITEM_FRAME, EntityType.DROPPED_ITEM, EntityType.PAINTING)
+        EntityType.ARMOR_STAND,EntityType.ITEM_FRAME, EntityType.ITEM_DISPLAY, EntityType.PAINTING)
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     fun onDeath(event: EntityDeathEvent) {

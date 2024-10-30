@@ -30,6 +30,8 @@ class ServerVersionInfo {
     var minecraftVersion = 0.0
         private set
     private var isOneTwentyFiveOrNewer = false
+    var useOldEnums = false
+        private set
 
     // preliminary fabric support. not entirely there yet
     private var _isRunningFabric: Boolean? = null
@@ -45,11 +47,14 @@ class ServerVersionInfo {
         if (isRunningPaper)
             parsePaperVersion()
 
+        if (!isRunningPaper || !isOneTwentyFiveOrNewer)
+            parseBukkitVersion()
+
         isOneTwentyFiveOrNewer =
             minorVersion == 20 && revision >= 5 || minorVersion >= 21
 
-        if (!isRunningPaper || !isOneTwentyFiveOrNewer)
-            parseBukkitVersion()
+        // 1.21.3 changed various enums to interfaces
+        useOldEnums = minorVersion < 21 || minorVersion == 21 && revision < 3
     }
 
     private fun parsePaperVersion(){

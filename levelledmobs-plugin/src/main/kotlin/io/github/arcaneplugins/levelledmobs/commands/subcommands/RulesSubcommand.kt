@@ -531,7 +531,7 @@ object RulesSubcommand {
     private fun spawnParticles(location: Location, world: World) {
         try {
             for (i in 0..9) {
-                world.spawnParticle(Particle.SPELL, location, 20, 0.0, 0.0, 0.0, 0.1)
+                world.spawnParticle(Particle.EFFECT, location, 20, 0.0, 0.0, 0.0, 0.1)
                 Thread.sleep(50)
             }
         } catch (ignored: InterruptedException) {}
