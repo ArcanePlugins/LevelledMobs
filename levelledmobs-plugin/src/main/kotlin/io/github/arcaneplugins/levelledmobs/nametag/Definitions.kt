@@ -129,7 +129,7 @@ class Definitions{
         private set
     var fieldInt2ObjectMap: Field? = null
         private set
-    var fieldEQuipmentSlotAny: Field? = null
+    var fieldEquipmentSlotAny: Field? = null
         private set
 
     // mythic mobs:
@@ -603,7 +603,7 @@ class Definitions{
         }
 
         if (!ver.useOldEnums)
-            fieldEQuipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
+            fieldEquipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
     }
 
     @Throws(NoSuchMethodException::class)

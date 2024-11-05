@@ -177,7 +177,7 @@ class MobDataManager {
         val mod: AttributeModifier = if (LevelledMobs.instance.ver.useOldEnums)
             AttributeModifier(attribute.name, additionValue.toDouble(), modifierOperation)
         else{
-            val equipmentSlotGroupANY = LevelledMobs.instance.definitions.fieldEQuipmentSlotAny!!.get(null)
+            val equipmentSlotGroupANY = LevelledMobs.instance.definitions.fieldEquipmentSlotAny!!.get(null)
             LevelledMobs.instance.definitions.ctorAttributeModifier!!.newInstance(
                 attribute.key, additionValue.toDouble(), modifierOperation, equipmentSlotGroupANY
             ) as AttributeModifier

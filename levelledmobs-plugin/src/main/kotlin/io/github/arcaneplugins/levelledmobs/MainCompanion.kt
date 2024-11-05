@@ -434,27 +434,32 @@ class MainCompanion{
         }
     }
 
-    //Check for updates on the Spigot page.
+    // check for updates on the Hangar page.
     fun checkUpdates() {
         val main = LevelledMobs.instance
         if (main.helperSettings.getBoolean("use-update-checker", true)) {
-            val updateChecker = UpdateChecker(main, 74304)
+            val updateChecker = UpdateChecker(main, "LevelledMobs")
             try {
-                updateChecker.getLatestVersion { latestVersion: String ->
-                    val currentVersion =
-                        updateChecker.currentVersion.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[0]
+                updateChecker.getLatestVersion { latestVersionFull: String? ->
+                    val currentVersion = updateChecker.currentVersion.split(" ")[0]
                     val thisVersion: VersionInfo
-                    val spigotVersion: VersionInfo
+                    val hangarVersion: VersionInfo
                     var isOutOfDate: Boolean
                     var isNewerVersion: Boolean
 
+                    if (latestVersionFull == null){
+                        Log.war("Unable to retreive latest version, string was null")
+                        return@getLatestVersion
+                    }
+
+                    val latestVersion = latestVersionFull.split("-")[0]
+
                     try {
                         thisVersion = VersionInfo(currentVersion)
-                        spigotVersion = VersionInfo(latestVersion)
+                        hangarVersion = VersionInfo(latestVersion)
 
-                        isOutOfDate = (thisVersion < spigotVersion)
-                        isNewerVersion = (thisVersion > spigotVersion)
+                        isOutOfDate = (thisVersion < hangarVersion)
+                        isNewerVersion = (thisVersion > hangarVersion)
                     } catch (e: InvalidObjectException) {
                         Log.war("Got exception creating version objects: ${e.message}")
 
@@ -467,10 +472,10 @@ class MainCompanion{
                         )
 
                         updateResult = replaceAllInList(
-                            updateResult, "%currentVersion%", currentVersion
+                            updateResult, "%currentVersion%", updateChecker.currentVersion
                         )
                         updateResult = replaceAllInList(
-                            updateResult, "%latestVersion%", latestVersion
+                            updateResult, "%latestVersion%", latestVersionFull.replace("-", " ")
                         )
                         updateResult = colorizeAllInList(updateResult)
 
@@ -560,6 +565,7 @@ class MainCompanion{
         val snowGolem = if (versionInfo.useOldEnums) EntityType.valueOf("SNOWMAN")
             else EntityType.valueOf("SNOW_GOLEM")
 
+        passiveMobsGroup.add(snowGolem)
 
         if (versionInfo.minorVersion >= 19) {
             passiveMobsGroup.addAll(Compat119.getPassiveMobs())

@@ -136,7 +136,7 @@ class LevelManager : LevelInterface2 {
 
         this.forcedBlockedEntityTypes.addAll(
             mutableListOf(
-                EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW, EntityType.BOAT,
+                EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW,
                 EntityType.DRAGON_FIREBALL, EntityType.ITEM_DISPLAY, EntityType.EGG,
                 EntityType.END_CRYSTAL,
                 EntityType.ENDER_PEARL, EntityType.EYE_OF_ENDER, EntityType.EXPERIENCE_ORB,
