@@ -136,25 +136,71 @@ class LevelManager : LevelInterface2 {
 
         this.forcedBlockedEntityTypes.addAll(
             mutableListOf(
-                EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW,
-                EntityType.DRAGON_FIREBALL, EntityType.ITEM_DISPLAY, EntityType.EGG,
-                EntityType.END_CRYSTAL,
-                EntityType.ENDER_PEARL, EntityType.EYE_OF_ENDER, EntityType.EXPERIENCE_ORB,
+                EntityType.AREA_EFFECT_CLOUD,
+                EntityType.ARMOR_STAND,
+                EntityType.ARROW,
+                EntityType.DRAGON_FIREBALL,
+                EntityType.EGG,
+                mapLegacyEntityTypeName("ENDER_CRYSTAL"),
+                EntityType.ENDER_PEARL,
+                mapLegacyEntityTypeName("ENDER_SIGNAL"),
+                EntityType.EXPERIENCE_ORB,
                 EntityType.FALLING_BLOCK,
-                EntityType.FIREBALL, EntityType.FIREWORK_ROCKET, EntityType.FISHING_BOBBER,
-                EntityType.ITEM_FRAME, EntityType.LEASH_KNOT, EntityType.LIGHTNING_BOLT,
+                EntityType.FIREBALL,
+                mapLegacyEntityTypeName("FIREWORK"),
+                mapLegacyEntityTypeName("FISHING_HOOK"),
+                EntityType.ITEM_FRAME,
+                mapLegacyEntityTypeName("LEASH_HITCH"),
+                mapLegacyEntityTypeName("LIGHTNING"),
                 EntityType.LLAMA_SPIT,
-                EntityType.MINECART, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART,
-                EntityType.FURNACE_MINECART,
-                EntityType.HOPPER_MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART,
+                EntityType.MINECART,
+                mapLegacyEntityTypeName("MINECART_CHEST"),
+                mapLegacyEntityTypeName("MINECART_COMMAND"),
+                mapLegacyEntityTypeName("MINECART_FURNACE"),
+                mapLegacyEntityTypeName("MINECART_HOPPER"),
+                mapLegacyEntityTypeName("MINECART_MOB_SPAWNER"),
+                mapLegacyEntityTypeName("MINECART_TNT"),
                 EntityType.PAINTING,
-                EntityType.TNT, EntityType.SMALL_FIREBALL, EntityType.SNOWBALL,
+                mapLegacyEntityTypeName("PRIMED_TNT"),
+                EntityType.SMALL_FIREBALL,
+                EntityType.SNOWBALL,
                 EntityType.SPECTRAL_ARROW,
-                EntityType.POTION, EntityType.EXPERIENCE_BOTTLE, EntityType.TRIDENT,
+                mapLegacyEntityTypeName("SPLASH_POTION"),
+                mapLegacyEntityTypeName("THROWN_EXP_BOTTLE"),
+                EntityType.TRIDENT,
                 EntityType.UNKNOWN,
-                EntityType.WITHER_SKULL, EntityType.SHULKER_BULLET, EntityType.PLAYER
+                EntityType.WITHER_SKULL,
+                EntityType.SHULKER_BULLET,
+                EntityType.PLAYER
             )
         )
+    }
+
+    private fun mapLegacyEntityTypeName(
+        name: String
+    ): EntityType{
+        return if (LevelledMobs.instance.ver.minorVersion >= 21){
+            when (name){
+                "ENDER_CRYSTAL" -> EntityType.END_CRYSTAL
+                "ENDER_SIGNAL" -> EntityType.EYE_OF_ENDER
+                "FIREWORK" -> EntityType.FIREWORK_ROCKET
+                "FISHING_HOOK" -> EntityType.FISHING_BOBBER
+                "LEASH_HITCH" -> EntityType.LEASH_KNOT
+                "LIGHTNING" -> EntityType.LIGHTNING_BOLT
+                "MINECART_CHEST" -> EntityType.CHEST_MINECART
+                "MINECART_COMMAND" -> EntityType.COMMAND_BLOCK_MINECART
+                "MINECART_FURNACE" -> EntityType.FURNACE_MINECART
+                "MINECART_HOPPER" -> EntityType.HOPPER_MINECART
+                "MINECART_MOB_SPAWNER" -> EntityType.SPAWNER_MINECART
+                "MINECART_TNT" -> EntityType.TNT_MINECART
+                "PRIMED_TNT" -> EntityType.TNT
+                "SPLASH_POTION" -> EntityType.POTION
+                "THROWN_EXP_BOTTLE" -> EntityType.EXPERIENCE_BOTTLE
+                else -> EntityType.UNKNOWN
+            }
+        }
+        else
+            EntityType.valueOf(name)
     }
 
     /**
@@ -1976,7 +2022,7 @@ class LevelManager : LevelInterface2 {
 
         if (lmEntity.livingEntity is Zombie)
             attribs.add(Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS)
-        else if (lmEntity.livingEntity is Horse)
+        else if (main.ver.minorVersion >= 20 && lmEntity.livingEntity is Horse)
             attribs.add(Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH)
 
         main.levelManager.applyLevelledAttributes(lmEntity, attribs, nbtDatas)

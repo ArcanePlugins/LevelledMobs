@@ -15,12 +15,17 @@ import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResul
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import org.bukkit.Chunk
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.NamespacedKey
+import org.bukkit.Registry
 import org.bukkit.World
 import org.bukkit.block.Biome
 import org.bukkit.command.CommandSender
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -591,5 +596,30 @@ object Utils {
         }
 
         return results
+    }
+
+    fun getEnchantment(
+        enchantName: String
+    ): Enchantment?{
+        val enchantment: Enchantment?
+        val ver = LevelledMobs.instance.ver
+
+        if (ver.isRunningPaper && ver.minorVersion >= 21){
+            val registry = RegistryAccess.registryAccess().getRegistry(
+                RegistryKey.ENCHANTMENT
+            )
+            enchantment = registry.get(
+                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
+            )
+        }
+        else{
+            // legacy versions < 1.21
+            @Suppress("DEPRECATION")
+            enchantment = Registry.ENCHANTMENT.get(
+                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
+            )
+        }
+
+        return enchantment
     }
 }

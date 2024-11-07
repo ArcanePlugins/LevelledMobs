@@ -28,6 +28,8 @@ import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.Registry
@@ -351,7 +353,21 @@ class RulesParser {
                                 if (input.isEmpty()) continue
                                 val namespace = if (input.size == 1) NamespacedKey.MINECRAFT_NAMESPACE else input[0]
                                 val key = if (input.size == 1) input[0].lowercase() else input[1].lowercase()
-                                val structure = Registry.STRUCTURE.get(NamespacedKey(namespace, key))
+                                val structure: Structure?
+
+                                if (LevelledMobs.instance.ver.isRunningPaper && LevelledMobs.instance.ver.minorVersion >= 21){
+                                    val registry = RegistryAccess.registryAccess().getRegistry(
+                                        RegistryKey.STRUCTURE
+                                    )
+                                    structure = registry.get(
+                                        NamespacedKey.minecraft(key.lowercase(Locale.getDefault()))
+                                    )
+                                }
+                                else{
+                                    // legacy versions < 1.21
+                                    @Suppress("DEPRECATION")
+                                    structure = Registry.STRUCTURE.get(NamespacedKey(namespace, key))
+                                }
 
                                 if (structure == null)
                                     Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
