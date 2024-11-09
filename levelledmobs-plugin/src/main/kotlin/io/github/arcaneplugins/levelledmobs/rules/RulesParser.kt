@@ -28,6 +28,8 @@ import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.Registry
@@ -351,7 +353,21 @@ class RulesParser {
                                 if (input.isEmpty()) continue
                                 val namespace = if (input.size == 1) NamespacedKey.MINECRAFT_NAMESPACE else input[0]
                                 val key = if (input.size == 1) input[0].lowercase() else input[1].lowercase()
-                                val structure = Registry.STRUCTURE.get(NamespacedKey(namespace, key))
+                                val structure: Structure?
+
+                                if (LevelledMobs.instance.ver.isRunningPaper && LevelledMobs.instance.ver.minorVersion >= 21){
+                                    val registry = RegistryAccess.registryAccess().getRegistry(
+                                        RegistryKey.STRUCTURE
+                                    )
+                                    structure = registry.get(
+                                        NamespacedKey.minecraft(key.lowercase(Locale.getDefault()))
+                                    )
+                                }
+                                else{
+                                    // legacy versions < 1.21
+                                    @Suppress("DEPRECATION")
+                                    structure = Registry.STRUCTURE.get(NamespacedKey(namespace, key))
+                                }
 
                                 if (structure == null)
                                     Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
@@ -1526,10 +1542,11 @@ class RulesParser {
         if (values == null) {
             val formula = YmlParsingHelper.getString(cs, item)
             val value = YmlParsingHelper.getFloat2(cs, item, null)
+
             return if (value != null)
                 Multiplier(addition, false, value, null, false)
             else if (formula != null)
-                Multiplier(addition, false, 0f, formula, true)
+                Multiplier(addition, false, null, formula, true)
             else
                 null
         }
@@ -1544,9 +1561,18 @@ class RulesParser {
             if (count > 2) break
 
             when (obj) {
-                is Float -> { value = obj }
-                is Double -> { value = obj.toFloat() }
-                is Int -> { value = obj.toFloat() }
+                is Float -> {
+                    value = obj
+                    customFormula = null
+                }
+                is Double -> {
+                    value = obj.toFloat()
+                    customFormula = null
+                }
+                is Int -> {
+                    value = obj.toFloat()
+                    customFormula = null
+                }
                 is String -> {
                     if ("formula".equals(obj, ignoreCase = true) ||
                         "formula_add".equals(obj, ignoreCase = true)){
@@ -1558,14 +1584,14 @@ class RulesParser {
                         isAddition = false
                         useStacked = false
                     }
-                    else if ("stacked".equals(obj, ignoreCase = true)) {
+                    else if ("stacked".equals(obj, ignoreCase = true))
                         useStacked = true
-                    } else if (isDouble(obj)) {
+                    else if (isDouble(obj))
                         value = obj.toFloat()
-                    }
+
 
                     valueStr = obj
-                    customFormula = obj
+                    if (useStacked) customFormula = null
                 }
             }
 

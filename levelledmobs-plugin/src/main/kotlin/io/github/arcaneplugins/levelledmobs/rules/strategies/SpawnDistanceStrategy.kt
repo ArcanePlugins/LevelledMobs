@@ -4,10 +4,9 @@ import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Location
-import kotlin.math.ceil
-import kotlin.math.floor
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -170,12 +169,10 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             result = 0f
         }
 
-        result =
-            if (result < 0f) ceil(result) + spawnDistanceLevelAssignment else floor(result) + spawnDistanceLevelAssignment
-        val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(
-            lmEntity
-        )
-        if (variance != null && variance > 0f) {
+        result += spawnDistanceLevelAssignment
+        val variance = RulesManager.instance.getRuleMaxRandomVariance(lmEntity)
+
+        if (variance != null && variance > 0) {
             result += ThreadLocalRandom.current().nextInt(0, variance + 1).toFloat()
         }
 

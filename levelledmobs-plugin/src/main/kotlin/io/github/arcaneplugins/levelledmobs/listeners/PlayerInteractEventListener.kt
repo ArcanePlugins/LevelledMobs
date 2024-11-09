@@ -43,26 +43,21 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-        if (event.action != Action.RIGHT_CLICK_BLOCK) {
+        if (event.action != Action.RIGHT_CLICK_BLOCK)
             return
-        }
 
         commandSender = event.player
         messageLabel = "lm"
 
         if (event.material.name.lowercase(Locale.getDefault()).endsWith("_spawn_egg")) {
-            if (processLMSpawnEgg(event)) {
-                return
-            }
+            if (processLMSpawnEgg(event)) return
         }
 
         val main = LevelledMobs.instance
-        if (main.mainCompanion.spawnerInfoIds.isEmpty() && main.mainCompanion.spawnerCopyIds.isEmpty()) {
+        if (main.mainCompanion.spawnerInfoIds.isEmpty() && main.mainCompanion.spawnerCopyIds.isEmpty())
             return
-        }
-        if (event.hand == null || event.hand != EquipmentSlot.HAND) {
-            return
-        }
+
+        if (event.hand == null || event.hand != EquipmentSlot.HAND) return
 
         val doShowInfo: Boolean = main.mainCompanion.spawnerInfoIds.contains(
             event.player.uniqueId
@@ -71,44 +66,35 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
             event.player.uniqueId
         )
 
-        if (!doCopy && !doShowInfo) {
-            return
-        }
+        if (!doCopy && !doShowInfo) return
+
 
         if (event.clickedBlock == null
             || event.clickedBlock!!.type != Material.SPAWNER
-        ) {
-            return
-        }
+        ) return
 
         val uuid = event.player.uniqueId
         val point = Point(event.clickedBlock!!.location)
         if (cooldownMap.containsKey(uuid)) {
             if (cooldownMap[uuid]!!.doesCooldownBelongToIdentifier(point.toString())) {
-                if (!cooldownMap[uuid]!!.hasCooldownExpired(2)) {
-                    return
-                }
+                if (!cooldownMap[uuid]!!.hasCooldownExpired(2)) return
             }
             cooldownMap.remove(uuid)
         }
         cooldownMap[uuid] = Cooldown(System.currentTimeMillis(), point.toString())
 
         val cs = event.clickedBlock!!.state as CreatureSpawner
-        if (doShowInfo) {
+        if (doShowInfo)
             showInfo(event.player, cs)
-        } else if (event.material == Material.AIR) {
+        else if (event.material == Material.AIR)
             copySpawner(event.player, cs)
-        }
     }
 
     private fun processLMSpawnEgg(event: PlayerInteractEvent): Boolean {
         val main = LevelledMobs.instance
-        if (!main.ver.isRunningPaper) {
-            return false
-        }
-        if (event.item == null) {
-            return false
-        }
+        if (!main.ver.isRunningPaper) return false
+        if (event.item == null) return false
+
         val meta = event.item!!.itemMeta ?: return false
         if (event.clickedBlock == null) {
             return false
@@ -174,9 +160,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
                 .get(NamespacedKeys.keySpawnerCustomName, PersistentDataType.STRING)
         }
 
-        if (eggName.isNullOrEmpty()) {
-            eggName = "LM Spawn Egg"
-        }
+        if (eggName.isNullOrEmpty()) eggName = "LM Spawn Egg"
 
         if (event.clickedBlock!!.blockData.material == Material.SPAWNER) {
             val info = CustomSpawnerInfo()
@@ -203,9 +187,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
 
         val entity = location.world
             .spawnEntity(location, spawnType, CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
-        if (entity !is LivingEntity) {
+        if (entity !is LivingEntity)
             return true
-        }
 
         val lmEntity = LivingEntityWrapper.getInstance(entity)
 
@@ -245,9 +228,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         event: PlayerInteractEvent,
         info: CustomSpawnerInfo
     ) {
-        if (event.clickedBlock == null) {
-            return
-        }
+        if (event.clickedBlock == null) return
 
         if (!event.player.hasPermission("levelledmobs.convert-spawner")) {
             showMessage("command.levelledmobs.spawner.permission-denied")
@@ -281,9 +262,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         cs.spawnedType = info.spawnType
         cs.update()
 
-        if (info.customName.isNullOrEmpty()) {
+        if (info.customName.isNullOrEmpty())
             info.customName = "LM Spawner"
-        }
 
         if (!wasLMSpawner) {
             showMessage(
@@ -303,11 +283,10 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         pdc: PersistentDataContainer,
         value: String?
     ) {
-        if (!value.isNullOrEmpty()) {
+        if (!value.isNullOrEmpty())
             pdc.set(key, PersistentDataType.STRING, value)
-        } else if (pdc.has(key, PersistentDataType.STRING)) {
+        else if (pdc.has(key, PersistentDataType.STRING))
             pdc.remove(key)
-        }
     }
 
     private fun copySpawner(player: Player, cs: CreatureSpawner) {
@@ -337,22 +316,18 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
                 NamespacedKeys.keySpawnerMinLevel,
                 PersistentDataType.INTEGER
             )
-            if (minLevel != null) {
-                info.minLevel = minLevel
-            }
+            if (minLevel != null) info.minLevel = minLevel
         }
         if (pdc.has(NamespacedKeys.keySpawnerMaxLevel, PersistentDataType.INTEGER)) {
             val maxLevel = pdc.get(
                 NamespacedKeys.keySpawnerMaxLevel,
                 PersistentDataType.INTEGER
             )
-            if (maxLevel != null) {
+            if (maxLevel != null)
                 info.maxLevel = maxLevel
-            }
         }
-        if (pdc.has(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING)) {
+        if (pdc.has(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING))
             info.lore = pdc.get(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING)
-        }
 
         info.spawnType = cs.spawnedType!!
         info.minSpawnDelay = cs.minSpawnDelay
@@ -417,17 +392,14 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         pdc: PersistentDataContainer,
         sb: StringBuilder
     ) {
-        if (!pdc.has(key, PersistentDataType.INTEGER)) {
-            return
-        }
+        if (!pdc.has(key, PersistentDataType.INTEGER)) return
 
-        if (sb.substring(sb.length - 1) != "\n") {
+        if (sb.substring(sb.length - 1) != "\n")
             sb.append(", ")
-        }
 
         sb.append("&7").append(name).append(": &b")
-        sb.append(pdc.get(key, PersistentDataType.INTEGER))
-        sb.append("&r")
+            .append(pdc.get(key, PersistentDataType.INTEGER)!!)
+            .append("&r")
     }
 
     private fun addSpawnerAttributeFromPdcStr(
@@ -435,16 +407,14 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         pdc: PersistentDataContainer,
         sb: StringBuilder
     ) {
-        if (!pdc.has(key, PersistentDataType.STRING)) {
+        if (!pdc.has(key, PersistentDataType.STRING))
             return
-        }
 
-        if (sb.substring(sb.length - 1) != "\n") {
+        if (sb.substring(sb.length - 1) != "\n")
             sb.append(", ")
-        }
 
         sb.append("&7custom drop id: &b")
-        sb.append(pdc.get(key, PersistentDataType.STRING)).append("&r")
+            .append(pdc.get(key, PersistentDataType.STRING)).append("&r")
     }
 
     private fun addSpawnerAttribute(
@@ -452,9 +422,9 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         value: Any,
         sb: StringBuilder
     ) {
-        if (sb.substring(sb.length - 1) != "\n") {
+        if (sb.substring(sb.length - 1) != "\n")
             sb.append(", ")
-        }
+
         sb.append("&7").append(name).append(": &b").append(value).append("&r")
     }
 }

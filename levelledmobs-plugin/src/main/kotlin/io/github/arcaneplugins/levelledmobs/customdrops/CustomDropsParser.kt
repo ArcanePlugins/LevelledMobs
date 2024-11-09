@@ -22,8 +22,6 @@ import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.Registry
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
@@ -708,17 +706,15 @@ class CustomDropsParser(
             if (value is LinkedHashMap<*, *>) {
                 // contains enchantment chances
 
-                val en = Registry.ENCHANTMENT.get(
-                    NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
-                )
+                val enchantment = Utils.getEnchantment(enchantName)
 
-                if (en == null) {
+                if (enchantment == null) {
                     hadError("Invalid enchantment: $enchantName")
                     continue
                 }
 
                 val enchantments = value as MutableMap<Any, Any>
-                parseEnchantmentChances(en, enchantments, item)
+                parseEnchantmentChances(enchantment, enchantments, item)
                 continue
             }
 
@@ -726,18 +722,17 @@ class CustomDropsParser(
             if (value != null && Utils.isInteger(value.toString()))
                 enchantLevel = value.toString().toInt()
 
-            val en = Registry.ENCHANTMENT.get(
-                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
-            )
-            if (en != null) {
+            val enchantment = Utils.getEnchantment(enchantName)
+
+            if (enchantment != null) {
                 if (item.material == Material.ENCHANTED_BOOK) {
                     val meta = item.itemStack
                         ?.itemMeta as EnchantmentStorageMeta
-                    meta.addStoredEnchant(en, enchantLevel, true)
+                    meta.addStoredEnchant(enchantment, enchantLevel, true)
                     item.itemStack!!.setItemMeta(meta)
                 }
                 else
-                    item.itemStack!!.addUnsafeEnchantment(en, enchantLevel)
+                    item.itemStack!!.addUnsafeEnchantment(enchantment, enchantLevel)
             }
             else
                 hadError("Invalid enchantment: $enchantName")
@@ -1205,15 +1200,17 @@ class CustomDropsParser(
             sb.append(enchantmentLevels)
         }
 
+        // enchantment info here
         if (item.itemStack != null) {
-            val meta = item.itemStack!!.itemMeta
+            val itemStack = item.itemStack!!
+            val meta = itemStack.itemMeta
             val sb2 = StringBuilder()
             if (meta != null) {
                 for (enchant in meta.enchants.keys) {
                     if (sb2.isNotEmpty()) sb2.append(", ")
 
                     sb2.append(
-                        "&b${enchant.key.key}&r (${item.itemStack!!.itemMeta.enchants[enchant]})", enchant.key.key
+                        "&b${enchant.key.key}&r (${itemStack.itemMeta.enchants[enchant]})"
                     )
                 }
             }

@@ -9,6 +9,9 @@ import java.util.UUID
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -56,6 +59,7 @@ class Definitions{
     var clazzPaperAdventure: Class<*>? = null
         private set
     private var clazzEntityTypes: Class<*>? = null
+    var clazzEquipmentSlotGroup: Class<*>? = null
 
     // mythic mobs:
     private var clazzMMmobExecutor: Class<*>? = null
@@ -109,6 +113,8 @@ class Definitions{
         private set
     var methodDataWatcherItemValue: Method? = null
         private set
+    var methodAttributeValues: Method? = null
+        private set
 
     // mythic mobs:
     var methodMMgetActiveMob: Method? = null
@@ -122,6 +128,8 @@ class Definitions{
     var fieldConnection: Field? = null
         private set
     var fieldInt2ObjectMap: Field? = null
+        private set
+    var fieldEquipmentSlotAny: Field? = null
         private set
 
     // mythic mobs:
@@ -145,6 +153,7 @@ class Definitions{
         private set
     var ctorPacket: Constructor<*>? = null
         private set
+    var ctorAttributeModifier: Constructor<*>? = null
 
     fun load(){
         ver = LevelledMobs.instance.ver
@@ -184,7 +193,7 @@ class Definitions{
         // if running folia only use simple name if the version is 1.21+
 
         val useSimpleName = (ver.isRunningPaper && isOneTwentyFiveOrNewer || ver.isRunningFabric) &&
-                (!ver.isRunningFolia || ver.minorVersion >= 21)
+                (!ver.isRunningFolia || ver.minorVersion >= 22)
 
         return if (useSimpleName) {
             "org.bukkit.craftbukkit.$classSuffix"
@@ -293,6 +302,12 @@ class Definitions{
             "net.minecraft.world.entity.EntityTypes"
         )
 
+        if (!ver.useOldEnums){
+            this.clazzEquipmentSlotGroup = Class.forName(
+                "org.bukkit.inventory.EquipmentSlotGroup"
+            )
+        }
+
         if (hasKiori) {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage")
@@ -319,7 +334,7 @@ class Definitions{
         //     net.minecraft.network.chat.MutableComponent empty()
 
         val methodName = if (ver.minecraftVersion >= 1.20) {
-            if (ver.revision >= 3) // 1.20.3+ or 1.20.0 - 2
+            if (ver.revision >= 3 || ver.minorVersion >= 21 && ver.revision >= 2) // 1.20.3+, 1.20.0 - 2 or 1.21.2+
                 "i" else "h"
         } else {
             // 1.19.0 = g, 1.19.1+ = h
@@ -368,7 +383,10 @@ class Definitions{
 
         methodName = when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                "ar"
+                if (ver.revision >= 2)
+                    "au"
+                else
+                    "ar"
             }
             MinecraftMajorVersion.V1_20 -> {
                 if (ver.revision >= 5) {
@@ -415,7 +433,10 @@ class Definitions{
         //   int getId() ->
         when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                methodName = "an"
+                methodName = if (ver.revision >= 2)
+                    "ar"
+                else
+                    "an"
             }
             MinecraftMajorVersion.V1_20 -> {
                 methodName =
@@ -536,6 +557,11 @@ class Definitions{
             //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
             this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod("e")
         }
+
+        if (!ver.useOldEnums){
+            // static Attribute[] values()
+            methodAttributeValues = Attribute::class.java.getDeclaredMethod("values")
+        }
     }
 
     @Throws(NoSuchFieldException::class)
@@ -549,7 +575,17 @@ class Definitions{
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
-        val fieldName = if (ver.minorVersion >= 20) "c" else "b"
+        val fieldName = when (ver.majorVersionEnum) {
+            MinecraftMajorVersion.V1_21 -> {
+                if (ver.revision >= 2)
+                    "f"
+                else
+                    "c"
+            }
+            MinecraftMajorVersion.V1_20 -> "c"
+            else -> /* 1.19 */ "b"
+        }
+
         this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
         if (ver.minorVersion >= 19) {
@@ -565,6 +601,9 @@ class Definitions{
             this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             fieldInt2ObjectMap!!.setAccessible(true)
         }
+
+        if (!ver.useOldEnums)
+            fieldEquipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
     }
 
     @Throws(NoSuchMethodException::class)
@@ -589,6 +628,13 @@ class Definitions{
             // up to 1.19.2 use this one:
             this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
                 Int::class.javaPrimitiveType, clazzDataWatcher, Boolean::class.javaPrimitiveType
+            )
+        }
+
+        if (!ver.useOldEnums){
+            // AttributeModifier(attribute.key, additionValue.toDouble(), modifierOperation, EquipmentSlotGroup.ANY)
+            this.ctorAttributeModifier = AttributeModifier::class.java.getConstructor(
+                NamespacedKey::class.java, Double::class.java, AttributeModifier.Operation::class.java, clazzEquipmentSlotGroup
             )
         }
     }

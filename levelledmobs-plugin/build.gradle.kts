@@ -28,7 +28,7 @@ idea {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.20")
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.1.0") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
@@ -50,6 +50,7 @@ repositories {
     gradlePluginPortal()
     mavenCentral()
     mavenLocal()
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.md-5.net/content/groups/public/")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.essentialsx.net/releases/")

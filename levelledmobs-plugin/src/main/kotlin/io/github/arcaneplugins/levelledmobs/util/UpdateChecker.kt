@@ -1,11 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.util
 
-import java.io.IOException
 import java.io.InputStream
-import java.net.URL
 import java.util.Scanner
 import java.util.function.Consumer
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import java.io.FileNotFoundException
+import java.net.URI
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -13,11 +13,11 @@ import org.bukkit.plugin.java.JavaPlugin
  *
  * @author lokka30
  * @see UpdateChecker#getLatestVersion(Consumer)
- * @since unknown
+ * @since 1.9
  */
 class UpdateChecker(
     private var plugin: JavaPlugin,
-    private var resourceId: Int
+    private var resourceName: String
 ) {
 
     /**
@@ -27,20 +27,26 @@ class UpdateChecker(
      * @since unknown
      */
     fun getLatestVersion(
-        consumer: Consumer<String>
+        consumer: Consumer<String?>
     ) {
         val scheduler = SchedulerWrapper { checkVersion(consumer) }
         scheduler.run()
     }
 
     private fun checkVersion(
-        consumer: Consumer<String>
+        consumer: Consumer<String?>
     ) {
         val inputStream: InputStream
         try {
-            inputStream = URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream()
-        } catch (e: IOException) {
-            e.printStackTrace()
+            inputStream = URI ("https://hangar.papermc.io/api/v1/projects/$resourceName/latest?channel=Release")
+                .toURL().openStream()
+        }
+        catch (e: FileNotFoundException) {
+            Log.war("Error checking for latest version, file not found: ${e.message}")
+            return
+        }
+        catch (e: Exception) {
+            Log.war("Error checking for latest version. ${e.message}")
             return
         }
 

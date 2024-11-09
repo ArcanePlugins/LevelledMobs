@@ -3,8 +3,6 @@ package io.github.arcaneplugins.levelledmobs.rules.strategies
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import kotlin.math.ceil
-import kotlin.math.floor
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -56,12 +54,12 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         minLevel: Int,
         maxLevel: Int
     ): Float {
-        var mobYLocation = lmEntity.livingEntity.location.blockY
-        val yStart = if (this.startingYLevel == null) 0 else startingYLevel!!
-        val yEnd = if (this.endingYLevel == null) 0 else endingYLevel!!
-        val yPeriod = if (this.yPeriod == null) 0.0 else yPeriod!!.toDouble()
+        var mobYLocation = lmEntity.livingEntity.location.blockY.toFloat()
+        val yStart = if (this.startingYLevel == null) 0f else startingYLevel!!.toFloat()
+        val yEnd = if (this.endingYLevel == null) 0f else endingYLevel!!.toFloat()
+        val yPeriod = if (this.yPeriod == null) 0f else yPeriod!!.toFloat()
         val useLevel: Float
-        val diff = (yEnd - yStart).toDouble()
+        val diff = yEnd - yStart
         val isDecending = (yStart > yEnd)
 
         // make sure the mob location isn't past the end or start
@@ -70,15 +68,13 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         else if (!isDecending && mobYLocation > yEnd)
             mobYLocation = yStart
 
-        if (yPeriod != 0.0) {
+        if (yPeriod != 0f) {
             val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)
-            useLevel = floor(
-                minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
-            ).toFloat()
+            useLevel = minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
         } else {
             val useMobYLocation = (mobYLocation - yStart).toDouble()
-            val percent = useMobYLocation / diff
-            useLevel = minLevel + ceil((maxLevel - minLevel) * percent).toFloat()
+            val percent = (useMobYLocation / diff).toFloat()
+            useLevel = minLevel + (maxLevel - minLevel) * percent
         }
 
         return useLevel

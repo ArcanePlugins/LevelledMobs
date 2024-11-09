@@ -88,12 +88,15 @@ class FineTuningAttributes : MergableRule, Cloneable {
     data class Multiplier(
         val addition: Addition,
         val useStacked: Boolean,
-        val value: Float,
+        val value: Float?,
         val formula: String?,
         val isAddition: Boolean
     ) {
         val hasFormula: Boolean
             get() = !this.formula.isNullOrEmpty()
+
+        val useValue: Float
+            get() = value ?: 0f
 
         override fun toString(): String {
             val sb = StringBuilder()
@@ -108,9 +111,14 @@ class FineTuningAttributes : MergableRule, Cloneable {
                     sb.append(" (multiply)")
             }
             else{
-                if (useStacked) sb.append(" (stkd): ")
-                else sb.append(": ")
-                sb.append(value)
+                if (value != null){
+                    if (useStacked) sb.append(" (stkd): ")
+                    else sb.append(": ")
+                    sb.append(value)
+                }
+                else{
+                    if (useStacked) sb.append(" (stkd)")
+                }
             }
 
             return sb.toString()
@@ -153,7 +161,8 @@ class FineTuningAttributes : MergableRule, Cloneable {
             if (sb.isNotEmpty()) sb.append(", ")
 
             sb.append(getShortName(multiplier.addition))
-            sb.append(": ").append(multiplier.value)
+            if (multiplier.value != null)
+                sb.append(": ").append(multiplier.value)
             if (multiplier.hasFormula){
                 sb.append(multiplier.formula)
             }
