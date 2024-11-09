@@ -2022,7 +2022,7 @@ class LevelManager : LevelInterface2 {
 
         if (lmEntity.livingEntity is Zombie)
             attribs.add(Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS)
-        else if (main.ver.minorVersion >= 20 && lmEntity.livingEntity is Horse)
+        else if (main.ver.useHorseJumpAttrib && lmEntity.livingEntity is Horse)
             attribs.add(Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH)
 
         main.levelManager.applyLevelledAttributes(lmEntity, attribs, nbtDatas)
