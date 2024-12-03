@@ -1481,7 +1481,12 @@ class LevelManager : LevelInterface2 {
                 Addition.ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH
                 Addition.ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE
                 Addition.ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED
-                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.GENERIC_JUMP_STRENGTH
+                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> {
+                    attribute = if (LevelledMobs.instance.ver.useNewHorseJumpAttrib)
+                        Attribute.GENERIC_JUMP_STRENGTH
+                    else
+                        Attribute.valueOf("HORSE_JUMP_STRENGTH")
+                }
                 Addition.ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR
                 Addition.ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS
                 Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE
@@ -2022,7 +2027,7 @@ class LevelManager : LevelInterface2 {
 
         if (lmEntity.livingEntity is Zombie)
             attribs.add(Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS)
-        else if (main.ver.minorVersion >= 20 && lmEntity.livingEntity is Horse)
+        else if (main.ver.useNewHorseJumpAttrib && lmEntity.livingEntity is Horse)
             attribs.add(Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH)
 
         main.levelManager.applyLevelledAttributes(lmEntity, attribs, nbtDatas)

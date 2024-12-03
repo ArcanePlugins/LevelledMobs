@@ -134,11 +134,11 @@ class RuleInfo(
     var mobNBTData: MergeableStringList? = null
     @field:RuleFieldInfo("skylight level", RuleType.CONDITION)
     var conditionsSkyLightLevel: MinAndMax? = null
-    @field:RuleFieldInfo("allowed worlds", RuleType.CONDITION)
+    @field:RuleFieldInfo("worlds", RuleType.CONDITION)
     var conditionsWorlds: CachedModalList<String>? = null
-    @field:RuleFieldInfo("allowed entities", RuleType.CONDITION)
+    @field:RuleFieldInfo("entities", RuleType.CONDITION)
     var conditionsEntities: CachedModalList<String>? = null
-    @field:RuleFieldInfo("allowed biomes", RuleType.CONDITION)
+    @field:RuleFieldInfo("biomes", RuleType.CONDITION)
     var conditionsBiomes: CachedModalList<Biome>? = null
     @field:RuleFieldInfo("external plugins", RuleType.CONDITION)
     var conditionsExternalPlugins: CachedModalList<String>? = null

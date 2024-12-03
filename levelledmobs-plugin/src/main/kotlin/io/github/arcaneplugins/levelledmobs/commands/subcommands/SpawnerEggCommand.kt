@@ -68,6 +68,7 @@ object SpawnerEggCommand : SpawnerBaseClass() {
         sender: CommandSender,
         input: String
     ){
+        this.commandSender = sender
         val args = Utils.splitStringWithQuotes(input)
 
         var hasGivePlayer = false
