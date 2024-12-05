@@ -10,7 +10,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
-import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.LivingEntity
 
@@ -112,8 +111,6 @@ class Definitions{
     var methodDataWatcherGetItem: Method? = null
         private set
     var methodDataWatcherItemValue: Method? = null
-        private set
-    var methodAttributeValues: Method? = null
         private set
 
     // mythic mobs:
@@ -225,6 +222,7 @@ class Definitions{
         )
 
         if (isOneTwentyFiveOrNewer){
+            // net.minecraft.network.syncher.SynchedEntityData$Builder ->
             this.clazzDataWatcherBuilder = Class.forName(
                 "net.minecraft.network.syncher.DataWatcher\$a"
             )
@@ -360,7 +358,7 @@ class Definitions{
         )
 
         // net.minecraft.network.chat.Component ->
-        // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[])
+        // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[]) ->
         this.methodTranslatableWithArgs = clazzIChatBaseComponent!!.getDeclaredMethod(
             "a",
             String::class.java, Array<Any>::class.java
@@ -556,11 +554,6 @@ class Definitions{
             // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
             //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
             this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod("e")
-        }
-
-        if (!ver.useOldEnums){
-            // static Attribute[] values()
-            methodAttributeValues = Attribute::class.java.getDeclaredMethod("values")
         }
     }
 

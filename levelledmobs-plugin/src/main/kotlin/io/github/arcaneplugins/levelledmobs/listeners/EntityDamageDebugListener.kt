@@ -2,11 +2,11 @@ package io.github.arcaneplugins.levelledmobs.listeners
 
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.enums.AttributeNames
 import io.github.arcaneplugins.levelledmobs.misc.Cooldown
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Creeper
 import org.bukkit.entity.LivingEntity
@@ -99,15 +99,13 @@ class EntityDamageDebugListener : Listener {
         // Print attributes
         player.sendMessage(" ")
         send(player, "&f&nAttribute Values:", false)
-        for (attribute in Attribute.entries) {
+        for (attributeName in AttributeNames.entries) {
+            val attribute = Utils.getAttribute(attributeName) ?: continue
             val attributeInstance = lmEntity.livingEntity
                 .getAttribute(attribute)
-            if (attributeInstance == null) {
-                continue
-            }
-            if (Utils.round(attributeInstance.value) == 0.0) {
-                continue
-            }
+            if (attributeInstance == null) continue
+
+            if (Utils.round(attributeInstance.value) == 0.0) continue
 
             val sb = StringBuilder()
             sb.append("&8&m->&b ")

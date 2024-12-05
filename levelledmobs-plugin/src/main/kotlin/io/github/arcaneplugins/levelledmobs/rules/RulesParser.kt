@@ -26,6 +26,7 @@ import io.github.arcaneplugins.levelledmobs.rules.strategies.SpawnDistanceStrate
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
 import io.github.arcaneplugins.levelledmobs.rules.strategies.YDistanceStrategy
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
 import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 import io.papermc.paper.registry.RegistryAccess
@@ -322,8 +323,11 @@ class RulesParser {
                                 val biomeModalList = cachedModalList as CachedModalList<Biome>
                                 val modalList = if (i == 0) biomeModalList.includedList else biomeModalList.excludedList
 
-                                val biome = Biome.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
-                                modalList.add(biome)
+                                val biome = Utils.getBiome(item.trim())
+                                if (biome != null)
+                                    modalList.add(biome)
+                                else
+                                    Log.war("Invalid biome name: $item")
                             }
                             ModalListParsingTypes.SPAWN_REASON -> {
                                 val spawnReasonModalList = cachedModalList as CachedModalList<String>
@@ -345,6 +349,11 @@ class RulesParser {
                                 modalList.add(vanillaBonus)
                             }
                             ModalListParsingTypes.STRUCTURE -> {
+                                if (!LevelledMobs.instance.ver.allowStructureConditions){
+                                    Log.war("Structure conditions are not available on this server version")
+                                    continue
+                                }
+
                                 val structuresModalList = cachedModalList as CachedModalList<Structure>
                                 val modalList =
                                     if (i == 0) structuresModalList.includedList else structuresModalList.excludedList
@@ -381,7 +390,10 @@ class RulesParser {
                 }
             }
 
-            return cachedModalList
+            return if (cachedModalList.isEmpty() && defaultValue == null)
+                null
+            else
+                cachedModalList
         }
     }
 
