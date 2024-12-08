@@ -1776,13 +1776,6 @@ class LevelManager : LevelInterface2 {
             return LevellableState.ALLOWED
         }
 
-        val externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(
-            lmInterface
-        )
-        if (externalCompatResult != LevellableState.ALLOWED) {
-            return externalCompatResult
-        }
-
         if (lmInterface.isMobOfExternalType) {
             lmInterface.invalidateCache()
 

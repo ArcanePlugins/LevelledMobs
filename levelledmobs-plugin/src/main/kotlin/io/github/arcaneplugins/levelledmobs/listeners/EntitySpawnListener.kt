@@ -53,8 +53,22 @@ class EntitySpawnListener : Listener{
     fun onEntitySpawn(event: EntitySpawnEvent) {
         if (event.entity !is LivingEntity) return
 
-        val main = LevelledMobs.instance
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
+        val mobProcessDelay = LevelledMobs.instance.helperSettings.getInt("mob-process-delay", 0)
+
+        if (mobProcessDelay > 0)
+            delayedProcessMob(lmEntity, event, mobProcessDelay)
+        else
+            preProcessmob(lmEntity, event, 0)
+    }
+
+    private fun preProcessmob(
+        lmEntity: LivingEntityWrapper,
+        event: EntitySpawnEvent,
+        delayedAmount: Int
+    ){
+        val main = LevelledMobs.instance
+
         lmEntity.skylightLevel = lmEntity.currentSkyLightLevel
         lmEntity.isNewlySpawned = true
         lmEntity.populateShowShowLMNametag()
@@ -77,7 +91,13 @@ class EntitySpawnListener : Listener{
                     updateMobForPlayerLevelling(lmEntity)
                 }
 
-                delayedAddToQueue(lmEntity, event, 20)
+                val amountToDelay = (20 - delayedAmount).coerceAtLeast(0)
+
+                if (amountToDelay == 0)
+                    main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
+                else
+                    delayedAddToQueue(lmEntity, event, amountToDelay)
+
                 lmEntity.free()
                 return
             }
@@ -97,14 +117,23 @@ class EntitySpawnListener : Listener{
         if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.playerForLevelling == null)
             updateMobForPlayerLevelling(lmEntity)
 
-        val mobProcessDelay = main.helperSettings.getInt("mob-process-delay", 0)
-
-        if (mobProcessDelay > 0)
-            delayedAddToQueue(lmEntity, event, mobProcessDelay)
-        else
-            main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
+        main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
 
         lmEntity.free()
+    }
+
+    private fun delayedProcessMob(
+        lmEntity: LivingEntityWrapper,
+        event: EntitySpawnEvent,
+        delay: Int
+    ) {
+        val scheduler = SchedulerWrapper {
+            preProcessmob(lmEntity, event, delay)
+            lmEntity.free()
+        }
+
+        lmEntity.inUseCount.getAndIncrement()
+        scheduler.runDelayed(delay.toLong())
     }
 
     private fun delayedAddToQueue(
@@ -201,10 +230,11 @@ class EntitySpawnListener : Listener{
         scheduler.run()
     }
 
-    fun preprocessMob(
+    fun processMob(
         lmEntity: LivingEntityWrapper,
         event: Event?
     ) {
+        // this function runs in an async thread
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled) {
             return
         }

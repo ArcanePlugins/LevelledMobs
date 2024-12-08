@@ -261,6 +261,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             this.nametagCooldownTime = main.rulesManager.getRuleNametagVisibleTime(this)
             this.nametagVisibilityEnum.clear()
             this.nametagVisibilityEnum.addAll(main.rulesManager.getRuleCreatureNametagVisbility(this))
+            ExternalCompatibilityManager.updateAllExternalCompats(this)
             this.isBuildingCache = false
         } catch (e: InterruptedException) {
             Log.war("exception in buildCache: " + e.message)

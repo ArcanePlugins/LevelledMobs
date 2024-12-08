@@ -168,7 +168,7 @@ class MobsQueueManager {
         if (!item.lmEntity.isPopulated) return
 
         try{
-            LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)
+            LevelledMobs.instance.levelManager.entitySpawnListener.processMob(item.lmEntity, item.event)
         }
 
         catch (ignored: EvaluationException){

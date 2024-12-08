@@ -95,7 +95,7 @@ class EntityTransformListener : Listener {
                     additionalLevelInformation = mutableSetOf(AdditionalLevelInformation.FROM_TRANSFORM_LISTENER)
                 )
             } else {
-                main.levelManager.entitySpawnListener.preprocessMob(
+                main.levelManager.entitySpawnListener.processMob(
                     transformedLmEntity,
                     EntitySpawnEvent(transformedEntity)
                 )
