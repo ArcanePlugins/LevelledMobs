@@ -575,6 +575,11 @@ class RulesParser {
         parseConditions(YmlParsingHelper.objToCS(ymlHelper.cs, "conditions"))
         parseApplySettings(YmlParsingHelper.objToCS(ymlHelper.cs, "settings"))
         parseModifiers(YmlParsingHelper.objToCS(ymlHelper.cs, "modifiers"))
+
+        for (key in ymlHelper.cs.getKeys(false)){
+            if (!KeyValidation.mainRuleSection.contains(key))
+                Log.war("Invalid option '$key', in rule: $ruleName")
+        }
     }
 
     private fun mergePreset(ymlHelper: YmlParsingHelper) {
@@ -819,6 +824,11 @@ class RulesParser {
 
         if (nametagVisibilityEnums.isNotEmpty())
             parsingInfo.nametagVisibilityEnum = nametagVisibilityEnums
+
+        for (key in ymlHelper.cs.getKeys(false)){
+            if (!KeyValidation.settings.contains(key))
+                Log.war("Invalid setting '$key', in rule: ${parsingInfo.ruleName}")
+        }
     }
 
     private fun parseChunkKillOptions(ymlHelper: YmlParsingHelper) {
@@ -1044,6 +1054,11 @@ class RulesParser {
         )
 
         checkExternalPlugins()
+
+        for (key in ymlHelper.cs.getKeys(false)){
+            if (!KeyValidation.conditions.contains(key))
+                Log.war("Invalid condition '$key', in rule: ${parsingInfo.ruleName}")
+        }
     }
 
     private fun checkExternalPlugins(){
@@ -1157,6 +1172,11 @@ class RulesParser {
         }
 
         parseWeightedRandom(cs)
+
+        for (key in ymlHelper.cs.getKeys(false)){
+            if (!KeyValidation.strategies.contains(key))
+                Log.war("Invalid strategy '$key', in rule: ${parsingInfo.ruleName}")
+        }
     }
 
     private fun parseModifiers(cs: ConfigurationSection?){
@@ -1171,6 +1191,12 @@ class RulesParser {
         for (key in cs.getKeys(false)) {
             if (key.startsWith("custom", ignoreCase = true))
                 parseCustomStrategy(cs, key)
+        }
+
+        for (key in ymlHelper.cs.getKeys(false)){
+            if (!KeyValidation.modifiers.contains(key) &&
+                !key.startsWith("custom", ignoreCase = true))
+                Log.war("Invalid modifier '$key', in rule: ${parsingInfo.ruleName}")
         }
     }
 
