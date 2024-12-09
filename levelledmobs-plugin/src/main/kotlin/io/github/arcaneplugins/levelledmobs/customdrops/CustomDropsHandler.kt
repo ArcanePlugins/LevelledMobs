@@ -335,9 +335,10 @@ class CustomDropsHandler {
                 val dropInstance = getCustomDropsitemsGroups()[group]
                 info.allDropInstances.add(dropInstance!!)
 
-                for (baseItem in dropInstance.customItems) {
-                    processDropPriorities(baseItem, info)
-                }
+                // why was this even here?
+//                for (baseItem in dropInstance.customItems) {
+//                    processDropPriorities(baseItem, info)
+//                }
 
                 if (dropInstance.utilizesGroupIds)
                     usesGroupIds = true
