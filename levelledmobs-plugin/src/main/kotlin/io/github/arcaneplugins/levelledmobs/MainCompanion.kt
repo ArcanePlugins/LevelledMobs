@@ -4,32 +4,27 @@ import io.github.arcaneplugins.levelledmobs.compatibility.Compat119
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat119.getAquaticMobs
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat120
 import io.github.arcaneplugins.levelledmobs.compatibility.Compat121
-import io.github.arcaneplugins.levelledmobs.listeners.BlockPlaceListener
-import io.github.arcaneplugins.levelledmobs.listeners.ChunkLoadListener
+import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.listeners.CombustListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDamageDebugListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDamageListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityNametagListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityPickupItemListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityRegainHealthListener
+import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityTameListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityTargetListener
-import io.github.arcaneplugins.levelledmobs.listeners.EntityTransformListener
-import io.github.arcaneplugins.levelledmobs.listeners.PlayerDeathListener
-import io.github.arcaneplugins.levelledmobs.listeners.PlayerInteractEventListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerJoinListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerPortalEventListener
+import io.github.arcaneplugins.levelledmobs.listeners.ServerLoadEvent
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
-import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
-import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
-import io.github.arcaneplugins.levelledmobs.listeners.ServerLoadEvent
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.FileLoader.loadFile
 import io.github.arcaneplugins.levelledmobs.misc.KillSkipConditions
 import io.github.arcaneplugins.levelledmobs.misc.OutdatedServerVersionException
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
+import io.github.arcaneplugins.levelledmobs.result.ChunkKillInfo
 import io.github.arcaneplugins.levelledmobs.rules.MetricsInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
@@ -55,6 +50,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.EventPriority
 
 /**
  * This class contains methods used by the main class.
@@ -223,37 +219,60 @@ class MainCompanion{
         main.mobsQueueManager.start()
         main.nametagQueueManager.start()
         main.entityDamageDebugListener = EntityDamageDebugListener()
-        main.blockPlaceListener = BlockPlaceListener()
 
-        pluginManager.registerEvents(main.levelManager.entitySpawnListener, main)
-        pluginManager.registerEvents(EntityDamageListener(), main)
-        pluginManager.registerEvents(main.entityDeathListener, main)
+        main.levelManager.entitySpawnListener.load()
+        main.entityDamageListener.load()
+        main.entityDeathListener.load()
         pluginManager.registerEvents(EntityRegainHealthListener(), main)
-        pluginManager.registerEvents(EntityTransformListener(), main)
+        main.entityTransformListener.load()
         pluginManager.registerEvents(EntityNametagListener(), main)
         pluginManager.registerEvents(EntityTargetListener(), main)
         pluginManager.registerEvents(PlayerJoinListener(), main)
         pluginManager.registerEvents(EntityTameListener(), main)
-        pluginManager.registerEvents(PlayerDeathListener(), main)
+        main.playerDeathListener.load()
         pluginManager.registerEvents(CombustListener(), main)
         pluginManager.registerEvents(main.blockPlaceListener, main)
         pluginManager.registerEvents(PlayerPortalEventListener(), main)
         pluginManager.registerEvents(EntityPickupItemListener(), main)
         pluginManager.registerEvents(ServerLoadEvent(), main)
-        main.chunkLoadListener = ChunkLoadListener()
-        main.playerInteractEventListener = PlayerInteractEventListener()
         pluginManager.registerEvents(main.playerInteractEventListener, main)
+        pluginManager.registerEvents(main.chunkLoadListener, main)
+        main.chunkLoadListener.load()
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             main.placeholderApiIntegration = PlaceholderApiIntegration()
             main.placeholderApiIntegration!!.register()
         }
+    }
 
-        if (main.helperSettings.getBoolean(
-                "ensure-mobs-are-levelled-on-chunk-load", true
-            )
-        ) {
-            pluginManager.registerEvents(main.chunkLoadListener, main)
+    fun checkListenersWithVariablePriorities(){
+        val main = LevelledMobs.instance
+
+        main.levelManager.entitySpawnListener.load()
+        main.entityDeathListener.load()
+        main.playerDeathListener.load()
+        EntityDamageListener.instance.load()
+    }
+
+    fun getEventPriority(
+        name: String,
+        defaultPriority: EventPriority
+    ): EventPriority{
+        val priorityName = LevelledMobs.instance.helperSettings.getString("event-priorities.$name")
+
+        if (priorityName.isNullOrEmpty()) return defaultPriority
+
+        return when (priorityName.lowercase()){
+            "highest" -> EventPriority.HIGHEST
+            "high" -> EventPriority.HIGH
+            "normal" -> EventPriority.NORMAL
+            "low" -> EventPriority.LOW
+            "lowest" -> EventPriority.LOWEST
+            "monitor" -> EventPriority.MONITOR
+            else -> {
+                Log.war("Invalid event priority for $name: $priorityName")
+                defaultPriority
+            }
         }
     }
 

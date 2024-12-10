@@ -6,11 +6,15 @@ import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.UUID
+import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.EventHandler
+import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntitySpawnEvent
@@ -23,8 +27,41 @@ import org.bukkit.event.entity.EntityTransformEvent
  * @version 2.4.0
  */
 class EntityTransformListener : Listener {
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    fun onTransform(event: EntityTransformEvent) {
+    val damageMappings = mutableMapOf<UUID, Player>()
+    private var lastPriority: EventPriority? = null
+    private val settingName = "entity-transform-event"
+
+    companion object {
+        @JvmStatic
+        lateinit var instance: EntityTransformListener
+            private set
+    }
+
+    init {
+        instance = this
+    }
+
+    fun load(){
+        val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.MONITOR)
+        if (lastPriority != null){
+            if (priority == lastPriority) return
+
+            HandlerList.unregisterAll(this)
+            Log.inf("Changing event priority for $settingName from $lastPriority to $priority")
+        }
+
+        Bukkit.getPluginManager().registerEvent(
+            EntityTransformEvent::class.java,
+            this,
+            priority,
+            { _, event -> if (event is EntityTransformEvent) onTransform(event) },
+            LevelledMobs.instance,
+            false
+        )
+        lastPriority = priority
+    }
+
+    private fun onTransform(event: EntityTransformEvent) {
         // is the original entity a living entity
         if (event.entity !is LivingEntity) {
             DebugManager.log(DebugType.ENTITY_MISC, event.entity, false) {

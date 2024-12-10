@@ -96,7 +96,7 @@ object KeyValidation {
             "world-time-tick"
         ))
 
-        settings.addAll(mutableSetOf(
+        modifiers.addAll(mutableSetOf(
             "max-random-variance",
             "player-variable-mod"
         ))

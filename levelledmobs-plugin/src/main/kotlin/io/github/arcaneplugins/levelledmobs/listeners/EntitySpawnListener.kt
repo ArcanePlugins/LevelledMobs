@@ -13,6 +13,7 @@ import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -25,8 +26,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
-import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
@@ -44,17 +45,40 @@ import org.bukkit.persistence.PersistentDataType
  */
 class EntitySpawnListener : Listener{
     var processMobSpawns = true
+    private var mobProcessDelay = 0
+    private var lastPriority: EventPriority? = null
+    private val settingName = "entity-spawn-event"
 
     init {
         instance = this
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    fun onEntitySpawn(event: EntitySpawnEvent) {
+    fun load(){
+        this.mobProcessDelay = LevelledMobs.instance.helperSettings.getInt("mob-process-delay", 0)
+
+        val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.MONITOR)
+        if (lastPriority != null){
+            if (priority == lastPriority) return
+
+            HandlerList.unregisterAll(this)
+            Log.inf("Changing event priority for $settingName from $lastPriority to $priority")
+        }
+
+        Bukkit.getPluginManager().registerEvent(
+            EntitySpawnEvent::class.java,
+            this,
+            priority,
+            { _, event -> if (event is EntitySpawnEvent) onEntitySpawn(event) },
+            LevelledMobs.instance,
+            false
+        )
+        lastPriority = priority
+    }
+
+    private fun onEntitySpawn(event: EntitySpawnEvent) {
         if (event.entity !is LivingEntity) return
 
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
-        val mobProcessDelay = LevelledMobs.instance.helperSettings.getInt("mob-process-delay", 0)
 
         if (mobProcessDelay > 0)
             delayedProcessMob(lmEntity, event, mobProcessDelay)

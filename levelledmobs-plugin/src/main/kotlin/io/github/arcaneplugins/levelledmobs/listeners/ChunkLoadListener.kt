@@ -19,14 +19,17 @@ import org.bukkit.event.world.ChunkLoadEvent
  * @since 2.4.0
  */
 class ChunkLoadListener : Listener {
+    private var ensureMobsAreLevelledOnChunkLoad = true
+
+    fun load(){
+        ensureMobsAreLevelledOnChunkLoad = LevelledMobs.instance.helperSettings.getBoolean(
+            "ensure-mobs-are-levelled-on-chunk-load", true
+        )
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onChunkLoad(event: ChunkLoadEvent) {
-        if (!LevelledMobs.instance.helperSettings.getBoolean(
-                "ensure-mobs-are-levelled-on-chunk-load", true
-            )
-        ) {
-            return
-        }
+        if (!ensureMobsAreLevelledOnChunkLoad) return
 
         // Check each entity in the chunk
         for (entity in event.chunk.entities) {

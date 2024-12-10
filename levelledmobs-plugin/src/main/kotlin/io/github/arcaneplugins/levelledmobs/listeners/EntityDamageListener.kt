@@ -9,7 +9,9 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import org.bukkit.Bukkit
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.EnderDragon
 import org.bukkit.entity.EntityType
@@ -19,8 +21,8 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.entity.Wither
-import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -35,6 +37,8 @@ import org.bukkit.persistence.PersistentDataType
  */
 class EntityDamageListener : Listener {
     var updateMobsOnNonPlayerdamage = true
+    private var lastPriority: EventPriority? = null
+    private val settingName = "entity-damage-event"
 
     companion object {
         @JvmStatic
@@ -46,9 +50,38 @@ class EntityDamageListener : Listener {
         instance = this
     }
 
+    fun load(){
+        val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.MONITOR)
+        if (lastPriority != null){
+            if (priority == lastPriority) return
+
+            HandlerList.unregisterAll(this)
+            Log.inf("Changing event priority for $settingName from $lastPriority to $priority")
+        }
+
+        Bukkit.getPluginManager().registerEvent(
+            EntityDamageEvent::class.java,
+            this,
+            priority,
+            { _, event -> if (event is EntityDamageEvent) onEntityDamageEvent(event) },
+            LevelledMobs.instance,
+            false
+        )
+
+        Bukkit.getPluginManager().registerEvent(
+            EntityDamageByEntityEvent::class.java,
+            this,
+            priority,
+            { _, event -> if (event is EntityDamageByEntityEvent) onEntityDamageByEntityEvent(event) },
+            LevelledMobs.instance,
+            false
+        )
+
+        lastPriority = priority
+    }
+
     // When the mob is damaged, update their nametag.
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    fun onEntityDamageEvent(event: EntityDamageEvent) {
+    private fun onEntityDamageEvent(event: EntityDamageEvent) {
         if (event.entity !is LivingEntity) return
 
         val isCritical = event.finalDamage == 0.0
@@ -146,8 +179,7 @@ class EntityDamageListener : Listener {
     }
 
     // Check for levelled ranged damage.
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
+    private fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
         if (event.finalDamage == 0.0) {
             return
         }

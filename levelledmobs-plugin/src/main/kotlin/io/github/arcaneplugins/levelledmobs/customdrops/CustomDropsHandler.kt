@@ -307,6 +307,7 @@ class CustomDropsHandler {
         info.prioritizedDrops = mutableMapOf()
         info.hasOverride = false
         var usesGroupIds = false
+        val alreadyProcessedIds = mutableSetOf<String>()
 
         val overrideNonDropTableDrops =
             info.dropRules != null && info.dropRules!!.chunkKillOptions!!.getDisableVanillaDrops()
@@ -317,6 +318,7 @@ class CustomDropsHandler {
                 continue
             }
 
+            alreadyProcessedIds.add(id)
             val dropInstance = customItemGroups[id.trim { it <= ' ' }]
             info.allDropInstances.add(dropInstance!!)
 
@@ -332,13 +334,14 @@ class CustomDropsHandler {
 
         if (!overrideNonDropTableDrops) {
             for (group in groups) {
+                if (alreadyProcessedIds.contains(group)) continue
+
                 val dropInstance = getCustomDropsitemsGroups()[group]
                 info.allDropInstances.add(dropInstance!!)
 
-                // why was this even here?
-//                for (baseItem in dropInstance.customItems) {
-//                    processDropPriorities(baseItem, info)
-//                }
+                for (baseItem in dropInstance.customItems) {
+                    processDropPriorities(baseItem, info)
+                }
 
                 if (dropInstance.utilizesGroupIds)
                     usesGroupIds = true
