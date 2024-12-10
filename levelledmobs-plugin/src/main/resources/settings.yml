@@ -172,6 +172,11 @@ lew-cache-clear-period: 3m
 # ||  mode when the Player Level Modifier is determining values.
 exclude-players-in-creative: false
 
+# ||  If set to true and PVM is enabled then a mob that doesn't have
+# ||  an associated player will be ignored. This is useful
+# ||  for attribute formulas that need player context.
+ignore-mobs-with-no-player-context: false
+
 # ||  This setting controls the even priority used in
 # ||  various events.
 event-priorities:

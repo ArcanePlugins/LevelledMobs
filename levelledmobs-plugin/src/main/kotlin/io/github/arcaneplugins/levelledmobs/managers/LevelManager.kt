@@ -1103,9 +1103,7 @@ class LevelManager : LevelInterface2 {
     private fun enumerateNearbyEntities() {
         entitiesPerPlayer.clear()
         asyncRunningCount.set(0)
-        val checkDistance = LevelledMobs.instance.helperSettings.getInt(
-            "async-task-max-blocks-from-player", 100
-        )
+        val checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (LevelledMobs.instance.ver.isRunningFolia) {
@@ -1117,8 +1115,7 @@ class LevelManager : LevelInterface2 {
                 val task =
                     Consumer<ScheduledTask> { _: ScheduledTask? ->
                         val entities = player.getNearbyEntities(
-                            checkDistance.toDouble(),
-                            checkDistance.toDouble(), checkDistance.toDouble()
+                            checkDistance, checkDistance, checkDistance
                         )
                         synchronized(entitiesPerPlayerLock) {
                             entitiesPerPlayer.put(player, entities)
@@ -1130,8 +1127,7 @@ class LevelManager : LevelInterface2 {
                 player.scheduler.run(LevelledMobs.instance, task, runnable)
             } else {
                 val entities = player.getNearbyEntities(
-                    checkDistance.toDouble(),
-                    checkDistance.toDouble(), checkDistance.toDouble()
+                    checkDistance, checkDistance, checkDistance
                 )
                 entitiesPerPlayer[player] = entities
                 runNametagCheckASync()

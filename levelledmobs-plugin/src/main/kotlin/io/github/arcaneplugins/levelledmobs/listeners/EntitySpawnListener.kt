@@ -46,6 +46,7 @@ import org.bukkit.persistence.PersistentDataType
 class EntitySpawnListener : Listener{
     var processMobSpawns = true
     private var mobProcessDelay = 0
+    var mobCheckDistance = 320
     private var lastPriority: EventPriority? = null
     private val settingName = "entity-spawn-event"
 
@@ -55,6 +56,9 @@ class EntitySpawnListener : Listener{
 
     fun load(){
         this.mobProcessDelay = LevelledMobs.instance.helperSettings.getInt("mob-process-delay", 0)
+        this.mobCheckDistance = LevelledMobs.instance.helperSettings.getInt(
+            "async-task-max-blocks-from-player", 320
+        )
 
         val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.MONITOR)
         if (lastPriority != null){
@@ -77,6 +81,7 @@ class EntitySpawnListener : Listener{
 
     private fun onEntitySpawn(event: EntitySpawnEvent) {
         if (event.entity !is LivingEntity) return
+        if (LevelledMobs.instance.levelManager.forcedBlockedEntityTypes.contains(event.entityType)) return
 
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
 
@@ -437,15 +442,12 @@ class EntitySpawnListener : Listener{
 
         fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
             val onlinePlayerCount = lmEntity.world.players.size
-            val checkDistance = LevelledMobs.instance.helperSettings.getInt(
-                "async-task-max-blocks-from-player", 100
-            )
 
             if (LevelledMobs.instance.ver.isRunningFolia || Bukkit.isPrimaryThread()){
                 // run directly if we're in the main thread already
                 updateMobForPlayerLevellingNonAsync(
                     lmEntity,
-                    checkDistance,
+                    lmEntity.main.levelManager.entitySpawnListener.mobCheckDistance,
                     onlinePlayerCount
                 )
                 return
@@ -454,7 +456,7 @@ class EntitySpawnListener : Listener{
             val wrapper = SchedulerWrapper(lmEntity.livingEntity){
                 updateMobForPlayerLevellingNonAsync(
                     lmEntity,
-                    checkDistance,
+                    lmEntity.main.levelManager.entitySpawnListener.mobCheckDistance,
                     onlinePlayerCount
                 )
                 lmEntity.free()

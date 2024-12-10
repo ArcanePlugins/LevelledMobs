@@ -143,6 +143,8 @@ class MainCompanion{
         main.customDropsHandler.customDropsParser.loadDrops(
             loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
         )
+        main.mobsQueueManager.ignoreMobsWithNoPlayerContext =
+            main.helperSettings.getBoolean("ignore-mobs-with-no-player-context", false)
 
         main.configUtils.load()
         main.playerLevellingMinRelevelTime = main.helperSettings.getIntTimeUnitMS(
