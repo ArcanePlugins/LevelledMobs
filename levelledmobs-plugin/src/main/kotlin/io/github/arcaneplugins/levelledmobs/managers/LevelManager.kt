@@ -881,7 +881,7 @@ class LevelManager : LevelInterface2 {
         if (!str.text.contains("%")) return str.text
 
         return replaceStringPlaceholders(
-            str, lmEntity, true, null, true
+            str, lmEntity, true, lmEntity.associatedPlayer, true
         )
     }
 
