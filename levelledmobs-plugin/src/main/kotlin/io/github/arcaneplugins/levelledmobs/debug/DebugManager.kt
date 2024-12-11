@@ -41,7 +41,6 @@ class DebugManager {
     val filterEntityTypes = mutableSetOf<EntityType>()
     val filterRuleNames = mutableSetOf<String>()
     val filterPlayerNames = mutableSetOf<String>()
-    var excludedEntityTypes = mutableListOf<String>()
     var playerThatEnabledDebug: Player? = null
     var listenFor = ListenFor.BOTH
     var outputType = OutputTypes.TO_CONSOLE
@@ -56,7 +55,6 @@ class DebugManager {
     init {
         instance = this
         maxPlayerDistance = defaultPlayerDistance
-        buildExcludedEntityTypes()
     }
 
     fun enableDebug(
@@ -180,7 +178,8 @@ class DebugManager {
          * @param msg       Message to help de-bugging
          */
         fun log(debugType: DebugType, msg: Supplier<String?>) {
-            instance.logInstance(debugType, null, null, null, null, msg.get()!!)
+            val message = msg.get() ?: return
+            instance.logInstance(debugType, null, null, null, null, message)
         }
 
         fun startLongDebugMessage(): UUID{
@@ -291,8 +290,9 @@ class DebugManager {
         if (lmInterface != null){
             val lmEntity = lmInterface as? LivingEntityWrapper
             val useName = lmEntity?.nameIfBaby ?: lmInterface.typeName
-            val lvl = lmEntity?.getMobLevel ?: (lmInterface.summonedLevel?: 0)
-            val lvlInfo = " (&7lvl $lvl&r)"
+            var lvl = lmEntity?.mobLevel
+            if (lmInterface.summonedLevel != null) lvl = lmInterface.summonedLevel
+            val lvlInfo = if (lvl != null) " (&7lvl $lvl&r)" else " (&7no lvl&r)"
             val addedComma = if (useComma) ", " else ""
 
             msg = if (msg.isEmpty())
@@ -506,58 +506,5 @@ class DebugManager {
             damageDebugOutputIsEnabled = false
             HandlerList.unregisterAll(LevelledMobs.instance.entityDamageDebugListener)
         }
-    }
-
-    private fun buildExcludedEntityTypes() {
-        this.excludedEntityTypes = mutableListOf(
-            "AREA_EFFECT_CLOUD",
-            "ARMOR_STAND",
-            "ARROW",
-            "BLOCK_DISPLAY",
-            "CHEST_BOAT",
-            "DRAGON_FIREBALL",
-            "DROPPED_ITEM",
-            "EGG",
-            "ENDER_CRYSTAL",
-            "ENDER_PEARL",
-            "ENDER_SIGNAL",
-            "EVOKER_FANGS",
-            "EXPERIENCE_ORB",
-            "FALLING_BLOCK",
-            "FIREWORK",
-            "FISHING_HOOK",
-            "GIANT",
-            "INTERACTION",
-            "ITEM_DISPLAY",
-            "ITEM_FRAME",
-            "LEASH_HITCH",
-            "LIGHTNING",
-            "LLAMA_SPIT",
-            "MARKER",
-            "MINECART",
-            "MINECART_CHEST",
-            "MINECART_COMMAND",
-            "MINECART_FURNACE",
-            "MINECART_HOPPER",
-            "MINECART_MOB_SPAWNER",
-            "MINECART_TNT",
-            "PAINTING",
-            "PLAYER",
-            "PRIMED_TNT",
-            "SHULKER_BULLET",
-            "SMALL_FIREBALL",
-            "SPECTRAL_ARROW",
-            "SPLASH_POTION",
-            "TEXT_DISPLAY",
-            "THROWN_EXP_BOTTLE",
-            "TRIDENT",
-            "UNKNOWN",
-            "BOAT",
-            "FIREBALL",
-            "GLOW_ITEM_FRAME",
-            "TROPICAL_FISH",
-            "WIND_CHARGE",
-            "WITHER_SKULL"
-        )
     }
 }
