@@ -142,6 +142,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
 
         if (options.outputCap != null) {
             results.max = results.max.coerceAtMost(options.outputCap!!)
+            results.min = results.min.coerceAtMost(options.outputCap!!)
         }
 
         val homeName = if (playerLevelSourceResult.homeNameUsed != null)
