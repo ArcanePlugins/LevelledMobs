@@ -6,7 +6,7 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.1.0"
     id("com.gradleup.shadow") version "9.0.0-beta4"
     id("idea")
     id("maven-publish")
@@ -81,11 +81,6 @@ tasks {
             relocate("kotlin", "io.github.arcaneplugins.levelledmobs.libs.kotlin")
         }
         minimize{}
-    }
-
-    jar.configure {
-        actions.clear()
-        dependsOn(shadowJar)
     }
 
     kotlin {
