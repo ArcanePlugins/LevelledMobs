@@ -399,7 +399,7 @@ class LevelManager : LevelInterface2 {
             var papiResult: String? = null
 
             if (ExternalCompatibilityManager.hasPapiInstalled) {
-                papiResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse)
+                papiResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse, lmEntity.invalidPlaceholderReplacement)
                 if (papiResult.isEmpty()) {
                     val l = player.location
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
@@ -760,7 +760,11 @@ class LevelManager : LevelInterface2 {
         nametag.replace("%health-indicator-color%", colorOnly)
 
         if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled)
-            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(lmEntity.associatedPlayer, nametag.text)
+            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(
+                lmEntity.associatedPlayer,
+                nametag.text,
+                lmEntity.invalidPlaceholderReplacement
+            )
 
         val result = NametagResult(nametag.text)
         // this field is only used for sending nametags to client
@@ -985,7 +989,7 @@ class LevelManager : LevelInterface2 {
         }
 
         if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
-            text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text)
+            text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text, lmEntity.invalidPlaceholderReplacement)
         }
 
         return text.text

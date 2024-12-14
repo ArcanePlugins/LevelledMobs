@@ -56,6 +56,7 @@ object KeyValidation {
             "tiered-coloring",
             "use-custom-item-drops-for-mobs",
             "use-droptable-id",
+            "invalid-placeholder-replacement",
 
             // these values are not valid but they were present in rules.yml so long
             // we are leaving them so people don't get errors

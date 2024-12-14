@@ -106,6 +106,8 @@ class RuleInfo(
     val customDropDropTableIds = mutableListOf<String>()
     @field:ExcludeFromHash @field:RuleFieldInfo("health indicator", RuleType.APPLY_SETTING)
     var healthIndicator: HealthIndicator? = null
+    @field:ExcludeFromHash @field:RuleFieldInfo("invalid placeholder replacement", RuleType.APPLY_SETTING)
+    var invalidPlaceholderReplacement: String? = null
     @field:RuleFieldInfo("mob customname", RuleType.CONDITION)
     var conditionsMobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED
     @field:RuleFieldInfo("mob tamed status", RuleType.CONDITION)

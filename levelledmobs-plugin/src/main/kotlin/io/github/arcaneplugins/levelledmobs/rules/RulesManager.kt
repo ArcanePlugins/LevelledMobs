@@ -300,6 +300,18 @@ class RulesManager {
         return maxBlast
     }
 
+    fun getRuleInvalidPlaceholderReplacement(lmEntity: LivingEntityWrapper): String?{
+        var result: String? = null
+
+        for (ruleInfo in lmEntity.getApplicableRules()) {
+            if (ruleInfo.invalidPlaceholderReplacement != null) {
+                result = ruleInfo.invalidPlaceholderReplacement
+            }
+        }
+
+        return result
+    }
+
     fun getRuleLevellingStrategies(
         lmEntity: LivingEntityWrapper
     ): MutableList<LevellingStrategy> {

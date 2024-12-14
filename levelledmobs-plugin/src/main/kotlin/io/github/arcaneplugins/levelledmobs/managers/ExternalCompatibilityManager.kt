@@ -174,8 +174,36 @@ class ExternalCompatibilityManager {
         val hasNbtApiInstalled: Boolean
             get() = checkIfPluginIsInstalledAndEnabled("NBTAPI")
 
-        fun getPapiPlaceholder(player: Player?, placeholder: String?): String {
-            return PlaceholderAPI.setPlaceholders(player, placeholder!!)
+        fun getPapiPlaceholder(
+            player: Player?,
+            placeholder: String,
+            invalidPlaceholderReplacement: String?
+        ): String {
+            if (invalidPlaceholderReplacement != null){
+                val matcher = PlaceholderAPI.getPlaceholderPattern().matcher(placeholder)
+                val inputList = mutableListOf<String>()
+                while (matcher.find()){
+                    inputList.add("%${matcher.group(matcher.groupCount())}%")
+                }
+
+                if (inputList.isEmpty())
+                    return PlaceholderAPI.setPlaceholders(player, placeholder)
+
+                var results = placeholder
+                val papiResults = PlaceholderAPI.setPlaceholders(player, inputList)
+                assert(inputList.size == papiResults.size){ 
+                    "getPapiPlaceholder: input size (${inputList.size}) did not match results size (${papiResults.size})"
+                }
+                for (i in 0..<papiResults.size) {
+                    var thisResult = papiResults[i]
+                    if (thisResult.isEmpty()) thisResult = invalidPlaceholderReplacement
+                    results = results.replace(inputList[i], thisResult)
+                }
+
+                return results
+            }
+            else
+                return PlaceholderAPI.setPlaceholders(player, placeholder)
         }
 
         val hasMythicMobsInstalled: Boolean

@@ -742,7 +742,9 @@ class RulesParser {
         parsingInfo.restrictionsMaxLevel = ymlHelper.getInt2(
             "maxlevel", parsingInfo.restrictionsMaxLevel
         )
-
+        parsingInfo.invalidPlaceholderReplacement = ymlHelper.getString(
+            "invalid-placeholder-replacement", parsingInfo.invalidPlaceholderReplacement
+        )
         parsingInfo.conditionsNoDropEntities = buildCachedModalListOfString(
                   cs, "no-drop-multipler-entities", parsingInfo.conditionsNoDropEntities
         )

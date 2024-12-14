@@ -97,6 +97,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     var pendingPlayerIdToSet: String? = null
     var lockedNametag: String? = null
     var lockedOverrideName: String? = null
+    var invalidPlaceholderReplacement: String? = null
     var associatedPlayer: Player? = null
     var summonedSender: CommandSender? = null
 
@@ -211,6 +212,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.playersNeedingNametagCooldownUpdate = null
         this.nametagCooldownTime = 0
         this.nbtData = null
+        this.invalidPlaceholderReplacement = null
         this.summonedSender = null
         this.playerLevellingAllowDecrease = null
         this.pendingPlayerIdToSet = null
@@ -262,6 +264,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             this.nametagVisibilityEnum.clear()
             this.nametagVisibilityEnum.addAll(main.rulesManager.getRuleCreatureNametagVisbility(this))
             ExternalCompatibilityManager.updateAllExternalCompats(this)
+            this.invalidPlaceholderReplacement = main.rulesManager.getRuleInvalidPlaceholderReplacement(this)
             this.isBuildingCache = false
         } catch (e: InterruptedException) {
             Log.war("exception in buildCache: " + e.message)
