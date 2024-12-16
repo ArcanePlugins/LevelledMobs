@@ -443,16 +443,6 @@ class EntitySpawnListener : Listener{
         fun updateMobForPlayerLevelling(lmEntity: LivingEntityWrapper) {
             val onlinePlayerCount = lmEntity.world.players.size
 
-            if (LevelledMobs.instance.ver.isRunningFolia || Bukkit.isPrimaryThread()){
-                // run directly if we're in the main thread already
-                updateMobForPlayerLevellingNonAsync(
-                    lmEntity,
-                    lmEntity.main.levelManager.entitySpawnListener.mobCheckDistance,
-                    onlinePlayerCount
-                )
-                return
-            }
-
             val wrapper = SchedulerWrapper(lmEntity.livingEntity){
                 updateMobForPlayerLevellingNonAsync(
                     lmEntity,

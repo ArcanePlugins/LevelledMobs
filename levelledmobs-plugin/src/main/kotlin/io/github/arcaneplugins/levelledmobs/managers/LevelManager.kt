@@ -1111,24 +1111,19 @@ class LevelManager : LevelInterface2 {
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (LevelledMobs.instance.ver.isRunningFolia) {
-                val runnable = Runnable {
+                asyncRunningCount.getAndIncrement()
+                val scheduler = SchedulerWrapper(player) {
+                    val entities = player.getNearbyEntities(
+                        checkDistance, checkDistance, checkDistance
+                    )
+                    synchronized(entitiesPerPlayerLock) {
+                        entitiesPerPlayer.put(player, entities)
+                    }
+
+                    asyncRunningCount.getAndDecrement()
                     if (asyncRunningCount.get() == 0) runNametagCheckASync()
                 }
-
-                asyncRunningCount.getAndIncrement()
-                val task =
-                    Consumer<ScheduledTask> { _: ScheduledTask? ->
-                        val entities = player.getNearbyEntities(
-                            checkDistance, checkDistance, checkDistance
-                        )
-                        synchronized(entitiesPerPlayerLock) {
-                            entitiesPerPlayer.put(player, entities)
-                        }
-
-                        asyncRunningCount.getAndDecrement()
-                        if (asyncRunningCount.get() == 0) runNametagCheckASync()
-                    }
-                player.scheduler.run(LevelledMobs.instance, task, runnable)
+                scheduler.run()
             } else {
                 val entities = player.getNearbyEntities(
                     checkDistance, checkDistance, checkDistance
