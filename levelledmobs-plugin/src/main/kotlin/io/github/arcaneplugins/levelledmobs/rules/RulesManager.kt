@@ -300,6 +300,18 @@ class RulesManager {
         return maxBlast
     }
 
+    fun getRuleInvalidPlaceholderReplacement(lmEntity: LivingEntityWrapper): String?{
+        var result: String? = null
+
+        for (ruleInfo in lmEntity.getApplicableRules()) {
+            if (ruleInfo.invalidPlaceholderReplacement != null) {
+                result = ruleInfo.invalidPlaceholderReplacement
+            }
+        }
+
+        return result
+    }
+
     fun getRuleLevellingStrategies(
         lmEntity: LivingEntityWrapper
     ): MutableList<LevellingStrategy> {
@@ -1197,7 +1209,7 @@ class RulesManager {
             DebugManager.log(
                 DebugType.CONDITION_BIOME_LIST, ri, lmInterface, result
             ) {
-                "mob biome: &b${lmInterface.location!!.block.biome.name}&7"
+                "mob biome: &b${lmInterface.location!!.block.biome}&7"
             }
             if (!result) return RuleCheckResult(false)
         }

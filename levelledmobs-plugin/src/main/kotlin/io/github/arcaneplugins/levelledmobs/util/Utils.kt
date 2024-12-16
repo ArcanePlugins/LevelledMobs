@@ -1,15 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.util
 
-import java.time.Duration
-import java.time.Instant
-import java.util.AbstractMap
-import java.util.Locale
-import java.util.regex.Pattern
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
-import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
+import io.github.arcaneplugins.levelledmobs.enums.AttributeNames
+import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.result.PlayerNetherOrWorldSpawnResult
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
@@ -17,12 +13,18 @@ import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import java.time.Duration
+import java.time.Instant
+import java.util.AbstractMap
+import java.util.Locale
+import java.util.regex.Pattern
 import org.bukkit.Chunk
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.World
+import org.bukkit.attribute.Attribute
 import org.bukkit.block.Biome
 import org.bukkit.command.CommandSender
 import org.bukkit.enchantments.Enchantment
@@ -56,6 +58,72 @@ object Utils {
     fun round(value: Double, digits: Int): Double {
         val scale = 10.0.pow(digits.toDouble())
         return Math.round(value * scale) / scale
+    }
+
+    fun getBiome(name: String): Biome?{
+        val ver = LevelledMobs.instance.ver
+
+        @Suppress("DEPRECATION")
+        if (ver.isRunningPaper && ver.minorVersion >= 21){
+            val registry = RegistryAccess.registryAccess().getRegistry(
+                RegistryKey.BIOME
+            )
+            return registry.get(
+                NamespacedKey.minecraft(name.lowercase(Locale.getDefault()))
+            )
+        }
+        else
+            return Registry.BIOME[NamespacedKey.minecraft(name.lowercase())]
+    }
+
+    fun getAllAttributes(): MutableList<Attribute>{
+        val attributes = mutableListOf<Attribute>()
+        for (attributeName in AttributeNames.entries){
+            val attribute = getAttribute(attributeName) ?: continue
+
+            attributes.add(attribute)
+        }
+
+        return attributes
+    }
+
+    fun getAttribute(attributeName: AttributeNames): Attribute?{
+        if (LevelledMobs.instance.ver.useOldEnums){
+            // 1.21.1 and older go here
+            return when (attributeName){
+                AttributeNames.MAX_HEALTH -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.max_health")) // GENERIC_MAX_HEALTH
+                AttributeNames.ATTACK_DAMAGE -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.attack_damage"))
+                AttributeNames.MOVEMENT_SPEED -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.movement_speed"))
+                AttributeNames.JUMP_STRENGTH -> {
+                    if (LevelledMobs.instance.ver.useNewHorseJumpAttrib)
+                        Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.jump_strength"))
+                    else
+                        Registry.ATTRIBUTE.get(NamespacedKey.minecraft("horse.jump_strength"))
+                }
+                AttributeNames.ARMOR -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.armor"))
+                AttributeNames.ARMOR_TOUGHNESS -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.armor_toughness"))
+                AttributeNames.KNOCKBACK_RESISTANCE -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.knockback_resistance"))
+                AttributeNames.FLYING_SPEED -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.flying_speed"))
+                AttributeNames.ATTACK_KNOCKBACK -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.attack_knockback"))
+                AttributeNames.FOLLOW_RANGE -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.follow_range"))
+                AttributeNames.SPAWN_REINFORCEMENTS -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("zombie.spawn_reinforcements"))
+            }
+        }
+
+        // 1.21.2+ go here
+        return when (attributeName){
+            AttributeNames.MAX_HEALTH -> Attribute.MAX_HEALTH
+            AttributeNames.ATTACK_DAMAGE -> Attribute.ATTACK_DAMAGE
+            AttributeNames.MOVEMENT_SPEED -> Attribute.MOVEMENT_SPEED
+            AttributeNames.JUMP_STRENGTH -> Attribute.JUMP_STRENGTH
+            AttributeNames.ARMOR -> Attribute.ARMOR
+            AttributeNames.ARMOR_TOUGHNESS -> Attribute.ARMOR_TOUGHNESS
+            AttributeNames.KNOCKBACK_RESISTANCE -> Attribute.KNOCKBACK_RESISTANCE
+            AttributeNames.FLYING_SPEED -> Attribute.FLYING_SPEED
+            AttributeNames.ATTACK_KNOCKBACK -> Attribute.ATTACK_KNOCKBACK
+            AttributeNames.FOLLOW_RANGE -> Attribute.FOLLOW_RANGE
+            AttributeNames.SPAWN_REINFORCEMENTS -> Attribute.SPAWN_REINFORCEMENTS
+        }
     }
 
     /**

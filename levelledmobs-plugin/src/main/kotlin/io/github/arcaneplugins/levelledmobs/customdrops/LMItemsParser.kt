@@ -116,7 +116,7 @@ class LMItemsParser {
                         value = main.levelManager.replaceStringPlaceholders(
                             value, info.lmEntity!!,true,info.mobKiller,false)
                     } else if (ExternalCompatibilityManager.hasPapiInstalled) {
-                        value = ExternalCompatibilityManager.getPapiPlaceholder(null, value)
+                        value = ExternalCompatibilityManager.getPapiPlaceholder(null, value,null)
                     }
                 }
 

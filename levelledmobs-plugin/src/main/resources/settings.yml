@@ -172,10 +172,24 @@ lew-cache-clear-period: 3m
 # ||  mode when the Player Level Modifier is determining values.
 exclude-players-in-creative: false
 
+# ||  If set to true and PVM is enabled then a mob that doesn't have
+# ||  an associated player will be ignored. This is useful
+# ||  for attribute formulas that need player context.
+ignore-mobs-with-no-player-context: false
+
+# ||  This setting controls the even priority used in
+# ||  various events.
+event-priorities:
+  # valid values: lowest, low, normal, high, highest, monitor
+  entity-damage-event: 'monitor'
+  entity-death-event: 'normal'
+  entity-spawn-event: 'monitor'
+  entity-transform-event: 'monitor'
+  player-death-event: 'normal'
 
 #
 #   ---------------  -  ------------------------------
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point
 #   ---------------  -  ------------------------------
 #
-file-version: 37
+file-version: 38

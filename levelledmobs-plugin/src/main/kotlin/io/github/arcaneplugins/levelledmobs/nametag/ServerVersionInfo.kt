@@ -34,6 +34,8 @@ class ServerVersionInfo {
         private set
     var useNewHorseJumpAttrib = false
         private set
+    var allowStructureConditions = false
+        private set
 
     // preliminary fabric support. not entirely there yet
     private var _isRunningFabric: Boolean? = null
@@ -54,6 +56,9 @@ class ServerVersionInfo {
 
         isOneTwentyFiveOrNewer =
             minorVersion == 20 && revision >= 5 || minorVersion >= 21
+
+        allowStructureConditions =
+            minorVersion == 20 && revision >= 4 || minorVersion >= 21
 
         // 1.21.3 changed various enums to interfaces
         useOldEnums = minorVersion < 21 || minorVersion == 21 && revision < 3

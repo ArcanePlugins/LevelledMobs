@@ -6,7 +6,10 @@ import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.listeners.BlockPlaceListener
 import io.github.arcaneplugins.levelledmobs.listeners.ChunkLoadListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDamageDebugListener
+import io.github.arcaneplugins.levelledmobs.listeners.EntityDamageListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityDeathListener
+import io.github.arcaneplugins.levelledmobs.listeners.EntityTransformListener
+import io.github.arcaneplugins.levelledmobs.listeners.PlayerDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerInteractEventListener
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
@@ -50,12 +53,15 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class LevelledMobs : JavaPlugin() {
     val levelInterface: LevelInterface2 = LevelManager()
-    var levelManager = LevelManager()
+    val levelManager = LevelManager()
     val mobDataManager = MobDataManager()
-    var customDropsHandler = CustomDropsHandler()
-    var chunkLoadListener = ChunkLoadListener()
-    var blockPlaceListener = BlockPlaceListener()
-    var playerInteractEventListener = PlayerInteractEventListener()
+    val customDropsHandler = CustomDropsHandler()
+    val chunkLoadListener = ChunkLoadListener()
+    val blockPlaceListener = BlockPlaceListener()
+    val playerInteractEventListener = PlayerInteractEventListener()
+    val playerDeathListener = PlayerDeathListener()
+    val entityDamageListener = EntityDamageListener()
+    val entityTransformListener = EntityTransformListener()
     val entityDeathListener = EntityDeathListener()
     val mainCompanion = MainCompanion()
     val rulesParsingManager = RulesParser()
@@ -177,14 +183,14 @@ class LevelledMobs : JavaPlugin() {
             configUtils.prefix
         )
         reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg)
-        reloadStartedMsg.forEach(Consumer { s: String? ->
-            sender.sendMessage(
-                s!!
-            )
+        reloadStartedMsg.forEach(Consumer { s: String ->
+            sender.sendMessage(s)
         })
 
         mainCompanion.reloadSender = sender
         mainCompanion.loadFiles()
+        mainCompanion.checkListenersWithVariablePriorities()
+        chunkLoadListener.load()
 
         var reloadFinishedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.finished"

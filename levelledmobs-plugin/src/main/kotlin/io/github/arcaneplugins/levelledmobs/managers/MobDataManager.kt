@@ -4,6 +4,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.enums.AttributeNames
 import io.github.arcaneplugins.levelledmobs.enums.VanillaBonusEnum
 import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
@@ -73,14 +74,12 @@ class MobDataManager {
             )
         }
 
-        fun populateAttributeCache(lmEntity: LivingEntityWrapper, whichOnes: MutableList<Attribute>? = null){
+        fun populateAttributeCache(
+            lmEntity: LivingEntityWrapper,
+            whichOnes: MutableList<Attribute>? = null
+        ){
             val result = mutableMapOf<Attribute, AttributeInstance>()
-            @Suppress("UNCHECKED_CAST")
-            val useList: MutableList<Attribute> = whichOnes
-                ?: if (LevelledMobs.instance.ver.useOldEnums)
-                       Attribute.entries.toMutableList()
-                   else
-                        (LevelledMobs.instance.definitions.methodAttributeValues!!.invoke(null) as Array<Attribute>).toMutableList()
+            val useList: MutableList<Attribute> = whichOnes ?: Utils.getAllAttributes()
 
             for (attribute in useList){
                 val attribInstance = lmEntity.livingEntity.getAttribute(attribute)
@@ -174,8 +173,10 @@ class MobDataManager {
             AttributeModifier.Operation.MULTIPLY_SCALAR_1
 
         @Suppress("removal", "DEPRECATION")
-        val mod: AttributeModifier = if (LevelledMobs.instance.ver.useOldEnums)
-            AttributeModifier(attribute.name, additionValue.toDouble(), modifierOperation)
+        val mod: AttributeModifier = if (LevelledMobs.instance.ver.useOldEnums) {
+            val attributeEnum = attribute as Enum<*>
+            AttributeModifier(attributeEnum.name, additionValue.toDouble(), modifierOperation)
+        }
         else{
             val equipmentSlotGroupANY = LevelledMobs.instance.definitions.fieldEquipmentSlotAny!!.get(null)
             LevelledMobs.instance.definitions.ctorAttributeModifier!!.newInstance(
@@ -184,14 +185,8 @@ class MobDataManager {
         }
 
         // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
-
-        // 1.21.3 renamed ZOMBIE_SPAWN_REINFORCEMENTS to SPAWN_REINFORCEMENTS
-        val spawnReinforcements =
-            if (LevelledMobs.instance.ver.useOldEnums) Attribute.ZOMBIE_SPAWN_REINFORCEMENTS.toString()
-            else Attribute.valueOf("SPAWN_REINFORCEMENTS")
-
-        if (attribute.toString() == spawnReinforcements
-            && lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN
+        if (lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN &&
+            attribute.toString() == Utils.getAttribute(AttributeNames.SPAWN_REINFORCEMENTS)!!.toString()
         ) {
             return null
         }
@@ -213,19 +208,13 @@ class MobDataManager {
             val attrib = lmEntity.livingEntity.getAttribute(info.attribute) ?: return
 
             // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
-            // 1.21.3 renamed ZOMBIE_SPAWN_REINFORCEMENTS to SPAWN_REINFORCEMENTS
-            val spawnReinforcements = if (LevelledMobs.instance.ver.useOldEnums) Attribute.ZOMBIE_SPAWN_REINFORCEMENTS.toString()
-            else Attribute.valueOf("SPAWN_REINFORCEMENTS")
-
-            if (info.attribute.toString() == spawnReinforcements
-                && lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN
+            if (lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN &&
+                info.attribute.toString() == Utils.getAttribute(AttributeNames.SPAWN_REINFORCEMENTS)!!.toString()
             ) {
                 return
             }
 
-            val genericMaxHealth =
-                if (LevelledMobs.instance.ver.useOldEnums) Attribute.GENERIC_MAX_HEALTH
-                else Attribute.valueOf("MAX_HEALTH")
+            val genericMaxHealth = Utils.getAttribute(AttributeNames.MAX_HEALTH)!!
             var hasExistingDamage = false
             var existingDamagePercent = 0f
 

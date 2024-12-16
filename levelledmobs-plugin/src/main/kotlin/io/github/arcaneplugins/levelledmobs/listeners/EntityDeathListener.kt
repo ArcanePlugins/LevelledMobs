@@ -12,13 +12,15 @@ import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.result.AdjacentChunksResult
+import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
@@ -32,13 +34,34 @@ import org.bukkit.persistence.PersistentDataType
  */
 class EntityDeathListener : Listener {
     val damageMappings = mutableMapOf<UUID, Player>()
+    private var lastPriority: EventPriority? = null
+    private val settingName = "entity-death-event"
 
     // These entity types will be forced not to be processed
     private val bypassEntity = mutableListOf(
         EntityType.ARMOR_STAND,EntityType.ITEM_FRAME, EntityType.ITEM_DISPLAY, EntityType.PAINTING)
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    fun onDeath(event: EntityDeathEvent) {
+    fun load(){
+        val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.NORMAL)
+        if (lastPriority != null){
+            if (priority == lastPriority) return
+
+            HandlerList.unregisterAll(this)
+            Log.inf("Changing event priority for $settingName from $lastPriority to $priority")
+        }
+
+        Bukkit.getPluginManager().registerEvent(
+            EntityDeathEvent::class.java,
+            this,
+            priority,
+            { _, event -> if (event is EntityDeathEvent) onDeath(event) },
+            LevelledMobs.instance,
+            false
+        )
+        lastPriority = priority
+    }
+
+    private fun onDeath(event: EntityDeathEvent) {
         var damagingPlayer: Player? = null
         if (damageMappings.containsKey(event.entity.uniqueId)) {
             damagingPlayer = damageMappings[event.entity.uniqueId]

@@ -5,11 +5,9 @@ import java.io.InvalidObjectException
 import me.clip.placeholderapi.PlaceholderAPI
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
-import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.misc.ExternalPluginDetection
 import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
 import io.github.arcaneplugins.levelledmobs.result.PlayerHomeCheckResult
-import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.TreeMap
@@ -94,7 +92,7 @@ class ExternalCompatibilityManager {
         }
     }
 
-    fun buildBuiltInCompatibilities(){
+    private fun buildBuiltInCompatibilities(){
         val compats = mutableListOf(
             ExternalCompatibility.MYTHIC_MOBS,
             ExternalCompatibility.SIMPLE_PETS,
@@ -162,15 +160,6 @@ class ExternalCompatibilityManager {
 
         private var useNewerEliteMobsKey: Boolean? = null
 
-        private fun isExternalCompatibilityEnabled(
-            externalCompatibility: ExternalCompatibility,
-            list: Map<ExternalCompatibility, Boolean?>
-        ): Boolean {
-            // if not defined default to true
-            return (!list.containsKey(externalCompatibility)
-                    || list[externalCompatibility] != null && list[externalCompatibility]!!)
-        }
-
         private fun checkIfPluginIsInstalledAndEnabled(pluginName: String): Boolean {
             val plugin = Bukkit.getPluginManager().getPlugin(pluginName)
             return plugin != null && plugin.isEnabled
@@ -185,8 +174,36 @@ class ExternalCompatibilityManager {
         val hasNbtApiInstalled: Boolean
             get() = checkIfPluginIsInstalledAndEnabled("NBTAPI")
 
-        fun getPapiPlaceholder(player: Player?, placeholder: String?): String {
-            return PlaceholderAPI.setPlaceholders(player, placeholder!!)
+        fun getPapiPlaceholder(
+            player: Player?,
+            placeholder: String,
+            invalidPlaceholderReplacement: String?
+        ): String {
+            if (invalidPlaceholderReplacement != null){
+                val matcher = PlaceholderAPI.getPlaceholderPattern().matcher(placeholder)
+                val inputList = mutableListOf<String>()
+                while (matcher.find()){
+                    inputList.add("%${matcher.group(matcher.groupCount())}%")
+                }
+
+                if (inputList.isEmpty())
+                    return PlaceholderAPI.setPlaceholders(player, placeholder)
+
+                var results = placeholder
+                val papiResults = PlaceholderAPI.setPlaceholders(player, inputList)
+                assert(inputList.size == papiResults.size){ 
+                    "getPapiPlaceholder: input size (${inputList.size}) did not match results size (${papiResults.size})"
+                }
+                for (i in 0..<papiResults.size) {
+                    var thisResult = papiResults[i]
+                    if (thisResult.isEmpty()) thisResult = invalidPlaceholderReplacement
+                    results = results.replace(inputList[i], thisResult)
+                }
+
+                return results
+            }
+            else
+                return PlaceholderAPI.setPlaceholders(player, placeholder)
         }
 
         val hasMythicMobsInstalled: Boolean
@@ -249,55 +266,6 @@ class ExternalCompatibilityManager {
             }
 
             return ""
-        }
-
-        fun checkAllExternalCompats(lmEntity: LivingEntityWrapper): LevellableState {
-            val externalPlugins = RulesManager.instance.getRuleExternalPlugins(
-                    lmEntity
-            )
-            if (externalPlugins == null) return LevellableState.ALLOWED
-
-            for (pluginName in instance.externalPluginDefinitions.keys){
-                if (!externalPlugins.isIncludedInList(pluginName, lmEntity)){
-                    val mobPlugin = instance.externalPluginDefinitions[pluginName]!!
-                    val result = evaluateExternalPluginMob(mobPlugin, lmEntity)
-                    if (result != LevellableState.ALLOWED) return result
-                }
-            }
-
-            return LevellableState.ALLOWED
-        }
-
-        private fun evaluateExternalPluginMob(
-            mobPlugin: ExternalPluginDetection,
-            lmEntity: LivingEntityWrapper
-        ): LevellableState{
-            if (!mobPlugin.isBuiltIn){
-                if (!mobPlugin.isMobOfType(lmEntity))
-                    return LevellableState.DENIED_EXTERNAL_PLUGIN
-
-                return LevellableState.ALLOWED
-            }
-
-            when (mobPlugin.externalCompatibility!!){
-                ExternalCompatibility.MYTHIC_MOBS -> {
-                    if (isMobOfMythicMobs(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS
-                }
-                ExternalCompatibility.SIMPLE_PETS -> {
-                    if (isMobOfSimplePets(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS
-                }
-                ExternalCompatibility.ELITE_BOSSES -> {
-                    if (isMobOfEliteBosses(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES
-                }
-                ExternalCompatibility.ELITE_MOBS -> {
-                    if (isMobOfMythicMobs(lmEntity)) return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS
-                }
-                else -> {
-                    return LevellableState.ALLOWED
-                }
-            }
-
-            return LevellableState.ALLOWED
         }
 
         fun updateAllExternalCompats(lmEntity: LivingEntityWrapper) {

@@ -24,6 +24,7 @@ class MobsQueueManager {
     private val queue = LinkedBlockingQueue<QueueItem>()
     private val processingList = mutableListOf<UUID>()
     private val maxThreads = 3
+    var ignoreMobsWithNoPlayerContext = false
     var queueTasks = mutableMapOf<Int, BukkitTask>()
     private val threadsCount = AtomicInteger()
     private val queueLock = Any()
@@ -167,8 +168,20 @@ class MobsQueueManager {
     private fun processItem(item: QueueItem) {
         if (!item.lmEntity.isPopulated) return
 
+        if (ignoreMobsWithNoPlayerContext && item.lmEntity.associatedPlayer == null
+            && LevelledMobs.instance.rulesManager.isPlayerLevellingEnabled()){
+            DebugManager.log(DebugType.PLAYER_CONTEXT, item.lmEntity){
+                val locationStr = "${item.lmEntity.location.blockX}, " +
+                    "${item.lmEntity.location.blockY}, " +
+                    "${item.lmEntity.location.blockZ} " +
+                    "in ${item.lmEntity.location.world.name}"
+                "ignoring mob ${item.lmEntity.nameIfBaby} due to no player context at $locationStr"
+            }
+            return
+        }
+
         try{
-            LevelledMobs.instance.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event)
+            LevelledMobs.instance.levelManager.entitySpawnListener.processMob(item.lmEntity, item.event)
         }
 
         catch (ignored: EvaluationException){

@@ -208,9 +208,10 @@ class CustomDropsHandler {
         if (lmEntity.livingEntity.lastDamageCause != null)
             processingInfo.deathCause = lmEntity.livingEntity.lastDamageCause!!.cause.toString()
 
-        processingInfo.addition = (
-            main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount
-        )
+        if (!processingInfo.equippedOnly){
+            processingInfo.addition =
+                main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount
+        }
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRuleCheckIfNoDropMultiplierEntitiy(
             lmEntity
@@ -307,6 +308,7 @@ class CustomDropsHandler {
         info.prioritizedDrops = mutableMapOf()
         info.hasOverride = false
         var usesGroupIds = false
+        val alreadyProcessedIds = mutableSetOf<String>()
 
         val overrideNonDropTableDrops =
             info.dropRules != null && info.dropRules!!.chunkKillOptions!!.getDisableVanillaDrops()
@@ -317,6 +319,7 @@ class CustomDropsHandler {
                 continue
             }
 
+            alreadyProcessedIds.add(id)
             val dropInstance = customItemGroups[id.trim { it <= ' ' }]
             info.allDropInstances.add(dropInstance!!)
 
@@ -332,6 +335,8 @@ class CustomDropsHandler {
 
         if (!overrideNonDropTableDrops) {
             for (group in groups) {
+                if (alreadyProcessedIds.contains(group)) continue
+
                 val dropInstance = getCustomDropsitemsGroups()[group]
                 info.allDropInstances.add(dropInstance!!)
 
@@ -1133,7 +1138,7 @@ class CustomDropsHandler {
         if (dropBase.playerLevelVariable != null && !info.equippedOnly && dropBase.playeerVariableMatches.isNotEmpty()) {
             val papiResult = Utils.removeColorCodes(
                 ExternalCompatibilityManager.getPapiPlaceholder(
-                    info.mobKiller, dropBase.playerLevelVariable
+                    info.mobKiller, dropBase.playerLevelVariable!!, info.lmEntity?.invalidPlaceholderReplacement
                 )
             )
 
@@ -1236,7 +1241,11 @@ class CustomDropsHandler {
             command = command.replace("%mob-scale-rounded%", mobScaleRounded)
 
             if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled)
-                command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command)
+                command = ExternalCompatibilityManager.getPapiPlaceholder(
+                    info.mobKiller,
+                    command,
+                    info.lmEntity?.invalidPlaceholderReplacement
+                )
 
             val maxAllowedTimesToRun: Int = LevelledMobs.instance.helperSettings.getInt(
                 "customcommand-amount-limit", 10

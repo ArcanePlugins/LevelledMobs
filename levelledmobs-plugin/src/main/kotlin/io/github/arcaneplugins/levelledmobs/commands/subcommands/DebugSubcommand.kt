@@ -494,7 +494,6 @@ object DebugSubcommand {
         )
 
         if (disableAfter != null) {
-            disableAfter *= 1000
             val category = args.get("category") as? String
             if (category != null) {
                 if (!parseEnableDebugCategory(category, sender)) return
@@ -962,7 +961,7 @@ object DebugSubcommand {
             ListTypes.ENTITY -> {
                 if (isAdd) {
                     for (entityType in EntityType.entries) {
-                        if (LevelledMobs.instance.debugManager.excludedEntityTypes.contains(entityType.name)) continue
+                        if (LevelledMobs.instance.levelManager.forcedBlockedEntityTypes.contains(entityType)) continue
                         result.add(entityType.toString().lowercase(Locale.getDefault()))
                     }
                 }

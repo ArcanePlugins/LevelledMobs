@@ -77,6 +77,8 @@ class CachedModalList<T> : Cloneable {
             if (!isFirst) sb.append(", ")
 
             if (item is Structure) {
+                // TODO: make this not use a deprecated method
+                @Suppress("removal")
                 sb.append(item.key().value())
             }
             else

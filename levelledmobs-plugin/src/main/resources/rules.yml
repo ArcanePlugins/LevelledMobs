@@ -368,8 +368,6 @@ default-rule:
     spawner-particles-count: 10
 
     baby-mobs-inherit-adult-setting: true
-    transforming-mobs-inherit-level: true
-    riding-passengers-match-vehicle-level: false
 
   # Miscellaneous Settings
     multipliers:

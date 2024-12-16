@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.customdrops.EquippedItemsInfo
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
 import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.enums.AttributeNames
 import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.enums.MobCustomNameStatus
@@ -105,15 +106,15 @@ class LevelManager : LevelInterface2 {
 
     fun load(){
         attributeStringList.putAll(mutableMapOf(
-            "%max-health%" to Attribute.GENERIC_MAX_HEALTH,
-            "%movement-speed%" to Attribute.GENERIC_MOVEMENT_SPEED,
-            "%attack-damage%" to Attribute.GENERIC_ATTACK_DAMAGE,
-            "%follow-range%" to Attribute.GENERIC_FOLLOW_RANGE,
-            "%armor-bonus%" to Attribute.GENERIC_ARMOR,
-            "%armor-toughness%" to Attribute.GENERIC_ARMOR_TOUGHNESS,
-            "%attack-knockback%" to Attribute.GENERIC_ATTACK_KNOCKBACK,
-            "%knockback-resistance%" to Attribute.GENERIC_KNOCKBACK_RESISTANCE,
-            "%zombie-spawn-reinforcements%" to Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+            "%max-health%" to Utils.getAttribute(AttributeNames.MAX_HEALTH)!!,
+            "%movement-speed%" to Utils.getAttribute(AttributeNames.MOVEMENT_SPEED)!!,
+            "%attack-damage%" to Utils.getAttribute(AttributeNames.ATTACK_DAMAGE)!!,
+            "%follow-range%" to Utils.getAttribute(AttributeNames.FOLLOW_RANGE)!!,
+            "%armor-bonus%" to Utils.getAttribute(AttributeNames.ARMOR)!!,
+            "%armor-toughness%" to Utils.getAttribute(AttributeNames.ARMOR_TOUGHNESS)!!,
+            "%attack-knockback%" to Utils.getAttribute(AttributeNames.ATTACK_KNOCKBACK)!!,
+            "%knockback-resistance%" to Utils.getAttribute(AttributeNames.KNOCKBACK_RESISTANCE)!!,
+            "%zombie-spawn-reinforcements%" to Utils.getAttribute(AttributeNames.SPAWN_REINFORCEMENTS)!!
         ))
 
         strategyPlaceholders.putAll(mutableMapOf(
@@ -398,7 +399,7 @@ class LevelManager : LevelInterface2 {
             var papiResult: String? = null
 
             if (ExternalCompatibilityManager.hasPapiInstalled) {
-                papiResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse)
+                papiResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse, lmEntity.invalidPlaceholderReplacement)
                 if (papiResult.isEmpty()) {
                     val l = player.location
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
@@ -759,7 +760,11 @@ class LevelManager : LevelInterface2 {
         nametag.replace("%health-indicator-color%", colorOnly)
 
         if (nametag.text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled)
-            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(lmEntity.associatedPlayer, nametag.text)
+            nametag.text = ExternalCompatibilityManager.getPapiPlaceholder(
+                lmEntity.associatedPlayer,
+                nametag.text,
+                lmEntity.invalidPlaceholderReplacement
+            )
 
         val result = NametagResult(nametag.text)
         // this field is only used for sending nametags to client
@@ -880,7 +885,7 @@ class LevelManager : LevelInterface2 {
         if (!str.text.contains("%")) return str.text
 
         return replaceStringPlaceholders(
-            str, lmEntity, true, null, true
+            str, lmEntity, true, lmEntity.associatedPlayer, true
         )
     }
 
@@ -954,7 +959,7 @@ class LevelManager : LevelInterface2 {
         text.replaceIfExists("%entity-max-health-rounded-up%"){ ceil(maxHealth).toInt().toString() }
         getHealthPercentRemaining(entityHealth, maxHealth, text)
         text.replaceIfExists("%base-health%"){
-            val baseHealth = lmEntity.livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue
+            val baseHealth = lmEntity.livingEntity.getAttribute(Utils.getAttribute(AttributeNames.MAX_HEALTH)!!)?.baseValue
             if (baseHealth != null) return@replaceIfExists baseHealth.toString()
             else return@replaceIfExists "0"
         }
@@ -984,7 +989,7 @@ class LevelManager : LevelInterface2 {
         }
 
         if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
-            text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text)
+            text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text, lmEntity.invalidPlaceholderReplacement)
         }
 
         return text.text
@@ -1102,35 +1107,26 @@ class LevelManager : LevelInterface2 {
     private fun enumerateNearbyEntities() {
         entitiesPerPlayer.clear()
         asyncRunningCount.set(0)
-        val checkDistance = LevelledMobs.instance.helperSettings.getInt(
-            "async-task-max-blocks-from-player", 100
-        )
+        val checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (LevelledMobs.instance.ver.isRunningFolia) {
-                val runnable = Runnable {
+                asyncRunningCount.getAndIncrement()
+                val scheduler = SchedulerWrapper(player) {
+                    val entities = player.getNearbyEntities(
+                        checkDistance, checkDistance, checkDistance
+                    )
+                    synchronized(entitiesPerPlayerLock) {
+                        entitiesPerPlayer.put(player, entities)
+                    }
+
+                    asyncRunningCount.getAndDecrement()
                     if (asyncRunningCount.get() == 0) runNametagCheckASync()
                 }
-
-                asyncRunningCount.getAndIncrement()
-                val task =
-                    Consumer<ScheduledTask> { _: ScheduledTask? ->
-                        val entities = player.getNearbyEntities(
-                            checkDistance.toDouble(),
-                            checkDistance.toDouble(), checkDistance.toDouble()
-                        )
-                        synchronized(entitiesPerPlayerLock) {
-                            entitiesPerPlayer.put(player, entities)
-                        }
-
-                        asyncRunningCount.getAndDecrement()
-                        if (asyncRunningCount.get() == 0) runNametagCheckASync()
-                    }
-                player.scheduler.run(LevelledMobs.instance, task, runnable)
+                scheduler.run()
             } else {
                 val entities = player.getNearbyEntities(
-                    checkDistance.toDouble(),
-                    checkDistance.toDouble(), checkDistance.toDouble()
+                    checkDistance, checkDistance, checkDistance
                 )
                 entitiesPerPlayer[player] = entities
                 runNametagCheckASync()
@@ -1476,33 +1472,29 @@ class LevelManager : LevelInterface2 {
             MobDataManager.instance.getAllAttributeValues(lmEntity)
 
         for (addition in additions){
-            val attribute: Attribute
-            when (addition) {
-                Addition.ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH
-                Addition.ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE
-                Addition.ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED
-                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> {
-                    attribute = if (LevelledMobs.instance.ver.useNewHorseJumpAttrib)
-                        Attribute.GENERIC_JUMP_STRENGTH
-                    else
-                        Attribute.valueOf("HORSE_JUMP_STRENGTH")
-                }
-                Addition.ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR
-                Addition.ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS
-                Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE
-                Addition.ATTRIBUTE_FLYING_SPEED -> attribute = Attribute.GENERIC_FLYING_SPEED
-                Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK
-                Addition.ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE
+            val attribute = when (addition) {
+                Addition.ATTRIBUTE_MAX_HEALTH -> Utils.getAttribute(AttributeNames.MAX_HEALTH)
+                Addition.ATTRIBUTE_ATTACK_DAMAGE -> Utils.getAttribute(AttributeNames.ATTACK_DAMAGE)
+                Addition.ATTRIBUTE_MOVEMENT_SPEED -> Utils.getAttribute(AttributeNames.MOVEMENT_SPEED)
+                Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH -> Utils.getAttribute(AttributeNames.JUMP_STRENGTH)
+                Addition.ATTRIBUTE_ARMOR_BONUS -> Utils.getAttribute(AttributeNames.ARMOR)
+                Addition.ATTRIBUTE_ARMOR_TOUGHNESS -> Utils.getAttribute(AttributeNames.ARMOR_TOUGHNESS)
+                Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE -> Utils.getAttribute(AttributeNames.KNOCKBACK_RESISTANCE)
+                Addition.ATTRIBUTE_FLYING_SPEED -> Utils.getAttribute(AttributeNames.FLYING_SPEED)
+                Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> Utils.getAttribute(AttributeNames.ATTACK_KNOCKBACK)
+                Addition.ATTRIBUTE_FOLLOW_RANGE -> Utils.getAttribute(AttributeNames.FOLLOW_RANGE)
                 Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
                     if (lmEntity.spawnReason.getMinecraftSpawnReason(lmEntity) == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS)
-                        continue
-
-                    attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS
+                        null
+                    else
+                        Utils.getAttribute(AttributeNames.SPAWN_REINFORCEMENTS)
                 }
                 else -> throw IllegalStateException(
                     "Addition must be an Attribute, if so, it has not been considered in this method"
                 )
             }
+
+            if (attribute == null) continue
 
             val result = MobDataManager.instance.prepareSetAttributes(lmEntity, attribute, addition)
             if (result != null) modInfo.add(result)
@@ -1732,7 +1724,7 @@ class LevelManager : LevelInterface2 {
         var result = 0.0
         synchronized(LevelledMobs.instance.attributeSyncObject) {
             val attrib = lmEntity.livingEntity
-                .getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                .getAttribute(Utils.getAttribute(AttributeNames.MAX_HEALTH)!!)
             if (attrib != null) {
                 result = attrib.value
             }
@@ -1777,13 +1769,6 @@ class LevelManager : LevelInterface2 {
 
         if (lmInterface !is LivingEntityWrapper) {
             return LevellableState.ALLOWED
-        }
-
-        val externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(
-            lmInterface
-        )
-        if (externalCompatResult != LevellableState.ALLOWED) {
-            return externalCompatResult
         }
 
         if (lmInterface.isMobOfExternalType) {
@@ -2161,13 +2146,9 @@ class LevelManager : LevelInterface2 {
 
         // reset attributes
         synchronized(main.attributeSyncObject) {
-            for (attribute in Attribute.entries) {
-                val attInst = lmEntity.livingEntity
-                    .getAttribute(attribute)
-
-                if (attInst == null) {
-                    continue
-                }
+            for (attributeName in AttributeNames.entries) {
+                val attribute = Utils.getAttribute(attributeName) ?: continue
+                val attInst = lmEntity.livingEntity.getAttribute(attribute) ?: continue
 
                 val existingMods =
                     Collections.enumeration(attInst.modifiers)
