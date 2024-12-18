@@ -48,6 +48,7 @@ object KeyValidation {
             "nametag-placeholder-unlevelled",
             "nametag-visibility-method",
             "nametag-visible-time",
+            "nbt-data",
             "no-drop-multipler-entities",
             "passenger-match-level",
             "spawner-particles",
