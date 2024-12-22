@@ -19,12 +19,9 @@ class NametagSenderHandler {
         }
 
         this.currentUtil = NmsNametagSender()
-        val ver = LevelledMobs.instance.ver
-        val showVersion = if (ver.isRunningPaper && "unknown" == ver.nmsVersion)
-            Bukkit.getServer().minecraftVersion else ver.nmsVersion
 
         Log.inf(
-            "Using NMS version $showVersion for nametag support"
+            "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
         )
 
         return this.currentUtil
