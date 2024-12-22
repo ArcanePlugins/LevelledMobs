@@ -17,6 +17,11 @@ class ServerVersionInfo {
     fun load(){
         parseServerVersion()
         parseNMSVersion()
+
+        if (isRunningPaper && "unknown" == nmsVersion) {
+            nmsVersion = Bukkit.getServer().minecraftVersion
+            useSimpleName = true
+        }
     }
 
     var majorVersion = 0
@@ -35,6 +40,8 @@ class ServerVersionInfo {
     var useNewHorseJumpAttrib = false
         private set
     var allowStructureConditions = false
+        private set
+    var useSimpleName = true
         private set
 
     // preliminary fabric support. not entirely there yet
@@ -64,6 +71,10 @@ class ServerVersionInfo {
         useOldEnums = minorVersion < 21 || minorVersion == 21 && revision < 3
 
         useNewHorseJumpAttrib = minorVersion >= 21 || (minorVersion == 20 && revision >= 6)
+
+        useSimpleName = (isRunningPaper && isOneTwentyFiveOrNewer && !isRunningFolia
+                || isRunningFabric)
+                && (!isRunningFolia || minorVersion >= 22)
     }
 
     private fun parsePaperVersion(){

@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo.MinecraftMajorVersion
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -154,6 +155,8 @@ class Definitions{
 
     fun load(){
         ver = LevelledMobs.instance.ver
+
+        Log.inf("Building reflection cache, use simple names: ${ver.useSimpleName}")
         build()
         if (hasMiniMessage) mm = MiniMessage.miniMessage()
     }
@@ -189,10 +192,7 @@ class Definitions{
 
         // if running folia only use simple name if the version is 1.21+
 
-        val useSimpleName = (ver.isRunningPaper && isOneTwentyFiveOrNewer || ver.isRunningFabric) &&
-                (!ver.isRunningFolia || ver.minorVersion >= 22)
-
-        return if (useSimpleName) {
+        return if (ver.useSimpleName) {
             "org.bukkit.craftbukkit.$classSuffix"
         } else {
             ("org.bukkit.craftbukkit." + ver.nmsVersion) + "." + classSuffix
