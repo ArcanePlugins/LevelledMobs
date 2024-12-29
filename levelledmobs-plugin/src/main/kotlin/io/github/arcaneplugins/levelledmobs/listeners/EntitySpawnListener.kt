@@ -103,6 +103,9 @@ class EntitySpawnListener : Listener{
         lmEntity.populateShowShowLMNametag()
         var hasBuiltCache = false
 
+        if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
+            updateMobForPlayerLevelling(lmEntity)
+
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason
             lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, spawnReason)
@@ -114,12 +117,6 @@ class EntitySpawnListener : Listener{
             if ((spawnReason == SpawnReason.CUSTOM || spawnReason == SpawnReason.SPAWNER_EGG) &&
                 !lmEntity.isLevelled
             ) {
-                if (main.rulesManager.isPlayerLevellingEnabled()
-                    && lmEntity.playerForLevelling == null
-                ) {
-                    updateMobForPlayerLevelling(lmEntity)
-                }
-
                 val amountToDelay = (20 - delayedAmount).coerceAtLeast(0)
 
                 if (amountToDelay == 0)
@@ -142,9 +139,6 @@ class EntitySpawnListener : Listener{
             lmEntity.buildCacheIfNeeded()
             MobDataManager.populateAttributeCache(lmEntity, null)
         }
-
-        if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.playerForLevelling == null)
-            updateMobForPlayerLevelling(lmEntity)
 
         main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
 
@@ -452,6 +446,8 @@ class EntitySpawnListener : Listener{
                 lmEntity.free()
             }
 
+            if (Bukkit.isPrimaryThread()) wrapper.runDirectlyInBukkit = true
+
             lmEntity.inUseCount.getAndIncrement()
             wrapper.run()
         }
@@ -477,6 +473,8 @@ class EntitySpawnListener : Listener{
 
             if (closestPlayer == null) return
 
+            lmEntity.associatedPlayer = closestPlayer
+
             // if player has been logged in for less than 5 seconds then ignore
             val logonTime = main.mainCompanion.getRecentlyJoinedPlayerLogonTime(closestPlayer)
             if (logonTime != null) {
@@ -490,7 +488,6 @@ class EntitySpawnListener : Listener{
                 closestPlayer.uniqueId.toString()
             )
 
-            lmEntity.playerForLevelling = closestPlayer
             val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
             if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
                 lmEntity.livingEntity.hasLineOfSight(closestPlayer)

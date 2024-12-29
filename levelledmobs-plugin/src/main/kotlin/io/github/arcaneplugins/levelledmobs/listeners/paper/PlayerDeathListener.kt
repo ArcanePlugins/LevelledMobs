@@ -95,7 +95,7 @@ class PlayerDeathListener {
 
         val player = event.player
 
-        lmKiller.playerForLevelling = player
+        lmKiller.associatedPlayer = player
         val mobNametag: NametagResult = LevelledMobs.instance.levelManager.getNametag(lmKiller,
             isDeathNametag = true,
             preserveMobName = true

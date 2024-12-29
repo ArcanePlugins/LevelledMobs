@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.EnderDragon
@@ -234,8 +235,17 @@ class EntityDamageListener : Listener {
         }
 
         val shooter = LivingEntityWrapper.getInstance(projectile.shooter as LivingEntity)
-        MobDataManager.populateAttributeCache(shooter)
-        processRangedDamage2(shooter, event)
+        if (LevelledMobs.instance.ver.isRunningFolia){
+            val scheduler = SchedulerWrapper(shooter.livingEntity){
+                MobDataManager.populateAttributeCache(shooter)
+                processRangedDamage2(shooter, event)
+            }
+            scheduler.run()
+        }
+        else{
+            MobDataManager.populateAttributeCache(shooter)
+            processRangedDamage2(shooter, event)
+        }
 
         shooter.free()
     }
