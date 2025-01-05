@@ -1191,8 +1191,7 @@ class RulesManager {
         }
 
         if (ri.conditionsWorlds != null) {
-            val result = (lmInterface.wasSummoned ||
-                    ri.conditionsWorlds!!.isIncludedInList(lmInterface.world!!.name, null))
+            val result = ri.conditionsWorlds!!.isIncludedInList(lmInterface.world!!.name, null)
             DebugManager.log(
                 DebugType.CONDITION_WORLD_LIST, ri, lmInterface, result
             ) {
