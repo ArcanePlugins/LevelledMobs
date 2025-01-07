@@ -240,12 +240,10 @@ class RuleInfo(
                 if (presetValue is CachedModalList<*>) {
                     val thisCachedModalList = ruleValue as CachedModalList<*>?
 
-                    if (thisCachedModalList != null && presetValue.doMerge) {
+                    if (thisCachedModalList != null && presetValue.doMerge)
                         thisCachedModalList.mergeCachedModal(presetValue)
-                    } else {
+                    else
                         this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
-                        //updatePropertyValue(p, presetValue.clone())
-                    }
 
                     skipSettingValue = true
                 }
