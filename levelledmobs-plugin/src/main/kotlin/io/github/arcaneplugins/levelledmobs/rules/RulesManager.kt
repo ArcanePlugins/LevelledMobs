@@ -592,9 +592,7 @@ class RulesManager {
         var entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>? = null
         var entityNameOverrides: MutableMap<String, LevelTierMatching>? = null
 
-        if (lmEntity.hasOverridenEntityName) {
-            return lmEntity.overridenEntityName
-        }
+        if (lmEntity.hasOverridenEntityName) return lmEntity.overridenEntityName
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
             val doMerge =
@@ -608,17 +606,15 @@ class RulesManager {
             }
 
             if (ruleInfo.entityNameOverridesLevel != null) {
-                if (entityNameOverridesLevel != null && doMerge) {
+                if (entityNameOverridesLevel != null && doMerge)
                     entityNameOverridesLevel.putAll(ruleInfo.entityNameOverridesLevel!!)
-                } else {
+                else
                     entityNameOverridesLevel = ruleInfo.entityNameOverridesLevel
-                }
             }
         }
 
-        if (entityNameOverrides == null && entityNameOverridesLevel == null) {
+        if (entityNameOverrides == null && entityNameOverridesLevel == null)
             return null
-        }
 
         var namesInfo: MutableList<String>? = null
         val matchedTiers = getEntityNameOverrideLevel(
@@ -628,18 +624,18 @@ class RulesManager {
         if (matchedTiers != null) {
             namesInfo = matchedTiers.names
         } else if (entityNameOverrides != null) {
-            if (entityNameOverrides.containsKey("all_entities")) {
+            if (entityNameOverrides.containsKey("all_entities"))
                 namesInfo = entityNameOverrides["all_entities"]!!.names
-            } else if (entityNameOverrides.containsKey(lmEntity.typeName)) {
-                namesInfo = entityNameOverrides[lmEntity.typeName]!!.names
-            }
+            else if (entityNameOverrides.containsKey(lmEntity.nameIfBaby))
+                namesInfo = entityNameOverrides[lmEntity.nameIfBaby]!!.names
+            else if (entityNameOverrides.containsKey("baby_") && lmEntity.isBabyMob)
+                namesInfo = entityNameOverrides["baby_"]!!.names
         }
 
-        if (namesInfo.isNullOrEmpty()) {
+        if (namesInfo.isNullOrEmpty())
             return null
-        } else if (namesInfo.size > 1) {
+        else if (namesInfo.size > 1)
             namesInfo.shuffle()
-        }
 
         val entityName = capitalize(lmEntity.typeName.replace("_".toRegex(), " "))
         var result = namesInfo[0]
