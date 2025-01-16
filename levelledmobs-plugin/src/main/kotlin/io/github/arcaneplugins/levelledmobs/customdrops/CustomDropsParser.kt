@@ -22,6 +22,7 @@ import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.MemorySection
@@ -1206,11 +1207,21 @@ class CustomDropsParser(
             val meta = itemStack.itemMeta
             val sb2 = StringBuilder()
             if (meta != null) {
-                for (enchant in meta.enchants.keys) {
+                val enchantments = if (meta is EnchantmentStorageMeta)
+                    meta.storedEnchants.entries
+                else
+                    meta.enchants.entries
+
+                for (enchant in enchantments) {
                     if (sb2.isNotEmpty()) sb2.append(", ")
 
+                    val showKey = if (enchant.key.key.namespace == NamespacedKey.MINECRAFT_NAMESPACE)
+                        enchant.key.key().value()
+                    else
+                        enchant.key.key().toString()
+
                     sb2.append(
-                        "&b${enchant.key.key}&r (${itemStack.itemMeta.enchants[enchant]})"
+                        "&b$showKey&r (${enchant.value})"
                     )
                 }
             }
