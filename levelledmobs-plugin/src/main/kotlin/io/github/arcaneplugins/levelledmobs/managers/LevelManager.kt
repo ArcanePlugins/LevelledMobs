@@ -1337,7 +1337,7 @@ class LevelManager : LevelInterface2 {
 
         if (doesMobNeedRelevelling(lmEntity, closestPlayer)) {
             lmEntity.pendingPlayerIdToSet = closestPlayer.uniqueId.toString()
-            lmEntity.playerForLevelling = closestPlayer
+            lmEntity.associatedPlayer = closestPlayer
             lmEntity.reEvaluateLevel = true
             LevelledMobs.instance.mobsQueueManager.addToQueue(QueueItem(lmEntity, null))
         }

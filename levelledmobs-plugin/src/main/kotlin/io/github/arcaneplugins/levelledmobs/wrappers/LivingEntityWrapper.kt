@@ -204,7 +204,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         this.isRulesForceAll = false
         this.wasPreviouslyLevelled = false
         this.groupsAreBuilt = false
-        this.playerForLevelling = null
         this.prevChanceRuleResults = null
         this._sourceSpawnerName = null
         this._sourceSpawnEggName = null
@@ -457,19 +456,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
         return this.nametagCooldownTime
     }
-
-    var playerForLevelling: Player? = null
-        get() {
-            synchronized(playerLock) {
-                return field
-            }
-        }
-        set(value) {
-            synchronized(playerLock) {
-                field = value
-            }
-            this.associatedPlayer = value
-        }
 
     var fineTuningAttributes: FineTuningAttributes? = null
         private set

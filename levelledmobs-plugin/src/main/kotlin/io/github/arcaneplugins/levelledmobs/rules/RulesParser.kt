@@ -59,12 +59,20 @@ class RulesParser {
         private const val MLINCLUDEDGROUPS = "included-groups"
         private const val MLEXCLUDEDITEMS = "excluded-list"
         private const val MLEXCLUDEDGROUPS = "excluded-groups"
+        private val validModalListOptions = mutableListOf<String>()
         private val emptyArrayPattern = Pattern.compile("\\[\\s+?]|\\[]")
+
+        init {
+            validModalListOptions.addAll(mutableListOf(
+                MLINCLUDEDGROUPS, MLINCLUDEDLIST, MLEXCLUDEDITEMS, MLEXCLUDEDGROUPS, "merge"
+            ))
+        }
 
         fun buildCachedModalListOfString(
             cs: ConfigurationSection?,
             name: String,
-            defaultValue: CachedModalList<String>?
+            defaultValue: CachedModalList<String>?,
+            ruleName: String?
         ): CachedModalList<String>? {
             if (cs == null) return defaultValue
 
@@ -88,6 +96,17 @@ class RulesParser {
             }
             if (cs2 == null && useList == null) {
                 return defaultValue
+            }
+
+            if (cs2 != null) {
+                for (key in cs2.getKeys(false)) {
+                    if (!validModalListOptions.contains(key)){
+                        if (ruleName == null)
+                            Log.war("Invalid modal list option: '$key'")
+                        else
+                            Log.war("Invalid modal list option: '$key' in rule: $ruleName")
+                    }
+                }
             }
 
             cachedModalList.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
@@ -207,7 +226,7 @@ class RulesParser {
                     mlpi.configurationKey = "biomes"
                     mlpi.itemName = "Biome"
                     mlpi.supportsGroups = true
-                    mlpi.groupMapping =  LevelledMobs.instance.rulesManager.biomeGroupMappings
+                    mlpi.groupMapping = LevelledMobs.instance.rulesManager.biomeGroupMappings
                     mlpi.cachedModalList = CachedModalList<Biome>()
                 }
 
@@ -258,6 +277,13 @@ class RulesParser {
             }
             if (cs2 == null && useList == null) {
                 return defaultValue
+            }
+
+            if (cs2 != null) {
+                for (key in cs2.getKeys(false)) {
+                    if (!validModalListOptions.contains(key))
+                        Log.war("Invalid modal list option: '$key' in rule: ${ruleInfo.ruleName}")
+                }
             }
 
             cachedModalList!!.doMerge = YmlParsingHelper.getBoolean(cs2, "merge")
@@ -746,7 +772,7 @@ class RulesParser {
             "invalid-placeholder-replacement", parsingInfo.invalidPlaceholderReplacement
         )
         parsingInfo.conditionsNoDropEntities = buildCachedModalListOfString(
-                  cs, "no-drop-multipler-entities", parsingInfo.conditionsNoDropEntities
+                  cs, "no-drop-multipler-entities", parsingInfo.conditionsNoDropEntities, parsingInfo.ruleName
         )
         parsingInfo.babyMobsInheritAdultSetting = ymlHelper.getBoolean2(
             "baby-mobs-inherit-adult-setting", parsingInfo.babyMobsInheritAdultSetting
@@ -933,7 +959,7 @@ class RulesParser {
         val ymlHelper = YmlParsingHelper(cs)
         parsingInfo.conditionsWorlds = buildCachedModalListOfString(
             cs, "worlds",
-            parsingInfo.conditionsWorlds
+            parsingInfo.conditionsWorlds, parsingInfo.ruleName
         )
 
         parsingInfo.conditionsMinLevel = ymlHelper.getInt2(
@@ -999,11 +1025,11 @@ class RulesParser {
 
         parsingInfo.conditionsWGregions = buildCachedModalListOfString(
             cs,
-            "worldguard-regions", parsingInfo.conditionsWGregions
+            "worldguard-regions", parsingInfo.conditionsWGregions, parsingInfo.ruleName
         )
         parsingInfo.conditionsWGregionOwners = buildCachedModalListOfString(
             cs,
-            "worldguard-region-owners", parsingInfo.conditionsWGregionOwners
+            "worldguard-region-owners", parsingInfo.conditionsWGregionOwners, parsingInfo.ruleName
         )
         parsingInfo.conditionsSpawnReasons = buildCachedModalOfType(
             cs,
@@ -1012,11 +1038,11 @@ class RulesParser {
         ) as CachedModalList<String>?
         parsingInfo.conditionsCustomNames = buildCachedModalListOfString(
             cs, "custom-names",
-            parsingInfo.conditionsCustomNames
+            parsingInfo.conditionsCustomNames, parsingInfo.ruleName
         )
         parsingInfo.conditionsEntities = buildCachedModalListOfString(
             cs, "entities",
-            parsingInfo.conditionsEntities
+            parsingInfo.conditionsEntities, parsingInfo.ruleName
         )
         parsingInfo.conditionsBiomes = buildCachedModalOfType(
             cs,
@@ -1025,19 +1051,19 @@ class RulesParser {
         ) as CachedModalList<Biome>?
         parsingInfo.conditionsExternalPlugins = buildCachedModalListOfString(
             cs,
-            "external-plugins", parsingInfo.conditionsExternalPlugins
+            "external-plugins", parsingInfo.conditionsExternalPlugins, parsingInfo.ruleName
         )
         parsingInfo.conditionsMMnames = buildCachedModalListOfString(
             cs,
-            "mythicmobs-internal-names", parsingInfo.conditionsMMnames
+            "mythicmobs-internal-names", parsingInfo.conditionsMMnames, parsingInfo.ruleName
         )
         parsingInfo.conditionsSpawnerNames = buildCachedModalListOfString(
             cs, "spawner-names",
-            parsingInfo.conditionsSpawnerNames
+            parsingInfo.conditionsSpawnerNames, parsingInfo.ruleName
         )
         parsingInfo.conditionsSpawnegEggNames = buildCachedModalListOfString(
             cs,
-            "spawner-egg-names", parsingInfo.conditionsSpawnegEggNames
+            "spawner-egg-names", parsingInfo.conditionsSpawnegEggNames, parsingInfo.ruleName
         )
         parsingInfo.conditionsWorldTickTime = parseWorldTimeTicks(
             cs,
@@ -1045,11 +1071,11 @@ class RulesParser {
         )
         parsingInfo.conditionsPermission = buildCachedModalListOfString(
             cs, "permission",
-            parsingInfo.conditionsPermission
+            parsingInfo.conditionsPermission, parsingInfo.ruleName
         )
         parsingInfo.conditionsScoreboardTags = buildCachedModalListOfString(
             cs, "scoreboard-tags",
-            parsingInfo.conditionsScoreboardTags
+            parsingInfo.conditionsScoreboardTags, parsingInfo.ruleName
         )
         parsingInfo.conditionsSkyLightLevel = parseMinMaxValue(
             ymlHelper.getString( "skylight-level")
@@ -1270,7 +1296,7 @@ class RulesParser {
         if (cs == null) return existingList
 
         val configName = "world-time-tick"
-        val temp = buildCachedModalListOfString(cs, configName, null) ?: return existingList
+        val temp = buildCachedModalListOfString(cs, configName, null, parsingInfo.ruleName) ?: return existingList
         val result = CachedModalList<MinAndMax>()
         result.includeAll = temp.includeAll
         result.excludeAll = temp.excludeAll

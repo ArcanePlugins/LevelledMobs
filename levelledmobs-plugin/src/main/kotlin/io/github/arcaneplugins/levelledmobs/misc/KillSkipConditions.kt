@@ -26,7 +26,7 @@ class KillSkipConditions {
                     "is-villager" -> result.isVillager = cs.getBoolean(key)
                     "entitytype" -> {
                         result.entityTypes = RulesParser.buildCachedModalListOfString(
-                            cs, key, null)
+                            cs, key, null, null)
                     }
                 }
             }

@@ -102,7 +102,7 @@ tasks {
         filesMatching("plugin.yml") {
             expand(mapOf(
                 "version" to version,
-                "description" to project.findProperty("description")
+                "description" to rootProject.description
             ))
         }
     }

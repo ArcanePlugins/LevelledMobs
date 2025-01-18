@@ -46,13 +46,13 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             return 0f
         }
 
-        val player = lmEntity.playerForLevelling ?: return 0f
+        val player = lmEntity.associatedPlayer ?: return 0f
 
         val variableToUse =
             if (options.variable.isNullOrEmpty()) "%level%" else options.variable!!
         val scale = if (options.playerVariableScale != null) options.playerVariableScale!! else 1f
         val playerLevelSourceResult = lmEntity.main.levelManager.getPlayerLevelSourceNumber(
-            lmEntity.playerForLevelling, lmEntity, variableToUse
+            lmEntity.associatedPlayer, lmEntity, variableToUse
         )
 
         val origLevelSource =
@@ -110,11 +110,11 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             if (!foundMatch) {
                 if (playerLevelSourceResult.isNumericResult) {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        "player: ${player.name}, input: $origLevelSource, scale: $levelSource,${capDisplay}sno tiers matched"
+                        "player: ${player.name}, input: $origLevelSource, scale: $levelSource,${capDisplay} no tiers matched"
                     }
                 } else {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        "player: ${player.name}, input: '${playerLevelSourceResult.stringResult}', ${capDisplay}no tiers matched"
+                        "player: ${player.name}, input: '${playerLevelSourceResult.stringResult}', ${capDisplay} no tiers matched"
                     }
                 }
                 if (options.outputCap != null) {
