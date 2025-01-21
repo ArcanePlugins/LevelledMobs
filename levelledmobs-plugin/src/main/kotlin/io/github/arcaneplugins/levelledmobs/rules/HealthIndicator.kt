@@ -16,6 +16,10 @@ class HealthIndicator : MergableRule, Cloneable {
     var maxIndicators: Int? = null
     var tiers: MutableMap<Int, String>? = null
     var merge: Boolean? = null
+    var maintainSpace: Boolean? = null
+    companion object{
+        private const val SPACE = " "
+    }
 
     override fun cloneItem(): Any {
         var copy: HealthIndicator? = null
@@ -50,59 +54,65 @@ class HealthIndicator : MergableRule, Cloneable {
     fun formatHealthIndicator(lmEntity: LivingEntityWrapper): HealthIndicatorResult {
         val mobHealth = lmEntity.livingEntity.health
 
-        if (mobHealth == 0.0) {
-            return HealthIndicatorResult()
-        }
+        if (mobHealth == 0.0) return HealthIndicatorResult()
 
         val maxIndicators = if (this.maxIndicators != null) maxIndicators!! else 10
         val indicatorStr = if (this.indicator != null) this.indicator else "▐"
         val scale = if (this.scale != null) scale!! else 5.0
+        val shouldMaintainSpace = (maintainSpace != null && maintainSpace!!)
 
         var indicatorsToUse = if (scale == 0.0) ceil(mobHealth).toInt() else ceil(mobHealth / scale)
             .toInt()
         val tiersToUse = ceil(indicatorsToUse.toDouble() / maxIndicators.toDouble()).toInt()
         var toRecolor = 0
-        if (tiersToUse > 0) {
+        if (tiersToUse > 0)
             toRecolor = indicatorsToUse % maxIndicators
-        }
 
         var primaryColor: String? = ""
         var secondaryColor: String? = ""
 
         if (this.tiers != null) {
-            if (tiers!!.containsKey(tiersToUse)) {
-                primaryColor = tiers!![tiersToUse]
-            } else if (tiers!!.containsKey(0)) {
-                primaryColor = tiers!![0]
-            }
+            val useTiers = this.tiers!!
 
-            if (tiersToUse > 0 && tiers!!.containsKey(tiersToUse - 1)) {
-                secondaryColor = tiers!![tiersToUse - 1]
-            } else if (tiers!!.containsKey(0)) {
-                secondaryColor = tiers!![0]
-            }
+            if (useTiers.containsKey(tiersToUse))
+                primaryColor = useTiers[tiersToUse]
+            else if (useTiers.containsKey(0))
+                primaryColor = useTiers[0]
+
+            if (tiersToUse > 0 && useTiers.containsKey(tiersToUse - 1))
+                secondaryColor = useTiers[tiersToUse - 1]
+            else if (useTiers.containsKey(0))
+                secondaryColor = useTiers[0]
         }
 
         val result = StringBuilder()
         result.append(primaryColor)
 
         if (tiersToUse < 2) {
+            var indicatorsUsed = 0
             var useHalf = false
             if (this.indicatorHalf != null && indicatorsToUse < maxIndicators) {
                 useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth
-                if (useHalf && indicatorsToUse > 0) {
+                if (useHalf && indicatorsToUse > 0)
                     indicatorsToUse--
-                }
             }
 
             result.append(indicatorStr!!.repeat(indicatorsToUse))
+            indicatorsUsed = indicatorsToUse
             if (useHalf) {
                 result.append(this.indicatorHalf)
+                indicatorsUsed++
+            }
+
+            if (shouldMaintainSpace && indicatorsUsed < maxIndicators) {
+                val amountToAdd = maxIndicators - indicatorsUsed
+                if (amountToAdd > 0)
+                    result.append(SPACE.repeat(amountToAdd))
             }
         } else {
-            if (toRecolor == 0) {
+            if (toRecolor == 0)
                 result.append(indicatorStr!!.repeat(maxIndicators))
-            } else {
+            else {
                 result.append(indicatorStr!!.repeat(toRecolor))
                 result.append(secondaryColor)
                 result.append(indicatorStr.repeat(maxIndicators - toRecolor))
@@ -118,26 +128,20 @@ class HealthIndicator : MergableRule, Cloneable {
     override fun merge(mergableRule: MergableRule?) {
         if (mergableRule !is HealthIndicator) return
 
-        if (mergableRule.indicator != null) {
+        if (mergableRule.indicator != null)
             this.indicator = mergableRule.indicator
-        }
-        if (mergableRule.indicatorHalf != null) {
+        if (mergableRule.indicatorHalf != null)
             this.indicatorHalf = mergableRule.indicatorHalf
-        }
-        if (mergableRule.scale != null) {
+        if (mergableRule.scale != null)
             this.scale = mergableRule.scale
-        }
-        if (mergableRule.maxIndicators != null) {
+        if (mergableRule.maxIndicators != null)
             this.maxIndicators = mergableRule.maxIndicators
-        }
 
-        if (mergableRule.tiers == null) {
-            return
-        }
+        if (mergableRule.tiers == null) return
 
-        if (this.tiers == null) {
+        if (this.tiers == null)
             this.tiers = mutableMapOf()
-        }
+
         tiers!!.putAll(mergableRule.tiers!!)
     }
 
@@ -149,47 +153,38 @@ class HealthIndicator : MergableRule, Cloneable {
         }
 
         if (indicatorHalf != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
-            sb.append("ind.5: ")
-            sb.append(indicatorHalf)
+            if (sb.isNotEmpty()) sb.append(", ")
+
+            sb.append("ind.5: ").append(indicatorHalf)
         }
 
         if (scale != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
-            sb.append("scl: ")
-            sb.append(scale)
+            if (sb.isNotEmpty()) sb.append(", ")
+
+            sb.append("scl: ").append(scale)
         }
 
         if (maxIndicators != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
-            sb.append("max: ")
-            sb.append(maxIndicators)
+            if (sb.isNotEmpty()) sb.append(", ")
+
+            sb.append("max: ").append(maxIndicators)
         }
 
         if (tiers != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append(tiers)
         }
 
         if (doMerge) {
-            if (sb.isNotEmpty()) {
-                sb.append("&r, ")
-            }
+            if (sb.isNotEmpty()) sb.append("&r, ")
+
             sb.append("merge: true")
         }
 
-        return if (sb.isNotEmpty()) {
+        return if (sb.isNotEmpty())
             sb.toString()
-        } else {
+        else
             super.toString()
-        }
     }
 }

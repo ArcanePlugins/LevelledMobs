@@ -1370,6 +1370,7 @@ class RulesParser {
         )
         indicator.maxIndicators = ymlHelper.getInt2( "max", indicator.maxIndicators)
         indicator.scale = ymlHelper.getDouble2( "scale", indicator.scale)
+        indicator.maintainSpace = ymlHelper.getBoolean2( "maintain-space", indicator.maintainSpace)
         indicator.merge = ymlHelper.getBoolean2( "merge", indicator.merge)
 
         val csTiers = YmlParsingHelper.objToCS(cs, "colored-tiers")

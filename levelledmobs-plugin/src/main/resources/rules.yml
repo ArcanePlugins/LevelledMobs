@@ -230,6 +230,7 @@ presets:
       health-indicator:
         indicator: '█'
         indicator-half: '▌'
+        maintain-space: false
         merge: true
 
   nametag-minimized:
