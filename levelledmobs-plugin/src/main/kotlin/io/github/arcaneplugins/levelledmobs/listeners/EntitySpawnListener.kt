@@ -170,6 +170,7 @@ class EntitySpawnListener : Listener{
         }
 
         lmEntity.inUseCount.getAndIncrement()
+        scheduler.entity = lmEntity.livingEntity
         scheduler.runDelayed(delay.toLong())
     }
 

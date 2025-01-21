@@ -11,7 +11,6 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.EnderDragon
@@ -105,19 +104,14 @@ class EntityDamageListener : Listener {
             return
         }
 
-        if (isCritical) {
-            return
-        }
+        if (isCritical) return
 
         if (event.entity is Player) {
-            if (event !is EntityDamageByEntityEvent) {
-                return
-            }
+            if (event !is EntityDamageByEntityEvent) return
 
             // if a mob hit a player then show the mob's nametag
-            if (event.damager !is LivingEntity || event.damager is Player) {
+            if (event.damager !is LivingEntity || event.damager is Player)
                 return
-            }
 
             val theHitter = LivingEntityWrapper.getInstance(event.damager as LivingEntity)
             val nametagVisibilityEnums = theHitter.nametagVisibilityEnum
@@ -145,17 +139,15 @@ class EntityDamageListener : Listener {
                 return
             }
 
-            if (lmEntity.getMobLevel < 0) {
+            if (lmEntity.getMobLevel < 0)
                 lmEntity.reEvaluateLevel = true
-            }
         }
 
         var wasDamagedByEntity = false
         if (event is EntityDamageByEntityEvent) {
             wasDamagedByEntity = true
-            if (event.damager is Player) {
+            if (event.damager is Player)
                 lmEntity.associatedPlayer = (event.damager as Player)
-            }
         }
         val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
         val nametagVisibleTime = lmEntity.getNametagCooldownTime()
@@ -181,9 +173,7 @@ class EntityDamageListener : Listener {
 
     // Check for levelled ranged damage.
     private fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
-        if (event.finalDamage == 0.0) {
-            return
-        }
+        if (event.finalDamage == 0.0) return
 
         processRangedDamage(event)
         processOtherRangedDamage(event)
@@ -193,9 +183,8 @@ class EntityDamageListener : Listener {
         if (event.damager.type == EntityType.AREA_EFFECT_CLOUD) {
             // ender dragon breath
             val aec = event.damager as AreaEffectCloud
-            if (aec.source !is EnderDragon) {
-                return
-            }
+            if (aec.source !is EnderDragon) return
+
             val lmEntity = LivingEntityWrapper.getInstance(aec.source as LivingEntity)
             MobDataManager.populateAttributeCache(lmEntity)
 
@@ -204,18 +193,12 @@ class EntityDamageListener : Listener {
             return
         }
 
-        if (event.damager !is Projectile) {
-            return
-        }
+        if (event.damager !is Projectile) return
 
         val projectile = event.damager as Projectile
-        if (projectile.shooter == null) {
-            return
-        }
+        if (projectile.shooter == null) return
 
-        if (projectile.shooter is Player
-            && event.entity is LivingEntity
-        ) {
+        if (projectile.shooter is Player && event.entity is LivingEntity) {
             val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
             MobDataManager.populateAttributeCache(lmEntity)
 
@@ -230,22 +213,11 @@ class EntityDamageListener : Listener {
             return
         }
 
-        if (projectile.shooter !is LivingEntity) {
-            return
-        }
+        if (projectile.shooter !is LivingEntity) return
 
         val shooter = LivingEntityWrapper.getInstance(projectile.shooter as LivingEntity)
-        if (LevelledMobs.instance.ver.isRunningFolia){
-            val scheduler = SchedulerWrapper(shooter.livingEntity){
-                MobDataManager.populateAttributeCache(shooter)
-                processRangedDamage2(shooter, event)
-            }
-            scheduler.run()
-        }
-        else{
-            MobDataManager.populateAttributeCache(shooter)
-            processRangedDamage2(shooter, event)
-        }
+        MobDataManager.populateAttributeCache(shooter)
+        processRangedDamage2(shooter, event)
 
         shooter.free()
     }
@@ -254,13 +226,10 @@ class EntityDamageListener : Listener {
         shooter: LivingEntityWrapper,
         event: EntityDamageByEntityEvent
     ) {
-        if (!shooter.livingEntity.isValid) {
-            return
-        }
+        if (!shooter.livingEntity.isValid) return
+
         if (!shooter.isLevelled) {
-            if (EntitySpawnListener.instance.processMobSpawns) {
-                return
-            }
+            if (EntitySpawnListener.instance.processMobSpawns) return
 
             shooter.main.mobsQueueManager.addToQueue(QueueItem(shooter, event))
         }
@@ -278,9 +247,8 @@ class EntityDamageListener : Listener {
     }
 
     private fun processOtherRangedDamage(event: EntityDamageByEntityEvent) {
-        if (event.damager !is LivingEntity) {
-            return
-        }
+        if (event.damager !is LivingEntity) return
+
         val livingEntity = event.damager as LivingEntity
         if (livingEntity !is Guardian &&
             livingEntity !is Ghast &&
@@ -289,12 +257,8 @@ class EntityDamageListener : Listener {
             return
         }
 
-        if (!livingEntity.isValid) {
-            return
-        }
-        if (!LevelledMobs.instance.levelInterface.isLevelled(livingEntity)) {
-            return
-        }
+        if (!livingEntity.isValid) return
+        if (!LevelledMobs.instance.levelInterface.isLevelled(livingEntity)) return
 
         val oldDamage = event.damage
         val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
