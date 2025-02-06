@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
 
 group = "io.github.arcaneplugins"
 description = description
@@ -86,7 +87,7 @@ tasks {
     kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+            apiVersion.set(KOTLIN_2_1)
         }
     }
 

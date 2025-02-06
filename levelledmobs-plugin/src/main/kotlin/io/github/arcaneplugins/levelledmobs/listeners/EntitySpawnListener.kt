@@ -103,12 +103,12 @@ class EntitySpawnListener : Listener{
         lmEntity.populateShowShowLMNametag()
         var hasBuiltCache = false
 
-        if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
-            updateMobForPlayerLevelling(lmEntity)
-
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason
             lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, spawnReason)
+
+            if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
+                updateMobForPlayerLevelling(lmEntity)
 
             lmEntity.buildCacheIfNeeded()
             MobDataManager.populateAttributeCache(lmEntity, null)
@@ -127,8 +127,12 @@ class EntitySpawnListener : Listener{
                 lmEntity.free()
                 return
             }
-        } else if (event is SpawnerSpawnEvent)
+        } else if (event is SpawnerSpawnEvent) {
             lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, SpawnReason.SPAWNER)
+
+            if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
+                updateMobForPlayerLevelling(lmEntity)
+        }
 
         if (!processMobSpawns) {
             lmEntity.free()
