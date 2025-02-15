@@ -59,22 +59,28 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         val yEnd = if (this.endingYLevel == null) 0f else endingYLevel!!.toFloat()
         val yPeriod = if (this.yPeriod == null) 0f else yPeriod!!.toFloat()
         val useLevel: Float
-        val diff = yEnd - yStart
-        val isDecending = (yStart > yEnd)
+        val isDescending = (yStart > yEnd)
+
+        val highest = if (isDescending) yStart else yEnd
+        val lowest = if (isDescending) yEnd else yStart
+        val diff = if (isDescending) yStart - yEnd else yEnd - yStart
 
         // make sure the mob location isn't past the end or start
-        if (isDecending && mobYLocation < yEnd)
-            mobYLocation = yEnd
-        else if (!isDecending && mobYLocation > yEnd)
-            mobYLocation = yStart
+        if (mobYLocation > highest)
+            mobYLocation = highest
+        if (mobYLocation < lowest)
+            mobYLocation = lowest
+
+        val distanceBelow = highest - mobYLocation
 
         if (yPeriod != 0f) {
-            val lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod)
-            useLevel = minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod)
+            val lvlPerPeriod = (maxLevel - minLevel) / yPeriod
+            val periodBelow = distanceBelow / yPeriod
+            useLevel = minLevel + (lvlPerPeriod * periodBelow)
         } else {
-            val useMobYLocation = (mobYLocation - yStart).toDouble()
+            val useMobYLocation = distanceBelow.toDouble()
             val percent = (useMobYLocation / diff).toFloat()
-            useLevel = minLevel + (maxLevel - minLevel) * percent
+            useLevel = minLevel + ((maxLevel - minLevel) * percent)
         }
 
         return useLevel
