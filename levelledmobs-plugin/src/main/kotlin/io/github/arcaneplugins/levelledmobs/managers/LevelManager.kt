@@ -1142,10 +1142,10 @@ class LevelManager : LevelInterface2 {
         var checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
 
         for (player in Bukkit.getOnlinePlayers()) {
-            checkDistance = retrieveLoadedChunkRadius(player, checkDistance)
             if (LevelledMobs.instance.ver.isRunningFolia) {
                 asyncRunningCount.getAndIncrement()
                 val scheduler = SchedulerWrapper(player) {
+                    checkDistance = retrieveLoadedChunkRadius(player, checkDistance)
                     val entities = player.getNearbyEntities(
                         checkDistance, checkDistance, checkDistance
                     )
