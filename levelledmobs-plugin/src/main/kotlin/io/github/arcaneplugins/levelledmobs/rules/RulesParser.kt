@@ -513,7 +513,7 @@ class RulesParser {
     private fun parseCustomBiomeGroups(cs: ConfigurationSection?) {
         if (cs == null) return
 
-        this.customBiomeGroups = mutableMapOf()
+        this.customBiomeGroups = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
         for (groupName in cs.getKeys(false)) {
             val names = cs.getStringList(groupName)

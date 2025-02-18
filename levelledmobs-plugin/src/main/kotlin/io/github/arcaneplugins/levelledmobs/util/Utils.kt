@@ -331,15 +331,12 @@ object Utils {
             }
         }
 
-        val biomeName = if (biome.key.namespace == NamespacedKey.MINECRAFT_NAMESPACE)
-            biome.toString() else "${biome.key.namespace}:$biome"
-
         if (list.excludedList.contains(biome))
             return false
 
         for (group in list.includedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
-                rulesManager.biomeGroupMappings[group]!!.contains(biomeName)
+                rulesManager.biomeGroupMappings[group]!!.contains(biome.toString())
             ) {
                 return true
             }
