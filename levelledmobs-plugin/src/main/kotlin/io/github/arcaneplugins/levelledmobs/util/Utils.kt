@@ -60,20 +60,24 @@ object Utils {
         return Math.round(value * scale) / scale
     }
 
-    fun getBiome(name: String): Biome?{
+    fun getBiome(name: String): Biome? {
         val ver = LevelledMobs.instance.ver
+
+        val key = if (name.contains(":"))
+            NamespacedKey.fromString(name.lowercase(Locale.getDefault()))
+        else
+            NamespacedKey.minecraft(name.lowercase(Locale.getDefault()))
+
+        if (key == null) return null
 
         @Suppress("DEPRECATION")
         if (ver.isRunningPaper && ver.minorVersion >= 21){
-            val registry = RegistryAccess.registryAccess().getRegistry(
-                RegistryKey.BIOME
-            )
-            return registry.get(
-                NamespacedKey.minecraft(name.lowercase(Locale.getDefault()))
-            )
+            val registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME)
+
+            return registry.get(key)
         }
         else
-            return Registry.BIOME[NamespacedKey.minecraft(name.lowercase())]
+            return Registry.BIOME[key]
     }
 
     fun getAllAttributes(): MutableList<Attribute>{
@@ -157,9 +161,8 @@ object Utils {
             }
             position0 = position1 + replaceWhat.length
         }
-        if (position0 == 0) {
-            return message
-        }
+        if (position0 == 0) return message
+
         for (i in position0 until message.length) {
             chars[count++] = message[i]
         }
@@ -241,19 +244,14 @@ object Utils {
             .toTypedArray() // each word separated from str
         for (i in words.indices) {
             val word = words[i]
-            if (word.isEmpty()) {
-                continue
-            }
+            if (word.isEmpty()) continue
 
             builder.append(word[0].toString().uppercase(Locale.getDefault())) // capitalize first letter
-            if (word.length > 1) {
+            if (word.length > 1)
                 builder.append(word.substring(1)) // append the rest of the word
-            }
 
             // if there is another word to capitalize, then add a space
-            if (i < words.size - 1) {
-                builder.append(" ")
-            }
+            if (i < words.size - 1) builder.append(" ")
         }
 
         return builder.toString()
@@ -264,22 +262,15 @@ object Utils {
         lmEntity: LivingEntityWrapper,
         checkBabyMobs: Boolean
     ): Boolean {
-        if (list.includeAll) {
-            return true
-        }
-        if (list.excludeAll) {
-            return false
-        }
-        if (list.isEmpty()) {
-            return true
-        }
+        if (list.includeAll) return true
+        if (list.excludeAll) return false
+        if (list.isEmpty()) return true
 
         val checkName = if (checkBabyMobs) lmEntity.nameIfBaby else lmEntity.typeName
 
         for (group in lmEntity.getApplicableGroups()) {
-            if (list.excludedGroups.contains(group)) {
+            if (list.excludedGroups.contains(group))
                 return false
-            }
         }
 
         // for denies we'll check for both baby and adult variants regardless of baby-mobs-inherit-adult-setting
@@ -291,9 +282,8 @@ object Utils {
         }
 
         for (group in lmEntity.getApplicableGroups()) {
-            if (list.includedGroups.contains(group)) {
+            if (list.includedGroups.contains(group))
                 return true
-            }
         }
 
         return list.isBlacklist || list.includedList.contains(checkName) || lmEntity.isBabyMob && list.includedList.contains(
@@ -305,30 +295,20 @@ object Utils {
         list: CachedModalList<MinAndMax>,
         checkNum: Int
     ): Boolean {
-        if (list.includeAll) {
-            return true
-        }
-        if (list.excludeAll) {
-            return false
-        }
-        if (list.isEmpty()) {
-            return true
-        }
+        if (list.includeAll) return true
+        if (list.excludeAll) return false
+        if (list.isEmpty()) return true
 
         for (exclude in list.excludedList) {
-            if (checkNum >= exclude.min && checkNum <= exclude.max) {
+            if (checkNum >= exclude.min && checkNum <= exclude.max)
                 return false
-            }
         }
 
-        if (list.isBlacklist) {
-            return true
-        }
+        if (list.isBlacklist) return true
 
         for (include in list.includedList) {
-            if (checkNum >= include.min && checkNum <= include.max) {
+            if (checkNum >= include.min && checkNum <= include.max)
                 return true
-            }
         }
 
         return false
@@ -339,15 +319,9 @@ object Utils {
         biome: Biome,
         rulesManager: RulesManager
     ): Boolean {
-        if (list.includeAll) {
-            return true
-        }
-        if (list.excludeAll) {
-            return false
-        }
-        if (list.isEmpty()) {
-            return true
-        }
+        if (list.includeAll) return true
+        if (list.excludeAll) return false
+        if (list.isEmpty()) return true
 
         for (group in list.excludedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
@@ -357,13 +331,15 @@ object Utils {
             }
         }
 
-        if (list.excludedList.contains(biome)) {
+        val biomeName = if (biome.key.namespace == NamespacedKey.MINECRAFT_NAMESPACE)
+            biome.toString() else "${biome.key.namespace}:$biome"
+
+        if (list.excludedList.contains(biome))
             return false
-        }
 
         for (group in list.includedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
-                rulesManager.biomeGroupMappings[group]!!.contains(biome.toString())
+                rulesManager.biomeGroupMappings[group]!!.contains(biomeName)
             ) {
                 return true
             }
@@ -376,20 +352,13 @@ object Utils {
         list: CachedModalList<String>,
         cause: String
     ): Boolean {
-        if (list.includeAll) {
-            return true
-        }
-        if (list.excludeAll) {
-            return false
-        }
-        if (list.isEmpty()) {
-            return true
-        }
+        if (list.includeAll) return true
+        if (list.excludeAll) return false
+        if (list.isEmpty()) return true
 
         // note: no group support
-        if (list.excludedList.contains(cause)) {
+        if (list.excludedList.contains(cause))
             return false
-        }
 
         return list.isBlacklist || list.includedList.contains(cause)
     }
@@ -479,9 +448,9 @@ object Utils {
     fun removeColorCodes(input: String): String {
         var formatted = input.replace("§", "&")
 
-        if (input.contains("&")) {
+        if (input.contains("&"))
             formatted = input.replace("&.".toRegex(), "")
-        }
+
         return formatted
     }
 
@@ -495,9 +464,8 @@ object Utils {
     ): Boolean {
         val main: LevelledMobs = LevelledMobs.instance
 
-        if (!lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING)) {
+        if (!lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING))
             return true
-        }
 
         var hadHash = false
         var mobHash: String? = null
@@ -537,12 +505,8 @@ object Utils {
         useMS: Boolean,
         sender: CommandSender?
     ): Long? {
-        if (input == null) {
-            return defaultTime
-        }
-        if ("0" == input) {
-            return 0L
-        }
+        if (input == null) return defaultTime
+        if ("0" == input) return 0L
 
         val match = timeUnitPattern.matcher(input)
 
@@ -623,9 +587,8 @@ object Utils {
                 else Log.war("Invalid time unit specified: $input ($unit)")
             }
         }
-        if (duration != null) {
+        if (duration != null)
             return if (useMS) duration.toMillis() else duration.seconds
-        }
 
         return defaultTime
     }
@@ -643,9 +606,8 @@ object Utils {
             .sortedBy { it.first }
             .map { it.second }
 
-        if (MainCompanion.instance.excludePlayersInCreative){
+        if (MainCompanion.instance.excludePlayersInCreative)
             temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
-        }
 
         return temp.toMutableList()
     }
