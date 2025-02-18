@@ -16,5 +16,5 @@ class ModalListParsingInfo(
     var itemName: String? = null
     var supportsGroups: Boolean = false
     var cachedModalList: CachedModalList<*>? = null
-    var groupMapping: Map<String, List<String>>? = null
+    var groupMapping: MutableMap<String, MutableSet<String>>? = null
 }

@@ -46,7 +46,7 @@ import org.bukkit.entity.Player
 class RulesManager {
     val rulesInEffect = mutableListOf<RuleInfo>()
     val ruleNameMappings: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-    val biomeGroupMappings: MutableMap<String, MutableList<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    val biomeGroupMappings: MutableMap<String, MutableSet<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     val rulesCooldown = mutableMapOf<String, MutableList<Instant>>()
     val allCustomStrategyPlaceholders: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     var anyRuleHasChance = false
@@ -1388,7 +1388,7 @@ class RulesManager {
         }
 
         for ((key, groupMembers) in customBiomeGroups) {
-            val newList: MutableList<String> = ArrayList(groupMembers.size)
+            val newList = TreeSet(String.CASE_INSENSITIVE_ORDER)
             newList.addAll(groupMembers)
             biomeGroupMappings[key] = newList
         }
