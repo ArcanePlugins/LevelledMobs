@@ -1104,12 +1104,45 @@ class LevelManager : LevelInterface2 {
         }
     }
 
+    private fun retrieveLoadedChunkRadius(player: Player, expect: Double): Double {
+        val world = player.world
+        val centerX:Int = (player.location.x / 16).toInt()
+        val centerZ:Int = (player.location.z / 16).toInt()
+        var maxChunkRadius = 0
+
+        outer@ while (true) {
+            val currentRadius = maxChunkRadius + 1
+            if (currentRadius * 16 > expect) break
+            for (dx in -currentRadius..currentRadius) {
+                if (!world.isChunkLoaded(centerX + dx, centerZ - currentRadius)) {
+                    break@outer
+                }
+                if (!world.isChunkLoaded(centerX + dx, centerZ + currentRadius)) {
+                    break@outer
+                }
+            }
+
+            for (dz in (-currentRadius + 1) until currentRadius) {
+                if (!world.isChunkLoaded(centerX - currentRadius, centerZ + dz)) {
+                    break@outer
+                }
+                if (!world.isChunkLoaded(centerX + currentRadius, centerZ + dz)) {
+                    break@outer
+                }
+            }
+            maxChunkRadius = currentRadius
+        }
+
+        return (maxChunkRadius * 16.0).coerceAtMost(expect)
+    }
+
     private fun enumerateNearbyEntities() {
         entitiesPerPlayer.clear()
         asyncRunningCount.set(0)
-        val checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
+        var checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
 
         for (player in Bukkit.getOnlinePlayers()) {
+            checkDistance = retrieveLoadedChunkRadius(player, checkDistance)
             if (LevelledMobs.instance.ver.isRunningFolia) {
                 asyncRunningCount.getAndIncrement()
                 val scheduler = SchedulerWrapper(player) {
