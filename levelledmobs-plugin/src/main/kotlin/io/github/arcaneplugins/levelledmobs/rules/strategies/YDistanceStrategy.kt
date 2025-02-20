@@ -17,6 +17,7 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
     var yPeriod: Int? = null
 
     override val strategyType = StrategyType.Y_COORDINATE
+    override var shouldMerge: Boolean = false
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy is YDistanceStrategy) {

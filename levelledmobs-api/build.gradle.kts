@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
-
 group = "io.github.arcaneplugins"
 version = "1.0"
 description = "LevelledMobs API"

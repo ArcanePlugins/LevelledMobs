@@ -23,6 +23,7 @@ import io.github.arcaneplugins.levelledmobs.nametag.Definitions
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.RulesParser
+import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.util.ConfigUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
@@ -191,6 +192,7 @@ class LevelledMobs : JavaPlugin() {
         mainCompanion.loadFiles()
         mainCompanion.checkListenersWithVariablePriorities()
         chunkLoadListener.load()
+        RandomLevellingStrategy.clearCache()
 
         var reloadFinishedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.finished"

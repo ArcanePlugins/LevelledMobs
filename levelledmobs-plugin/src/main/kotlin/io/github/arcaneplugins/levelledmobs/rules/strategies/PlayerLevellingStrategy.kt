@@ -29,9 +29,9 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
     var playerVariableScale: Float? = null
     var variable: String? = null
     var decreaseOutput = true
-    var doMerge = false
 
     override val strategyType = StrategyType.PLAYER_VARIABLE
+    override var shouldMerge: Boolean = false
 
     override fun generateNumber(
         lmEntity: LivingEntityWrapper,
@@ -110,11 +110,11 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             if (!foundMatch) {
                 if (playerLevelSourceResult.isNumericResult) {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        "player: ${player.name}, input: $origLevelSource, scale: $levelSource,${capDisplay} no tiers matched"
+                        "player: ${player.name}, input: $origLevelSource, scale: $levelSource,$capDisplay no tiers matched"
                     }
                 } else {
                     DebugManager.log(DebugType.PLAYER_LEVELLING, lmEntity) {
-                        "player: ${player.name}, input: '${playerLevelSourceResult.stringResult}', ${capDisplay} no tiers matched"
+                        "player: ${player.name}, input: '${playerLevelSourceResult.stringResult}', $capDisplay no tiers matched"
                     }
                 }
                 if (options.outputCap != null) {

@@ -320,13 +320,13 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             val theseStrategies = ruleInfo.levellingStrategy
 
-            for (strategy in theseStrategies) {
-                val existingStrategy = strategies[strategy.key]
-                if (existingStrategy == null) {
-                    strategies[strategy.key] = strategy.value.cloneItem()
-                } else {
-                    strategies[strategy.key]!!.mergeRule(strategy.value)
-                }
+            for (thisStrategy in theseStrategies) {
+                val currentStrategy = strategies[thisStrategy.key]
+
+                if (currentStrategy == null || !thisStrategy.value.shouldMerge)
+                    strategies[thisStrategy.key] = thisStrategy.value
+                else
+                    currentStrategy.cloneItem().mergeRule(thisStrategy.value)
             }
         }
 
@@ -450,7 +450,7 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.levellingStrategy.containsKey(StrategyType.PLAYER_VARIABLE)) {
                 val thisPL = ruleInfo.levellingStrategy[StrategyType.PLAYER_VARIABLE]!!
-                if (levellingOptions == null || !levellingOptions.doMerge) levellingOptions =
+                if (levellingOptions == null || !levellingOptions.shouldMerge) levellingOptions =
                     thisPL.cloneItem() as PlayerLevellingStrategy
                 else
                     levellingOptions.mergeRule(thisPL)

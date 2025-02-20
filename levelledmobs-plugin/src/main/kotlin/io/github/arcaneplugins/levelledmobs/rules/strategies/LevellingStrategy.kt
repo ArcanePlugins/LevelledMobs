@@ -20,4 +20,6 @@ interface LevellingStrategy {
     fun cloneItem(): LevellingStrategy
 
     val strategyType: StrategyType
+
+    var shouldMerge: Boolean
 }

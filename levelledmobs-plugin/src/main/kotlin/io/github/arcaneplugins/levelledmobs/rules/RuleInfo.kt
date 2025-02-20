@@ -251,7 +251,7 @@ class RuleInfo(
                     val mergingStrategies = presetValue as MutableMap<StrategyType, LevellingStrategy>
 
                     for (strategy in mergingStrategies){
-                        if (this.levellingStrategy.containsKey(strategy.key))
+                        if (this.levellingStrategy.containsKey(strategy.key) && strategy.value.shouldMerge)
                             this.levellingStrategy[strategy.key]!!.mergeRule(strategy.value)
                         else
                             this.levellingStrategy[strategy.key] = strategy.value.cloneItem()
@@ -342,10 +342,7 @@ class RuleInfo(
                 if (value.toString() == "NOT_SPECIFIED") continue
                 if (value.toString() == "{}") continue
                 if (value.toString() == "[]") continue
-                //if (value.toString() == "0") continue
-                //if (value.toString() == "0.0") continue
                 if (value.toString().equals("NONE", ignoreCase = true)) continue
-                //if (value.toString().equals("false", ignoreCase = true)) continue
 
                 if (value is CachedModalList<*>) {
                     if (value.isEmpty() && !value.includeAll && !value.excludeAll) {

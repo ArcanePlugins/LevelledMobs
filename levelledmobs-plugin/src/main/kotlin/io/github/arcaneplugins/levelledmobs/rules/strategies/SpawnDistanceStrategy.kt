@@ -27,6 +27,7 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
     var scaleDownward: Boolean? = null
 
     override val strategyType = StrategyType.SPAWN_DISTANCE
+    override var shouldMerge: Boolean = false
 
     override fun generateNumber(
         lmEntity: LivingEntityWrapper,
