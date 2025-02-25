@@ -170,6 +170,10 @@ class RuleInfo(
     var conditionsStructure: CachedModalList<Structure>? = null
     @field:RuleFieldInfo("player permissions", RuleType.CONDITION)
     var conditionsPermission: CachedModalList<String>? = null
+    @field:RuleFieldInfo("player names", RuleType.CONDITION)
+    var conditionsPlayerNames: CachedModalList<String>? = null
+    @field:RuleFieldInfo("Gamemode", RuleType.CONDITION)
+    var conditionsGamemode: CachedModalList<String>? = null
     @field:RuleFieldInfo("within coordinates", RuleType.CONDITION)
     var conditionsWithinCoords: WithinCoordinates? = null
     @field:RuleFieldInfo("all mob multipliers", RuleType.APPLY_SETTING)

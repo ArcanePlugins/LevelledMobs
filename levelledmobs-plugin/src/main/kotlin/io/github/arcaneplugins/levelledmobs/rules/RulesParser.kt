@@ -1073,6 +1073,14 @@ class RulesParser {
             cs, "permission",
             parsingInfo.conditionsPermission, parsingInfo.ruleName
         )
+        parsingInfo.conditionsPlayerNames = buildCachedModalListOfString(
+            cs, "player-names",
+            parsingInfo.conditionsPlayerNames, parsingInfo.ruleName
+        )
+        parsingInfo.conditionsGamemode = buildCachedModalListOfString(
+            cs, "gamemode",
+            parsingInfo.conditionsGamemode, parsingInfo.ruleName
+        )
         parsingInfo.conditionsScoreboardTags = buildCachedModalListOfString(
             cs, "scoreboard-tags",
             parsingInfo.conditionsScoreboardTags, parsingInfo.ruleName

@@ -1028,6 +1028,49 @@ class RulesManager {
             }
         }
 
+        if (ri.conditionsPlayerNames != null) {
+            if (lmEntity.associatedPlayer == null) {
+                DebugManager.log(
+                    DebugType.CONDITION_PLAYER_NAMES, ri, lmEntity, false
+                ) {
+                    "no player was provided"
+                }
+                return false
+            }
+
+            val result = ri.conditionsPlayerNames!!.isIncludedInList(lmEntity.associatedPlayer!!.name, lmEntity)
+
+            DebugManager.log(
+                DebugType.CONDITION_PLAYER_NAMES, ri, lmEntity, result
+            ) {
+                "player: &b${lmEntity.associatedPlayer!!.name}&r"
+            }
+
+            if (!result) return false
+        }
+
+        if (ri.conditionsGamemode != null) {
+            if (lmEntity.associatedPlayer == null) {
+                DebugManager.log(
+                    DebugType.CONDITION_GAMEMODE, ri, lmEntity, false
+                ) {
+                    "no player was provided"
+                }
+                return false
+            }
+
+            val gameModeStr = lmEntity.associatedPlayer!!.gameMode.toString()
+            val result = ri.conditionsGamemode!!.isIncludedInList(gameModeStr, lmEntity)
+
+            DebugManager.log(
+                DebugType.CONDITION_GAMEMODE, ri, lmEntity, result
+            ) {
+                "player: &b${lmEntity.associatedPlayer!!.name}&7, gamemode: $gameModeStr&r"
+            }
+
+            if (!result) return false
+        }
+
         if (ri.conditionsMobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
             && ri.conditionsMobCustomnameStatus != MobCustomNameStatus.EITHER
         ) {
