@@ -10,9 +10,27 @@ import io.github.arcaneplugins.levelledmobs.util.Utils
  * @since 3.2.0
  */
 class MinAndMax : Comparable<MinAndMax>{
-    var min = 0.0f
-    var max = 0.0f
+    var min = 0f
+        set(value) {
+            isDefault = false
+            field = value
+        }
+    var max = 0f
+        set(value) {
+            isDefault = false
+            field = value
+        }
+
+    constructor()
+
+    constructor(min: Float, max: Float){
+        this.min = min
+        this.max = max
+    }
+
     var showAsInt = false
+    var isDefault = false
+        private set
 
     val minAsInt: Int
         get() = min.toInt()
@@ -24,14 +42,12 @@ class MinAndMax : Comparable<MinAndMax>{
         fun setAmountRangeFromString(
             numberOrNumberRange: String?
         ): MinAndMax? {
-            if (numberOrNumberRange.isNullOrEmpty()) {
+            if (numberOrNumberRange.isNullOrEmpty())
                 return null
-            }
 
             if (!numberOrNumberRange.contains("-")) {
-                if (!Utils.isDouble(numberOrNumberRange)) {
+                if (!Utils.isDouble(numberOrNumberRange))
                     return null
-                }
 
                 val result = MinAndMax()
                 result.min = numberOrNumberRange.toDouble().toFloat()
@@ -40,13 +56,11 @@ class MinAndMax : Comparable<MinAndMax>{
             }
 
             val nums = numberOrNumberRange.split("-")
-            if (nums.size != 2) {
-                return null
-            }
+            if (nums.size != 2) return null
 
-            if (!Utils.isDouble(nums[0].trim { it <= ' ' }) || !Utils.isDouble(nums[1].trim { it <= ' ' })) {
+
+            if (!Utils.isDouble(nums[0].trim { it <= ' ' }) || !Utils.isDouble(nums[1].trim { it <= ' ' }))
                 return null
-            }
 
             val result = MinAndMax()
             result.min = nums[0].trim { it <= ' ' }.toDouble().toFloat()
@@ -70,10 +84,7 @@ class MinAndMax : Comparable<MinAndMax>{
     }
 
     override fun compareTo(other: MinAndMax): Int {
-        return if (other.min == this.min && other.max == this.max) {
-            0
-        } else {
-            1
-        }
+        return if (other.min == this.min && other.max == this.max)
+            0 else 1
     }
 }
