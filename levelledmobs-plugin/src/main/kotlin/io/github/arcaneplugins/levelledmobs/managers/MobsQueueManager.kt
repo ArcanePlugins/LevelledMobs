@@ -168,8 +168,7 @@ class MobsQueueManager {
     private fun processItem(item: QueueItem) {
         if (!item.lmEntity.isPopulated) return
 
-        if (ignoreMobsWithNoPlayerContext && item.lmEntity.associatedPlayer == null
-            && LevelledMobs.instance.rulesManager.isPlayerLevellingEnabled()){
+        if (ignoreMobsWithNoPlayerContext && item.lmEntity.associatedPlayer == null){
             DebugManager.log(DebugType.PLAYER_CONTEXT, item.lmEntity){
                 val locationStr = "${item.lmEntity.location.blockX}, " +
                     "${item.lmEntity.location.blockY}, " +
@@ -183,7 +182,6 @@ class MobsQueueManager {
         try{
             LevelledMobs.instance.levelManager.entitySpawnListener.processMob(item.lmEntity, item.event)
         }
-
         catch (ignored: EvaluationException){
             // this exception is manually thrown after logging and notifying op users
         }

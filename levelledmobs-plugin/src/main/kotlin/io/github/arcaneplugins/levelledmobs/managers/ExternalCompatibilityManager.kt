@@ -195,9 +195,7 @@ class ExternalCompatibilityManager {
                     "getPapiPlaceholder: input size (${inputList.size}) did not match results size (${papiResults.size})"
                 }
                 for (i in 0..<papiResults.size) {
-                    var thisResult = papiResults[i]
-                    if (thisResult.isEmpty()) thisResult = invalidPlaceholderReplacement
-                    results = results.replace(inputList[i], thisResult)
+                    results = results.replace(inputList[i], invalidPlaceholderReplacement)
                 }
 
                 return results

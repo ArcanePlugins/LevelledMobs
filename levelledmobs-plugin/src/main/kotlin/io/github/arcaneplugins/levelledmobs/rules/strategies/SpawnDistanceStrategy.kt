@@ -50,6 +50,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             )
         }
 
+        if (spawnLocation.world != lmEntity.location.world) return minLevel.toFloat()
+
         val bufferDistance = if (this.bufferDistance == null) 0f else bufferDistance!!
         val distanceFromSpawn = spawnLocation.distance(lmEntity.location).toFloat()
         val levelDistance = (distanceFromSpawn - bufferDistance).coerceAtLeast(0f)
