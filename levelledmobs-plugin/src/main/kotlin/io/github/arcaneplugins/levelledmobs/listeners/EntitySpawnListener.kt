@@ -14,6 +14,7 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -516,7 +517,8 @@ class EntitySpawnListener : Listener{
             mob: LivingEntity,
             checkDistance: Int
         ): MutableList<Player> {
-            var temp = mob.getNearbyEntities(checkDistance.toDouble(), checkDistance.toDouble(), checkDistance.toDouble()
+            val radius = MiscUtils.retrieveLoadedChunkRadius(mob.location, checkDistance.toDouble())
+            var temp = mob.getNearbyEntities(radius, radius, radius
             ).asSequence()
                 .filterIsInstance<Player>()
                 .filter { e: Entity -> (e as Player).gameMode != GameMode.SPECTATOR }

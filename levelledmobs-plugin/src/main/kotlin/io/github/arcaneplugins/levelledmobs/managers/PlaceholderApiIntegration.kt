@@ -6,6 +6,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.misc.LastMobKilledInfo
 import io.github.arcaneplugins.levelledmobs.misc.StringReplacer
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -167,7 +168,8 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
             "nametag-placeholder-maxblocks", 30
         )
 
-        for (entity in player.getNearbyEntities(maxBlocks.toDouble(), maxBlocks.toDouble(), maxBlocks.toDouble())) {
+        val radius = MiscUtils.retrieveLoadedChunkRadius(player.location, maxBlocks.toDouble())
+        for (entity in player.getNearbyEntities(radius, radius, radius)) {
             if (entity !is LivingEntity) {
                 continue
             }
