@@ -2,10 +2,8 @@ package io.github.arcaneplugins.levelledmobs.rules.strategies
 
 import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.util.Log
-import java.util.LinkedList
 import java.util.TreeMap
 import java.util.concurrent.ThreadLocalRandom
-import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 
 /**

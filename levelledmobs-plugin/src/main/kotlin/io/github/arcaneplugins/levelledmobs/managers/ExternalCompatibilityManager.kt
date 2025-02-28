@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.managers
 
-import com.earth2me.essentials.Essentials
 import java.io.InvalidObjectException
 import me.clip.placeholderapi.PlaceholderAPI
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
@@ -372,11 +371,6 @@ class ExternalCompatibilityManager {
             player: Player,
             allowBed: Boolean
         ): PlayerHomeCheckResult {
-            val plugin = Bukkit.getPluginManager().getPlugin("essentials")
-                ?: return PlayerHomeCheckResult(
-                    "Unable to get player home, Essentials is not installed", null
-                )
-
             if (allowBed && player.world.environment != World.Environment.NETHER) {
                 val bedLocation = player.bedSpawnLocation
                 if (bedLocation != null) {
@@ -384,18 +378,7 @@ class ExternalCompatibilityManager {
                 }
             }
 
-            val essentials = plugin as Essentials
-            val user = essentials.getUser(player)
-                ?: return PlayerHomeCheckResult("Unable to locate player information in essentials")
-
-            if (user.homes == null || user.homes.isEmpty()) {
-                return PlayerHomeCheckResult(null, null)
-            }
-
-            return PlayerHomeCheckResult(
-                null, user.getHome(user.homes[0]),
-                user.homes[0]
-            )
+            return EssentialsIntegration.getHomeLocation(player)
         }
 
         private fun isSimplePets(lmEntity: LivingEntityWrapper): Boolean {

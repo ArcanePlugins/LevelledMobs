@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.listeners.EntityDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityTransformListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerInteractEventListener
+import io.github.arcaneplugins.levelledmobs.managers.EssentialsIntegration
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
@@ -114,6 +115,7 @@ class LevelledMobs : JavaPlugin() {
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
         }
         this.definitions.load()
+        EssentialsIntegration.load()
         this.nametagQueueManager.load()
         this.mainCompanion.load()
         (this.levelInterface as LevelManager).load()
