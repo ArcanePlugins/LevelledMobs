@@ -68,6 +68,7 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -1140,7 +1141,7 @@ class LevelManager : LevelInterface2 {
     }
 
     private fun runNametagCheckASync() {
-        val entityToPlayer = mutableMapOf<LivingEntityWrapper, MutableList<Player>>()
+        val entityToPlayer = ConcurrentHashMap<LivingEntityWrapper, MutableList<Player>>()
 
         if (LevelledMobs.instance.ver.isRunningFolia) {
             for (player in entitiesPerPlayer.keys) {
