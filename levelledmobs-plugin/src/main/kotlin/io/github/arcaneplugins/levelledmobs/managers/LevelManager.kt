@@ -935,9 +935,8 @@ class LevelManager : LevelInterface2 {
             else
                 lmEntity.lockedOverrideName
 
-            if (!overridenName.isNullOrEmpty()) {
+            if (!overridenName.isNullOrEmpty() && lmEntity.livingEntity.customName == null)
                 return@replaceIfExists overridenName
-            }
 
             if (lmEntity.livingEntity.customName != null)
                 return@replaceIfExists if (LevelledMobs.instance.ver.isRunningPaper) "{CustomName}" else lmEntity.livingEntity.customName
