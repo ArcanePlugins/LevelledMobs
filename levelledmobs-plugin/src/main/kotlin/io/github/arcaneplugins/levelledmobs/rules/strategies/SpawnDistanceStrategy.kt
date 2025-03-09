@@ -27,6 +27,7 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
     var scaleDownward: Boolean? = null
 
     override val strategyType = StrategyType.SPAWN_DISTANCE
+    override var shouldMerge: Boolean = false
 
     override fun generateNumber(
         lmEntity: LivingEntityWrapper,
@@ -48,6 +49,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
                 useZ
             )
         }
+
+        if (spawnLocation.world != lmEntity.location.world) return minLevel.toFloat()
 
         val bufferDistance = if (this.bufferDistance == null) 0f else bufferDistance!!
         val distanceFromSpawn = spawnLocation.distance(lmEntity.location).toFloat()

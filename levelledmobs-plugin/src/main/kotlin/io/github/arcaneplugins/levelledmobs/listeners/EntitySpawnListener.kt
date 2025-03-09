@@ -14,6 +14,7 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -103,12 +104,12 @@ class EntitySpawnListener : Listener{
         lmEntity.populateShowShowLMNametag()
         var hasBuiltCache = false
 
-        if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
-            updateMobForPlayerLevelling(lmEntity)
-
         if (event is CreatureSpawnEvent) {
             val spawnReason = event.spawnReason
             lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, spawnReason)
+
+            if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
+                updateMobForPlayerLevelling(lmEntity)
 
             lmEntity.buildCacheIfNeeded()
             MobDataManager.populateAttributeCache(lmEntity, null)
@@ -127,8 +128,12 @@ class EntitySpawnListener : Listener{
                 lmEntity.free()
                 return
             }
-        } else if (event is SpawnerSpawnEvent)
+        } else if (event is SpawnerSpawnEvent) {
             lmEntity.spawnReason.setMinecraftSpawnReason(lmEntity, SpawnReason.SPAWNER)
+
+            if (main.rulesManager.isPlayerLevellingEnabled() && lmEntity.associatedPlayer == null)
+                updateMobForPlayerLevelling(lmEntity)
+        }
 
         if (!processMobSpawns) {
             lmEntity.free()
@@ -170,6 +175,7 @@ class EntitySpawnListener : Listener{
         }
 
         lmEntity.inUseCount.getAndIncrement()
+        scheduler.entity = lmEntity.livingEntity
         scheduler.runDelayed(delay.toLong())
     }
 
@@ -511,7 +517,8 @@ class EntitySpawnListener : Listener{
             mob: LivingEntity,
             checkDistance: Int
         ): MutableList<Player> {
-            var temp = mob.getNearbyEntities(checkDistance.toDouble(), checkDistance.toDouble(), checkDistance.toDouble()
+            val radius = MiscUtils.retrieveLoadedChunkRadius(mob.location, checkDistance.toDouble())
+            var temp = mob.getNearbyEntities(radius, radius, radius
             ).asSequence()
                 .filterIsInstance<Player>()
                 .filter { e: Entity -> (e as Player).gameMode != GameMode.SPECTATOR }

@@ -11,6 +11,39 @@ import org.bukkit.entity.LivingEntity
  * @since 3.11.0
  */
 object MiscUtils {
+
+     fun retrieveLoadedChunkRadius(location: org.bukkit.Location, expect: Double): Double {
+        val world = location.world
+        val centerX:Int = (location.x / 16).toInt()
+        val centerZ:Int = (location.z / 16).toInt()
+        var maxChunkRadius = 0
+
+        outer@ while (true) {
+            val currentRadius = maxChunkRadius + 1
+            if (currentRadius * 16 > expect) break
+            for (dx in -currentRadius..currentRadius) {
+                if (!world.isChunkLoaded(centerX + dx, centerZ - currentRadius)) {
+                    break@outer
+                }
+                if (!world.isChunkLoaded(centerX + dx, centerZ + currentRadius)) {
+                    break@outer
+                }
+            }
+
+            for (dz in (-currentRadius + 1) until currentRadius) {
+                if (!world.isChunkLoaded(centerX - currentRadius, centerZ + dz)) {
+                    break@outer
+                }
+                if (!world.isChunkLoaded(centerX + currentRadius, centerZ + dz)) {
+                    break@outer
+                }
+            }
+            maxChunkRadius = currentRadius
+        }
+
+        return (maxChunkRadius * 16.0).coerceAtMost(expect)
+    }
+
     fun getNBTDump(
         livingEntity: LivingEntity
     ): String {

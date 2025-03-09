@@ -46,7 +46,7 @@ import org.bukkit.entity.Player
 class RulesManager {
     val rulesInEffect = mutableListOf<RuleInfo>()
     val ruleNameMappings: MutableMap<String, RuleInfo> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-    val biomeGroupMappings: MutableMap<String, MutableList<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    val biomeGroupMappings: MutableMap<String, MutableSet<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     val rulesCooldown = mutableMapOf<String, MutableList<Instant>>()
     val allCustomStrategyPlaceholders: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     var anyRuleHasChance = false
@@ -320,13 +320,13 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             val theseStrategies = ruleInfo.levellingStrategy
 
-            for (strategy in theseStrategies) {
-                val existingStrategy = strategies[strategy.key]
-                if (existingStrategy == null) {
-                    strategies[strategy.key] = strategy.value.cloneItem()
-                } else {
-                    strategies[strategy.key]!!.mergeRule(strategy.value)
-                }
+            for (thisStrategy in theseStrategies) {
+                val currentStrategy = strategies[thisStrategy.key]
+
+                if (currentStrategy == null || !thisStrategy.value.shouldMerge)
+                    strategies[thisStrategy.key] = thisStrategy.value
+                else
+                    currentStrategy.cloneItem().mergeRule(thisStrategy.value)
             }
         }
 
@@ -450,7 +450,7 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.levellingStrategy.containsKey(StrategyType.PLAYER_VARIABLE)) {
                 val thisPL = ruleInfo.levellingStrategy[StrategyType.PLAYER_VARIABLE]!!
-                if (levellingOptions == null || !levellingOptions.doMerge) levellingOptions =
+                if (levellingOptions == null || !levellingOptions.shouldMerge) levellingOptions =
                     thisPL.cloneItem() as PlayerLevellingStrategy
                 else
                     levellingOptions.mergeRule(thisPL)
@@ -1028,6 +1028,49 @@ class RulesManager {
             }
         }
 
+        if (ri.conditionsPlayerNames != null) {
+            if (lmEntity.associatedPlayer == null) {
+                DebugManager.log(
+                    DebugType.CONDITION_PLAYER_NAMES, ri, lmEntity, false
+                ) {
+                    "no player was provided"
+                }
+                return false
+            }
+
+            val result = ri.conditionsPlayerNames!!.isIncludedInList(lmEntity.associatedPlayer!!.name, lmEntity)
+
+            DebugManager.log(
+                DebugType.CONDITION_PLAYER_NAMES, ri, lmEntity, result
+            ) {
+                "player: &b${lmEntity.associatedPlayer!!.name}&r"
+            }
+
+            if (!result) return false
+        }
+
+        if (ri.conditionsGamemode != null) {
+            if (lmEntity.associatedPlayer == null) {
+                DebugManager.log(
+                    DebugType.CONDITION_GAMEMODE, ri, lmEntity, false
+                ) {
+                    "no player was provided"
+                }
+                return false
+            }
+
+            val gameModeStr = lmEntity.associatedPlayer!!.gameMode.toString()
+            val result = ri.conditionsGamemode!!.isIncludedInList(gameModeStr, lmEntity)
+
+            DebugManager.log(
+                DebugType.CONDITION_GAMEMODE, ri, lmEntity, result
+            ) {
+                "player: &b${lmEntity.associatedPlayer!!.name}&7, gamemode: $gameModeStr&r"
+            }
+
+            if (!result) return false
+        }
+
         if (ri.conditionsMobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
             && ri.conditionsMobCustomnameStatus != MobCustomNameStatus.EITHER
         ) {
@@ -1388,7 +1431,7 @@ class RulesManager {
         }
 
         for ((key, groupMembers) in customBiomeGroups) {
-            val newList: MutableList<String> = ArrayList(groupMembers.size)
+            val newList = TreeSet(String.CASE_INSENSITIVE_ORDER)
             newList.addAll(groupMembers)
             biomeGroupMappings[key] = newList
         }

@@ -489,7 +489,7 @@ object DebugSubcommand {
             return
         }
 
-        var disableAfter = Utils.parseTimeUnit(
+        val disableAfter = Utils.parseTimeUnit(
             input, null, true, sender
         )
 

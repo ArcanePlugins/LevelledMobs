@@ -18,6 +18,7 @@ class CustomStrategy(
 ) : LevellingStrategy, Cloneable {
     var formula: String? = null
     override val strategyType = StrategyType.CUSTOM
+    override var shouldMerge: Boolean = false
 
     override fun generateNumber(
         lmEntity: LivingEntityWrapper,

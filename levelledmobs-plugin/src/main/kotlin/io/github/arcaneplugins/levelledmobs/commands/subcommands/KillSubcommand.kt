@@ -9,6 +9,7 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
+import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.Bukkit
@@ -207,16 +208,15 @@ object KillSubcommand {
         var killed = 0
         var skipped = 0
         val mobsToKill: Collection<Entity>
+
         if (sender is BlockCommandSender) {
             val block = sender.block
+            val finalRadius = MiscUtils.retrieveLoadedChunkRadius(block.location, radius.toDouble())
             mobsToKill = block.world
-                .getNearbyEntities(block.location, radius.toDouble(), radius.toDouble(), radius.toDouble())
+                .getNearbyEntities(block.location, finalRadius, finalRadius, finalRadius)
         } else {
-            mobsToKill = (sender as Player).getNearbyEntities(
-                radius.toDouble(),
-                radius.toDouble(),
-                radius.toDouble()
-            )
+            val finalRadius = MiscUtils.retrieveLoadedChunkRadius((sender as Player).location, radius.toDouble())
+            mobsToKill = sender.getNearbyEntities(finalRadius, finalRadius, finalRadius)
         }
 
         for (entity in mobsToKill) {

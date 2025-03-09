@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.listeners.EntityDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.EntityTransformListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerDeathListener
 import io.github.arcaneplugins.levelledmobs.listeners.PlayerInteractEventListener
+import io.github.arcaneplugins.levelledmobs.managers.EssentialsIntegration
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.managers.MobsQueueManager
@@ -23,6 +24,7 @@ import io.github.arcaneplugins.levelledmobs.nametag.Definitions
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.RulesParser
+import io.github.arcaneplugins.levelledmobs.rules.strategies.RandomLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.util.ConfigUtils
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
@@ -113,6 +115,7 @@ class LevelledMobs : JavaPlugin() {
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
         }
         this.definitions.load()
+        EssentialsIntegration.load()
         this.nametagQueueManager.load()
         this.mainCompanion.load()
         (this.levelInterface as LevelManager).load()
@@ -191,6 +194,7 @@ class LevelledMobs : JavaPlugin() {
         mainCompanion.loadFiles()
         mainCompanion.checkListenersWithVariablePriorities()
         chunkLoadListener.load()
+        RandomLevellingStrategy.clearCache()
 
         var reloadFinishedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.finished"

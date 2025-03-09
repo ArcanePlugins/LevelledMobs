@@ -68,6 +68,7 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -934,9 +935,8 @@ class LevelManager : LevelInterface2 {
             else
                 lmEntity.lockedOverrideName
 
-            if (!overridenName.isNullOrEmpty()) {
+            if (!overridenName.isNullOrEmpty() && lmEntity.livingEntity.customName == null)
                 return@replaceIfExists overridenName
-            }
 
             if (lmEntity.livingEntity.customName != null)
                 return@replaceIfExists if (LevelledMobs.instance.ver.isRunningPaper) "{CustomName}" else lmEntity.livingEntity.customName
@@ -1107,12 +1107,13 @@ class LevelManager : LevelInterface2 {
     private fun enumerateNearbyEntities() {
         entitiesPerPlayer.clear()
         asyncRunningCount.set(0)
-        val checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
+        var checkDistance = entitySpawnListener.mobCheckDistance.toDouble()
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (LevelledMobs.instance.ver.isRunningFolia) {
                 asyncRunningCount.getAndIncrement()
                 val scheduler = SchedulerWrapper(player) {
+                    checkDistance = MiscUtils.retrieveLoadedChunkRadius(player.location, checkDistance)
                     val entities = player.getNearbyEntities(
                         checkDistance, checkDistance, checkDistance
                     )
@@ -1140,7 +1141,7 @@ class LevelManager : LevelInterface2 {
     }
 
     private fun runNametagCheckASync() {
-        val entityToPlayer = mutableMapOf<LivingEntityWrapper, MutableList<Player>>()
+        val entityToPlayer = ConcurrentHashMap<LivingEntityWrapper, MutableList<Player>>()
 
         if (LevelledMobs.instance.ver.isRunningFolia) {
             for (player in entitiesPerPlayer.keys) {

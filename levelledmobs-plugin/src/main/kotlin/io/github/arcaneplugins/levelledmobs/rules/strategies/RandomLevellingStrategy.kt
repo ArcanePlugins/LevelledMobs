@@ -1,10 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.rules.strategies
 
+import io.github.arcaneplugins.levelledmobs.rules.MinAndMax
 import io.github.arcaneplugins.levelledmobs.util.Log
-import java.util.LinkedList
 import java.util.TreeMap
 import java.util.concurrent.ThreadLocalRandom
-import io.github.arcaneplugins.levelledmobs.util.Utils.isInteger
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 
 /**
@@ -15,15 +14,38 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
  * @since 3.1.0
  */
 class RandomLevellingStrategy : LevellingStrategy, Cloneable {
-    val weightedRandom: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-    var doMerge: Boolean = false
-    private var randomArray: Array<Int>? = null
+    val weightedRandomMap: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    private var randomArray = IntArray(0)
     private var minLevel = 0
     private var maxLevel = 0
     var autoGenerate = false
     var enabled = true
 
     override var strategyType = StrategyType.RANDOM
+    override var shouldMerge: Boolean = false
+
+    companion object{
+        private val cachedWeightedRandom = mutableMapOf<String, RandomLevellingStrategy>()
+        private val lockObj = Object()
+
+        private fun getCachedWR(checkStr: String): RandomLevellingStrategy? {
+            synchronized(lockObj){
+                return cachedWeightedRandom[checkStr]
+            }
+        }
+
+        private fun putCachedWR(checkStr: String, weightedRandom: RandomLevellingStrategy) {
+            synchronized(lockObj){
+                cachedWeightedRandom[checkStr] = weightedRandom
+            }
+        }
+
+        fun clearCache(){
+            synchronized(lockObj){
+                cachedWeightedRandom.clear()
+            }
+        }
+    }
 
     override fun generateNumber(
         lmEntity: LivingEntityWrapper,
@@ -31,34 +53,46 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         maxLevel: Int
     ): Float {
         // this function only has lmEmtity to satify the interface requirement
-        if (weightedRandom.isEmpty()) {
+        if (weightedRandomMap.isEmpty())
             return getRandomLevel(minLevel, maxLevel).toFloat()
-        }
 
-        if (this.randomArray == null || (minLevel != this.minLevel) || (maxLevel != this.maxLevel)) {
-            populateWeightedRandom(minLevel, maxLevel)
+        if (this.randomArray.isEmpty() || (minLevel != this.minLevel) || (maxLevel != this.maxLevel)) {
+            val checkStr = "$minLevel-$maxLevel $this"
+            val cachedWR = getCachedWR(checkStr)
+
+            if (cachedWR != null)
+                setValuesFromCache(cachedWR)
+            else{
+                populateWeightedRandom(minLevel, maxLevel)
+                putCachedWR(checkStr, this)
+            }
         }
 
         // populateWeightedRandom(..) should've populated randomArray but if weightedRandom
         // was empty then it won't do anything
-        if (this.randomArray == null) {
+        if (this.randomArray.isEmpty())
             return getRandomLevel(minLevel, maxLevel).toFloat()
-        }
 
-        if (randomArray == null || randomArray!!.isEmpty())
+        if (randomArray.isEmpty())
             return 0f
 
-        val useArrayNum = ThreadLocalRandom.current().nextInt(0, randomArray!!.size)
-        return randomArray!![useArrayNum].toFloat()
+        val useArrayNum = ThreadLocalRandom.current().nextInt(0, randomArray.size)
+        return randomArray[useArrayNum].toFloat()
+    }
+
+    private fun setValuesFromCache(cachedWeightedRandom: RandomLevellingStrategy){
+        this.randomArray = cachedWeightedRandom.randomArray
+        this.minLevel = cachedWeightedRandom.minLevel
+        this.maxLevel = cachedWeightedRandom.maxLevel
+        this.strategyType = StrategyType.WEIGHTED_RANDOM
     }
 
     fun populateWeightedRandom(minLevel: Int, maxLevel: Int) {
-        if (weightedRandom.isEmpty()) {
-            Log.inf("populateWeightedRandom weightedRandom was empty")
+        if (weightedRandomMap.isEmpty()) {
             autoGenerate = true
             for (i in minLevel..maxLevel){
-                val test = maxLevel - i + 1
-                weightedRandom["$i"] = test
+                val value = maxLevel - i + 1
+                weightedRandomMap["$i"] = value
             }
         }
         else
@@ -67,103 +101,40 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         this.minLevel = minLevel
         this.maxLevel = maxLevel
         var count = 0
-        val numbers = mutableListOf<IntArray>()
+        val numbers = mutableListOf<MinAndMax>()
         val values = mutableListOf<Int>()
-        val numbersUsed = mutableListOf<Int>()
-        val origOverallNumberRange = mutableListOf<Int>()
-
-        for (i in minLevel..maxLevel) {
-            origOverallNumberRange.add(i)
-        }
-
-        val overallNumberRange: MutableList<Int> = LinkedList(origOverallNumberRange)
 
         // first loop parses the number range string and counts totals
         // so we know how big to size the array
-        for ((range, value) in this.weightedRandom) {
-            if (range.isEmpty()) {
-                continue
-            }
+        for ((range, value) in this.weightedRandomMap) {
+            if (range.isEmpty()) continue
 
-            val numRange: IntArray = parseNumberRange(range)
-            if (numRange[0] == -1 && numRange[1] == -1) {
+            val numRange = MinAndMax.setAmountRangeFromString(range)
+            if (numRange == null) {
                 Log.war("Invalid number range for weighted random: $range")
                 continue
             }
 
-            val start = if (numRange[0] < 0) numRange[1] else numRange[0]
-            val end = if (numRange[1] < 0) numRange[0] else numRange[1]
-            numbers.add(intArrayOf(start, end))
+            val start = if (numRange.min < 0f) numRange.max else numRange.min
+            val end = if (numRange.max < 0) numRange.min else numRange.max
+
+            numbers.add(MinAndMax(start, end))
             values.add(value)
-
-            for (i in start..end) {
-                if (!origOverallNumberRange.contains(i)) {
-                    continue
-                }
-                if (!numbersUsed.contains(i)) {
-                    numbersUsed.add(i)
-                }
-
-                count += value
-            }
+            count += (end.toInt() - start.toInt() + 1) * value
         }
 
-        count -= numbersUsed.size
-        count += overallNumberRange.size
-
-        this.randomArray = Array(count){0}
+        this.randomArray = IntArray(count)
         var newCount = 0
 
         // now we actually populate the array
         for ((valuesCount, nums) in numbers.withIndex()) {
-            for (i in nums[0]..nums[1]) {
-                if (!origOverallNumberRange.contains(i)) {
-                    continue
-                }
-                overallNumberRange.remove(i)
+            for (i in nums.minAsInt..nums.maxAsInt) {
                 for (t in 0 until values[valuesCount]) {
-                    randomArray!![newCount] = i
+                    randomArray[newCount] = i
                     newCount++
                 }
             }
         }
-
-        for (number in overallNumberRange) {
-            randomArray!![newCount] = number
-            newCount++
-        }
-    }
-
-    private fun parseNumberRange(range: String): IntArray {
-        val results = intArrayOf(-1, -1)
-
-        if (!range.contains("-")) {
-            if (!isInteger(range)) {
-                return results
-            }
-
-            results[0] = range.toInt()
-            results[1] = results[0]
-            return results
-        }
-
-        val nums = range.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        if (nums.size < 2) {
-            return results
-        }
-
-        nums[0] = nums[0].trim { it <= ' ' }
-        nums[1] = nums[1].trim { it <= ' ' }
-
-        if (nums[0].isNotEmpty() && isInteger(nums[0])) {
-            results[0] = nums[0].toInt()
-        }
-
-        if (nums[1].isNotEmpty() && isInteger(nums[1])) {
-            results[1] = nums[1].toInt()
-        }
-
-        return results
     }
 
     private fun getRandomLevel(minLevel: Int, maxLevel: Int): Int {
@@ -173,16 +144,13 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
-        if (levellingStrategy !is RandomLevellingStrategy) {
-            return
-        }
+        if (levellingStrategy !is RandomLevellingStrategy) return
 
-        if (levellingStrategy.doMerge && levellingStrategy.enabled) {
-            weightedRandom.putAll(levellingStrategy.weightedRandom)
-        }
+        if (levellingStrategy.shouldMerge && levellingStrategy.enabled)
+            weightedRandomMap.putAll(levellingStrategy.weightedRandomMap)
 
         this.strategyType =
-            if (weightedRandom.isEmpty()) StrategyType.RANDOM
+            if (weightedRandomMap.isEmpty()) StrategyType.RANDOM
             else StrategyType.WEIGHTED_RANDOM
     }
 
@@ -198,15 +166,16 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
     }
 
     override fun toString(): String {
-        if (weightedRandom.isEmpty()) {
+        if (weightedRandomMap.isEmpty()) {
             return if (this.autoGenerate) "Random Levelling (auto generate)"
             else "Random Levelling"
         }
 
-        if (minLevel == 0) {
-            return weightedRandom.toString()
-        }
+        val mergeMessage = if (shouldMerge) " (merge)" else ""
 
-        return "$minLevel-$maxLevel: $weightedRandom"
+        return if (minLevel == 0)
+            return "$weightedRandomMap$mergeMessage"
+        else
+            "$minLevel-$maxLevel: $weightedRandomMap$mergeMessage"
     }
 }

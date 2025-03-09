@@ -513,7 +513,7 @@ class RulesParser {
     private fun parseCustomBiomeGroups(cs: ConfigurationSection?) {
         if (cs == null) return
 
-        this.customBiomeGroups = mutableMapOf()
+        this.customBiomeGroups = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
         for (groupName in cs.getKeys(false)) {
             val names = cs.getStringList(groupName)
@@ -1073,6 +1073,14 @@ class RulesParser {
             cs, "permission",
             parsingInfo.conditionsPermission, parsingInfo.ruleName
         )
+        parsingInfo.conditionsPlayerNames = buildCachedModalListOfString(
+            cs, "player-names",
+            parsingInfo.conditionsPlayerNames, parsingInfo.ruleName
+        )
+        parsingInfo.conditionsGamemode = buildCachedModalListOfString(
+            cs, "gamemode",
+            parsingInfo.conditionsGamemode, parsingInfo.ruleName
+        )
         parsingInfo.conditionsScoreboardTags = buildCachedModalListOfString(
             cs, "scoreboard-tags",
             parsingInfo.conditionsScoreboardTags, parsingInfo.ruleName
@@ -1148,6 +1156,7 @@ class RulesParser {
             val ymlHelper2 = YmlParsingHelper(csYDistance)
             val yDistanceStrategy = YDistanceStrategy()
 
+            yDistanceStrategy.shouldMerge = ymlHelper2.getBoolean("merge")
             yDistanceStrategy.startingYLevel = ymlHelper2.getInt2(
                  "start-height", yDistanceStrategy.startingYLevel
             )
@@ -1169,6 +1178,7 @@ class RulesParser {
             val ymlHelper2 = YmlParsingHelper(csSpawnDistance)
             val spawnDistanceStrategy = SpawnDistanceStrategy()
 
+            spawnDistanceStrategy.shouldMerge = ymlHelper2.getBoolean("merge")
             spawnDistanceStrategy.ringedTiers = ymlHelper2.getFloat2(
                 "ringed-tiers", spawnDistanceStrategy.ringedTiers
             )
@@ -1256,11 +1266,11 @@ class RulesParser {
         val isDisabled = "false".equals(useWeightedRandom, ignoreCase = true)
         if (isDisabled || "true".equals(useWeightedRandom, ignoreCase = true)) {
             val randomLevelling = RandomLevellingStrategy()
-            if (isDisabled) {
+            if (isDisabled)
                 randomLevelling.enabled = false
-            } else {
+            else
                 randomLevelling.autoGenerate = true
-            }
+
             parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] = randomLevelling
 
             return
@@ -1269,22 +1279,24 @@ class RulesParser {
         val csRandom = YmlParsingHelper.objToCS(cs, "weighted-random") ?: return
         val randomMap = mutableMapOf<String, Int>()
         val randomLevelling = RandomLevellingStrategy()
-        randomLevelling.doMerge = YmlParsingHelper.getBoolean(csRandom, "merge")
+        randomLevelling.shouldMerge = YmlParsingHelper.getBoolean(csRandom, "merge")
 
         for (range in csRandom.getKeys(false)) {
-            if ("merge".equals(range, ignoreCase = true)) {
-                continue
-            }
+            if ("merge".equals(range, ignoreCase = true)) continue
+
             val value = csRandom.getInt(range)
             randomMap[range] = value
         }
 
-        if (randomMap.isNotEmpty()) {
-            randomLevelling.weightedRandom.putAll(randomMap)
-        }
+        if (randomMap.isNotEmpty())
+            randomLevelling.weightedRandomMap.putAll(randomMap)
 
-        if (parsingInfo.levellingStrategy.containsKey(StrategyType.WEIGHTED_RANDOM))
-            parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM]!!.mergeRule(randomLevelling)
+        if (parsingInfo.levellingStrategy.containsKey(StrategyType.WEIGHTED_RANDOM)) {
+            if (randomLevelling.shouldMerge)
+                parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM]!!.mergeRule(randomLevelling)
+            else
+                parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] = randomLevelling
+        }
         else
             parsingInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] = randomLevelling
     }
@@ -1370,6 +1382,7 @@ class RulesParser {
         )
         indicator.maxIndicators = ymlHelper.getInt2( "max", indicator.maxIndicators)
         indicator.scale = ymlHelper.getDouble2( "scale", indicator.scale)
+        indicator.maintainSpace = ymlHelper.getBoolean2( "maintain-space", indicator.maintainSpace)
         indicator.merge = ymlHelper.getBoolean2( "merge", indicator.merge)
 
         val csTiers = YmlParsingHelper.objToCS(cs, "colored-tiers")
@@ -1435,7 +1448,7 @@ class RulesParser {
         )
         options.outputCap = ymlHelper.getFloat2( "output-cap", options.outputCap)
         options.enabled = ymlHelper.getBoolean2( "enabled", options.enabled)
-        options.doMerge = ymlHelper.getBoolean( "merge", options.doMerge)
+        options.shouldMerge = ymlHelper.getBoolean( "merge")
         options.variable = ymlHelper.getString( "player-variable", options.variable)
         options.decreaseOutput = ymlHelper.getBoolean( "decrease-output", true)
         options.recheckPlayers = ymlHelper.getBoolean2( "recheck-players", options.recheckPlayers)
@@ -1682,17 +1695,19 @@ class RulesParser {
             if ("defaults" != ruleInfo.ruleName) continue
 
             if (ruleInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM] != null) {
-                if (rls == null) rls = ruleInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM]!!.cloneItem() as RandomLevellingStrategy
-                else rls.mergeRule(rls)
+                if (rls == null)
+                    rls = ruleInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM]!!.cloneItem() as RandomLevellingStrategy
+                else
+                    rls.mergeRule(ruleInfo.levellingStrategy[StrategyType.WEIGHTED_RANDOM])
             }
 
             if (ruleInfo.restrictionsMinLevel != null) minLevel = ruleInfo.restrictionsMinLevel!!
             if (ruleInfo.restrictionsMaxLevel != null) maxLevel = ruleInfo.restrictionsMaxLevel!!
         }
 
-        if (rls == null || !rls.autoGenerate || rls.weightedRandom.isNotEmpty()) return
+        if (rls == null || !rls.autoGenerate || rls.weightedRandomMap.isNotEmpty()) return
         // TODO: next line probably shouldn't have i-i
-        for (i in minLevel..maxLevel) rls.weightedRandom["$i-$i"] = maxLevel - i + 1
+        for (i in minLevel..maxLevel) rls.weightedRandomMap["$i-$i"] = maxLevel - i + 1
 
         rls.populateWeightedRandom(minLevel, maxLevel)
     }
