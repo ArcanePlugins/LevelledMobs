@@ -381,7 +381,7 @@ class Definitions{
 
         methodName = when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                if (ver.revision >= 2)
+                if (ver.revision in 2..4)
                     "au"
                 else
                     "ar"
@@ -418,9 +418,9 @@ class Definitions{
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
 
+        // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         methodName = if (isOneTwentyFiveOrNewer) "a" else "b"
 
-        // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         this.methodSet = clazzDataWatcher!!.getMethod(
             methodName, clazzDataWatcherObject,
             Any::class.java
@@ -431,7 +431,9 @@ class Definitions{
         //   int getId() ->
         when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                methodName = if (ver.revision >= 2)
+                methodName = if (ver.revision >= 5)
+                    "ao"
+                else if (ver.revision >= 2)
                     "ar"
                 else
                     "an"
