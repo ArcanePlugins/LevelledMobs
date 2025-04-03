@@ -7,8 +7,8 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.0"
-    id("com.gradleup.shadow") version "9.0.0-beta9"
+    kotlin("jvm") version "2.1.20"
+    id("com.gradleup.shadow") version "9.0.0-beta11"
     id("idea")
     id("maven-publish")
 }
@@ -28,7 +28,7 @@ idea {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch

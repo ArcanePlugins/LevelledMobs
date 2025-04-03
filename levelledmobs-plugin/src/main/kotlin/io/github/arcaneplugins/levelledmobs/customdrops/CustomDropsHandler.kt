@@ -371,7 +371,7 @@ class CustomDropsHandler {
 
         if (usesGroupIds) {
             for (customDropBases in info.prioritizedDrops!!.values) {
-                customDropBases.shuffled()
+                customDropBases.shuffle()
             }
         }
 
@@ -527,16 +527,13 @@ class CustomDropsHandler {
             return
         }
 
-        if (dropBase.noSpawner && info.isSpawner)return
+        if (dropBase.noSpawner && info.isSpawner) return
         if (shouldDenyDeathCause(dropBase, info)) return
         if (!madePlayerLevelRequirement(info, dropBase)) return
 
         if (dropBase.excludedMobs.contains(info.lmEntity!!.typeName)) {
-            if (dropBase is CustomDropItem && !info.equippedOnly) {
-                info.addDebugMessage(
-                    "item: ${dropBase.material.name}, mob was excluded"
-                )
-            }
+            if (dropBase is CustomDropItem && !info.equippedOnly)
+                info.addDebugMessage("item: ${dropBase.material.name}, mob was excluded")
             return
         }
 
@@ -940,7 +937,7 @@ class CustomDropsHandler {
             var enchantmentNumber = 0
             val levelsList = mutableListOf<Int>()
             levelsList.addAll(chances.items[enchantment]!!.keys)
-            if (opts == null || opts.doShuffle) levelsList.shuffled()
+            if (opts == null || opts.doShuffle) levelsList.shuffle()
 
             for (enchantLevel in levelsList) {
                 val chanceValue = chances.items[enchantment]!![enchantLevel]!!
