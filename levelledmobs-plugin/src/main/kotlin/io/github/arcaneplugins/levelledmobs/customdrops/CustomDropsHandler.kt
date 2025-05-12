@@ -667,11 +667,23 @@ class CustomDropsHandler {
 
         if (dropBase is CustomCommand) {
             // ------------------------------------------ commands get executed here then function returns ---------------------------------------------------
+            var count = 0
+            if (dropBase.hasGroupId && info.groupLimits != null) {
+                count = info.getItemsDropsByGroup(dropBase)
+                val groupLimits = info.groupLimits!!
+                if (groupLimits.hasReachedCapTotal(count)) {
+                    DebugManager.log(DebugType.GROUP_LIMITS, info.lmEntity) {
+                        "Reached cap-total of ${groupLimits.capTotal} for group: ${dropBase.groupId}"
+                    }
+                    return
+                }
+            }
+
             executeCommand(dropBase, info)
+            info.itemGotDropped(dropBase, 1)
 
             if (dropBase.hasGroupId) {
                 if (main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
-                    val count = info.getItemsDropsByGroup(dropBase)
                     var msg = "item: command, gId: &b${dropBase.groupId}&7, maxDropGroup: &b${dropBase.maxDropGroup}&7, " +
                             "groupDropCount: &b$count&7, executed: &btrue"
                     if (info.retryNumber > 0)
@@ -1274,8 +1286,9 @@ class CustomDropsHandler {
     }
 
     private fun executeTheCommand(command: String, timesToRun: Int) {
-        for (i in 0 until timesToRun)
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+        (0 until timesToRun).forEach { i ->
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+        }
     }
 
     private fun processRangedCommand(
