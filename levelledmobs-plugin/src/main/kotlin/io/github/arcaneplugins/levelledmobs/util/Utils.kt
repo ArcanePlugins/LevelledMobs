@@ -36,10 +36,6 @@ import org.jetbrains.annotations.Contract
 import kotlin.math.max
 import kotlin.math.pow
 
-/**
-* Threw this here so bedrock testing can be referenced everywhere.
-*/
-fun Player.isBedrock(): Boolean = this.uniqueId.toString().startsWith("00000000-0000-0000")
 
 /**
  * Holds common utilities

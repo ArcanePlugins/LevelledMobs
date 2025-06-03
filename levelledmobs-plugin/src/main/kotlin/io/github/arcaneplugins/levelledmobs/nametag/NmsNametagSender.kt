@@ -37,8 +37,8 @@ class NmsNametagSender : NametagSender {
     ) {
 
         /** Disable if Java or Bedrock */
-        if (player.isBedrock() && LevelledMobs.disableNametagBedrock) return
-        if (!player.isBedrock() && LevelledMobs.disableNametagJava) return
+        if (this.isBedrock(player) && this.disableNametagBedrock) return
+        if (!this.isBedrock(player) && this.disableNametagJava) return
 
         if (!player.isOnline || !player.isValid) return
 
@@ -50,6 +50,9 @@ class NmsNametagSender : NametagSender {
             }
             scheduler.run()
         }
+    }
+    private fun isBedrock(player: Player) : Boolean {
+        return player.uniqueId.toString().startsWith("00000000-0000-0000")
     }
 
     fun refresh() {
