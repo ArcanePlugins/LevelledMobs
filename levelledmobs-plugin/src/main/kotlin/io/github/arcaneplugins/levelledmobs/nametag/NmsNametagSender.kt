@@ -51,7 +51,7 @@ class NmsNametagSender : NametagSender {
         }
     }
     private fun isBedrock(player: Player) : Boolean {
-        return player.uniqueId.toString().startsWith("00000000-0000-0000")
+        return player.uniqueId.getMostSignificantBits() == 0L
     }
 
     fun refresh() {
