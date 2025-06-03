@@ -24,10 +24,10 @@ import org.bukkit.entity.Player
 class NmsNametagSender : NametagSender {
     private var def = LevelledMobs.instance.definitions
     private var disableNametagJava: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
-            "disable-nametag-java", true
+            "disable-nametag-java", false
         )
     private var disableNametagBedrock: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
-            "disable-nametag-bedrock", true
+            "disable-nametag-bedrock", false
         )
     override fun sendNametag(
         livingEntity: LivingEntity,
