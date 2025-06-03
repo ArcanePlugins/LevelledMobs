@@ -37,8 +37,8 @@ class NmsNametagSender : NametagSender {
     ) {
 
         /** Disable if Java or Bedrock */
-        if (this.isBedrock(player) && this.disableNametagBedrock) return
-        if (!this.isBedrock(player) && this.disableNametagJava) return
+        if (this.disableNametagBedrock && this.isBedrock(player)) return
+        if (this.disableNametagJava && !this.isBedrock(player)) return
 
         if (!player.isOnline || !player.isValid) return
 
