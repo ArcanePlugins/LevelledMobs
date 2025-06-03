@@ -137,6 +137,12 @@ player-levelling-relevel-min-time: 5s
 # ||  for it to register under `%levelledmobs_mob-target%`.
 nametag-placeholder-maxblocks: 30
 
+# || This setting disables levelledmobs nametags for java users
+disable-nametag-java: false
+
+# || This setting disables levelledmmobs nametags for bedrock users
+disable-nametag-bedrock: false
+
 # ||  What conditions should a mob have in order for the
 # ||  LevelledMobs kill command to 'skip' it (not kill the mob)?
 kill-skip-conditions:
