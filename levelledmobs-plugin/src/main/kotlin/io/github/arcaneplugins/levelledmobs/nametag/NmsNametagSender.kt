@@ -23,7 +23,6 @@ import org.bukkit.entity.Player
 @Suppress("UNCHECKED_CAST")
 class NmsNametagSender : NametagSender {
     private var def = LevelledMobs.instance.definitions
-
     override fun sendNametag(
         livingEntity: LivingEntity,
         nametag: NametagResult,

@@ -262,6 +262,16 @@ class NametagQueueManager {
         nametag: NametagResult,
         players: MutableList<Player>
     ) {
+
+        var disableNametagJava: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
+                "disable-nametag-java", false
+            )
+        var disableNametagBedrock: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
+                "disable-nametag-bedrock", false
+            )    
+        fun isBedrock(player: Player) : Boolean {
+            return player.uniqueId.getMostSignificantBits() == 0L
+        }                
         val loopCount = if (lmEntity.playersNeedingNametagCooldownUpdate == null) 1 else 2
 
         for (i in 0 until loopCount) {
@@ -279,6 +289,10 @@ class NametagQueueManager {
                     ) {
                         continue
                     }
+                    
+                    /** Disable if Java or Bedrock */
+                    if (disableNametagBedrock && isBedrock(player)) return
+                    if (disableNametagJava && !isBedrock(player)) return
 
                     nametagSender!!.sendNametag(
                         lmEntity.livingEntity, nametag, player,
@@ -288,6 +302,12 @@ class NametagQueueManager {
             } else {
                 // these players are getting always on nametags
                 for (player in lmEntity.playersNeedingNametagCooldownUpdate!!) {
+
+                    /** Disable if Java or Bedrock */
+                    if (disableNametagBedrock && isBedrock(player)) return
+                    if (disableNametagJava && !isBedrock(player)) return
+
+
                     nametagSender!!.sendNametag(lmEntity.livingEntity, nametag, player, true)
                 }
             }

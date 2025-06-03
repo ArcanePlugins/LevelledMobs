@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Contract
 import kotlin.math.max
 import kotlin.math.pow
 
+
 /**
  * Holds common utilities
  *
