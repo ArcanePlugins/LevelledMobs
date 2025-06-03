@@ -35,12 +35,11 @@ class NmsNametagSender : NametagSender {
         player: Player,
         alwaysVisible: Boolean
     ) {
+        if (!player.isOnline || !player.isValid) return
 
         /** Disable if Java or Bedrock */
         if (this.disableNametagBedrock && this.isBedrock(player)) return
         if (this.disableNametagJava && !this.isBedrock(player)) return
-
-        if (!player.isOnline || !player.isValid) return
 
         if (LevelledMobs.instance.ver.isRunningFolia)
             sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
