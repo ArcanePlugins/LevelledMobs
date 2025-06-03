@@ -23,12 +23,6 @@ import org.bukkit.entity.Player
 @Suppress("UNCHECKED_CAST")
 class NmsNametagSender : NametagSender {
     private var def = LevelledMobs.instance.definitions
-    private var disableNametagJava: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
-            "disable-nametag-java", false
-        )
-    private var disableNametagBedrock: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
-            "disable-nametag-bedrock", false
-        )
     override fun sendNametag(
         livingEntity: LivingEntity,
         nametag: NametagResult,
@@ -36,10 +30,6 @@ class NmsNametagSender : NametagSender {
         alwaysVisible: Boolean
     ) {
         if (!player.isOnline || !player.isValid) return
-
-        /** Disable if Java or Bedrock */
-        if (this.disableNametagBedrock && this.isBedrock(player)) return
-        if (this.disableNametagJava && !this.isBedrock(player)) return
 
         if (LevelledMobs.instance.ver.isRunningFolia)
             sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
@@ -49,9 +39,6 @@ class NmsNametagSender : NametagSender {
             }
             scheduler.run()
         }
-    }
-    private fun isBedrock(player: Player) : Boolean {
-        return player.uniqueId.getMostSignificantBits() == 0L
     }
 
     fun refresh() {
