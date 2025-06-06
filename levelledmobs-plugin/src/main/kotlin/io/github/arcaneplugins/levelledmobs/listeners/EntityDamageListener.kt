@@ -50,9 +50,9 @@ class EntityDamageListener : Listener {
         instance = this
     }
 
-    fun load(){
+    fun load() {
         val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.MONITOR)
-        if (lastPriority != null){
+        if (lastPriority != null) {
             if (priority == lastPriority) return
 
             HandlerList.unregisterAll(this)
@@ -88,18 +88,18 @@ class EntityDamageListener : Listener {
 
         if (event is EntityDamageByEntityEvent
         ) {
-            if (isCritical && event.damager is Player){
+            if (isCritical && event.damager is Player) {
                 // this is so custom drops can associate the killer if the mob was
                 // killed via a custom projectile such as magic
-                LevelledMobs.instance.entityDeathListener.damageMappings[event.getEntity().uniqueId] = (event.damager as Player)
+                LevelledMobs.instance.entityDeathListener.damageMappings[event.getEntity().uniqueId] =
+                    (event.damager as Player)
                 return
             }
-            if (!updateMobsOnNonPlayerdamage && !isCritical && event.entity !is Player && event.damager !is Player){
+            if (!updateMobsOnNonPlayerdamage && !isCritical && event.entity !is Player && event.damager !is Player) {
                 // we only care about player caused damage
                 return
             }
-        }
-        else if (!updateMobsOnNonPlayerdamage){
+        } else if (!updateMobsOnNonPlayerdamage) {
             // we only care about player caused damage
             return
         }
@@ -129,7 +129,7 @@ class EntityDamageListener : Listener {
             theHitter.free()
             return
         }
-
+        val livingEntity = event.entity as LivingEntity
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
 
         //Make sure the mob is levelled
@@ -149,34 +149,38 @@ class EntityDamageListener : Listener {
             if (event.damager is Player)
                 lmEntity.associatedPlayer = (event.damager as Player)
         }
-        val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
-        val nametagVisibleTime = lmEntity.getNametagCooldownTime()
+        livingEntity.scheduler.run(LevelledMobs.instance, { task ->
+            val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
+            val nametagVisibleTime = lmEntity.getNametagCooldownTime()
 
-        if (nametagVisibleTime > 0L && wasDamagedByEntity &&
-            nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)
-        ) {
-            if (lmEntity.associatedPlayer != null) {
-                if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
-                    lmEntity.playersNeedingNametagCooldownUpdate = HashSet()
+            if (nametagVisibleTime > 0L && wasDamagedByEntity &&
+                nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)
+            ) {
+                if (lmEntity.associatedPlayer != null) {
+                    if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
+                        lmEntity.playersNeedingNametagCooldownUpdate = HashSet()
+                    }
+
+                    lmEntity.playersNeedingNametagCooldownUpdate!!.add(lmEntity.associatedPlayer!!)
                 }
-
-                lmEntity.playersNeedingNametagCooldownUpdate!!.add(lmEntity.associatedPlayer!!)
             }
-        }
 
-        lmEntity.pdc.set(NamespacedKeys.lastDamageTime, PersistentDataType.LONG, Instant.now().toEpochMilli())
+            lmEntity.pdc.set(NamespacedKeys.lastDamageTime, PersistentDataType.LONG, Instant.now().toEpochMilli())
 
-        // Update their nametag with a 1 tick delay so that their health after the damage is shown
-        lmEntity.main.levelManager.updateNametagWithDelay(lmEntity)
-        lmEntity.free()
+            // Update their nametag with a 1 tick delay so that their health after the damage is shown
+            lmEntity.main.levelManager.updateNametagWithDelay(lmEntity)
+            lmEntity.free()
+        }, null)
     }
 
     // Check for levelled ranged damage.
     private fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
         if (event.finalDamage == 0.0) return
 
-        processRangedDamage(event)
-        processOtherRangedDamage(event)
+        event.entity.scheduler.run(LevelledMobs.instance, { task ->
+            processRangedDamage(event)
+            processOtherRangedDamage(event)
+        }, null)
     }
 
     private fun processRangedDamage(event: EntityDamageByEntityEvent) {
@@ -267,7 +271,7 @@ class EntityDamageListener : Listener {
             event.damage.toFloat()
         ).amount.toDouble() // use ranged attack damage value
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, livingEntity)
-            { "old damage: &b: $oldDamage&r, new damage: &b${event.damage}&r" }
+        { "old damage: &b: $oldDamage&r, new damage: &b${event.damage}&r" }
         lmEntity.free()
     }
 }

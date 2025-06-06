@@ -86,10 +86,12 @@ class EntitySpawnListener : Listener{
 
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
 
-        if (mobProcessDelay > 0)
-            delayedProcessMob(lmEntity, event, mobProcessDelay)
-        else
-            preProcessmob(lmEntity, event, 0)
+        event.entity.scheduler.run(LevelledMobs.instance, { task ->
+            if (mobProcessDelay > 0)
+                delayedProcessMob(lmEntity, event, mobProcessDelay)
+            else
+                preProcessmob(lmEntity, event, 0)
+        }, null)
     }
 
     private fun preProcessmob(
