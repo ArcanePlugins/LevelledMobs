@@ -30,7 +30,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.CommandBlock
 import org.bukkit.command.BlockCommandSender
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
@@ -99,7 +98,7 @@ object SummonSubcommand {
         requestedLevel.level = mobLevel
         var location = when (sender) {
             is Player -> sender.location
-            is CommandBlock -> sender.location
+            is BlockCommandSender -> sender.block.location
             else -> null
         }
         var nbtData: String? = null
