@@ -127,31 +127,33 @@ class EntityDeathListener : Listener {
             }
         }
 
-        if (lmEntity.isLevelled) {
-            // Set levelled item drops
-            MobDataManager.populateAttributeCache(lmEntity)
-            main.levelManager.setLevelledItemDrops(lmEntity, event.drops, doNotMultiplyDrops)
+        event.entity.scheduler.run(LevelledMobs.instance, { task ->
+            if (lmEntity.isLevelled) {
+                // Set levelled item drops
+                MobDataManager.populateAttributeCache(lmEntity)
+                main.levelManager.setLevelledItemDrops(lmEntity, event.drops, doNotMultiplyDrops)
 
-            // Set levelled exp drops
-            if (disableXpDrops)
-                event.droppedExp = 0
-            else if (!doNotBoostXp) {
-                if (event.droppedExp > 0)
-                    event.droppedExp = main.levelManager.getLevelledExpDrops(lmEntity, event.droppedExp.toDouble())
+                // Set levelled exp drops
+                if (disableXpDrops)
+                    event.droppedExp = 0
+                else if (!doNotBoostXp) {
+                    if (event.droppedExp > 0)
+                        event.droppedExp = main.levelManager.getLevelledExpDrops(lmEntity, event.droppedExp.toDouble())
+                }
+            } else if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
+                val drops = mutableListOf<ItemStack>()
+                val result: CustomDropResult = main.customDropsHandler.getCustomItemDrops(
+                    lmEntity,
+                    drops, false
+                )
+                if (result.hasOverride)
+                    main.levelManager.removeVanillaDrops(lmEntity, event.drops)
+
+                event.drops.addAll(drops)
             }
-        } else if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
-            val drops = mutableListOf<ItemStack>()
-            val result: CustomDropResult = main.customDropsHandler.getCustomItemDrops(
-                lmEntity,
-                drops, false
-            )
-            if (result.hasOverride)
-                main.levelManager.removeVanillaDrops(lmEntity, event.drops)
 
-            event.drops.addAll(drops)
-        }
-
-        lmEntity.free()
+            lmEntity.free()
+        }, null)
     }
 
     private fun hasReachedEntityDeathChunkMax(

@@ -29,7 +29,11 @@ idea {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") {
+        exclude(group = "com.google.guava", module = "guava")
+        exclude(group = "com.google.code.gson", module = "gson")
+        exclude(group = "it.unimi.dsi", module = "fastutil")
+    }
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.1.0") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit

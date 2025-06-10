@@ -45,23 +45,25 @@ class ChunkLoadListener : Listener {
 
     private fun checkEntity(livingEntity: LivingEntity, event: ChunkLoadEvent) {
         val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
-        val wrapper = SchedulerWrapper(livingEntity){
-            if (LevelledMobs.instance.levelManager.doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
-                lmEntity.reEvaluateLevel = true
-                lmEntity.isRulesForceAll = true
-                lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled
-            } else if (lmEntity.isLevelled) {
+        livingEntity.scheduler.run(LevelledMobs.instance, { task ->
+            val wrapper = SchedulerWrapper(livingEntity) {
+                if (LevelledMobs.instance.levelManager.doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
+                    lmEntity.reEvaluateLevel = true
+                    lmEntity.isRulesForceAll = true
+                    lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled
+                } else if (lmEntity.isLevelled) {
+                    lmEntity.free()
+                    return@SchedulerWrapper
+                }
+
+                LevelledMobs.instance.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
                 lmEntity.free()
-                return@SchedulerWrapper
             }
 
-            LevelledMobs.instance.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
-            lmEntity.free()
-        }
-
-        lmEntity.buildCacheIfNeeded()
-        lmEntity.inUseCount.getAndIncrement()
-        wrapper.runDirectlyInBukkit = true
-        wrapper.run()
+            lmEntity.buildCacheIfNeeded()
+            lmEntity.inUseCount.getAndIncrement()
+            wrapper.runDirectlyInBukkit = true
+            wrapper.run()
+        }, null)
     }
 }
