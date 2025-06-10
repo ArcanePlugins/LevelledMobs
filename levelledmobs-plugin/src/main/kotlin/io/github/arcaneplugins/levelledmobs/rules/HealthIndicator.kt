@@ -89,7 +89,6 @@ class HealthIndicator : MergableRule, Cloneable {
         result.append(primaryColor)
 
         if (tiersToUse < 2) {
-            var indicatorsUsed = 0
             var useHalf = false
             if (this.indicatorHalf != null && indicatorsToUse < maxIndicators) {
                 useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth
@@ -98,7 +97,7 @@ class HealthIndicator : MergableRule, Cloneable {
             }
 
             result.append(indicatorStr!!.repeat(indicatorsToUse))
-            indicatorsUsed = indicatorsToUse
+            var indicatorsUsed = indicatorsToUse
             if (useHalf) {
                 result.append(this.indicatorHalf)
                 indicatorsUsed++

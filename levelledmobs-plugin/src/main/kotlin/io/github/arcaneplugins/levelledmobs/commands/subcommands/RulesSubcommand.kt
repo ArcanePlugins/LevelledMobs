@@ -192,8 +192,8 @@ object RulesSubcommand {
                 }
 
                 var doContinue = false
-                synchronized(entity.getPersistentDataContainer()) {
-                    if (entity.getPersistentDataContainer().has(
+                synchronized(entity.persistentDataContainer) {
+                    if (entity.persistentDataContainer.has(
                                 NamespacedKeys.wasSummoned,
                                 PersistentDataType.INTEGER
                             )
@@ -492,7 +492,7 @@ object RulesSubcommand {
             }
 
             if (findNearbyEntities) {
-                val distance = entity.getLocation().distanceSquared(player.location)
+                val distance = entity.location.distanceSquared(player.location)
                 entities[distance] = entity
             } else {
                 val toEntity: Vector = entity.eyeLocation.toVector().subtract(eye.toVector())
@@ -530,11 +530,11 @@ object RulesSubcommand {
 
     private fun spawnParticles(location: Location, world: World) {
         try {
-            for (i in 0..9) {
+            repeat(10) {
                 world.spawnParticle(Particle.EFFECT, location, 20, 0.0, 0.0, 0.0, 0.1)
                 Thread.sleep(50)
             }
-        } catch (ignored: InterruptedException) {}
+        } catch (_: InterruptedException) {}
     }
 
     private fun showEffectiveValues(

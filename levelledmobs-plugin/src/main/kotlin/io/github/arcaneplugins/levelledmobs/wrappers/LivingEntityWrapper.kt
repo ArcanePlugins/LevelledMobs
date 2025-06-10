@@ -68,7 +68,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     var spawnedWGRegions = mutableSetOf<String>()
         private set
     val spawnReason = LMSpawnReason()
-    private var _nametagVisibilityEnum = mutableListOf<NametagVisibilityEnum>()
     private val cacheLock = ReentrantLock()
     private val pdcLock = ReentrantLock()
 
@@ -102,7 +101,6 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     var summonedSender: CommandSender? = null
 
     companion object{
-        private val playerLock = Any()
         private val cachedLM_Wrappers_Lock = Any()
         private val cache = Stack<LivingEntityWrapper>()
         private const val LOCKMAXRETRYTIMES = 3
@@ -244,7 +242,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                     NamespacedKeys.wasSummoned,
                     PersistentDataType.INTEGER
                 )
-            } catch (ignored: Exception) {}
+            } catch (_: Exception) {}
 
             if (main.rulesManager.hasAnyWGCondition) this.spawnedWGRegions =
                 ExternalCompatibilityManager.getWGRegionsAtLocation(
@@ -352,6 +350,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
 
         try {
+            @Suppress("UNUSED_PARAMETER")
             for (i in 0..1) {
                 try {
                     if (sbAllowed.isNotEmpty()) {
@@ -548,6 +547,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             var succeeded = false
 
             try {
+                @Suppress("UNUSED_PARAMETER")
                 for (i in 0..1) {
                     try {
                         if (livingEntity.persistentDataContainer
@@ -814,6 +814,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
 
             try {
+                @Suppress("UNUSED_PARAMETER")
                 for (i in 0..1) {
                     try {
                         if (pdc.has(
@@ -828,10 +829,10 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                             NamespacedKeys.spawnedTimeOfDay, PersistentDataType.INTEGER,
                             value
                         )
-                    } catch (ignored: ConcurrentModificationException) {
+                    } catch (_: ConcurrentModificationException) {
                         try {
                             Thread.sleep(10)
-                        } catch (ignored2: InterruptedException) {
+                        } catch (_: InterruptedException) {
                             break
                         }
                     }

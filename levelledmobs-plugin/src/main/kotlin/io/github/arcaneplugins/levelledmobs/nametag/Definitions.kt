@@ -95,8 +95,6 @@ class Definitions{
         private set
     var methodSend: Method? = null
         private set
-    var methodGetAll: Method? = null
-        private set
     var methodDefine: Method? = null
         private set
     var methodGetAccessor: Method? = null
@@ -294,7 +292,7 @@ class Definitions{
                 "io.papermc.paper.adventure.PaperAdventure"
             )
             this.hasKiori = true
-        } catch (ignored: ClassNotFoundException) {}
+        } catch (_: ClassNotFoundException) {}
 
         this.clazzEntityTypes = Class.forName(
             "net.minecraft.world.entity.EntityTypes"
@@ -310,7 +308,7 @@ class Definitions{
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage")
                 this.hasMiniMessage = true
-            } catch (ignored: ClassNotFoundException) {}
+            } catch (_: ClassNotFoundException) {}
         }
     }
 

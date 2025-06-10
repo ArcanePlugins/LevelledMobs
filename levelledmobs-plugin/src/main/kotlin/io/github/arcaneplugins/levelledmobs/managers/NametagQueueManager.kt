@@ -32,6 +32,8 @@ class NametagQueueManager {
     private var doThread = false
     private var nametagSender: NametagSender? = null
     private var hasLibsDisguisesInstalled = false
+    var disableNametagJava = false
+    var disableNametagBedrock = false
     var queueTask: BukkitTask? = null
     private val queue = LinkedBlockingQueue<QueueItem>()
     val nametagSenderHandler = NametagSenderHandler()
@@ -40,6 +42,16 @@ class NametagQueueManager {
     fun load(){
         hasLibsDisguisesInstalled = ExternalCompatibilityManager.hasLibsDisguisesInstalled
         this.nametagSender = nametagSenderHandler.getCurrentUtil()
+        onLoadOrReload()
+    }
+
+    fun onLoadOrReload(){
+        this.disableNametagJava = LevelledMobs.instance.helperSettings.getBoolean(
+            "disable-nametag-java", false
+        )
+        this.disableNametagBedrock = LevelledMobs.instance.helperSettings.getBoolean(
+            "disable-nametag-bedrock", false
+        )
     }
 
     val hasNametagSupport: Boolean
@@ -262,16 +274,6 @@ class NametagQueueManager {
         nametag: NametagResult,
         players: MutableList<Player>
     ) {
-
-        var disableNametagJava: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
-                "disable-nametag-java", false
-            )
-        var disableNametagBedrock: Boolean = LevelledMobs.instance.helperSettings.getBoolean(
-                "disable-nametag-bedrock", false
-            )    
-        fun isBedrock(player: Player) : Boolean {
-            return player.uniqueId.getMostSignificantBits() == 0L
-        }                
         val loopCount = if (lmEntity.playersNeedingNametagCooldownUpdate == null) 1 else 2
 
         for (i in 0 until loopCount) {
@@ -323,5 +325,9 @@ class NametagQueueManager {
                 LibsDisguisesUtils.updateLibsDisguiseNametag(lmEntity, useNametag)
             }
         }
+    }
+
+    private fun isBedrock(player: Player) : Boolean {
+        return player.uniqueId.mostSignificantBits == 0L
     }
 }

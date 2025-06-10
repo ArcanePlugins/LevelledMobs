@@ -82,7 +82,6 @@ class MetricsInfo {
 
     fun getLevellingStrategy(): String {
         // Random, Weighted Random, Spawn Distance, Blended, Y-Levelling
-        val defaultRule = LevelledMobs.instance.rulesParsingManager.defaultRule!!
 
         // TODO: fix this
 //        if (defaultRule.levellingStrategy != null) {

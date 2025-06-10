@@ -194,6 +194,7 @@ class LevelledMobs : JavaPlugin() {
         mainCompanion.loadFiles()
         mainCompanion.checkListenersWithVariablePriorities()
         chunkLoadListener.load()
+        nametagQueueManager.onLoadOrReload()
         RandomLevellingStrategy.clearCache()
 
         var reloadFinishedMsg = messagesCfg.getStringList(

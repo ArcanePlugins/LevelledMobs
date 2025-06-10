@@ -150,8 +150,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         val currentYPos = lmEntity.location.blockY.toFloat()
         var result: Float
         val transitionYHeight =
-            if (this.transitionYheight == null) 0f else transitionYheight!!.toFloat()
-        val yHeightPeriod = if (this.yHeightPeriod == null) 0f else yHeightPeriod!!.toFloat()
+            if (this.transitionYheight == null) 0f else transitionYheight!!
+        val yHeightPeriod = if (this.yHeightPeriod == null) 0f else yHeightPeriod!!
         val lvlMultiplier = if (this.lvlMultiplier == null) 0f else lvlMultiplier!!
 
         result = if (this.scaleDownward == null || scaleDownward!!) {

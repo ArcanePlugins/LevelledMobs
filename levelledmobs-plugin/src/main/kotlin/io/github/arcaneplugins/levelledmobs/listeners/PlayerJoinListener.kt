@@ -168,7 +168,7 @@ class PlayerJoinListener : Listener {
             }
 
             // mob must be alive
-            if (!entity.isValid()) {
+            if (!entity.isValid) {
                 continue
             }
 

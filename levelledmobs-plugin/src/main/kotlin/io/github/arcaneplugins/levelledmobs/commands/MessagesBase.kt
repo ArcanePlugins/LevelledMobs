@@ -102,34 +102,4 @@ open class MessagesBase{
         val messages = getMessage(path, replaceWhat, replaceWith)
         messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
     }
-
-    protected fun getMessage(
-        path: String
-    ): String {
-        var messages = LevelledMobs.instance.messagesCfg.getStringList(path)
-        messages = replaceAllInList(messages, "%prefix%", LevelledMobs.instance.configUtils.prefix)
-        messages = replaceAllInList(messages, "%label%", messageLabel)
-        messages = colorizeAllInList(messages)
-
-        if (messages.isEmpty()) {
-            return ""
-        }
-        return if (messages.size == 1) {
-            messages[0]
-        } else {
-            messages.joinToString("\n")
-        }
-    }
-
-    protected fun getMessage(
-        path: String,
-        replaceWhat: String,
-        replaceWith: String
-    ): MutableList<String> {
-        return getMessage(
-            path,
-            arrayOf(replaceWhat),
-            arrayOf(replaceWith)
-        )
-    }
 }

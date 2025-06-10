@@ -179,7 +179,7 @@ object KillSubcommand {
         var radius: Int
         try {
             radius = opts.args[0].toInt()
-        } catch (exception: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             MessagesHelper.showMessage(sender,
                 "command.levelledmobs.kill.near.invalid-radius", "%radius%",
                 opts.args[0]

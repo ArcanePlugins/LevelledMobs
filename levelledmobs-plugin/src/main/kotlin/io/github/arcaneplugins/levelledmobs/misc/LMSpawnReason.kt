@@ -91,13 +91,14 @@ class LMSpawnReason {
     fun checkPDCKey(lmEntity: LivingEntityWrapper){
         hasCheckedPDCKey = true
         var temp: String? = null
+        @Suppress("UNUSED_PARAMETER")
         for (i in 0..1) {
             try {
                 if (lmEntity.pdc.has(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING))
                     temp = lmEntity.pdc[NamespacedKeys.spawnReasonKey, PersistentDataType.STRING]
                 break
             }
-            catch (ignored: ConcurrentModificationException) {
+            catch (_: ConcurrentModificationException) {
                 _minecraftSpawnReason = SpawnReason.DEFAULT
                 _internalSpawnReason = null
             }
@@ -123,8 +124,7 @@ class LMSpawnReason {
 
     private fun setPDCKey(lmEntity: LivingEntityWrapper, doForce: Boolean = false){
         hasCheckedPDCKey = true
-        val keyValue = if (_internalSpawnReason != null) _internalSpawnReason.toString()
-        else _minecraftSpawnReason.toString()
+        val keyValue = _internalSpawnReason?.toString() ?: _minecraftSpawnReason.toString()
         if (doForce || !lmEntity.pdc.has(NamespacedKeys.spawnReasonKey, PersistentDataType.STRING)) {
             lmEntity.pdc.set(
                 NamespacedKeys.spawnReasonKey, PersistentDataType.STRING,

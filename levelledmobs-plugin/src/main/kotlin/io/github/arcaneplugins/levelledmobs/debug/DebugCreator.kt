@@ -74,7 +74,7 @@ object DebugCreator {
                 zipOut?.close()
                 fis?.close()
                 fos?.close()
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
 
@@ -101,8 +101,7 @@ object DebugCreator {
 
         try {
             shaDigest = MessageDigest.getInstance("SHA-256")
-        } catch (ignored: Exception) {
-        }
+        } catch (_: Exception) { }
 
         sb.append(main.description.name)
         sb.append(" ")

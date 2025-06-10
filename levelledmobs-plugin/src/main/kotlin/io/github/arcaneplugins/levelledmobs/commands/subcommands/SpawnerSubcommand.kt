@@ -236,7 +236,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
                 "/spawntype" -> {
                     try {
                         info.spawnType = EntityType.valueOf(foundValue.uppercase(Locale.getDefault()))
-                    } catch (ignored: Exception) {
+                    } catch (_: Exception) {
                         sender.sendMessage("Invalid spawn type: $foundValue")
                         return
                     }
@@ -258,7 +258,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
                     }
                     try {
                         info.player = Bukkit.getPlayer(foundValue)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         MessagesHelper.showMessage(sender, "common.player-offline", "%player%", foundValue)
                         return
                     }

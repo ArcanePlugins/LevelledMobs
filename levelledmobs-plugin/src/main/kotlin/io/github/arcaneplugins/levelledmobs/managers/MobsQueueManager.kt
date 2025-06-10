@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.misc.EvaluationException
 import io.github.arcaneplugins.levelledmobs.misc.QueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.UUID
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitTask
@@ -41,8 +42,10 @@ class MobsQueueManager {
         queueTasks.clear()
 
         if (!LevelledMobs.instance.ver.isRunningFolia) {
-            for (i in 0..<maxThreads)
-                startAThread()
+            repeat(
+                maxThreads,
+                action = { startAThread() }
+            )
         }
     }
 
@@ -50,7 +53,7 @@ class MobsQueueManager {
         val bgThread = Runnable {
             try {
                 mainThread()
-            } catch (ignored: InterruptedException) {
+            } catch (_: InterruptedException) {
                 isRunning = false
             }
             doneWithThread()
@@ -112,8 +115,10 @@ class MobsQueueManager {
 
         if (threadsNeeded == 0) return
 
-        for (i in 0..<threadsNeeded)
-            startAThread()
+        repeat(
+            threadsNeeded,
+            action = { startAThread() }
+        )
     }
 
     fun addToQueue(item: QueueItem) {
@@ -182,10 +187,10 @@ class MobsQueueManager {
         try{
             LevelledMobs.instance.levelManager.entitySpawnListener.processMob(item.lmEntity, item.event)
         }
-        catch (ignored: EvaluationException){
+        catch (_: EvaluationException){
             // this exception is manually thrown after logging and notifying op users
         }
-        catch (e: java.util.concurrent.TimeoutException){
+        catch (_: TimeoutException){
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, item.lmEntity, false){
                 "Timed out applying level to mob"
             }

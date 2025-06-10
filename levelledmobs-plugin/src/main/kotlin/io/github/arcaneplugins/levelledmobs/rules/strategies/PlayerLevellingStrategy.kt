@@ -263,7 +263,7 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 PersistentDataType.STRING,
                 value
             )
-        } catch (ignored: Exception) { }
+        } catch (_: Exception) { }
     }
 
     override fun toString(): String {

@@ -146,7 +146,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
             if (temp != null) {
                 try {
                     spawnType = EntityType.valueOf(temp)
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                     Log.war("Invalid spawn type on spawner egg: $temp")
                 }
             }

@@ -252,11 +252,11 @@ class EntitySpawnListener : Listener{
 
         val scheduler = SchedulerWrapper {
             try {
-                for (i in 0 until count) {
+                repeat(count) {
                     world.spawnParticle(particle, location, 20, 0.0, 0.0, 0.0, 0.1)
                     Thread.sleep(50)
                 }
-            } catch (ignored: InterruptedException) { }
+            } catch (_: InterruptedException) { }
         }
         scheduler.run()
     }

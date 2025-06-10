@@ -162,7 +162,7 @@ class CustomDropsParser(
                         universalGroup = CustomUniversalGroups.valueOf(
                             mobTypeOrGroup.uppercase(Locale.getDefault())
                         )
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         hadError("invalid universal group in customdrops.yml: $mobTypeOrGroup")
                         continue
                     }
@@ -179,7 +179,7 @@ class CustomDropsParser(
 
                     try {
                         entityType = EntityType.valueOf(mobTypeOrGroup.uppercase(Locale.getDefault()))
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.uppercase(Locale.getDefault())))
                             hadError("invalid mob type in customdrops.yml: $mobTypeOrGroup")
 
@@ -369,8 +369,7 @@ class CustomDropsParser(
             if (value != null) results[name] = value
         }
 
-        return if (results.isEmpty()) null
-        else results
+        return results.ifEmpty { null }
     }
 
     private fun parseCustomDropsAttributes(
@@ -665,7 +664,7 @@ class CustomDropsParser(
                 else
                     EntityDamageEvent.DamageCause.valueOf(item.trim().uppercase()).toString()
                 cachedModalList.includedList.add(cause)
-            } catch (ignored: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 hadError("Invalid damage cause: $item")
             }
         }
@@ -684,7 +683,7 @@ class CustomDropsParser(
                 else
                     EntityDamageEvent.DamageCause.valueOf(item.trim().uppercase()).toString()
                 cachedModalList.excludedList.add(cause)
-            } catch (ignored: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 hadError("Invalid damage cause: $item")
             }
         }
@@ -777,7 +776,7 @@ class CustomDropsParser(
             var chanceValue: Double
             try {
                 chanceValue = value.toString().toDouble()
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 hadError("Enchantment: $enchantment, invalid chance specified: $value")
                 continue
             }
@@ -872,7 +871,7 @@ class CustomDropsParser(
             try {
                 val newFlag = ItemFlag.valueOf(flag.trim { it <= ' ' }.uppercase(Locale.getDefault()))
                 results.add(newFlag)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 hadError("Invalid itemflag: $flag, item: ${item.material.name}, mobOrGroup: ${dropInstance.getMobOrGroupName()}")
             }
         }
@@ -934,7 +933,7 @@ class CustomDropsParser(
             }
             try {
                 material = Material.valueOf(useMaterialName.uppercase(Locale.getDefault()))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 hadError("Invalid material type specified in customdrops.yml for: ${dropInstance.getMobOrGroupName()}, $useMaterialName")
                 return false
             }
@@ -1056,8 +1055,8 @@ class CustomDropsParser(
     private fun showCustomDropsDebugInfo2(
         baseItem: CustomDropBase
     ): String {
-        val command = if (baseItem is CustomCommand) baseItem else null
-        val item = if (baseItem is CustomDropItem) baseItem else null
+        val command = baseItem as? CustomCommand
+        val item = baseItem as? CustomDropItem
 
         val sb = StringBuilder()
         if (item != null) {

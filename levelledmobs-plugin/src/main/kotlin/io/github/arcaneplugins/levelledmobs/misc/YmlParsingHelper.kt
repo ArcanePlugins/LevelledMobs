@@ -183,7 +183,7 @@ class YmlParsingHelper(
     fun getKeyNameFromConfig(
         key: String
     ): String {
-        return Companion.getKeyNameFromConfig(cs, key)
+        return getKeyNameFromConfig(cs, key)
     }
 
     fun objToCS(

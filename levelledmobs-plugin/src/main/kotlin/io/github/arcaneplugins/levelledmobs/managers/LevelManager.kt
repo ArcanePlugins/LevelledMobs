@@ -426,7 +426,7 @@ class LevelManager : LevelInterface2 {
                     if (Utils.isDouble(papiResult)) {
                         origLevelSource = try {
                             papiResult.toFloat()
-                        } catch (ignored: Exception) {
+                        } catch (_: Exception) {
                             player.level.toFloat()
                         }
                     } else {
@@ -442,7 +442,7 @@ class LevelManager : LevelInterface2 {
         val maxRandomVariance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(lmEntity)
 
         if (maxRandomVariance != null) {
-            sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance.toInt() + 1).toFloat()
+            sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance + 1).toFloat()
             if (ThreadLocalRandom.current().nextBoolean())
                 sourceResult.randomVarianceResult = sourceResult.randomVarianceResult!! * -1
         }
@@ -647,7 +647,7 @@ class LevelManager : LevelInterface2 {
                 return 0
             }
 
-            if (dropAddition > -1) newXp = Math.round(xp + (xp * dropAddition)).toDouble()
+            if (dropAddition > -1) newXp = (xp + (xp * dropAddition)).roundToInt().toDouble()
 
             val newXpFinal = newXp.toInt()
             DebugManager.log(DebugType.SET_LEVELLED_XP_DROPS, lmEntity) {
@@ -919,7 +919,7 @@ class LevelManager : LevelInterface2 {
         val entityHealthRounded = if (entityHealth < 1.0 && entityHealth > 0.0) 1 else Utils.round(entityHealth).toInt()
         val roundedMaxHealth: String = Utils.round(maxHealth).toString()
         val roundedMaxHealthInt = (Utils.round(maxHealth).toInt()).toString()
-        val percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0).toDouble()
+        val percentHealthTemp = (entityHealth / maxHealth * 100.0).roundToInt().toDouble()
         val percentHealth = if (percentHealthTemp < 1.0) 1 else percentHealthTemp.toInt()
         val playerId = player?.uniqueId?.toString() ?: ""
         val playerName = player?.name ?: ""
@@ -1187,12 +1187,12 @@ class LevelManager : LevelInterface2 {
 
         // Mob must be a livingentity that is ...living.
         if (entity !is LivingEntity || entity is Player
-            || !entity.isValid()
+            || !entity.isValid
         ) {
             return
         }
         // this is mostly so for spawner mobs and spawner egg mobs as they have a 20 tick delay in before proessing
-        if (entity.getTicksLived() < 30) {
+        if (entity.ticksLived < 30) {
             return
         }
 
@@ -1668,7 +1668,7 @@ class LevelManager : LevelInterface2 {
                     equippedSoFar = equippedCountPerGroup[item.groupId]!!
                 }
 
-                if (groupLimits!!.hasReachedCapEquipped(equippedSoFar)) {
+                if (groupLimits.hasReachedCapEquipped(equippedSoFar)) {
                     DebugManager.log(DebugType.GROUP_LIMITS, lmEntity) {
                         "Reached equip limit of ${groupLimits.capEquipped}, item: $material, group: ${item.groupId}"
                     }
@@ -1974,7 +1974,7 @@ class LevelManager : LevelInterface2 {
 
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, true, sb::toString)
         }
-        catch (e: java.util.concurrent.TimeoutException){
+        catch (_: java.util.concurrent.TimeoutException){
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false){
                 "Timed out applying level to mob"
             }
@@ -2071,6 +2071,7 @@ class LevelManager : LevelInterface2 {
         var succeeded = false
         var isLevelled = false
 
+        @Suppress("UNUSED_PARAMETER")
         for (i in 0..1) {
             try {
                 synchronized(livingEntity.persistentDataContainer) {
@@ -2079,11 +2080,11 @@ class LevelManager : LevelInterface2 {
                 }
                 succeeded = true
                 break
-            } catch (ignored: ConcurrentModificationException) {
+            } catch (_: ConcurrentModificationException) {
                 hadError = true
                 try {
                     Thread.sleep(10)
-                } catch (ignored2: InterruptedException) {
+                } catch (_: InterruptedException) {
                     return false
                 }
             }

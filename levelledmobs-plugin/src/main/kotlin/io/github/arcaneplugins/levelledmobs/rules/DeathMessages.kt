@@ -16,7 +16,10 @@ class DeathMessages {
 
     fun addEntry(weight: Int, message: String) {
         val number = max(1.0, weight.toDouble()).toInt()
-        for (i in 0 until number) messages.add(message)
+        repeat(
+            number,
+            action = { messages.add(message) }
+        )
     }
 
     fun getDeathMessage(): String? {
