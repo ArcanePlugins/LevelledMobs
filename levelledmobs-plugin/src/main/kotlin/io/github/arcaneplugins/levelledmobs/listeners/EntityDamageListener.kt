@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.enums.NametagVisibilityEnum
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.EnderDragon
@@ -149,7 +150,8 @@ class EntityDamageListener : Listener {
             if (event.damager is Player)
                 lmEntity.associatedPlayer = (event.damager as Player)
         }
-        livingEntity.scheduler.run(LevelledMobs.instance, { task ->
+
+        val scheduler = SchedulerWrapper(livingEntity){
             val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
             val nametagVisibleTime = lmEntity.getNametagCooldownTime()
 
@@ -170,17 +172,24 @@ class EntityDamageListener : Listener {
             // Update their nametag with a 1 tick delay so that their health after the damage is shown
             lmEntity.main.levelManager.updateNametagWithDelay(lmEntity)
             lmEntity.free()
-        }, null)
+        }
+        lmEntity.inUseCount.incrementAndGet()
+        scheduler.runDirectlyInBukkit = true
+        scheduler.run()
+
+        lmEntity.free()
     }
 
     // Check for levelled ranged damage.
     private fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
         if (event.finalDamage == 0.0) return
 
-        event.entity.scheduler.run(LevelledMobs.instance, { task ->
+        val scheduler = SchedulerWrapper(event.entity){
             processRangedDamage(event)
             processOtherRangedDamage(event)
-        }, null)
+        }
+        scheduler.runDirectlyInBukkit = true
+        scheduler.run()
     }
 
     private fun processRangedDamage(event: EntityDamageByEntityEvent) {

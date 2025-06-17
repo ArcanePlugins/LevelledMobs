@@ -16,6 +16,7 @@ import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -127,7 +128,7 @@ class EntityDeathListener : Listener {
             }
         }
 
-        event.entity.scheduler.run(LevelledMobs.instance, { task ->
+        val scheduler = SchedulerWrapper(event.entity){
             if (lmEntity.isLevelled) {
                 // Set levelled item drops
                 MobDataManager.populateAttributeCache(lmEntity)
@@ -153,7 +154,10 @@ class EntityDeathListener : Listener {
             }
 
             lmEntity.free()
-        }, null)
+        }
+        lmEntity.inUseCount.incrementAndGet()
+        scheduler.runDirectlyInBukkit = true
+        scheduler.run()
     }
 
     private fun hasReachedEntityDeathChunkMax(
