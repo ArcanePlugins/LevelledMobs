@@ -190,11 +190,10 @@ class Definitions{
 
         // if running folia only use simple name if the version is 1.21+
 
-        return if (ver.useSimpleName) {
+        return if (ver.useSimpleName)
             "org.bukkit.craftbukkit.$classSuffix"
-        } else {
-            ("org.bukkit.craftbukkit." + ver.nmsVersion) + "." + classSuffix
-        }
+        else
+            "org.bukkit.craftbukkit.${ver.nmsVersion}.$classSuffix"
     }
 
     private fun buildClasses() {
@@ -402,13 +401,12 @@ class Definitions{
             }
 
             MinecraftMajorVersion.V1_19 -> {
-                if (ver.revision >= 4) {
+                if (ver.revision >= 4)
                     "aj"
-                } else if (ver.revision == 3) {
+                else if (ver.revision == 3)
                     "al"
-                } else {
+                else
                     "ai"
-                }
             }
 
             else -> throw RuntimeException("Unable to determine NMS method name for your Minecraft server version. Is your server version compatible?")
@@ -429,10 +427,10 @@ class Definitions{
         //   int getId() ->
         when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                methodName = if (ver.revision >= 5)
-                    "ao"
+                methodName = if (ver.revision == 5)
+                    "ao" // 1.21.5 only
                 else if (ver.revision >= 2)
-                    "ar"
+                    "ar" // 1.21.2 - 1.21.4, 1.21.6+
                 else
                     "an"
             }
@@ -570,7 +568,9 @@ class Definitions{
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
         val fieldName = when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                if (ver.revision >= 2)
+                if (ver.revision >= 6)
+                    "g"
+                else if (ver.revision >= 2)
                     "f"
                 else
                     "c"
