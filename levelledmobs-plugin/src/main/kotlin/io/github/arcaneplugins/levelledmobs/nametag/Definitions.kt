@@ -52,9 +52,7 @@ class Definitions{
     private var clazzClientboundSetEntityDataPacket: Class<*>? = null
     private var clazzCraftPlayer: Class<*>? = null
     private var clazzPacket: Class<*>? = null
-    private var clazzPlayerConnection: Class<*>? = null
     private var clazzServerPlayerConnection: Class<*>? = null
-    private var clazzNetworkManager: Class<*>? = null
     private var clazzEntityPlayer: Class<*>? = null
     var clazzPaperAdventure: Class<*>? = null
         private set
@@ -269,15 +267,9 @@ class Definitions{
             "net.minecraft.network.protocol.Packet"
         )
 
-        this.clazzNetworkManager = Class.forName(
-            NmsMappings.getMapping("clazzNetworkManager")
-        )
-
         //net.minecraft.server.network.ServerPlayerConnection ->
         // void send(net.minecraft.network.protocol.Packet) ->
-        this.clazzPlayerConnection = Class.forName(
-            NmsMappings.getMapping("clazzPlayerConnection")
-        )
+
 
         this.clazzServerPlayerConnection = Class.forName(
             "net.minecraft.server.network.ServerPlayerConnection"

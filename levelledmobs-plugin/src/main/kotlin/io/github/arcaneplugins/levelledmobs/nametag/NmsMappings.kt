@@ -48,7 +48,7 @@ object NmsMappings {
         )
         mappings["clazzNetworkManager"] = MappingInfo(
             "net.minecraft.network.NetworkManager",
-            "net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket"
+            "net.minecraft.network.Connection"
         )
         mappings["clazzPlayerConnection"] = MappingInfo(
             "net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata",

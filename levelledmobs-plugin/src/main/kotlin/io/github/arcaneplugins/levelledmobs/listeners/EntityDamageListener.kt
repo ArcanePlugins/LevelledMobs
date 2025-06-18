@@ -229,12 +229,14 @@ class EntityDamageListener : Listener {
         if (projectile.shooter !is LivingEntity) return
 
         val shooter = LivingEntityWrapper.getInstance(projectile.shooter as LivingEntity)
-        shooter.livingEntity.scheduler.run(LevelledMobs.instance, { task ->
+        val scheduler = SchedulerWrapper(shooter.livingEntity){
             MobDataManager.populateAttributeCache(shooter)
             processRangedDamage2(shooter, event)
 
             shooter.free()
-        }, null )
+        }
+        scheduler.runDirectlyInBukkit = true
+        scheduler.run()
     }
 
     private fun processRangedDamage2(
