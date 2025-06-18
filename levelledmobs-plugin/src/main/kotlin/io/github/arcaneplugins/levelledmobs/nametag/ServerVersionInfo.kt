@@ -22,6 +22,9 @@ class ServerVersionInfo {
             nmsVersion = Bukkit.getServer().minecraftVersion
             useSimpleName = true
         }
+
+        // 1.21.6+ paper servers
+        useMojangMappings = isRunningPaper && minorVersion >= 21 && revision >= 6
     }
 
     var majorVersion = 0
@@ -36,6 +39,8 @@ class ServerVersionInfo {
         private set
     private var isOneTwentyFiveOrNewer = false
     var useOldEnums = false
+        private set
+    var useMojangMappings = true
         private set
     var useNewHorseJumpAttrib = false
         private set

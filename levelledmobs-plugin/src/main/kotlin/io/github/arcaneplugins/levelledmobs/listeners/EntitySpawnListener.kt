@@ -82,16 +82,18 @@ class EntitySpawnListener : Listener{
 
     private fun onEntitySpawn(event: EntitySpawnEvent) {
         if (event.entity !is LivingEntity) return
-        event.entity.scheduler.run(LevelledMobs.instance, { task ->
-        if (LevelledMobs.instance.levelManager.forcedBlockedEntityTypes.contains(event.entityType)) return@run
+        if (LevelledMobs.instance.levelManager.forcedBlockedEntityTypes.contains(event.entityType)) return
 
-        val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
+        val scheduler = SchedulerWrapper(event.entity){
+            val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
 
             if (mobProcessDelay > 0)
                 delayedProcessMob(lmEntity, event, mobProcessDelay)
             else
                 preProcessmob(lmEntity, event, 0)
-        }, null)
+        }
+        scheduler.runDirectlyInBukkit = true
+        scheduler.run()
     }
 
     private fun preProcessmob(
@@ -164,6 +166,8 @@ class EntitySpawnListener : Listener{
 
         lmEntity.inUseCount.getAndIncrement()
         scheduler.runDelayed(delay.toLong())
+
+        lmEntity.free()
     }
 
     private fun delayedAddToQueue(

@@ -126,8 +126,7 @@ class NmsNametagSender : NametagSender {
         try {
             // SynchedEntityData.DataItem<?>[]
             val itemsById = def.fieldInt2ObjectMap!!.get(entityDataPreClone) as Array<Any>
-            if (itemsById.isEmpty())
-                return null
+            if (itemsById.isEmpty()) return null
 
             for (objDataItem in itemsById) {
                 // .getAccessor()
