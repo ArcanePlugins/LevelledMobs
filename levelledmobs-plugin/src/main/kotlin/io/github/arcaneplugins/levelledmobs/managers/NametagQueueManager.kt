@@ -59,11 +59,11 @@ class NametagQueueManager {
 
     fun start() {
         // folia will run directly
+        doThread = true
         if (LevelledMobs.instance.ver.isRunningFolia) return
 
         if (isRunning) return
 
-        doThread = true
         isRunning = true
 
         val scheduler = SchedulerWrapper {
@@ -200,9 +200,8 @@ class NametagQueueManager {
                     // record which players should get the cooldown for this mob
                     // public Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
                     for (player in item.lmEntity.playersNeedingNametagCooldownUpdate!!) {
-                        if (!nametagCooldownQueue.containsKey(player)) {
+                        if (!nametagCooldownQueue.containsKey(player))
                             continue
-                        }
 
                         nametagCooldownQueue[player]?.set(item.lmEntity.livingEntity, Instant.now())
                         LevelledMobs.instance.nametagTimerChecker.cooldownTimes[item.lmEntity.livingEntity] =
@@ -211,32 +210,27 @@ class NametagQueueManager {
 
                     // if any players already have a cooldown on this mob then don't remove the cooldown
                     for ((player, value) in nametagCooldownQueue) {
-                        if (item.lmEntity.playersNeedingNametagCooldownUpdate!!.contains(player)) {
+                        if (item.lmEntity.playersNeedingNametagCooldownUpdate!!.contains(player))
                             continue
-                        }
 
-                        if (value.containsKey(item.lmEntity.livingEntity)) {
+                        if (value.containsKey(item.lmEntity.livingEntity))
                             item.lmEntity.playersNeedingNametagCooldownUpdate!!.add(player)
-                        }
                     }
                 } else {
                     // if there's any existing cooldowns we'll use them
                     for ((key, value) in nametagCooldownQueue) {
                         if (value.containsKey(item.lmEntity.livingEntity)) {
-                            if (item.lmEntity.playersNeedingNametagCooldownUpdate == null) {
+                            if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
                                 item.lmEntity.playersNeedingNametagCooldownUpdate = HashSet()
-                            }
 
-                            item.lmEntity.playersNeedingNametagCooldownUpdate!!.add(
-                                key
-                            )
+                            item.lmEntity.playersNeedingNametagCooldownUpdate!!.add(key)
                         }
                     }
                 }
             }
-        } else if (item.lmEntity.playersNeedingNametagCooldownUpdate != null) {
-            item.lmEntity.playersNeedingNametagCooldownUpdate = null
         }
+        else if (item.lmEntity.playersNeedingNametagCooldownUpdate != null)
+            item.lmEntity.playersNeedingNametagCooldownUpdate = null
 
         val main = LevelledMobs.instance
         synchronized(NametagTimerChecker.entityTarget_Lock) {
@@ -244,9 +238,8 @@ class NametagQueueManager {
                     item.lmEntity.livingEntity
                 )
             ) {
-                if (item.lmEntity.playersNeedingNametagCooldownUpdate == null) {
+                if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
                     item.lmEntity.playersNeedingNametagCooldownUpdate = mutableSetOf()
-                }
 
                 item.lmEntity.playersNeedingNametagCooldownUpdate!!.add(
                     main.nametagTimerChecker.entityTargetMap[item.lmEntity.livingEntity]!!
@@ -254,14 +247,12 @@ class NametagQueueManager {
             }
         }
 
-        if (!item.lmEntity.isPopulated) {
+        if (!item.lmEntity.isPopulated)
             return
-        }
 
         if (main.helperSettings.getBoolean(
                 "assert-entity-validity-with-nametag-packets"
-            ) && !item.lmEntity.livingEntity
-                .isValid
+            ) && !item.lmEntity.livingEntity.isValid
         ) {
             return
         }
