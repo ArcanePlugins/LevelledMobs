@@ -108,6 +108,7 @@ class NametagQueueManager {
     }
 
     fun addToQueue(item: QueueItem) {
+        if (!doThread) return
         if (!item.lmEntity.shouldShowLMNametag) return
         if (Bukkit.getOnlinePlayers().isEmpty()) return
         if (item.lmEntity.nametagVisibilityEnum.contains(NametagVisibilityEnum.DISABLED))

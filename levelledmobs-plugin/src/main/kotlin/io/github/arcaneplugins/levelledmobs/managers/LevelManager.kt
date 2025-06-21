@@ -241,12 +241,11 @@ class LevelManager : LevelInterface2 {
 
         if (useMinLevel == -1 || useMaxLevel == -1) {
             val levels: MinAndMaxHolder = getMinAndMaxLevels(lmEntity)
-            if (useMinLevel == -1) {
+            if (useMinLevel == -1)
                 useMinLevel = levels.minAsInt
-            }
-            if (useMaxLevel == -1) {
+
+            if (useMaxLevel == -1)
                 useMaxLevel = levels.maxAsInt
-            }
         }
 
         val levellingStrategies = LevelledMobs.instance.rulesManager.getRuleLevellingStrategies(
@@ -1227,9 +1226,8 @@ class LevelManager : LevelInterface2 {
                 wrapperHasReference = true
             }
 
-            if (!lmEntity.isPopulated) {
-                return
-            }
+            if (!lmEntity.isPopulated) return
+
             val nametagVisibilityEnums = lmEntity.nametagVisibilityEnum
             val nametagVisibleTime = lmEntity.getNametagCooldownTime()
             if (nametagVisibleTime > 0L &&
@@ -1254,9 +1252,7 @@ class LevelManager : LevelInterface2 {
                 val levellableState = main.levelInterface.getLevellableState(
                     lmEntity
                 )
-                if (!lmEntity.isBabyMob &&
-                    wasBabyMob && levellableState == LevellableState.ALLOWED
-                ) {
+                if (!lmEntity.isBabyMob && wasBabyMob && levellableState == LevellableState.ALLOWED) {
                     // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                     DebugManager.log(DebugType.ENTITY_MISC, lmEntity) {
                         ("&b" + lmEntity.typeName
@@ -1264,26 +1260,22 @@ class LevelManager : LevelInterface2 {
                     }
 
                     main.mobsQueueManager.addToQueue(QueueItem(lmEntity, null))
-                } else if (levellableState == LevellableState.ALLOWED) {
-                    main.mobsQueueManager.addToQueue(QueueItem(lmEntity, null))
                 }
+                else if (levellableState == LevellableState.ALLOWED)
+                    main.mobsQueueManager.addToQueue(QueueItem(lmEntity, null))
             }
         }
 
-        if (!wrapperHasReference) {
-            lmEntity.free()
-        }
+        if (!wrapperHasReference) lmEntity.free()
     }
 
     private fun checkIfReadyForRelevelling(lmEntity: LivingEntityWrapper): Boolean {
         val opts = LevelledMobs.instance.rulesManager.getRulePlayerLevellingOptions(lmEntity)
-        if (opts?.preserveEntityTime == null) {
+        if (opts?.preserveEntityTime == null)
             return true
-        }
 
-        if (!lmEntity.pdc.has(NamespacedKeys.lastDamageTime, PersistentDataType.LONG)) {
+        if (!lmEntity.pdc.has(NamespacedKeys.lastDamageTime, PersistentDataType.LONG))
             return true
-        }
 
         val lastLevelledTime: Long = lmEntity.pdc.get(NamespacedKeys.lastDamageTime, PersistentDataType.LONG)
             ?: return true
@@ -1312,27 +1304,23 @@ class LevelManager : LevelInterface2 {
         }
 
         val sortedPlayers = sortedPlayersSequence.toMutableList()
-
         var closestPlayer: Player? = null
         for (player in sortedPlayers) {
-            if (ExternalCompatibilityManager.isMobOfCitizens(player)) {
+            if (ExternalCompatibilityManager.isMobOfCitizens(player))
                 continue
-            }
 
             closestPlayer = player
             break
         }
 
-        if (closestPlayer == null) {
-            return
-        }
+        if (closestPlayer == null) return
 
         // if player has been logged in for less than 5 seconds then ignore
         val logonTime =  MainCompanion.instance.getRecentlyJoinedPlayerLogonTime(closestPlayer)
         if (logonTime != null) {
-            if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) {
+            if (Utils.getMillisecondsFromInstant(logonTime) < 5000L)
                 return
-            }
+
             MainCompanion.instance.removeRecentlyJoinedPlayer(closestPlayer)
         }
 
@@ -1397,15 +1385,13 @@ class LevelManager : LevelInterface2 {
             val lastCheck = main.playerLevellingEntities[mob]
             val duration = Duration.between(lastCheck, Instant.now())
 
-            if (duration.toMillis() < main.playerLevellingMinRelevelTime) {
+            if (duration.toMillis() < main.playerLevellingMinRelevelTime)
                 return false
-            }
         }
 
         val playerId: String?
-        if (main.playerLevellingMinRelevelTime > 0L) {
+        if (main.playerLevellingMinRelevelTime > 0L)
             main.playerLevellingEntities[mob] = Instant.now()
-        }
 
         synchronized(mob.persistentDataContainer) {
             if (!mob.persistentDataContainer
@@ -1423,11 +1409,10 @@ class LevelManager : LevelInterface2 {
                 )
         }
 
-        if (playerId == null && main.playerLevellingMinRelevelTime <= 0L) {
+        if (playerId == null && main.playerLevellingMinRelevelTime <= 0L)
             return true
-        } else if (playerId == null || player.uniqueId.toString() != playerId) {
+        else if (playerId == null || player.uniqueId.toString() != playerId)
             return true
-        }
 
         val opts = main.rulesManager.getRulePlayerLevellingOptions(lmEntity)
         if (player.uniqueId.toString() == playerId && opts != null && opts.getRecheckPlayers) {
@@ -1447,18 +1432,18 @@ class LevelManager : LevelInterface2 {
     }
 
     fun stopNametagAutoUpdateTask() {
-        if (!LevelledMobs.instance.nametagQueueManager.hasNametagSupport) {
+        LevelledMobs.instance.nametagQueueManager.stop()
+
+        if (!LevelledMobs.instance.nametagQueueManager.hasNametagSupport)
             return
-        }
 
         if (nametagAutoUpdateTask != null && !nametagAutoUpdateTask!!.isCancelled()) {
             Log.inf("&fTasks: &7Stopping async nametag auto update task...")
             nametagAutoUpdateTask!!.cancelTask()
         }
 
-        if (nametagTimerTask != null && !nametagTimerTask!!.isCancelled()) {
+        if (nametagTimerTask != null && !nametagTimerTask!!.isCancelled())
             nametagTimerTask!!.cancelTask()
-        }
     }
 
     private fun applyLevelledAttributes(
@@ -1525,12 +1510,12 @@ class LevelManager : LevelInterface2 {
 
             applyNbtData(lmEntity, nbtDatas)
 
-            if (lmEntity.livingEntity is Creeper) {
+            if (lmEntity.livingEntity is Creeper)
                 lmEntity.main.levelManager.applyCreeperBlastRadius(lmEntity)
-            }
 
             lmEntity.free()
         }
+
         lmEntity.inUseCount.getAndIncrement()
         scheduler.runDirectlyInFolia = true
         scheduler.run()
@@ -1543,39 +1528,32 @@ class LevelManager : LevelInterface2 {
         val tuning = main.rulesManager.getFineTuningAttributes(lmEntity)
         if (tuning == null) {
             // make sure creeper explosion is at vanilla defaults incase of a relevel, etc
-            if (creeper.explosionRadius != 3) {
+            if (creeper.explosionRadius != 3)
                 creeper.explosionRadius = 3
-            }
+
             DebugManager.log(
                 DebugType.CREEPER_BLAST_RADIUS, lmEntity
             ) { "mulp: null, result: 3" }
             return
         }
 
-        val maxRadius: Int = main.rulesManager.getRuleCreeperMaxBlastRadius(lmEntity)
+        val maxRadius = main.rulesManager.getRuleCreeperMaxBlastRadius(lmEntity)
         val damage = main.mobDataManager.getAdditionsForLevel(
             lmEntity,
             Addition.CREEPER_BLAST_DAMAGE, 3f
         ).amount
-        if (damage == 0.0f) {
-            return
-        }
+
+        if (damage == 0.0f) return
 
         var blastRadius = 3 + floor(damage).toInt()
 
-        if (blastRadius > maxRadius) {
-            blastRadius = maxRadius
-        } else if (blastRadius < 0) {
-            blastRadius = 0
-        }
+        blastRadius = blastRadius
+            .coerceAtLeast(0)
+            .coerceAtMost(maxRadius)
 
         val blastRadiusFinal = blastRadius
         DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) {
             "mulp: ${Utils.round(damage.toDouble(), 3)}, max: $maxRadius, result: $blastRadiusFinal"
-        }
-
-        if (blastRadius < 0) {
-            blastRadius = 0
         }
 
         creeper.explosionRadius = blastRadius
@@ -1599,15 +1577,11 @@ class LevelManager : LevelInterface2 {
             // then we'll be here with a non-levelled entity
             return
         }
-        if (level < 1) {
-            return
-        }
+        if (level < 1) return
 
         // Custom Drops must be enabled.
         val customDropsRuleSet: CustomDropsRuleSet = LevelledMobs.instance.rulesManager.getRuleUseCustomDropsForMob(lmEntity)
-        if (!customDropsRuleSet.useDrops) {
-            return
-        }
+        if (!customDropsRuleSet.useDrops) return
 
         if (LevelledMobs.instance.ver.isRunningFolia){
             applyLevelledEquipmentNonAsync(lmEntity, customDropsRuleSet)
@@ -1629,9 +1603,8 @@ class LevelManager : LevelInterface2 {
         customDropsRuleSet: CustomDropsRuleSet
     ) {
         val mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity)
-        if (mmInfo != null && mmInfo.preventRandomEquipment) {
+        if (mmInfo != null && mmInfo.preventRandomEquipment)
             return
-        }
 
         val main = LevelledMobs.instance
         val items = mutableListOf<ItemStack>()
@@ -1664,9 +1637,8 @@ class LevelManager : LevelInterface2 {
             val hasEquipLimits = item.hasGroupId && groupLimits != null && groupLimits.hasCapEquipped
 
             if (hasEquipLimits) {
-                if (equippedCountPerGroup.containsKey(item.groupId)) {
+                if (equippedCountPerGroup.containsKey(item.groupId))
                     equippedSoFar = equippedCountPerGroup[item.groupId]!!
-                }
 
                 if (groupLimits.hasReachedCapEquipped(equippedSoFar)) {
                     DebugManager.log(DebugType.GROUP_LIMITS, lmEntity) {
@@ -1695,9 +1667,8 @@ class LevelManager : LevelInterface2 {
                 equipment.setHelmet(itemStack, true)
                 equipment.helmetDropChance = 0f
                 equippedItemsInfo.helmet = item.itemStack
-                if (material == Material.PLAYER_HEAD) {
+                if (material == Material.PLAYER_HEAD)
                     hadPlayerHead = true
-                }
             } else {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack)
@@ -1713,9 +1684,8 @@ class LevelManager : LevelInterface2 {
 
             equippedSoFar++
 
-            if (hasEquipLimits) {
+            if (hasEquipLimits)
                 equippedCountPerGroup[item.groupId] = equippedSoFar
-            }
         }
 
         equippedItemsInfo.saveEquipment(lmEntity)
@@ -1726,9 +1696,8 @@ class LevelManager : LevelInterface2 {
         synchronized(LevelledMobs.instance.attributeSyncObject) {
             val attrib = lmEntity.livingEntity
                 .getAttribute(Utils.getAttribute(AttributeNames.MAX_HEALTH)!!)
-            if (attrib != null) {
+            if (attrib != null)
                 result = attrib.value
-            }
         }
 
         return result
@@ -1752,32 +1721,26 @@ class LevelManager : LevelInterface2 {
         before all other checks are made.
          */
         val main = LevelledMobs.instance
-        if (forcedBlockedEntityTypes.contains(lmInterface.entityType)) {
+        if (forcedBlockedEntityTypes.contains(lmInterface.entityType))
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE
-        }
 
-        if (lmInterface.getApplicableRules().isEmpty()) {
+        if (lmInterface.getApplicableRules().isEmpty())
             return LevellableState.DENIED_NO_APPLICABLE_RULES
-        }
 
-        if (!main.rulesManager.getRuleIsMobAllowedInEntityOverride(lmInterface)) {
+        if (!main.rulesManager.getRuleIsMobAllowedInEntityOverride(lmInterface))
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE
-        }
 
-        if (main.rulesManager.getRuleMobMaxLevel(lmInterface) < 1) {
+        if (main.rulesManager.getRuleMobMaxLevel(lmInterface) < 1)
             return LevellableState.DENIED_LEVEL_0
-        }
 
-        if (lmInterface !is LivingEntityWrapper) {
+        if (lmInterface !is LivingEntityWrapper)
             return LevellableState.ALLOWED
-        }
 
         if (lmInterface.isMobOfExternalType) {
             lmInterface.invalidateCache()
 
-            if (!main.rulesManager.getRuleIsMobAllowedInEntityOverride(lmInterface)) {
+            if (!main.rulesManager.getRuleIsMobAllowedInEntityOverride(lmInterface))
                 return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE
-            }
         }
 
         /*
@@ -1849,9 +1812,9 @@ class LevelManager : LevelInterface2 {
         }
 
         var useLevel = level
-        if (useLevel <= 0) {
+        if (useLevel <= 0)
             useLevel = generateLevel(lmEntity)
-        }
+
         lmEntity.setMobPrelevel(useLevel)
 
         assert(bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED)
@@ -1880,9 +1843,7 @@ class LevelManager : LevelInterface2 {
             )
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent)
 
-            if (summonedMobPreLevelEvent.isCancelled) {
-                return
-            }
+            if (summonedMobPreLevelEvent.isCancelled) return
         } else {
             val mobPreLevelEvent = MobPreLevelEvent(
                 lmEntity.livingEntity, useLevel, MobPreLevelEvent.LevelCause.NORMAL,
@@ -1890,9 +1851,7 @@ class LevelManager : LevelInterface2 {
             )
 
             Bukkit.getPluginManager().callEvent(mobPreLevelEvent)
-            if (mobPreLevelEvent.isCancelled) {
-                return
-            }
+            if (mobPreLevelEvent.isCancelled) return
 
             useLevel = mobPreLevelEvent.level
             lmEntity.setMobPrelevel(useLevel)
@@ -1930,9 +1889,10 @@ class LevelManager : LevelInterface2 {
         lmEntity.invalidateCache()
 
         val nbtDatas =
-            if (lmEntity.nbtData != null && lmEntity.nbtData!!.isNotEmpty()) lmEntity.nbtData else main.rulesManager.getRuleNbtData(
-                lmEntity
-            )
+            if (lmEntity.nbtData != null && lmEntity.nbtData!!.isNotEmpty())
+                lmEntity.nbtData
+            else
+                main.rulesManager.getRuleNbtData(lmEntity)
 
         if (nbtDatas!!.isNotEmpty() && !ExternalCompatibilityManager.hasNbtApiInstalled) {
             val msg = if (isSummoned)
@@ -1988,9 +1948,9 @@ class LevelManager : LevelInterface2 {
     ) {
         applyAttribs(lmEntity, nbtDatas)
 
-        if (!doSkipLMNametag) {
+        if (!doSkipLMNametag)
             LevelledMobs.instance.levelManager.updateNametagWithDelay(lmEntity)
-        }
+        
         LevelledMobs.instance.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel)
     }
 
@@ -2163,9 +2123,8 @@ class LevelManager : LevelInterface2 {
             }
         }
 
-        if (lmEntity.livingEntity is Creeper) {
+        if (lmEntity.livingEntity is Creeper)
             (lmEntity.livingEntity as Creeper).explosionRadius = 3
-        }
 
         lmEntity.invalidateCache()
 

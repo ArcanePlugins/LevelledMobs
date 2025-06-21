@@ -382,7 +382,7 @@ class Definitions{
         else {
             methodName = when (ver.majorVersionEnum) {
                 MinecraftMajorVersion.V1_21 -> {
-                    if (ver.revision >= 4)
+                    if (ver.revision >= 4 && ver.revision != 5)
                         "au"
                     else
                         "ar"
@@ -636,7 +636,6 @@ class Definitions{
 
             this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             fieldInt2ObjectMap!!.setAccessible(true)
-            Log.infTemp("fieldInt2ObjectMap: $fieldInt2ObjectMap")
         }
 
         if (!ver.useOldEnums)
