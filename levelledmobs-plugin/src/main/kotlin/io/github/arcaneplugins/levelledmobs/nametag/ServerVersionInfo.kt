@@ -22,6 +22,9 @@ class ServerVersionInfo {
             nmsVersion = Bukkit.getServer().minecraftVersion
             useSimpleName = true
         }
+
+        // 1.21.6+ paper servers
+        useMojangMappings = isRunningPaper && minorVersion >= 21 && revision >= 6
     }
 
     var majorVersion = 0
@@ -36,6 +39,8 @@ class ServerVersionInfo {
         private set
     private var isOneTwentyFiveOrNewer = false
     var useOldEnums = false
+        private set
+    var useMojangMappings = true
         private set
     var useNewHorseJumpAttrib = false
         private set
@@ -153,7 +158,7 @@ class ServerVersionInfo {
                 try {
                     Class.forName("net.fabricmc.loader.api.FabricLoader")
                     this._isRunningFabric = true
-                } catch (ignored: ClassNotFoundException) {
+                } catch (_: ClassNotFoundException) {
                     this._isRunningFabric = false
                 }
             }
@@ -167,7 +172,7 @@ class ServerVersionInfo {
                 try {
                     Class.forName("net.md_5.bungee.api.ChatColor")
                     this._isRunningSpigot = true
-                } catch (ignored: ClassNotFoundException) {
+                } catch (_: ClassNotFoundException) {
                     this._isRunningSpigot = false
                 }
             }
@@ -181,7 +186,7 @@ class ServerVersionInfo {
                 try {
                     Class.forName("com.destroystokyo.paper.ParticleBuilder")
                     this._isRunningPaper = true
-                } catch (ignored: ClassNotFoundException) {
+                } catch (_: ClassNotFoundException) {
                     this._isRunningPaper = false
                 }
             }
@@ -195,7 +200,7 @@ class ServerVersionInfo {
                 try {
                     Class.forName("io.papermc.paper.threadedregions.RegionizedServer")
                     this._isRunningFolia = true
-                } catch (ignored: ClassNotFoundException) {
+                } catch (_: ClassNotFoundException) {
                     this._isRunningFolia = false
                 }
             }

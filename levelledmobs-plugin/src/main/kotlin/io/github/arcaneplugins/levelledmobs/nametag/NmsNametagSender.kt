@@ -23,7 +23,6 @@ import org.bukkit.entity.Player
 @Suppress("UNCHECKED_CAST")
 class NmsNametagSender : NametagSender {
     private var def = LevelledMobs.instance.definitions
-
     override fun sendNametag(
         livingEntity: LivingEntity,
         nametag: NametagResult,
@@ -127,8 +126,7 @@ class NmsNametagSender : NametagSender {
         try {
             // SynchedEntityData.DataItem<?>[]
             val itemsById = def.fieldInt2ObjectMap!!.get(entityDataPreClone) as Array<Any>
-            if (itemsById.isEmpty())
-                return null
+            if (itemsById.isEmpty()) return null
 
             for (objDataItem in itemsById) {
                 // .getAccessor()

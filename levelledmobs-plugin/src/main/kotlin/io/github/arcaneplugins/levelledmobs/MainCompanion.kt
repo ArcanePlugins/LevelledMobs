@@ -181,7 +181,7 @@ class MainCompanion{
                 val debugType = DebugType.valueOf(debug.uppercase(Locale.getDefault()))
                 main.debugManager.filterDebugTypes.add(debugType)
                 addedDebugs = true
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 Log.war("Invalid value for debug-misc: $debug")
             }
         }

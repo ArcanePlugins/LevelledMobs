@@ -7,8 +7,8 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.20"
-    id("com.gradleup.shadow") version "9.0.0-beta13"
+    kotlin("jvm") version "2.2.0"
+    id("com.gradleup.shadow") version "9.0.0-beta16"
     id("idea")
     id("maven-publish")
 }
@@ -28,8 +28,12 @@ idea {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") {
+        exclude(group = "com.google.guava", module = "guava")
+        exclude(group = "com.google.code.gson", module = "gson")
+        exclude(group = "it.unimi.dsi", module = "fastutil")
+    }
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.1.0") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
@@ -40,7 +44,7 @@ dependencies {
     compileOnly("LibsDisguises:LibsDisguises:10.0.44-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
     compileOnly("me.clip:placeholderapi:2.11.6") // https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.1.0-SNAPSHOT") // https://maven.enginehub.org/repo/com/sk89q/worldguard/worldguard-bukkit/
-    compileOnly("de.tr7zw:item-nbt-api-plugin:2.14.1") // https://mvnrepository.com/artifact/de.tr7zw/item-nbt-api-plugin
+    compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.0") // https://mvnrepository.com/artifact/de.tr7zw/item-nbt-api-plugin
     compileOnly("io.github.stumper66:LM_Items:1.3.0") // https://mvnrepository.com/artifact/io.github.stumper66/LM_Items
 
     implementation(fileTree("lib") { include("*.jar") })

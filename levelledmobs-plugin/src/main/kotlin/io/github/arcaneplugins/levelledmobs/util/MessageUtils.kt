@@ -3,7 +3,6 @@
 package io.github.arcaneplugins.levelledmobs.util
 
 import java.util.regex.Pattern
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 
@@ -70,7 +69,6 @@ object MessageUtils {
     private fun colorizeHexCodes(
         message: String
     ): String {
-        val ver = LevelledMobs.instance.ver
         val startTag = "&#"
         val endTag = ""
 

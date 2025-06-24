@@ -8,7 +8,6 @@ import dev.jorel.commandapi.arguments.ListArgumentBuilder
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
-import java.util.Locale
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
@@ -23,6 +22,7 @@ import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import java.util.Locale
 import java.util.Random
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
@@ -30,7 +30,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.CommandBlock
 import org.bukkit.command.BlockCommandSender
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
@@ -90,7 +89,7 @@ object SummonSubcommand {
         val entityType: EntityType
         try {
             entityType = EntityType.valueOf(mobType.uppercase(Locale.getDefault()))
-        } catch (ex: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             MessagesHelper.showMessage(sender, "command.levelledmobs.summon.invalid-entity-type", "%entityType%", mobType)
             return
         }
@@ -99,7 +98,7 @@ object SummonSubcommand {
         requestedLevel.level = mobLevel
         var location = when (sender) {
             is Player -> sender.location
-            is CommandBlock -> sender.location
+            is BlockCommandSender -> sender.block.location
             else -> null
         }
         var nbtData: String? = null
@@ -392,9 +391,6 @@ object SummonSubcommand {
             val distFromPlayer = main.helperSettings.getInt(
                 "summon-command-spawn-distance-from-player", 5
             )
-            val minDistFromPlayer = main.helperSettings.getInt(
-                "summon-command-spawn-min-distance-from-player", 0
-            )
             if (distFromPlayer > 0 && target != null) {
                 val locationTemp = getSpawnLocation(target, location, options.lmPlaceholder.entityType!!)
                 if (locationTemp == null) {
@@ -411,7 +407,7 @@ object SummonSubcommand {
             }
         }
 
-        for (i in 0 until options.amount) {
+        repeat(options.amount) {
             assert(location.world != null)
             val useLevel = if (options.requestedLevel!!.hasLevelRange) ThreadLocalRandom.current().nextInt(
                 options.requestedLevel!!.levelRangeMin,
@@ -538,6 +534,7 @@ object SummonSubcommand {
         val blocksNeeded = if (entityType == EntityType.ENDERMAN || entityType == EntityType.RAVAGER) 3
         else 2
 
+        @Suppress("UNUSED_PARAMETER")
         for (i in 0..9) {
             val useDistance: Int = if (minDistFromPlayer != maxDistFromPlayer) ThreadLocalRandom.current()
                 .nextInt(minDistFromPlayer, maxDistFromPlayer) else maxDistFromPlayer
@@ -666,7 +663,7 @@ object SummonSubcommand {
                     val addition: Double
                     try {
                         addition = xStr.substring(1).toDouble()
-                    } catch (ex: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         return null
                     }
                     x += addition
@@ -685,7 +682,7 @@ object SummonSubcommand {
                     val addition: Double
                     try {
                         addition = yStr.substring(1).toDouble()
-                    } catch (ex: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         return null
                     }
 
@@ -705,7 +702,7 @@ object SummonSubcommand {
                     val addition: Double
                     try {
                         addition = zStr.substring(1).toDouble()
-                    } catch (ex: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         return null
                     }
                     z += addition
@@ -718,21 +715,21 @@ object SummonSubcommand {
         if (!xRelative) {
             try {
                 x = xStr.toDouble()
-            } catch (ex: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 return null
             }
         }
         if (!yRelative) {
             try {
                 y = yStr.toDouble()
-            } catch (ex: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 return null
             }
         }
         if (!zRelative) {
             try {
                 z = zStr.toDouble()
-            } catch (ex: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 return null
             }
         }
@@ -750,7 +747,7 @@ object SummonSubcommand {
         val random1 = Random()
         val random2 = Random()
 
-        for (i in 0..19) {
+        repeat(20) {
             val x = oldLocation.x + min + (max - min) * random1.nextDouble()
             val z = oldLocation.z + min + (max - min) * random2.nextDouble()
 

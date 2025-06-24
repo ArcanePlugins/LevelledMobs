@@ -191,7 +191,7 @@ class RulesParser {
                         )
                         results.add(customGroup.toString())
                         continue
-                    } catch (e: IllegalArgumentException) {
+                    } catch (_: IllegalArgumentException) {
                         invalidGroup = true
                     }
                 }
@@ -410,7 +410,7 @@ class RulesParser {
                                     modalList.add(structure)
                             }
                         }
-                    } catch (e: IllegalArgumentException) {
+                    } catch (_: IllegalArgumentException) {
                         Log.war("Invalid $invalidWord ${mlpi.itemName}: $item")
                     }
                 }
@@ -842,7 +842,7 @@ class RulesParser {
                     nametagVisEnum.uppercase(Locale.getDefault())
                 )
                 nametagVisibilityEnums.add(nametagVisibilityEnum)
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 Log.war(
                     "Invalid value in nametag-visibility-method: $nametagVisibility" +
                             ", in rule: ${parsingInfo.ruleName}"
@@ -916,7 +916,7 @@ class RulesParser {
 
         try {
             parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase(Locale.getDefault()))
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             Log.war(
                 "Invalid value in spawner-particles: $particle, in rule: "
                         + parsingInfo.ruleName
@@ -987,7 +987,7 @@ class RulesParser {
                 parsingInfo.conditionsMobCustomnameStatus = MobCustomNameStatus.valueOf(
                     mobCustomNameStatus.uppercase(Locale.getDefault())
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Log.war("Invalid value for $mobCustomNameStatus")
             }
         }
@@ -998,7 +998,7 @@ class RulesParser {
                 parsingInfo.conditionsMobTamedStatus = MobTamedStatus.valueOf(
                     mobTamedStatus.uppercase(Locale.getDefault())
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Log.war("Invalid value for $mobTamedStatus")
             }
         }
@@ -1539,7 +1539,7 @@ class RulesParser {
 
             try {
                 EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 Log.war(
                     "Invalid entity type: $mobName for fine-tuning in rule: "
                             + parsingInfo.ruleName
@@ -1593,7 +1593,7 @@ class RulesParser {
                                 item.replace("-", "_")
                                     .uppercase(Locale.getDefault())
                             )
-                    } catch (ignored: Exception) {
+                    } catch (_: Exception) {
                         Log.war("Invalid multiplier: $item")
                         continue
                     }

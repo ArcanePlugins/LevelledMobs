@@ -93,9 +93,9 @@ class WithinCoordinates {
         coord: Int,
         axis: Axis
     ): Boolean {
-        var range1: Int? = null
-        var range2: Int? = null
-        var infinityDirection = InfinityDirection.NONE
+        var range1: Int?
+        var range2: Int?
+        var infinityDirection: InfinityDirection
         when (axis) {
             Axis.X -> {
                 range1 = this.startX

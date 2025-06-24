@@ -73,9 +73,6 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         if (this.randomArray.isEmpty())
             return getRandomLevel(minLevel, maxLevel).toFloat()
 
-        if (randomArray.isEmpty())
-            return 0f
-
         val useArrayNum = ThreadLocalRandom.current().nextInt(0, randomArray.size)
         return randomArray[useArrayNum].toFloat()
     }
@@ -129,7 +126,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         // now we actually populate the array
         for ((valuesCount, nums) in numbers.withIndex()) {
             for (i in nums.minAsInt..nums.maxAsInt) {
-                for (t in 0 until values[valuesCount]) {
+                repeat(values[valuesCount]) {
                     randomArray[newCount] = i
                     newCount++
                 }

@@ -21,6 +21,7 @@ import io.github.arcaneplugins.levelledmobs.managers.PlaceholderApiIntegration
 import io.github.arcaneplugins.levelledmobs.misc.NametagTimerChecker
 import io.github.arcaneplugins.levelledmobs.misc.YmlParsingHelper
 import io.github.arcaneplugins.levelledmobs.nametag.Definitions
+import io.github.arcaneplugins.levelledmobs.nametag.NmsMappings
 import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo
 import io.github.arcaneplugins.levelledmobs.rules.RulesManager
 import io.github.arcaneplugins.levelledmobs.rules.RulesParser
@@ -111,9 +112,10 @@ class LevelledMobs : JavaPlugin() {
 
         CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
         this.ver.load()
-        if (ver.minecraftVersion <= 1.18){
+        if (ver.minecraftVersion <= 1.19){
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
         }
+        NmsMappings.load()
         this.definitions.load()
         EssentialsIntegration.load()
         this.nametagQueueManager.load()
@@ -194,6 +196,7 @@ class LevelledMobs : JavaPlugin() {
         mainCompanion.loadFiles()
         mainCompanion.checkListenersWithVariablePriorities()
         chunkLoadListener.load()
+        nametagQueueManager.onLoadOrReload()
         RandomLevellingStrategy.clearCache()
 
         var reloadFinishedMsg = messagesCfg.getStringList(

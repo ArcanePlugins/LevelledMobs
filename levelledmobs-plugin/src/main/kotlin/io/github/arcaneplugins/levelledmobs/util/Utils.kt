@@ -35,6 +35,8 @@ import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.annotations.Contract
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
+
 
 /**
  * Holds common utilities
@@ -52,12 +54,12 @@ object Utils {
      * @return rounded value
      */
     fun round(value: Double): Double {
-        return Math.round(value * 100) / 100.00
+        return (value * 100).roundToInt() / 100.00
     }
 
     fun round(value: Double, digits: Int): Double {
         val scale = 10.0.pow(digits.toDouble())
-        return Math.round(value * scale) / scale
+        return (value * scale).roundToInt() / scale
     }
 
     fun getBiome(name: String): Biome? {
@@ -182,7 +184,7 @@ object Utils {
         try {
             str.toInt()
             return true
-        } catch (ex: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             return false
         }
     }
@@ -193,7 +195,7 @@ object Utils {
         try {
             str.toDouble()
             return true
-        } catch (ex: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             return false
         }
     }
@@ -530,7 +532,7 @@ object Utils {
             try {
                 remainder = 1.0 - ("0." + split[1]).toDouble()
                 numberPart = split[0]
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 if (sender != null) sender.sendMessage("Invalid time: $input")
                 else Log.war("Invalid time: $input")
 
@@ -540,7 +542,7 @@ object Utils {
 
         try {
             time = numberPart.toLong()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             if (sender != null) sender.sendMessage("Invalid time: $input")
             else Log.war("Invalid time: $input")
 

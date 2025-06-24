@@ -52,9 +52,7 @@ class Definitions{
     private var clazzClientboundSetEntityDataPacket: Class<*>? = null
     private var clazzCraftPlayer: Class<*>? = null
     private var clazzPacket: Class<*>? = null
-    private var clazzPlayerConnection: Class<*>? = null
     private var clazzServerPlayerConnection: Class<*>? = null
-    private var clazzNetworkManager: Class<*>? = null
     private var clazzEntityPlayer: Class<*>? = null
     var clazzPaperAdventure: Class<*>? = null
         private set
@@ -94,8 +92,6 @@ class Definitions{
     var methodPlayergetHandle: Method? = null
         private set
     var methodSend: Method? = null
-        private set
-    var methodGetAll: Method? = null
         private set
     var methodDefine: Method? = null
         private set
@@ -192,21 +188,22 @@ class Definitions{
 
         // if running folia only use simple name if the version is 1.21+
 
-        return if (ver.useSimpleName) {
+        return if (ver.useSimpleName)
             "org.bukkit.craftbukkit.$classSuffix"
-        } else {
-            ("org.bukkit.craftbukkit." + ver.nmsVersion) + "." + classSuffix
-        }
+        else
+            "org.bukkit.craftbukkit.${ver.nmsVersion}.$classSuffix"
     }
 
     private fun buildClasses() {
-        this.clazzIChatMutableComponent = Class.forName(
-            "net.minecraft.network.chat.IChatMutableComponent"
-        )
+        if (!ver.isRunningPaper) {
+            this.clazzIChatMutableComponent = Class.forName(
+                "net.minecraft.network.chat.IChatMutableComponent"
+            )
 
-        this.clazzIChatBaseComponent = Class.forName(
-            "net.minecraft.network.chat.IChatBaseComponent"
-        )
+            this.clazzIChatBaseComponent = Class.forName(
+                "net.minecraft.network.chat.IChatBaseComponent"
+            )
+        }
 
         this.clazzCraftEntity = Class.forName(
             getClassName("entity.CraftEntity")
@@ -218,13 +215,13 @@ class Definitions{
 
         // net.minecraft.network.syncher.SynchedEntityData
         this.clazzDataWatcher = Class.forName(
-            "net.minecraft.network.syncher.DataWatcher"
+            NmsMappings.getMapping("clazzDataWatcher")
         )
 
         if (isOneTwentyFiveOrNewer){
             // net.minecraft.network.syncher.SynchedEntityData$Builder ->
             this.clazzDataWatcherBuilder = Class.forName(
-                "net.minecraft.network.syncher.DataWatcher\$a"
+                NmsMappings.getMapping("clazzDataWatcherBuilder")
             )
 
             this.clazzSyncedDataHolder = Class.forName(
@@ -233,17 +230,17 @@ class Definitions{
 
             // net.minecraft.network.syncher.SynchedEntityData$DataValue ->
             this.clazzDataWatcherValue = Class.forName(
-                "net.minecraft.network.syncher.DataWatcher\$c"
+                NmsMappings.getMapping("clazzDataWatcherValue")
             )
         }
 
         // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
         this.clazzDataWatcherItem = Class.forName(
-            "net.minecraft.network.syncher.DataWatcher\$Item"
+            NmsMappings.getMapping("clazzDataWatcherItem")
         )
 
         this.clazzDataWatcherRegistry = Class.forName(
-            "net.minecraft.network.syncher.DataWatcherRegistry"
+            NmsMappings.getMapping("clazzDataWatcherRegistry")
         )
 
         this.clazzEntity = Class.forName(
@@ -251,15 +248,15 @@ class Definitions{
         )
 
         this.clazzDataWatcherObject = Class.forName(
-            "net.minecraft.network.syncher.DataWatcherObject"
+            NmsMappings.getMapping("clazzDataWatcherObject")
         )
 
         this.clazzDataWatcherSerializer = Class.forName(
-            "net.minecraft.network.syncher.DataWatcherSerializer"
+            NmsMappings.getMapping("clazzDataWatcherSerializer")
         )
 
         this.clazzClientboundSetEntityDataPacket = Class.forName(
-            "net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata"
+            NmsMappings.getMapping("clazzClientboundSetEntityDataPacket")
         )
 
         this.clazzCraftPlayer = Class.forName(
@@ -270,15 +267,9 @@ class Definitions{
             "net.minecraft.network.protocol.Packet"
         )
 
-        this.clazzNetworkManager = Class.forName(
-            "net.minecraft.network.NetworkManager"
-        )
-
         //net.minecraft.server.network.ServerPlayerConnection ->
         // void send(net.minecraft.network.protocol.Packet) ->
-        this.clazzPlayerConnection = Class.forName(
-            "net.minecraft.server.network.PlayerConnection"
-        )
+
 
         this.clazzServerPlayerConnection = Class.forName(
             "net.minecraft.server.network.ServerPlayerConnection"
@@ -286,7 +277,7 @@ class Definitions{
 
         // net.minecraft.server.level.ServerPlayer ->
         this.clazzEntityPlayer = Class.forName(
-            "net.minecraft.server.level.EntityPlayer"
+            NmsMappings.getMapping("clazzEntityPlayer")
         )
 
         try {
@@ -294,10 +285,10 @@ class Definitions{
                 "io.papermc.paper.adventure.PaperAdventure"
             )
             this.hasKiori = true
-        } catch (ignored: ClassNotFoundException) {}
+        } catch (_: ClassNotFoundException) {}
 
         this.clazzEntityTypes = Class.forName(
-            "net.minecraft.world.entity.EntityTypes"
+            NmsMappings.getMapping("clazzEntityTypes")
         )
 
         if (!ver.useOldEnums){
@@ -310,14 +301,17 @@ class Definitions{
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage")
                 this.hasMiniMessage = true
-            } catch (ignored: ClassNotFoundException) {}
+            } catch (_: ClassNotFoundException) {}
         }
     }
 
     private fun getMethodComponentAppend() {
+        if (ver.isRunningPaper) return // spigot only stuff here
+
         // # {"fileName":"MutableComponent.java","id":"sourceFile"}
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
         // 1.19.0 = a, everything else  = b
+
         val methodName = if (ver.minecraftVersion == 1.19 && ver.revision == 0
         ) "a" else "b"
 
@@ -327,6 +321,8 @@ class Definitions{
     }
 
     private fun getMethodTextComponents() {
+        if (ver.isRunningPaper) return // spigot only stuff here
+
         // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
         //     net.minecraft.network.chat.MutableComponent empty()
@@ -349,6 +345,8 @@ class Definitions{
     }
 
     private fun getMethodTranslatable() {
+        if (ver.isRunningPaper) return // spigot only stuff here
+
         // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String) ->
@@ -379,47 +377,54 @@ class Definitions{
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         var methodName: String
 
-        methodName = when (ver.majorVersionEnum) {
-            MinecraftMajorVersion.V1_21 -> {
-                if (ver.revision in 2..4)
-                    "au"
-                else
-                    "ar"
-            }
-            MinecraftMajorVersion.V1_20 -> {
-                if (ver.revision >= 5) {
-                    // 1.20.5+
-                    "ap"
+        if (ver.useMojangMappings)
+            methodName = "getEntityData"
+        else {
+            methodName = when (ver.majorVersionEnum) {
+                MinecraftMajorVersion.V1_21 -> {
+                    if (ver.revision >= 4 && ver.revision != 5)
+                        "au"
+                    else
+                        "ar"
                 }
-                else if (ver.revision >= 3) {
-                    // 1.20.3 - .4
-                    "an"
-                } else if (ver.revision == 2) {
-                    // 1.20.2
-                    "al"
-                } else {
-                    // 1.20 - 1.20.1
-                    "aj"
-                }
-            }
 
-            MinecraftMajorVersion.V1_19 -> {
-                if (ver.revision >= 4) {
-                    "aj"
-                } else if (ver.revision == 3) {
-                    "al"
-                } else {
-                    "ai"
+                MinecraftMajorVersion.V1_20 -> {
+                    if (ver.revision >= 5) {
+                        // 1.20.5+
+                        "ap"
+                    } else if (ver.revision >= 3) {
+                        // 1.20.3 - .4
+                        "an"
+                    } else if (ver.revision == 2) {
+                        // 1.20.2
+                        "al"
+                    } else {
+                        // 1.20 - 1.20.1
+                        "aj"
+                    }
                 }
-            }
 
-            else -> throw RuntimeException("Unable to determine NMS method name for your Minecraft server version. Is your server version compatible?")
+                MinecraftMajorVersion.V1_19 -> {
+                    if (ver.revision >= 4)
+                        "aj"
+                    else if (ver.revision == 3)
+                        "al"
+                    else
+                        "ai"
+                }
+
+                else -> throw RuntimeException("Unable to determine NMS method name for your Minecraft server version. Is your server version compatible?")
+            }
         }
+
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
 
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-        methodName = if (isOneTwentyFiveOrNewer) "a" else "b"
+        methodName =
+            if (ver.useMojangMappings) "set"
+            else if (isOneTwentyFiveOrNewer) "a"
+            else "b"
 
         this.methodSet = clazzDataWatcher!!.getMethod(
             methodName, clazzDataWatcherObject,
@@ -431,12 +436,15 @@ class Definitions{
         //   int getId() ->
         when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                methodName = if (ver.revision >= 5)
-                    "ao"
-                else if (ver.revision >= 2)
-                    "ar"
-                else
-                    "an"
+                methodName =
+                    if (ver.useMojangMappings)
+                        "getId"
+                    else if (ver.revision == 5)
+                        "ao" // 1.21.5 only
+                    else if (ver.revision >= 2)
+                        "ar" // 1.21.2 - 1.21.4, 1.21.6+
+                    else
+                        "an"
             }
             MinecraftMajorVersion.V1_20 -> {
                 methodName =
@@ -464,20 +472,27 @@ class Definitions{
             }
         }
 
+        this.methodGetId = clazzEntity!!.getDeclaredMethod(methodName)
+
         if (isOneTwentyFiveOrNewer){
             // net.minecraft.network.syncher.SynchedEntityData$Builder ->
             //     net.minecraft.network.syncher.SynchedEntityData$Builder define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
             methodDataWatcherBuilderDefine =
-                clazzDataWatcherBuilder!!.getDeclaredMethod("a", clazzDataWatcherObject, Any::class.java)
+                clazzDataWatcherBuilder!!.getDeclaredMethod(
+                    NmsMappings.getMapping("methodDataWatcherBuilderDefine"),
+                    clazzDataWatcherObject, Any::class.java)
 
             // net.minecraft.network.syncher.SynchedEntityData build() ->
-            methodDataWatcherBuilderBuild = clazzDataWatcherBuilder!!.getDeclaredMethod("a")
+            methodDataWatcherBuilderBuild = clazzDataWatcherBuilder!!.getDeclaredMethod(
+                NmsMappings.getMapping("methodDataWatcherBuilderBuild")
+            )
 
             // int id() ->
-            methodDataWatcherGetId = clazzDataWatcherValue!!.getDeclaredMethod("a")
+            methodDataWatcherGetId = clazzDataWatcherValue!!.getDeclaredMethod(
+                NmsMappings.getMapping("methodDataWatcherGetId")
+            )
         }
 
-        this.methodGetId = clazzEntity!!.getDeclaredMethod(methodName)
         this.methodPlayergetHandle = clazzCraftPlayer!!.getDeclaredMethod("getHandle")
 
         // starting with 1.20.2 it is:
@@ -489,19 +504,20 @@ class Definitions{
 
         //    void send(net.minecraft.network.protocol.Packet) ->
         methodName =
-            if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 2 ||
-                ver.minorVersion >= 21) {
+            if (ver.useMojangMappings)
+                "send"
+            else if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 2 ||
+                ver.minorVersion >= 21)
                 "b"
-            } else {
+            else
                 "a"
-            }
 
         this.methodSend = clazzServerPlayerConnection!!.getDeclaredMethod(methodName, clazzPacket)
 
         // # {"fileName":"SynchedEntityData.java","id":"sourceFile"}
         // net.minecraft.network.syncher.SynchedEntityData ->
-        //    define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-        methodName = "a"
+        //    set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
+        methodName = if (ver.useMojangMappings) "set" else "a"
 
         this.methodDefine = clazzDataWatcher!!.getDeclaredMethod(
             methodName,
@@ -509,9 +525,11 @@ class Definitions{
         )
 
         // net.minecraft.network.syncher.EntityDataAccessor getAccessor() ->
-        this.methodGetAccessor = clazzDataWatcherItem!!.getDeclaredMethod("a")
+        methodName = if (ver.useMojangMappings) "getAccessor" else "a"
+        this.methodGetAccessor = clazzDataWatcherItem!!.getDeclaredMethod(methodName)
         // java.lang.Object getValue() ->
-        this.methodGetValue = clazzDataWatcherItem!!.getDeclaredMethod("b")
+        methodName = if (ver.useMojangMappings) "getValue" else "b"
+        this.methodGetValue = clazzDataWatcherItem!!.getDeclaredMethod(methodName)
 
         // net.minecraft.network.Connection getConnection() ->
         //this.method_getConnection = clazz_CraftPlayer.getDeclaredMethod("networkManager");
@@ -524,27 +542,37 @@ class Definitions{
 
         // # {"fileName":"EntityType.java","id":"sourceFile"}
         // java.util.Optional byString(java.lang.String) ->
-        this.methodEntityTypeByString = clazzEntityTypes!!.getDeclaredMethod("a", String::class.java)
+        this.methodEntityTypeByString = clazzEntityTypes!!.getDeclaredMethod(
+            NmsMappings.getMapping("methodEntityTypeByString"),
+            String::class.java
+        )
 
         // java.lang.String getDescriptionId() ->
-        this.methodGetDescriptionId = clazzEntityTypes!!.getDeclaredMethod("g")
+        this.methodGetDescriptionId = clazzEntityTypes!!.getDeclaredMethod(
+            NmsMappings.getMapping("methodGetDescriptionId")
+        )
 
         if (this.isOneNinteenThreeOrNewer) {
             // the methods here were added in 1.19.3
 
             // java.util.List getNonDefaultValues() ->
 
-            this.methodGetNonDefaultValues = clazzDataWatcher!!.getDeclaredMethod("c")
+            this.methodGetNonDefaultValues = clazzDataWatcher!!.getDeclaredMethod(
+                NmsMappings.getMapping("methodGetNonDefaultValues")
+            )
 
-            // define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
+            // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
             this.methodSynchedEntityDataDefine = clazzDataWatcher!!.getMethod(
-                "a",
+                NmsMappings.getMapping("methodSynchedEntityDataDefine"),
                 clazzDataWatcherObject, Any::class.java
             )
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            methodName = if (ver.minorVersion == 20 && ver.revision <= 4) "c" else "b"
+            methodName = if (ver.minorVersion == 20 && ver.revision <= 4)
+                "c"
+            else
+                NmsMappings.getMapping("methodDataWatcherGetItem")
             // 1.19, 1.20.5 = b, 1.20 - 1.20.4+ = c
 
             this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(
@@ -555,24 +583,34 @@ class Definitions{
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
             //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
-            this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod("e")
+            this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod(
+                NmsMappings.getMapping("methodDataWatcherItemValue")
+            )
         }
     }
 
     @Throws(NoSuchFieldException::class)
     private fun buildFields() {
         // net.minecraft.network.syncher.EntityDataSerializer OPTIONAL_COMPONENT
-        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField("g")
+        this.fieldOPTIONALCOMPONENT = clazzDataWatcherRegistry!!.getDeclaredField(
+            NmsMappings.getMapping("fieldOPTIONALCOMPONENT")
+        )
 
         // net.minecraft.network.syncher.EntityDataSerializer BOOLEAN
-        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField("k")
+        this.fieldBOOLEAN = clazzDataWatcherRegistry!!.getDeclaredField(
+            NmsMappings.getMapping("fieldBOOLEAN")
+        )
 
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
         val fieldName = when (ver.majorVersionEnum) {
             MinecraftMajorVersion.V1_21 -> {
-                if (ver.revision >= 2)
+                if (ver.useMojangMappings)
+                    "connection"
+                else if (ver.revision >= 6)
+                    "g"
+                else if (ver.revision >= 2)
                     "f"
                 else
                     "c"
@@ -591,7 +629,10 @@ class Definitions{
             //    net.minecraft.network.syncher.SynchedEntityData$DataItem[] itemsById ->
             // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
-            val methodName = if (this.isOneNinteenThreeOrNewer) "e" else "f"
+            val methodName = if (this.isOneNinteenThreeOrNewer)
+                NmsMappings.getMapping("fieldInt2ObjectMap")
+            else
+                "f"
 
             this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
             fieldInt2ObjectMap!!.setAccessible(true)

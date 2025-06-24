@@ -577,7 +577,7 @@ object DebugSubcommand {
         val debugType: DebugType
         try {
             debugType = DebugType.valueOf(debugCategory.uppercase(Locale.getDefault()))
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             sender.sendMessage("Invalid debug type: $debugCategory")
             return false
         }
@@ -603,7 +603,7 @@ object DebugSubcommand {
         val useNull = numberStr == null || "none".equals(numberStr, ignoreCase = true)
 
         try {
-            val value = if (useNull) null else numberStr!!.toInt()
+            val value = if (useNull) null else numberStr.toInt()
             when (numberSetting) {
                 NumberSettings.MAX_PLAYERS_DIST -> {
                     if (numberStr == null){
@@ -638,7 +638,7 @@ object DebugSubcommand {
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             sender.sendMessage("Invalid number: $numberStr")
         }
     }
@@ -663,7 +663,7 @@ object DebugSubcommand {
                 DebugManager.ListenFor.FAILURE -> sender.sendMessage("Listening for failed debug notice events")
                 DebugManager.ListenFor.SUCCESS -> sender.sendMessage("Listening for successful debug notice events")
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             sender.sendMessage("Invalid listen-for type: $value, valid options are: failure, success, both")
         }
     }
@@ -750,7 +750,7 @@ object DebugSubcommand {
                             dm.filterDebugTypes.remove(debugType)
                             optionsAddedOrRemoved.add(debugType.name)
                         }
-                    } catch (ignored: Exception) {
+                    } catch (_: Exception) {
                         if (isAdd) sender.sendMessage("Invalid debug type: $debugTypeStr")
                     }
                 }
@@ -767,7 +767,7 @@ object DebugSubcommand {
                             dm.filterEntityTypes.remove(entityType)
                             optionsAddedOrRemoved.add(entityType.name)
                         }
-                    } catch (ignored: Exception) {
+                    } catch (_: Exception) {
                         if (isAdd) sender.sendMessage("Invalid entity type: $entityTypeStr")
                     }
                 }

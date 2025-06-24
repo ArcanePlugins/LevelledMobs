@@ -70,7 +70,7 @@ class ExternalCompatibilityManager {
                 try{
                     requirement = ExternalPluginDetection.RequirementTypes.valueOf(requirementStr.uppercase())
                 }
-                catch (ignored: Exception){
+                catch (_: Exception){
                     Log.war("Invalid value: $requirementStr")
                 }
             }

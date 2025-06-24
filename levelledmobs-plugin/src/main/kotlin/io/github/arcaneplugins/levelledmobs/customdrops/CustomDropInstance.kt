@@ -65,7 +65,7 @@ class CustomDropInstance {
         return if (this.associatedMob != null) {
             if (getOverrideStockDrops) associatedMob!!.name + " - override" else associatedMob!!.name
         } else if (this.entityGroup != null) {
-            if (getOverrideStockDrops) entityGroup.toString() + " - override" else entityGroup.toString()
+            if (getOverrideStockDrops) "$entityGroup - override" else entityGroup.toString()
         } else {
             "CustomDropInstance"
         }
