@@ -24,6 +24,7 @@ object CommandHandler {
                         .silentLogs(true)
                         .verboseOutput(false)
                         .skipReloadDatapacks(true)
+                        .beLenientForMinorVersions(true)
                     CommandAPI.onLoad(commandCfg)
                     registerCommands()
                 }
