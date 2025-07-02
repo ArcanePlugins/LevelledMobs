@@ -91,7 +91,10 @@ class EntitySpawnListener : Listener{
                 delayedProcessMob(lmEntity, event, mobProcessDelay)
             else
                 preProcessmob(lmEntity, event, 0)
+
+            lmEntity.free()
         }
+
         scheduler.runDirectlyInBukkit = true
         scheduler.run()
     }
@@ -129,7 +132,6 @@ class EntitySpawnListener : Listener{
                 else
                     delayedAddToQueue(lmEntity, event, amountToDelay)
 
-                lmEntity.free()
                 return
             }
         } else if (event is SpawnerSpawnEvent) {
@@ -139,10 +141,7 @@ class EntitySpawnListener : Listener{
                 updateMobForPlayerLevelling(lmEntity)
         }
 
-        if (!processMobSpawns) {
-            lmEntity.free()
-            return
-        }
+        if (!processMobSpawns) return
 
         if (!hasBuiltCache) {
             lmEntity.buildCacheIfNeeded()
@@ -150,8 +149,6 @@ class EntitySpawnListener : Listener{
         }
 
         main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
-
-        lmEntity.free()
     }
 
     private fun delayedProcessMob(
@@ -166,8 +163,6 @@ class EntitySpawnListener : Listener{
 
         lmEntity.inUseCount.getAndIncrement()
         scheduler.runDelayed(delay.toLong())
-
-        lmEntity.free()
     }
 
     private fun delayedAddToQueue(
