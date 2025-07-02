@@ -194,7 +194,13 @@ class ExternalCompatibilityManager {
                     "getPapiPlaceholder: input size (${inputList.size}) did not match results size (${papiResults.size})"
                 }
                 for (i in 0..<papiResults.size) {
-                    results = results.replace(inputList[i], invalidPlaceholderReplacement)
+                    val currentResult = papiResults[i]
+                    val currentInput = inputList[i]
+
+                    results = if (currentResult.isEmpty() || currentResult == currentInput)
+                        results.replace(currentInput, invalidPlaceholderReplacement)
+                    else
+                        results.replace(currentInput, currentResult)
                 }
 
                 return results
