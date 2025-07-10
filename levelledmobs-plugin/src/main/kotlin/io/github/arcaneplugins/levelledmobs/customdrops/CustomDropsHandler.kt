@@ -210,7 +210,7 @@ class CustomDropsHandler {
 
         if (!processingInfo.equippedOnly){
             processingInfo.addition =
-                main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount
+                main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).multiplierAmount
         }
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRuleCheckIfNoDropMultiplierEntitiy(

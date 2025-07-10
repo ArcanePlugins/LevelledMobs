@@ -505,7 +505,7 @@ class LevelManager : LevelInterface2 {
             val additionValue = main.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_ITEM_DROP, 2.0f
-            ).amount
+            ).multiplierAmount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
                     "removing any drops present"
@@ -636,7 +636,7 @@ class LevelManager : LevelInterface2 {
             val dropAddition: Float = LevelledMobs.instance.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_XP_DROP, 3.0f
-            ).amount
+            ).multiplierAmount
             var newXp = 0.0
 
             if (dropAddition == Float.MIN_VALUE) {
@@ -1541,7 +1541,7 @@ class LevelManager : LevelInterface2 {
         val damage = main.mobDataManager.getAdditionsForLevel(
             lmEntity,
             Addition.CREEPER_BLAST_DAMAGE, 3f
-        ).amount
+        ).multiplierAmount
 
         if (damage == 0.0f) return
 

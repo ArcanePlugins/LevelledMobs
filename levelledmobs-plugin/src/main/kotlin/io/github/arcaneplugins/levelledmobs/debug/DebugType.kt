@@ -105,6 +105,8 @@ enum class DebugType {
 
     APPLY_MULTIPLIERS,
 
+    APPLY_BASE_MODIFIERS,
+
     CUSTOM_DROPS,
 
     CUSTOM_EQUIPS,

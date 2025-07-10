@@ -32,6 +32,12 @@ class Definitions{
     var mm: MiniMessage? = null
 
     // classes:
+    var clazzCompoundTag: Class<*>? = null
+        private set
+    private var clazzProblemReport: Class<*>? = null
+    private var clazzValueOutput: Class<*>? = null
+    var clazzTagValueOutput: Class<*>? = null
+        private set
     private var clazzIChatMutableComponent: Class<*>? = null
     private var clazzIChatBaseComponent: Class<*>? = null
     var clazzTranslatableComponent: Class<*>? = null
@@ -65,6 +71,12 @@ class Definitions{
     private var clazzMMmobType: Class<*>? = null
 
     // methods:
+    var methodSaveWithoutId: Method? = null
+        private set
+    var methodWithoutContext: Method? = null
+        private set
+    var methodBuildResult: Method? = null
+        private set
     var methodDataWatcherBuilderBuild: Method? = null
         private set
     var methodDataWatcherBuilderDefine: Method? = null
@@ -115,6 +127,7 @@ class Definitions{
         private set
 
     // fields
+    var fieldDISCARDING: Field? = null
     var fieldOPTIONALCOMPONENT: Field? = null
         private set
     var fieldBOOLEAN: Field? = null
@@ -176,6 +189,7 @@ class Definitions{
             buildSimpleMethods()
             buildFields()
             buildConstructors()
+            buildNbtDumpRelatedStuff()
             buildMythicMobs()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -302,6 +316,44 @@ class Definitions{
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage")
                 this.hasMiniMessage = true
             } catch (_: ClassNotFoundException) {}
+        }
+    }
+
+    private fun buildNbtDumpRelatedStuff(){
+        // these reflection items go here because they are optional
+        // if they fail then only nbt-dump command will not be available
+
+        this.clazzCompoundTag = Class.forName(
+            "net.minecraft.nbt.NBTTagCompound"
+        )
+
+        // 1.21.5 and older:
+        //    net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> h
+        // 1.21.6+:
+        //    void saveWithoutId(net.minecraft.world.level.storage.ValueOutput) -> d
+
+        try {
+            if (ver.minecraftVersion >= 1.21 && ver.minorVersion >= 6) {
+                /*
+                    net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
+                    net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
+                    entity.saveWithoutId(tvo);
+                    net.minecraft.nbt.CompoundTag tag = tvo.buildResult();
+                */
+                this.clazzProblemReport = Class.forName("net.minecraft.util.ProblemReporter")
+                this.fieldDISCARDING = clazzProblemReport!!.getDeclaredField("DISCARDING")
+                this.clazzValueOutput = Class.forName("net.minecraft.world.level.storage.ValueOutput")
+                this.clazzTagValueOutput = Class.forName("net.minecraft.world.level.storage.TagValueOutput")
+                this.methodWithoutContext =
+                    clazzTagValueOutput!!.getDeclaredMethod("createWithoutContext", clazzProblemReport)
+                this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("saveWithoutId", clazzValueOutput)
+                this.methodBuildResult = this.clazzTagValueOutput!!.getDeclaredMethod("buildResult")
+            }
+            else // pre 1.21.6:
+                this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("f", clazzCompoundTag)
+        }
+        catch (e: Exception){
+            Log.war("Error get reflection methods for nbt-dump operations: ${e.message}")
         }
     }
 

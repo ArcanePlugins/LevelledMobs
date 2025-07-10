@@ -22,6 +22,7 @@ object KeyValidation {
     init {
         settings.addAll(mutableSetOf(
             "attribute-modifier",
+            "base-attribute-modifier",
             "baby-mobs-inherit-adult-setting",
             "chunk-max-cooldown-seconds",
             "chunk-max-cooldown-seconds",

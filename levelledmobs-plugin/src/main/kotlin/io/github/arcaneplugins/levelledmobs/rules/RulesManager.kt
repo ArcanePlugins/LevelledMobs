@@ -220,44 +220,24 @@ class RulesManager {
     fun getFineTuningAttributes(
         lmEntity: LivingEntityWrapper
     ): FineTuningAttributes? {
-        var allMobAttribs: FineTuningAttributes? = null
-        var thisMobAttribs: FineTuningAttributes? = null
+        var result: FineTuningAttributes? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.allMobMultipliers != null) {
-                val multipliers = ruleInfo.allMobMultipliers!!
-                if (allMobAttribs == null || multipliers.doNotMerge) {
-                    allMobAttribs = multipliers.cloneItem() as FineTuningAttributes
-                    if (multipliers.doNotMerge) {
-                        thisMobAttribs = null
-                    }
-                } else {
-                    allMobAttribs.merge(multipliers)
-                }
-            }
+            if (ruleInfo.mobMultipliers == null) continue
 
-            if (ruleInfo.specificMobMultipliers != null
-                && ruleInfo.specificMobMultipliers!!.containsKey(lmEntity.nameIfBaby)
-            ) {
-                val tempAttribs = ruleInfo.specificMobMultipliers!![lmEntity.nameIfBaby]
-                if (thisMobAttribs == null || tempAttribs!!.doNotMerge) {
-                    thisMobAttribs = tempAttribs!!.cloneItem() as FineTuningAttributes
+            val multipliers = ruleInfo.mobMultipliers!!
+            if (result == null || multipliers.doNotMerge) {
 
-                    if (tempAttribs.doNotMerge) allMobAttribs = null
-                    else allMobAttribs?.merge(thisMobAttribs)
-                } else {
-                    thisMobAttribs.merge(tempAttribs)
-                }
+                if (multipliers.doNotMerge)
+                    result = null
+                else
+                    result = multipliers.cloneItem() as FineTuningAttributes
             }
+            else
+                result.merge(multipliers)
         }
 
-        if (allMobAttribs != null) {
-            if (thisMobAttribs != null)
-                allMobAttribs.merge(thisMobAttribs)
-            return allMobAttribs
-        } else {
-            return thisMobAttribs
-        }
+        return result
     }
 
     @Suppress("UNCHECKED_CAST")

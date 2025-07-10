@@ -755,7 +755,7 @@ class RulesParser {
         if (cs == null) return
 
         val ymlHelper = YmlParsingHelper(cs)
-        parseFineTuning(YmlParsingHelper.objToCS(cs, "attribute-modifier"))
+        parseFineTuning(cs)
         parseEntityNameOverride(YmlParsingHelper.objToCS(cs, "entity-name-override"))
         parseTieredColoring(YmlParsingHelper.objToCS(cs, "tiered-coloring"))
         parseHealthIndicator(YmlParsingHelper.objToCS(cs, "health-indicator"))
@@ -1516,7 +1516,9 @@ class RulesParser {
         }
     }
 
-    private fun parseFineTuning(cs: ConfigurationSection?) {
+    private fun parseFineTuning(
+        cs: ConfigurationSection?
+    ) {
         if (cs == null) return
 
         parsingInfo.vanillaBonuses = buildCachedModalOfType(
@@ -1524,67 +1526,90 @@ class RulesParser {
             parsingInfo.vanillaBonuses, ModalListParsingTypes.VANILLA_BONUSES,
             parsingInfo
         ) as CachedModalList<VanillaBonusEnum>?
-        parsingInfo.allMobMultipliers = parseFineTuningValues(cs, parsingInfo.allMobMultipliers)
+        var fineTuning: FineTuningAttributes? = null
+        val namesList = mutableListOf("base-attribute-modifier", "attribute-modifier")
+        val namesList2 = mutableListOf("custom-base-attribute-modifier", "custom-attribute-modifier")
 
-        val csCustom = YmlParsingHelper.objToCS(cs, "custom-attribute-modifier") ?: return
-        val fineTuning: MutableMap<String, FineTuningAttributes> = TreeMap(
-            String.CASE_INSENSITIVE_ORDER
-        )
+        for ((loopNum, useName) in namesList.withIndex()) {
+            val isBaseModifier = (loopNum == 0)
+            val useName2 = namesList2[loopNum]
 
-        for (mobName in csCustom.getKeys(false)) {
-            var checkName = mobName
-            if (checkName.lowercase(Locale.getDefault()).startsWith("baby_")) {
-                checkName = checkName.substring(5)
-            }
+            if (fineTuning == null) fineTuning = FineTuningAttributes()
 
-            try {
-                EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
-            } catch (_: IllegalArgumentException) {
-                Log.war(
-                    "Invalid entity type: $mobName for fine-tuning in rule: "
-                            + parsingInfo.ruleName
+            val useDefaults = if (isBaseModifier)
+                fineTuning.baseAttributeModifiers
+            else
+                fineTuning.multipliers
+
+            val cs2 = YmlParsingHelper.objToCS(cs, useName)
+            if (cs2 == null) continue
+
+            val values = parseFineTuningValues(cs2, useDefaults, isBaseModifier)
+            if (isBaseModifier)
+                fineTuning.baseAttributeModifiers = values
+            else
+                fineTuning.multipliers = values
+
+            val mobSpecificMultipliers = mutableMapOf<String, MutableMap<Addition, Multiplier>>()
+            val csCustom = YmlParsingHelper.objToCS(cs2, useName2) ?: continue
+            for (mobName in csCustom.getKeys(false)) {
+                var checkName = mobName
+                if (checkName.lowercase(Locale.getDefault()).startsWith("baby_"))
+                    checkName = checkName.substring(5)
+
+                try {
+                    EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
+                } catch (_: IllegalArgumentException) {
+                    Log.war(
+                        "Invalid entity type: $mobName for fine-tuning in rule: ${parsingInfo.ruleName}"
+                    )
+                    continue
+                }
+
+                val thisMobAttribs = parseFineTuningValues(
+                    YmlParsingHelper.objToCS(csCustom, mobName), null, isBaseModifier
                 )
-                continue
+                if (thisMobAttribs == null) continue
+
+                mobSpecificMultipliers[mobName] = thisMobAttribs
             }
 
-            val attribs = parseFineTuningValues(
-                YmlParsingHelper.objToCS(csCustom, mobName), null
-            )
-            if (attribs == null) continue
-
-            fineTuning[mobName] = attribs
-        }
-
-        if (fineTuning.isNotEmpty()) {
-            if (parsingInfo.specificMobMultipliers != null) {
-                parsingInfo.specificMobMultipliers!!.putAll(fineTuning)
-            } else {
-                parsingInfo.specificMobMultipliers = fineTuning
+            if (!mobSpecificMultipliers.isEmpty()) {
+                if (isBaseModifier)
+                    fineTuning.mobSpecificBaseModifiers = mobSpecificMultipliers
+                else
+                    fineTuning.mobSpecificMultipliers = mobSpecificMultipliers
             }
         }
+
+        if (fineTuning != null && !fineTuning.isEmpty)
+            parsingInfo.mobMultipliers = fineTuning
     }
 
     private fun parseFineTuningValues(
         cs: ConfigurationSection?,
-        defaults: FineTuningAttributes?
-    ): FineTuningAttributes? {
-        //if (cs == null) return defaults?.cloneItem() as FineTuningAttributes
+        defaults: MutableMap<Addition, Multiplier>?,
+        isBaseModifier: Boolean
+    ): MutableMap<Addition, Multiplier>? {
         if (cs == null) return defaults
 
+        var useStacked: Boolean? = null
         val ymlHelper = YmlParsingHelper(cs)
-        val doMerge = ymlHelper.getBoolean( "merge", true)
-        val attribs =
-            if (parsingInfo.allMobMultipliers != null && doMerge)
-                parsingInfo.allMobMultipliers!!.cloneItem() as FineTuningAttributes
-            else
-                FineTuningAttributes()
+        var doNotMerge = !ymlHelper.getBoolean( "merge", true) // for backwards compat
+        //val doMerge = ymlHelper.getBoolean( "merge", true)
+        val results = mutableMapOf<Addition, Multiplier>()
+//        val attribs =
+//            if (parsingInfo.mobMultipliers != null && doMerge)
+//                parsingInfo.mobMultipliers!!.cloneItem() as FineTuningAttributes
+//            else
+//                FineTuningAttributes()
 
         for (item in cs.getKeys(false)) {
             when (item.lowercase(Locale.getDefault())) {
-                "use-stacked" -> attribs.useStacked = ymlHelper.getBoolean2(item, attribs.useStacked)
-                "do-not-merge" -> attribs.doNotMerge = ymlHelper.getBoolean(item, false)
-                "merge" -> attribs.doNotMerge = !ymlHelper.getBoolean(item, true)
-                "vanilla-bonus", "custom-attribute-modifier" -> {}
+                "merge" -> doNotMerge = !ymlHelper.getBoolean(item, true)
+                "use-stacked" -> useStacked = ymlHelper.getBoolean2(item, useStacked)
+                "do-not-merge" -> doNotMerge = ymlHelper.getBoolean(item, false)
+                "vanilla-bonus", "custom-attribute-modifier", "custom-base-attribute-modifier" -> {}
                 else -> {
                     var lmMultiplier: LMMultiplier
                     try {
@@ -1598,24 +1623,23 @@ class RulesParser {
                         continue
                     }
 
-                    val addition = attribs.getAdditionFromLMMultiplier(lmMultiplier)
-                    val multiplier = parseFineTuningValues2(cs, addition, item)
-                    if (multiplier != null) {
-                        attribs.addItem(addition, multiplier)
-                    }
+                    val addition = FineTuningAttributes.getAdditionFromLMMultiplier(lmMultiplier)
+                    val multiplier = parseFineTuningValues2(cs, addition, item, isBaseModifier)
+                    if (multiplier != null) results[addition] = multiplier
                 }
             }
         }
 
-        if (attribs.isEmpty) return defaults
+        if (results.isEmpty()) return defaults
 
-        return attribs
+        return results
     }
 
     private fun parseFineTuningValues2(
         cs: ConfigurationSection,
         addition: Addition,
-        item: String
+        item: String,
+        isBaseModifier: Boolean
     ): Multiplier? {
         val values = cs.getList(item)
         if (values == null) {
@@ -1623,9 +1647,9 @@ class RulesParser {
             val value = YmlParsingHelper.getFloat2(cs, item, null)
 
             return if (value != null)
-                Multiplier(addition, false, value, null, false)
+                Multiplier(addition, false, value, null, isAddition = false, isBaseModifier)
             else if (formula != null)
-                Multiplier(addition, false, null, formula, true)
+                Multiplier(addition, false, null, formula, isAddition = true, isBaseModifier)
             else
                 null
         }
@@ -1679,7 +1703,7 @@ class RulesParser {
 
         if (value > Float.MIN_VALUE || !customFormula.isNullOrEmpty()) {
             return Multiplier(
-                addition, useStacked, value, customFormula, isAddition
+                addition, useStacked, value, customFormula, isAddition, false
             )
         }
 

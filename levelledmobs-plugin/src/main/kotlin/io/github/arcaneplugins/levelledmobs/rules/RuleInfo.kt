@@ -176,17 +176,13 @@ class RuleInfo(
     var conditionsGamemode: CachedModalList<String>? = null
     @field:RuleFieldInfo("within coordinates", RuleType.CONDITION)
     var conditionsWithinCoords: WithinCoordinates? = null
-    @field:RuleFieldInfo("all mob multipliers", RuleType.APPLY_SETTING)
-    var allMobMultipliers: FineTuningAttributes? = null
-    @field:RuleFieldInfo("mob specific multipliers", RuleType.APPLY_SETTING)
-    var specificMobMultipliers: MutableMap<String, FineTuningAttributes>? = null
+    @field:RuleFieldInfo("mob multipliers", RuleType.APPLY_SETTING)
+    var mobMultipliers: FineTuningAttributes? = null
     @field:ExcludeFromHash @field:RuleFieldInfo("chunk kill options", RuleType.APPLY_SETTING)
     var chunkKillOptions: ChunkKillOptions? = null
 
     fun mergePresetRules(preset: RuleInfo?) {
-        if (preset == null) {
-            return
-        }
+        if (preset == null) return
 
         try {
             for (f in preset::javaClass.get().declaredFields) {
@@ -207,26 +203,16 @@ class RuleInfo(
                     if (ruleValue != null && mergableRule.doMerge) {
                         (ruleValue as MergableRule).merge(mergableRule.cloneItem() as MergableRule)
                         skipSettingValue = true
-                    } else {
-                        presetValue = mergableRule.cloneItem()
                     }
+                    else
+                        presetValue = mergableRule.cloneItem()
                 } else if (f.name == "entityNameOverrides_Level" && this.entityNameOverridesLevel != null) {
                     entityNameOverridesLevel!!.putAll(
                         presetValue as MutableMap<String, MutableList<LevelTierMatching>>
                     )
                     skipSettingValue = true
-                } else if (f.name == "specificMobMultipliers") {
-                    val mergingPreset = presetValue as MutableMap<String, FineTuningAttributes>
-                    if (this.specificMobMultipliers == null) {
-                        this.specificMobMultipliers = mutableMapOf()
-                    }
-
-                    for ((key, value) in mergingPreset) {
-                        specificMobMultipliers!![key] = value.cloneItem() as FineTuningAttributes
-                    }
-
-                    skipSettingValue = true
-                } else if (f.name == "customDropDropTableIds") {
+                }
+                else if (f.name == "customDropDropTableIds") {
                     val mergingPreset = presetValue as MutableList<String>
                     customDropDropTableIds.addAll(mergingPreset)
 
@@ -274,18 +260,17 @@ class RuleInfo(
                     skipSettingValue = true
                 }
 
-                if (presetValue is TieredColoringInfo) {
+                if (presetValue is TieredColoringInfo)
                     presetValue = presetValue.cloneItem()!!
-                }
 
                 if (presetValue == MobCustomNameStatus.NOT_SPECIFIED ||
                     presetValue == MobTamedStatus.NOT_SPECIFIED) {
                     continue
                 }
 
-                if (!skipSettingValue) {
+                if (!skipSettingValue)
                     this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
-                }
+
                 ruleSourceNames[f.name] = preset.ruleName
             }
         } catch (e: IllegalAccessException) {
@@ -349,9 +334,8 @@ class RuleInfo(
                 if (value.toString().equals("NONE", ignoreCase = true)) continue
 
                 if (value is CachedModalList<*>) {
-                    if (value.isEmpty() && !value.includeAll && !value.excludeAll) {
+                    if (value.isEmpty() && !value.includeAll && !value.excludeAll)
                         continue
-                    }
                 }
                 val ruleInfo = RuleSortingInfo(
                     ruleInfoType,
@@ -426,9 +410,8 @@ class RuleInfo(
     }
 
     override fun toString(): String {
-        if (this.ruleName.isEmpty()) {
+        if (this.ruleName.isEmpty())
             return super.toString()
-        }
 
         return this.ruleName
     }

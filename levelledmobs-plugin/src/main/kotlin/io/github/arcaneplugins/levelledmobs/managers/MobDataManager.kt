@@ -163,8 +163,8 @@ class MobDataManager {
 
         val defaultValue = attribInstance.baseValue.toFloat()
         val multiplierResult = getAdditionsForLevel(lmEntity, addition, defaultValue)
-        val additionValue = multiplierResult.amount
-        if (additionValue == 0.0f)
+        val additionValue = multiplierResult.multiplierAmount
+        if (additionValue == 0.0f && multiplierResult.baseModAmount == null)
             return null
 
         val modifierOperation = if (multiplierResult.isAddition)
@@ -203,8 +203,7 @@ class MobDataManager {
         attribInfos: MutableList<AttributePreMod>
     ) {
         for (info in attribInfos){
-            val additionValue = info.multiplierResult.amount
-            if (additionValue == 0.0f) return
+            val additionValue = info.multiplierResult.multiplierAmount
             val attrib = lmEntity.livingEntity.getAttribute(info.attribute) ?: return
 
             // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
@@ -228,6 +227,18 @@ class MobDataManager {
                     }
                 }
             }
+
+            if (info.multiplierResult.baseModAmount != null){
+                val oldValue = attrib.baseValue
+                attrib.baseValue = info.multiplierResult.baseModAmount.toDouble()
+
+                DebugManager.log(DebugType.APPLY_BASE_MODIFIERS, lmEntity) {
+                    "attrib: ${info.attribute}, old base: ${Utils.round(oldValue, 3)}, " +
+                            "new base: ${Utils.round(info.multiplierResult.baseModAmount.toDouble(), 3)}"
+                }
+            }
+
+            if (additionValue == 0.0f) continue
 
             removeExistingMultipliers(lmEntity, attrib)
             attrib.addModifier(info.attributeModifier)
@@ -313,33 +324,50 @@ class MobDataManager {
     ): MultiplierResult {
         val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity).toFloat()
         val fineTuning = lmEntity.fineTuningAttributes
-        var multiplier: FineTuningAttributes.Multiplier? = null
+        var attributeMultiplier: FineTuningAttributes.Multiplier? = null
+        //var baseModifier: FineTuningAttributes.Multiplier? = null
         var attributeMax = 0f
         var multiplierValue = 0f
+        var baseModifierAmount: Float? = null
         var isAddition = true
 
         if (fineTuning != null) {
-            multiplier = fineTuning.getItem(addition)
-            if (multiplier?.hasFormula == true){
-                isAddition = multiplier.isAddition
-                val formulaStr = StringReplacer(multiplier.formula!!)
-                formulaStr.replaceIfExists("%level%"){ lmEntity.getMobLevel.toString() }
-                formulaStr.text = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(
-                    formulaStr.text,
-                    lmEntity
-                )
+            attributeMultiplier = fineTuning.getMultiplier(addition, lmEntity)
 
-                val evalResult = evaluateExpression(formulaStr.text)
-                multiplierValue = evalResult.result.toFloat()
-                if (evalResult.hadError)
-                    Log.war("Error evaluating formula for ${lmEntity.nameIfBaby}: '$formulaStr', ${evalResult.error}")
+            for (loop in 0..1){
+                // loop 0 = multipliers, loop 1 = base modifiers
+                val multiplierOrMod = if (loop == 0)
+                    attributeMultiplier
+                else
+                    fineTuning.getBaseModifier(addition, lmEntity)
 
-                DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity, !evalResult.hadError) {
-                    "${multiplier.addition.name}, formulaPre: '${multiplier.formula}'\nformula: " +
-                            "'$formulaStr', result: '$multiplierValue'" }
+                if (multiplierOrMod == null) continue
+
+                if (multiplierOrMod.hasFormula){
+                    isAddition = multiplierOrMod.isAddition
+                    val formulaStr = StringReplacer(multiplierOrMod.formula!!)
+                    formulaStr.replaceIfExists("%level%"){ lmEntity.getMobLevel.toString() }
+                    formulaStr.text = LevelledMobs.instance.levelManager.replaceStringPlaceholdersForFormulas(
+                        formulaStr.text,
+                        lmEntity
+                    )
+
+                    val evalResult = evaluateExpression(formulaStr.text)
+                    multiplierValue = evalResult.result.toFloat()
+                    if (evalResult.hadError)
+                        Log.war("Error evaluating formula for ${lmEntity.nameIfBaby}: '$formulaStr', ${evalResult.error}")
+
+                    DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity, !evalResult.hadError) {
+                        "${multiplierOrMod.addition.name}, formulaPre: '${multiplierOrMod.formula}'\nformula: " +
+                                "'$formulaStr', result: '$multiplierValue'" }
+                }
+                else {
+                    if (loop == 0)
+                        multiplierValue = multiplierOrMod.useValue
+                    else
+                        baseModifierAmount = multiplierOrMod.useValue
+                }
             }
-            else if (multiplier != null)
-                multiplierValue = multiplier.useValue
 
             attributeMax = when (addition) {
                 Addition.ATTRIBUTE_ARMOR_BONUS -> 30.0f
@@ -355,24 +383,24 @@ class MobDataManager {
                 val msg = if (maxLevel == 0f) "maxLevel was 0" else "multiplier was 0"
                 "$msg; returning 0 for $addition"
             }
-            return MultiplierResult(0.0f, isAddition)
+            return MultiplierResult(0.0f, baseModifierAmount, isAddition)
         }
 
-        if (multiplier?.hasFormula == true)
-            return MultiplierResult(multiplierValue, isAddition)
+        if (attributeMultiplier?.hasFormula == true)
+            return MultiplierResult(multiplierValue, baseModifierAmount, isAddition)
 
         if ((addition == Addition.CUSTOM_ITEM_DROP || addition == Addition.CUSTOM_XP_DROP)
             && multiplierValue == -1f
-        ) return MultiplierResult(Float.MIN_VALUE, isAddition)
+        ) return MultiplierResult(Float.MIN_VALUE, baseModifierAmount, isAddition)
 
-        if (fineTuning!!.getUseStacked() || multiplier!!.useStacked) {
+        if (fineTuning!!.getUseStacked() || attributeMultiplier!!.useStacked) {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "attrib: ${addition.name}, stkd formula, ${multiplier!!.value}"
+                "attrib: ${addition.name}, stkd formula, ${attributeMultiplier!!.value}"
             }
-            return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, isAddition)
+            return MultiplierResult(lmEntity.getMobLevel.toFloat() * multiplierValue, baseModifierAmount, isAddition)
         } else {
             DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity) {
-                "attrib: ${addition.name}, std formula, ${multiplier.value}"
+                "attrib: ${addition.name}, std formula, ${attributeMultiplier.value}"
             }
 
             multiplierValue = if (attributeMax > 0.0) {
@@ -382,7 +410,7 @@ class MobDataManager {
                 // normal formula for most attributes
                 defaultValue * multiplierValue * ((lmEntity.getMobLevel) / maxLevel)
             }
-            return MultiplierResult(multiplierValue, isAddition)
+            return MultiplierResult(multiplierValue, baseModifierAmount, isAddition)
         }
     }
 }

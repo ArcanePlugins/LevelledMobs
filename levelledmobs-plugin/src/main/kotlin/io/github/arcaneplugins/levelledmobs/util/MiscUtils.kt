@@ -48,23 +48,31 @@ object MiscUtils {
         livingEntity: LivingEntity
     ): String {
         val def = LevelledMobs.instance.definitions
+        val ver = LevelledMobs.instance.ver
+        val useNewMethod = (ver.minecraftVersion >= 1.21 && ver.minorVersion >= 6)
 
         try {
-            //final Method method_getHandle = def.clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
             val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
 
-            val compoundTagClazz =
-                Class.forName("net.minecraft.nbt.NBTTagCompound")
+            if (useNewMethod) {
+                /*
+                    net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
+                    net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
+                    entity.saveWithoutId(tvo);
+                    net.minecraft.nbt.CompoundTag tag = tvo.buildResult();
+                    return tag.toString()
+                */
+                val problemReporter = def.fieldDISCARDING!!.get(null)
+                val tagValueOutput = def.methodWithoutContext!!.invoke(def.clazzTagValueOutput, problemReporter)
+                def.methodSaveWithoutId!!.invoke(internalLivingEntity, tagValueOutput)
+                return def.methodBuildResult!!.invoke(tagValueOutput).toString()
+            }
+            else{
+                val compoundTag = def.clazzCompoundTag!!.getConstructor().newInstance()
+                def.methodSaveWithoutId!!.invoke(internalLivingEntity, compoundTag)
 
-            val compoundTag = compoundTagClazz.getConstructor().newInstance()
-
-            // net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> f
-            val saveWithoutId =
-                def.clazzEntity!!.getDeclaredMethod("f", compoundTagClazz)
-
-            saveWithoutId.invoke(internalLivingEntity, compoundTag)
-
-            return compoundTag.toString()
+                return compoundTag.toString()
+            }
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
