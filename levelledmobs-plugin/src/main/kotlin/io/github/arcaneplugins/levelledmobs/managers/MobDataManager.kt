@@ -147,9 +147,8 @@ class MobDataManager {
     ): Boolean {
         // Head drops
         val main = LevelledMobs.instance
-        if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
+        if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL"))
             return main.helperSettings.getBoolean( "mobs-multiply-head-drops")
-        }
 
         return false
     }
@@ -325,7 +324,6 @@ class MobDataManager {
         val maxLevel = LevelledMobs.instance.rulesManager.getRuleMobMaxLevel(lmEntity).toFloat()
         val fineTuning = lmEntity.fineTuningAttributes
         var attributeMultiplier: FineTuningAttributes.Multiplier? = null
-        //var baseModifier: FineTuningAttributes.Multiplier? = null
         var attributeMax = 0f
         var multiplierValue = 0f
         var baseModifierAmount: Float? = null

@@ -15,6 +15,7 @@ import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
+import java.util.Objects
 import java.util.TreeMap
 import org.bukkit.Particle
 import org.bukkit.block.Biome
@@ -284,6 +285,19 @@ class RuleInfo(
     ){
         override fun toString(): String {
             return "$ruleType: $fieldName"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is RuleSortingInfo)
+                return false
+
+            return other.ruleType == this.ruleType &&
+                other.fieldName == this.fieldName
+        }
+
+        override fun hashCode(): Int {
+            return Objects.hash(ruleType, fieldName)
         }
     }
 

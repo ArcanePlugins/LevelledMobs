@@ -1,6 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.enums.Addition
+import io.github.arcaneplugins.levelledmobs.misc.EffectiveInfo
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import kotlin.collections.iterator
 import kotlin.collections.set
@@ -11,28 +13,29 @@ import kotlin.collections.set
  * @author stumper66
  * @since 3.0.0
  */
-class FineTuningAttributes : MergableRule, Cloneable {
+class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
     var multipliers: MutableMap<Addition, Multiplier>? = null
     var mobSpecificMultipliers: MutableMap<String, MutableMap<Addition, Multiplier>>? = null
     var baseAttributeModifiers: MutableMap<Addition, Multiplier>? = null
     var mobSpecificBaseModifiers: MutableMap<String, MutableMap<Addition, Multiplier>>? = null
 
-    var doNotMergeAllMobs = false
-    var doNotMergeMobSpecific = false
+    var doNotMergeAllMultipliers = false
+    var doNotMergeMobSpecificMultipliers = false
+    var doNotMergeAllBaseMods = false
+    var doNotMergeMobSpecificBaseMods = false
     var useStacked: Boolean? = null
 
     var doNotMerge: Boolean
         set(value) {
-            doNotMergeMobSpecific = value
-            doNotMergeAllMobs = value
+            doNotMergeAllMultipliers = value
+            doNotMergeMobSpecificMultipliers = value
+            doNotMergeAllBaseMods = value
+            doNotMergeMobSpecificBaseMods = value
         }
-        get() = doNotMergeAllMobs || doNotMergeMobSpecific
-
-//    val hasMobSpecificMultipliers: Boolean
-//        get() = !mobSpecificMultipliers.isNullOrEmpty()
-//
-//    val hasBaseAttributeModifiers: Boolean
-//        get() = !baseAttributeModifiers.isNullOrEmpty()
+        get() = doNotMergeAllMultipliers
+                && doNotMergeMobSpecificMultipliers
+                && doNotMergeAllBaseMods
+                && doNotMergeMobSpecificBaseMods
 
     fun getUseStacked(): Boolean {
         return useStacked != null && useStacked!!
@@ -40,14 +43,14 @@ class FineTuningAttributes : MergableRule, Cloneable {
 
     val isEmpty: Boolean
         get() = multipliers.isNullOrEmpty() &&
-                mobSpecificMultipliers.isNullOrEmpty() &&
+                baseAttributeModifiers.isNullOrEmpty() &&
                 mobSpecificMultipliers.isNullOrEmpty() &&
                 mobSpecificBaseModifiers.isNullOrEmpty()
 
     override fun merge(mergableRule: MergableRule?) {
         if (mergableRule !is FineTuningAttributes) return
 
-        copyMultipliers(mergableRule, this)
+        copyMultipliers(mergableRule, this, false)
     }
 
     override val doMerge: Boolean
@@ -81,6 +84,20 @@ class FineTuningAttributes : MergableRule, Cloneable {
             null
         else
             baseAttributeModifiers!![addition]
+    }
+
+    fun checkMerges(){
+        if (!multipliers.isNullOrEmpty() && doNotMergeAllMultipliers)
+            multipliers!!.clear()
+
+        if (!mobSpecificMultipliers.isNullOrEmpty() && doNotMergeMobSpecificMultipliers)
+            mobSpecificMultipliers!!.clear()
+
+        if (!baseAttributeModifiers.isNullOrEmpty() && doNotMergeMobSpecificBaseMods)
+            baseAttributeModifiers!!.clear()
+
+        if (!mobSpecificBaseModifiers.isNullOrEmpty() && doNotMergeMobSpecificBaseMods)
+            mobSpecificBaseModifiers!!.clear()
     }
 
     companion object{
@@ -171,8 +188,21 @@ class FineTuningAttributes : MergableRule, Cloneable {
 
         private fun copyMultipliers(
             source: FineTuningAttributes,
-            dest: FineTuningAttributes
+            dest: FineTuningAttributes,
+            copyAll: Boolean
         ) {
+            if (source.doNotMergeAllMultipliers && !copyAll)
+                dest.multipliers?.clear()
+
+            if (source.doNotMergeAllBaseMods && !copyAll)
+                dest.baseAttributeModifiers?.clear()
+
+            if (source.doNotMergeMobSpecificMultipliers && !copyAll)
+                dest.mobSpecificMultipliers?.clear()
+
+            if (source.doNotMergeMobSpecificBaseMods && !copyAll)
+                dest.mobSpecificBaseModifiers?.clear()
+
             if (!source.multipliers.isNullOrEmpty()) {
                 if (dest.multipliers == null) dest.multipliers = mutableMapOf()
                 dest.multipliers!!.putAll(dulicateMap1(source.multipliers!!))
@@ -193,13 +223,101 @@ class FineTuningAttributes : MergableRule, Cloneable {
                 dest.mobSpecificBaseModifiers!!.putAll(dulicateMap2(source.mobSpecificBaseModifiers!!))
             }
         }
+
+        private fun formatMultipliers(
+            items: MutableMap<Addition, Multiplier>?,
+            sb: StringBuilder,
+            header: String?,
+            useCarriageReturn: Boolean,
+            mobName: String?
+        ) {
+            if (items == null) return
+
+            if (useCarriageReturn) sb.append("\n     ")
+            if (header != null) {
+                if (mobName != null)
+                    sb.append("&r&l$header: ($mobName)&r ")
+                else
+                    sb.append("&r&l$header:&r ")
+            }
+            else
+                sb.append("&r")
+
+            var isFirst = true
+            for (multiplier in items.values) {
+                if (isFirst)
+                    isFirst = false
+                else
+                    sb.append(", ")
+
+                sb.append(getShortName(multiplier.addition))
+                if (multiplier.value != null)
+                    sb.append(": ").append(multiplier.value)
+                if (multiplier.hasFormula)
+                    sb.append(multiplier.formula)
+                else if (multiplier.useStacked)
+                    sb.append(" (stk)")
+            }
+        }
+
+        private fun formatMobSpecific(
+            items: MutableMap<String, MutableMap<Addition, Multiplier>>?,
+            sb: StringBuilder,
+            header: String?,
+            useCarriageReturn: Boolean,
+            lmEntity: LivingEntityWrapper?
+        ): Boolean {
+            if (items == null) return false
+
+            if (lmEntity != null){
+                val mobSpecificItems = items[lmEntity.nameIfBaby]
+                if (mobSpecificItems == null) return false
+
+                formatMultipliers(
+                    mobSpecificItems,
+                    sb,
+                    header,
+                    useCarriageReturn,
+                    lmEntity.nameIfBaby
+                )
+
+                return true
+            }
+
+            var isFirst = true
+            if (useCarriageReturn) sb.append("\n     ")
+            if (header != null)
+                sb.append("&r&l$header&r: ")
+            else
+                sb.append("&r")
+
+            for (mobName in items){
+                if (isFirst)
+                    isFirst = false
+                else
+                    sb.append(", ")
+
+                var isFirstValues = true
+                sb.append("&b${mobName.key}:&r ")
+                for (mobValues in mobName.value){
+                    if (isFirstValues)
+                        isFirstValues = false
+                    else
+                        sb.append(", ")
+
+                    sb.append(mobValues.value)
+                }
+            }
+
+            return true
+        }
     }
 
     override fun cloneItem(): Any {
         var copy: FineTuningAttributes? = null
         try {
             copy = super.clone() as FineTuningAttributes
-            copyMultipliers(this, copy)
+            copyMultipliers(this, copy, true)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -249,101 +367,87 @@ class FineTuningAttributes : MergableRule, Cloneable {
         }
     }
 
-    private fun formatMultipliers(
-        items: MutableMap<Addition, Multiplier>?,
-        sb: StringBuilder,
-        header: String?,
-        useCarriageReturn: Boolean
-    ) {
-        if (items == null) return
+    override fun getEffectiveInfo(lmEntity: LivingEntityWrapper): String{
+        val fineTunning = LevelledMobs.instance.rulesManager.getFineTuningAttributes(lmEntity)
 
-        if (useCarriageReturn) sb.append("\n    ")
-        if (header != null)
-            sb.append("&r$header: ")
-        else
-            sb.append("&r")
-
-        var isFirst = true
-        for (multiplier in multipliers!!.values) {
-            if (isFirst)
-                isFirst = false
-            else
-                sb.append(", ")
-
-            sb.append(getShortName(multiplier.addition))
-            if (multiplier.value != null)
-                sb.append(": ").append(multiplier.value)
-            if (multiplier.hasFormula)
-                sb.append(multiplier.formula)
-            else if (multiplier.useStacked)
-                sb.append(" (stk)")
-        }
-    }
-
-    private fun formatMobSpecific(
-        items: MutableMap<String, MutableMap<Addition, Multiplier>>?,
-        sb: StringBuilder,
-        header: String?,
-        useCarriageReturn: Boolean
-    ) {
-        if (items == null) return
-
-        var isFirst = true
-        if (useCarriageReturn) sb.append("\n    ")
-        if (header != null)
-            sb.append("&r$header: ")
-        else
-            sb.append("&r")
-
-        for (item in items){
-            if (isFirst)
-                isFirst = false
-            else
-                sb.append(", ")
-
-            var isFirstValues = true
-            sb.append("&b${item.key}:&r ")
-            for (mobValues in item.value){
-                if (isFirstValues)
-                    isFirstValues = false
-                else
-                    sb.append(", ")
-
-                sb.append(mobValues.value)
-            }
-        }
+        return fineTunning?.formatToString(lmEntity) ?: formatToString(lmEntity)
     }
 
     override fun toString(): String {
+        return formatToString(null)
+    }
+
+    private fun formatToString(lmEntity: LivingEntityWrapper?): String{
         if (this.isEmpty) return "No items"
 
         val sb = StringBuilder()
-        if (this.getUseStacked()) sb.append("(all stk)")
+        if (this.getUseStacked()) sb.append("(all stk) ")
+
+        if (doNotMerge) {
+            //if (sb.isNotEmpty()) sb.append(", ")
+            sb.append("noMerge ")
+        }
+
         var hadItems = false
 
         if (!multipliers.isNullOrEmpty()) {
-            hadItems = true
-            formatMultipliers(multipliers, sb, null, false)
-        }
+            var skipMultipliers = false
 
-        if (doNotMerge) {
-            if (sb.isNotEmpty()) sb.append(", ")
-            sb.append("noMerge")
+            if (lmEntity != null && !mobSpecificMultipliers.isNullOrEmpty()
+                && mobSpecificMultipliers!!.contains(lmEntity.nameIfBaby)){
+                skipMultipliers = true
+            }
+
+            if (!skipMultipliers) {
+                hadItems = true
+                formatMultipliers(
+                    multipliers,
+                    sb,
+                    null,
+                    false,
+                    null
+                )
+            }
         }
 
         if (!mobSpecificMultipliers.isNullOrEmpty()){
-            formatMobSpecific(mobSpecificMultipliers, sb, "mob specific", hadItems)
-            hadItems = true
+            hadItems = formatMobSpecific(
+                mobSpecificMultipliers,
+                sb,
+                "mob specific",
+                hadItems,
+                lmEntity
+            )
         }
 
         if (!baseAttributeModifiers.isNullOrEmpty()){
-            formatMultipliers(baseAttributeModifiers, sb, "base mods", hadItems)
-            hadItems = true
+            var skipBaseMods = false
+
+            if (lmEntity != null && !mobSpecificBaseModifiers.isNullOrEmpty()
+                && mobSpecificBaseModifiers!!.contains(lmEntity.nameIfBaby)){
+                skipBaseMods = true
+            }
+
+            if (!skipBaseMods) {
+                formatMultipliers(
+                    baseAttributeModifiers,
+                    sb,
+                    "base mods",
+                    hadItems,
+                    null
+                )
+                hadItems = true
+            }
         }
 
-        if (!mobSpecificBaseModifiers.isNullOrEmpty()){
-            formatMobSpecific(mobSpecificBaseModifiers, sb, "mob specific base mods", hadItems)
-        }
+        if (!mobSpecificBaseModifiers.isNullOrEmpty())
+            formatMobSpecific(
+                mobSpecificBaseModifiers,
+                sb,
+                "mob specific base mods",
+                hadItems,
+                lmEntity
+            )
 
         return sb.toString()
     }

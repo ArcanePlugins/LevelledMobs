@@ -353,7 +353,7 @@ class Definitions{
                 this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("f", clazzCompoundTag)
         }
         catch (e: Exception){
-            Log.war("Error get reflection methods for nbt-dump operations: ${e.message}")
+            Log.war("Error getting reflection methods for nbt-dump operations: ${e.message}")
         }
     }
 

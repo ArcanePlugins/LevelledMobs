@@ -30,16 +30,13 @@ class EntityDamageDebugListener : Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         // Make sure debug entity damage is enabled
-        if (!LevelledMobs.instance.debugManager.damageDebugOutputIsEnabled) {
+        if (!LevelledMobs.instance.debugManager.damageDebugOutputIsEnabled)
             return
-        }
 
         // Make sure the mob is a LivingEntity and the attacker is a Player
-        if (event.entity !is LivingEntity
-            || event.damager !is Player
-        ) {
+        if (event.entity !is LivingEntity || event.damager !is Player)
             return
-        }
+
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
 
         checkEntity(event.damager as Player, lmEntity)
@@ -52,14 +49,11 @@ class EntityDamageDebugListener : Listener {
         lmEntity: LivingEntityWrapper
     ) {
         // Make sure the mob is levelled
-        if (!lmEntity.isLevelled) {
-            return
-        }
+        if (!lmEntity.isLevelled) return
 
         // Make sure the player has debug perm
-        if (!player.hasPermission("levelledmobs.debug")) {
-            return
-        }
+        if (!player.hasPermission("levelledmobs.debug")) return
+
 
         // Don't spam the player's chat
         val entityId = lmEntity.livingEntity.entityId.toString()
@@ -67,9 +61,8 @@ class EntityDamageDebugListener : Listener {
             val cooldown = cooldownMap[player.uniqueId]
 
             if (cooldown!!.doesCooldownBelongToIdentifier(entityId)) {
-                if (!cooldown.hasCooldownExpired(2)) {
+                if (!cooldown.hasCooldownExpired(2))
                     return
-                }
             }
 
             cooldownMap.remove(player.uniqueId)
@@ -101,38 +94,44 @@ class EntityDamageDebugListener : Listener {
         send(player, "&f&nAttribute Values:", false)
         for (attributeName in AttributeNames.entries) {
             val attribute = Utils.getAttribute(attributeName) ?: continue
-            val attributeInstance = lmEntity.livingEntity
-                .getAttribute(attribute)
-            if (attributeInstance == null) continue
+            val attributeInstance = lmEntity.livingEntity.getAttribute(attribute)
 
+            if (attributeInstance == null) continue
             if (Utils.round(attributeInstance.value) == 0.0) continue
 
-            val sb = StringBuilder()
-            sb.append("&8&m->&b ")
+            val sb = StringBuilder("&8&m->&b ")
             sb.append(attribute.toString().replace("GENERIC_", ""))
-            sb.append(": &7")
-            sb.append(Utils.round(attributeInstance.value))
+                .append(": &7")
+                .append(Utils.round(attributeInstance.value))
 
-            var count = 0
+            var hadItems = false
             for (mod in attributeInstance.modifiers) {
-                if (count == 0) {
+                if (!hadItems)
                     sb.append(" (")
-                } else {
+                else
                     sb.append(", ")
-                }
-                if (mod.operation == AttributeModifier.Operation.MULTIPLY_SCALAR_1) {
+
+                if (mod.operation == AttributeModifier.Operation.MULTIPLY_SCALAR_1)
                     sb.append("* ")
-                } else {
+                else
                     sb.append("+ ")
-                }
+
                 sb.append(Utils.round(mod.amount, 5))
 
-                count++
-            }
-            if (count > 0) {
-                sb.append(")")
+                hadItems = true
             }
 
+            if (hadItems) {
+                sb.append("), base: ")
+                val remainingDigitsStr = attributeInstance.baseValue.toString()
+                val remainingDigits = remainingDigitsStr.substring(
+                    remainingDigitsStr.indexOf('.')
+                ).length - 1
+                if (remainingDigits > 1)
+                    sb.append(Utils.round(attributeInstance.baseValue), 3)
+                else
+                    sb.append(attributeInstance.baseValue)
+            }
             send(player, sb.toString(), false)
         }
 
@@ -167,8 +166,7 @@ class EntityDamageDebugListener : Listener {
             player.sendMessage(
                 colorizeAll(LevelledMobs.instance.configUtils.prefix + "&7 " + message)
             )
-        } else {
+        } else
             player.sendMessage(colorizeAll(message))
-        }
     }
 }

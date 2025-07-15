@@ -1517,12 +1517,12 @@ class RulesParser {
     }
 
     private fun parseFineTuning(
-        cs: ConfigurationSection?
+        csBase: ConfigurationSection?
     ) {
-        if (cs == null) return
+        if (csBase == null) return
 
         parsingInfo.vanillaBonuses = buildCachedModalOfType(
-            cs,
+            csBase,
             parsingInfo.vanillaBonuses, ModalListParsingTypes.VANILLA_BONUSES,
             parsingInfo
         ) as CachedModalList<VanillaBonusEnum>?
@@ -1531,9 +1531,9 @@ class RulesParser {
         val namesList2 = mutableListOf("custom-base-attribute-modifier", "custom-attribute-modifier")
 
         for ((loopNum, useName) in namesList.withIndex()) {
+            // first loop = base mods, second loop = modifiers
             val isBaseModifier = (loopNum == 0)
             val useName2 = namesList2[loopNum]
-
             if (fineTuning == null) fineTuning = FineTuningAttributes()
 
             val useDefaults = if (isBaseModifier)
@@ -1541,21 +1541,42 @@ class RulesParser {
             else
                 fineTuning.multipliers
 
-            val cs2 = YmlParsingHelper.objToCS(cs, useName)
-            if (cs2 == null) continue
+            val cs = YmlParsingHelper.objToCS(csBase, useName)
+            if (cs == null) continue
 
-            val values = parseFineTuningValues(cs2, useDefaults, isBaseModifier)
-            if (isBaseModifier)
-                fineTuning.baseAttributeModifiers = values
-            else
-                fineTuning.multipliers = values
+            val parseResult = parseFineTuningValues(cs, useDefaults, isBaseModifier)
+            if (isBaseModifier) {
+                fineTuning.baseAttributeModifiers = parseResult.result
+                fineTuning.doNotMergeAllBaseMods = parseResult.doNotMerge
+            }
+            else {
+                fineTuning.multipliers = parseResult.result
+                fineTuning.doNotMergeAllMultipliers = parseResult.doNotMerge
+            }
+
+            if (parseResult.doNotMergeAny) fineTuning.doNotMerge = true
 
             val mobSpecificMultipliers = mutableMapOf<String, MutableMap<Addition, Multiplier>>()
-            val csCustom = YmlParsingHelper.objToCS(cs2, useName2) ?: continue
+            val csCustom = YmlParsingHelper.objToCS(cs, useName2) ?: continue
             for (mobName in csCustom.getKeys(false)) {
                 var checkName = mobName
+                var doNotMerge: Boolean? = null
                 if (checkName.lowercase(Locale.getDefault()).startsWith("baby_"))
                     checkName = checkName.substring(5)
+
+                if ("merge".equals(mobName, ignoreCase = true))
+                    doNotMerge = !csCustom.getBoolean(mobName)
+                else if ("do-not-merge".equals(mobName, ignoreCase = true))
+                    doNotMerge = csCustom.getBoolean(mobName)
+
+                if (doNotMerge != null){
+                    if (isBaseModifier)
+                        fineTuning.doNotMergeMobSpecificBaseMods = doNotMerge
+                    else
+                        fineTuning.doNotMergeMobSpecificMultipliers = doNotMerge
+
+                    continue
+                }
 
                 try {
                     EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
@@ -1566,12 +1587,22 @@ class RulesParser {
                     continue
                 }
 
-                val thisMobAttribs = parseFineTuningValues(
-                    YmlParsingHelper.objToCS(csCustom, mobName), null, isBaseModifier
+                val parseResult2 = parseFineTuningValues(
+                    YmlParsingHelper.objToCS(csCustom, mobName),
+                    null,
+                    isBaseModifier
                 )
-                if (thisMobAttribs == null) continue
 
-                mobSpecificMultipliers[mobName] = thisMobAttribs
+                if (parseResult2.doNotMerge){
+                    if (isBaseModifier)
+                        fineTuning.doNotMergeMobSpecificBaseMods = true
+                    else
+                        fineTuning.doNotMergeMobSpecificMultipliers = true
+                }
+
+                if (parseResult2.result == null) continue
+
+                mobSpecificMultipliers[mobName] = parseResult2.result
             }
 
             if (!mobSpecificMultipliers.isEmpty()) {
@@ -1589,27 +1620,26 @@ class RulesParser {
     private fun parseFineTuningValues(
         cs: ConfigurationSection?,
         defaults: MutableMap<Addition, Multiplier>?,
-        isBaseModifier: Boolean
-    ): MutableMap<Addition, Multiplier>? {
-        if (cs == null) return defaults
+        isBaseModifier: Boolean,
+    ): FineTuningParseResult {
+        if (cs == null) return FineTuningParseResult(false
+            , doNotMergeAny = false
+            , result = defaults
+        )
 
         var useStacked: Boolean? = null
         val ymlHelper = YmlParsingHelper(cs)
         var doNotMerge = !ymlHelper.getBoolean( "merge", true) // for backwards compat
-        //val doMerge = ymlHelper.getBoolean( "merge", true)
+        val doNotMergeAny = ymlHelper.getBoolean( "do-not-merge-any", false)
+
         val results = mutableMapOf<Addition, Multiplier>()
-//        val attribs =
-//            if (parsingInfo.mobMultipliers != null && doMerge)
-//                parsingInfo.mobMultipliers!!.cloneItem() as FineTuningAttributes
-//            else
-//                FineTuningAttributes()
 
         for (item in cs.getKeys(false)) {
             when (item.lowercase(Locale.getDefault())) {
                 "merge" -> doNotMerge = !ymlHelper.getBoolean(item, true)
                 "use-stacked" -> useStacked = ymlHelper.getBoolean2(item, useStacked)
                 "do-not-merge" -> doNotMerge = ymlHelper.getBoolean(item, false)
-                "vanilla-bonus", "custom-attribute-modifier", "custom-base-attribute-modifier" -> {}
+                "vanilla-bonus", "custom-attribute-modifier", "custom-base-attribute-modifier", "do-not-merge-any" -> {}
                 else -> {
                     var lmMultiplier: LMMultiplier
                     try {
@@ -1630,9 +1660,10 @@ class RulesParser {
             }
         }
 
-        if (results.isEmpty()) return defaults
-
-        return results
+        return if (results.isEmpty())
+            FineTuningParseResult(doNotMerge, doNotMergeAny, defaults)
+        else
+            FineTuningParseResult(doNotMerge, doNotMergeAny,results)
     }
 
     private fun parseFineTuningValues2(

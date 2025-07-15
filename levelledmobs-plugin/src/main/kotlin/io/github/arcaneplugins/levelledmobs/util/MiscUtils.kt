@@ -22,21 +22,17 @@ object MiscUtils {
             val currentRadius = maxChunkRadius + 1
             if (currentRadius * 16 > expect) break
             for (dx in -currentRadius..currentRadius) {
-                if (!world.isChunkLoaded(centerX + dx, centerZ - currentRadius)) {
+                if (!world.isChunkLoaded(centerX + dx, centerZ - currentRadius))
                     break@outer
-                }
-                if (!world.isChunkLoaded(centerX + dx, centerZ + currentRadius)) {
+                if (!world.isChunkLoaded(centerX + dx, centerZ + currentRadius))
                     break@outer
-                }
             }
 
             for (dz in (-currentRadius + 1) until currentRadius) {
-                if (!world.isChunkLoaded(centerX - currentRadius, centerZ + dz)) {
+                if (!world.isChunkLoaded(centerX - currentRadius, centerZ + dz))
                     break@outer
-                }
-                if (!world.isChunkLoaded(centerX + currentRadius, centerZ + dz)) {
+                if (!world.isChunkLoaded(centerX + currentRadius, centerZ + dz))
                     break@outer
-                }
             }
             maxChunkRadius = currentRadius
         }
@@ -49,7 +45,8 @@ object MiscUtils {
     ): String {
         val def = LevelledMobs.instance.definitions
         val ver = LevelledMobs.instance.ver
-        val useNewMethod = (ver.minecraftVersion >= 1.21 && ver.minorVersion >= 6)
+        val useNewMethod = (ver.minecraftVersion >= 1.21 && ver.minorVersion >= 6
+                || ver.minecraftVersion >= 1.22)
 
         try {
             val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
@@ -168,45 +165,39 @@ object MiscUtils {
             }
 
             for (i in 0 until result.objectsAdded!!.size) {
-                if (i > 0) {
+                if (i > 0)
                     sb.append(", ")
-                } else {
+                else
                     sb.append("added: ")
-                }
 
                 sb.append(result.objectsAdded!![i])
             }
         }
 
         for (result in results) {
-            if (result.objectsUpdated == null) {
+            if (result.objectsUpdated == null)
                 continue
-            }
 
             for (i in 0 until result.objectsUpdated!!.size) {
-                if (i > 0 || sb.isNotEmpty()) {
+                if (i > 0 || sb.isNotEmpty())
                     sb.append(", ")
-                }
-                if (i == 0) {
-                    sb.append("updated: ")
-                }
+
+                if (i == 0) sb.append("updated: ")
 
                 sb.append(result.objectsUpdated!![i])
             }
         }
 
         for (result in results) {
-            if (result.objectsRemoved == null) {
+            if (result.objectsRemoved == null)
                 continue
-            }
 
             for (i in 0 until result.objectsRemoved!!.size) {
-                if (i > 0 || sb.isNotEmpty()) {
+                if (i > 0 || sb.isNotEmpty())
                     sb.append(", ")
-                }
-                if (i == 0) {
+
+                if (i == 0)
                     sb.append("removed: ")
-                }
 
                 sb.append(result.objectsRemoved!![i])
             }

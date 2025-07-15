@@ -20,6 +20,7 @@ import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper.showMessage
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
+import io.github.arcaneplugins.levelledmobs.misc.EffectiveInfo
 import io.github.arcaneplugins.levelledmobs.rules.strategies.PlayerLevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -120,9 +121,8 @@ object RulesSubcommand {
         sender: CommandSender,
         args: CommandArguments
     ){
-        if (sender is Player) {
+        if (sender is Player)
             showMessage(sender,"command.levelledmobs.rules.console-rules")
-        }
 
         val showOnConsole = (args.get("console") as? String != null)
         val main = LevelledMobs.instance
@@ -132,29 +132,28 @@ object RulesSubcommand {
             sb.append(
                 "\n&r--------------------------------- Preset rule ----------------------------------"
             )
-            sb.append(rpi.formatRulesVisually(false, mutableListOf("ruleIsEnabled")))
+                .append(rpi.formatRulesVisually(false, mutableListOf("ruleIsEnabled")))
         }
 
         sb.append(
             "\n&r--------------------------------- Default values -------------------------------"
         )
-        sb.append(main.rulesParsingManager.defaultRule!!.formatRulesVisually())
+            .append(main.rulesParsingManager.defaultRule!!.formatRulesVisually())
 
         for (rpi in main.rulesParsingManager.customRules) {
             sb.append(
                 "\n&r--------------------------------- Custom rule ----------------------------------"
             )
-            sb.append(rpi.formatRulesVisually())
+                .append(rpi.formatRulesVisually())
         }
         sb.append(
             "\n&r--------------------------------------------------------------------------------------"
         )
 
-        if (showOnConsole) {
+        if (showOnConsole)
             Log.inf(colorizeAll(sb.toString()))
-        } else {
+        else
             sender.sendMessage(colorizeAll(sb.toString()))
-        }
     }
 
     private fun getAllRuleNames(): Array<String>{
@@ -187,9 +186,8 @@ object RulesSubcommand {
         for (world in Bukkit.getWorlds()) {
             worldCount++
             for (entity in world.entities) {
-                if (entity !is LivingEntity || entity is Player) {
+                if (entity !is LivingEntity || entity is Player)
                     continue
-                }
 
                 var doContinue = false
                 synchronized(entity.persistentDataContainer) {
@@ -314,9 +312,9 @@ object RulesSubcommand {
                 var rulesBackupFile = File(main.dataFolder, "rules.yml.backup")
 
                 for (i in 0..9) {
-                    if (!rulesBackupFile.exists()) {
+                    if (!rulesBackupFile.exists())
                         break
-                    }
+
                     rulesBackupFile = File(main.dataFolder, "rules.yml.backup$i")
                 }
 
@@ -351,11 +349,10 @@ object RulesSubcommand {
             return
         }
 
-        if (LevelledMobs.instance.ver.isRunningPaper) {
+        if (LevelledMobs.instance.ver.isRunningPaper)
             PaperUtils.sendHyperlink(sender, message, url)
-        } else {
+        else
             SpigotUtils.sendHyperlink(sender, message, url)
-        }
     }
 
     private fun showRule(
@@ -395,11 +392,10 @@ object RulesSubcommand {
         )
 
         sb.append(rule.formatRulesVisually(false, mutableListOf("id")))
-        if (showOnConsole) {
+        if (showOnConsole)
             Log.inf(sb.toString())
-        } else {
+        else
             sender.sendMessage(colorizeAll(sb.toString()))
-        }
     }
 
     private fun showEffectiveRules(
@@ -457,14 +453,11 @@ object RulesSubcommand {
         else
             sender.sendMessage(sb.toString())
 
-        if (!showOnConsole) {
-            sb.setLength(0)
-        }
+        if (!showOnConsole) sb.setLength(0)
 
         var mobHash: String? = null
-        if (lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING)) {
+        if (lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING))
             mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
-        }
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
             showEffectiveValues(sender, lmEntity, showOnConsole, mobHash)
@@ -487,9 +480,7 @@ object RulesSubcommand {
         val entities: SortedMap<Double, LivingEntity> = TreeMap()
 
         for (entity in player.getNearbyEntities(10.0, 10.0, 10.0)) {
-            if (entity !is LivingEntity) {
-                continue
-            }
+            if (entity !is LivingEntity) continue
 
             if (findNearbyEntities) {
                 val distance = entity.location.distanceSquared(player.location)
@@ -504,14 +495,13 @@ object RulesSubcommand {
             }
         }
 
-        if (!findNearbyEntities && livingEntity == null) {
+        if (!findNearbyEntities && livingEntity == null)
             showMessage(sender, "command.levelledmobs.rules.no-entities-visible")
-        } else if (findNearbyEntities && entities.isEmpty()) {
+        else if (findNearbyEntities && entities.isEmpty())
             showMessage(sender, "command.levelledmobs.rules.no-entities-near")
-        } else {
-            if (findNearbyEntities) {
+        else {
+            if (findNearbyEntities)
                 livingEntity = entities[entities.firstKey()]
-            }
 
             createParticleEffect(livingEntity!!.location)
             lmEntity = LivingEntityWrapper.getInstance(livingEntity)
@@ -546,6 +536,7 @@ object RulesSubcommand {
         val values = mutableMapOf<RuleInfo.RuleSortingInfo, String>()
         val effectiveRules = lmEntity.getApplicableRules()
         val sb = StringBuilder()
+        val effectiveInfosAlreadyProcessed = mutableMapOf<String, RuleInfo.RuleSortingInfo>()
 
         if (effectiveRules.isEmpty()) {
             if (showOnConsole) {
@@ -554,9 +545,10 @@ object RulesSubcommand {
                         LevelledMobs.instance.configUtils.prefix + " ", ""
                     )
                 )
-            } else {
-                showMessage(sender, "command.levelledmobs.rules.no-effective-rules")
             }
+            else
+                showMessage(sender, "command.levelledmobs.rules.no-effective-rules")
+
             return
         }
 
@@ -584,24 +576,32 @@ object RulesSubcommand {
                     if (value is Map<*, *> && value.isEmpty()) continue
                     if (value is List<*> && value.isEmpty()) continue
 
-                    if (value is PlayerLevellingStrategy) {
+                    val ruleInfo = RuleInfo.RuleSortingInfo(
+                        ruleInfoType,
+                        ruleName
+                    )
+
+                    if (value is PlayerLevellingStrategy)
                         showValue = getPlayerLevellingFormatting(value, lmEntity)
+                    else if (value is EffectiveInfo) {
+                        if (effectiveInfosAlreadyProcessed.contains(ruleName)) {
+                            pi.ruleSourceNames[f.name] = pi.ruleName
+                            continue
+                        }
+
+                        showValue = value.getEffectiveInfo(lmEntity)
+                        effectiveInfosAlreadyProcessed[pi.ruleName] = ruleInfo
                     }
 
                     if (value is Enum<*> &&
                         ("NONE" == value.toString() || "NOT_SPECIFIED" == value.toString())
                     ) continue
 
-                    if (showValue == null) {
-                        showValue = "&b$value&r"
-                    }
+                    if (showValue == null) showValue = "&b$value&r"
+
                     showValue += ", &1source: " + (if (pi.ruleSourceNames.containsKey(f.name)) pi.ruleSourceNames[f.name] else pi.ruleName)
                     showValue += "&r"
 
-                    val ruleInfo = RuleInfo.RuleSortingInfo(
-                        ruleInfoType,
-                        ruleName
-                    )
                     values[ruleInfo] = showValue
                 }
             }
@@ -683,11 +683,10 @@ object RulesSubcommand {
                 .append(": ").append(item.value)
         }
 
-        if (showOnConsole) {
+        if (showOnConsole)
             Log.inf(sb.toString())
-        } else {
+        else
             sender.sendMessage(colorizeAll(sb.toString()))
-        }
     }
 
     private fun getPlayerLevellingFormatting(
@@ -695,20 +694,16 @@ object RulesSubcommand {
         lmEntity: LivingEntityWrapper
     ): String {
         val sb = StringBuilder("value: ")
-
         var userId: String? = null
         var plValue: String? = null
 
-        if (lmEntity.pdc.has(NamespacedKeys.playerLevellingId)) {
+        if (lmEntity.pdc.has(NamespacedKeys.playerLevellingId))
             userId = lmEntity.pdc.get(NamespacedKeys.playerLevellingId, PersistentDataType.STRING)
-        }
-        if (lmEntity.pdc.has(NamespacedKeys.playerLevellingValue)) {
-            plValue = lmEntity.pdc.get(NamespacedKeys.playerLevellingValue, PersistentDataType.STRING)
-        }
 
-        if (plValue != null) {
-            sb.append(plValue)
-        }
+        if (lmEntity.pdc.has(NamespacedKeys.playerLevellingValue))
+            plValue = lmEntity.pdc.get(NamespacedKeys.playerLevellingValue, PersistentDataType.STRING)
+
+        if (plValue != null) sb.append(plValue)
 
         var foundName = false
         if (userId != null) {
@@ -722,9 +717,8 @@ object RulesSubcommand {
             }
         }
 
-        if (plValue != null || foundName) {
+        if (plValue != null || foundName)
             sb.append(", ")
-        }
 
         sb.append(opts)
         return sb.toString()

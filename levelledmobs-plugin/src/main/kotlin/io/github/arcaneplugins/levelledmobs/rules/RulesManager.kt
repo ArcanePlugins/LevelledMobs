@@ -226,13 +226,9 @@ class RulesManager {
             if (ruleInfo.mobMultipliers == null) continue
 
             val multipliers = ruleInfo.mobMultipliers!!
-            if (result == null || multipliers.doNotMerge) {
 
-                if (multipliers.doNotMerge)
-                    result = null
-                else
-                    result = multipliers.cloneItem() as FineTuningAttributes
-            }
+            if (result == null)
+                result = multipliers.cloneItem() as FineTuningAttributes
             else
                 result.merge(multipliers)
         }
