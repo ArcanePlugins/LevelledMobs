@@ -50,7 +50,9 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
     override fun merge(mergableRule: MergableRule?) {
         if (mergableRule !is FineTuningAttributes) return
 
-        copyMultipliers(mergableRule, this, false)
+        synchronized(lockObject) {
+            copyMultipliers(mergableRule, this, false)
+        }
     }
 
     override val doMerge: Boolean
@@ -60,47 +62,39 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
         addition: Addition,
         lmEntity: LivingEntityWrapper
     ): Multiplier? {
-        if (mobSpecificMultipliers != null) {
-            val result = mobSpecificMultipliers!![lmEntity.nameIfBaby]?.get(addition)
-            if (result != null) return result
-        }
+        synchronized(lockObject) {
+            if (mobSpecificMultipliers != null) {
+                val result = mobSpecificMultipliers!![lmEntity.nameIfBaby]?.get(addition)
+                if (result != null) return result
+            }
 
-        return if (multipliers == null)
-            null
-        else
-            multipliers!![addition]
+            return if (multipliers == null)
+                null
+            else
+                multipliers!![addition]
+        }
     }
 
     fun getBaseModifier(
         addition: Addition,
         lmEntity: LivingEntityWrapper
     ): Multiplier? {
-        if (mobSpecificBaseModifiers != null) {
-            val result = mobSpecificBaseModifiers!![lmEntity.nameIfBaby]?.get(addition)
-            if (result != null) return result
+        synchronized(lockObject) {
+            if (mobSpecificBaseModifiers != null) {
+                val result = mobSpecificBaseModifiers!![lmEntity.nameIfBaby]?.get(addition)
+                if (result != null) return result
+            }
+
+            return if (baseAttributeModifiers == null)
+                null
+            else
+                baseAttributeModifiers!![addition]
         }
-
-        return if (baseAttributeModifiers == null)
-            null
-        else
-            baseAttributeModifiers!![addition]
-    }
-
-    fun checkMerges(){
-        if (!multipliers.isNullOrEmpty() && doNotMergeAllMultipliers)
-            multipliers!!.clear()
-
-        if (!mobSpecificMultipliers.isNullOrEmpty() && doNotMergeMobSpecificMultipliers)
-            mobSpecificMultipliers!!.clear()
-
-        if (!baseAttributeModifiers.isNullOrEmpty() && doNotMergeMobSpecificBaseMods)
-            baseAttributeModifiers!!.clear()
-
-        if (!mobSpecificBaseModifiers.isNullOrEmpty() && doNotMergeMobSpecificBaseMods)
-            mobSpecificBaseModifiers!!.clear()
     }
 
     companion object{
+        val lockObject = Any()
+
         fun getShortName(addition: Addition): String {
             return when (addition) {
                 Addition.ATTRIBUTE_ATTACK_DAMAGE -> { "attkDmg" }
@@ -205,22 +199,22 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
 
             if (!source.multipliers.isNullOrEmpty()) {
                 if (dest.multipliers == null) dest.multipliers = mutableMapOf()
-                dest.multipliers!!.putAll(dulicateMap1(source.multipliers!!))
+                dest.multipliers!!.putAll(source.multipliers!!)
             }
 
             if (!source.mobSpecificMultipliers.isNullOrEmpty()){
                 if (dest.mobSpecificMultipliers == null) dest.mobSpecificMultipliers = mutableMapOf()
-                dest.mobSpecificMultipliers!!.putAll(dulicateMap2(source.mobSpecificMultipliers!!))
+                dest.mobSpecificMultipliers!!.putAll(source.mobSpecificMultipliers!!)
             }
 
             if (!source.baseAttributeModifiers.isNullOrEmpty()){
                 if (dest.baseAttributeModifiers == null) dest.baseAttributeModifiers = mutableMapOf()
-                dest.baseAttributeModifiers!!.putAll(dulicateMap1(source.baseAttributeModifiers!!))
+                dest.baseAttributeModifiers!!.putAll(source.baseAttributeModifiers!!)
             }
 
             if (!source.mobSpecificBaseModifiers.isNullOrEmpty()){
                 if (dest.mobSpecificBaseModifiers == null) dest.mobSpecificBaseModifiers = mutableMapOf()
-                dest.mobSpecificBaseModifiers!!.putAll(dulicateMap2(source.mobSpecificBaseModifiers!!))
+                dest.mobSpecificBaseModifiers!!.putAll(source.mobSpecificBaseModifiers!!)
             }
         }
 
@@ -316,9 +310,12 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
     override fun cloneItem(): Any {
         var copy: FineTuningAttributes? = null
         try {
-            copy = super.clone() as FineTuningAttributes
-            copyMultipliers(this, copy, true)
-        } catch (e: Exception) {
+            synchronized(lockObject) {
+                copy = super.clone() as FineTuningAttributes
+                copyMultipliers(this, copy, true)
+            }
+        }
+        catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -374,7 +371,9 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
     }
 
     override fun toString(): String {
-        return formatToString(null)
+        synchronized(lockObject) {
+            return formatToString(null)
+        }
     }
 
     private fun formatToString(lmEntity: LivingEntityWrapper?): String{
@@ -383,10 +382,7 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
         val sb = StringBuilder()
         if (this.getUseStacked()) sb.append("(all stk) ")
 
-        if (doNotMerge) {
-            //if (sb.isNotEmpty()) sb.append(", ")
-            sb.append("noMerge ")
-        }
+        if (doNotMerge) sb.append("noMerge ")
 
         var hadItems = false
 

@@ -1663,7 +1663,7 @@ class RulesParser {
         return if (results.isEmpty())
             FineTuningParseResult(doNotMerge, doNotMergeAny, defaults)
         else
-            FineTuningParseResult(doNotMerge, doNotMergeAny,results)
+            FineTuningParseResult(doNotMerge, doNotMergeAny, results)
     }
 
     private fun parseFineTuningValues2(

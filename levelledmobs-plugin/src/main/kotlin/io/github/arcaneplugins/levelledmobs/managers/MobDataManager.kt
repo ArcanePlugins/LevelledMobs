@@ -38,6 +38,7 @@ import kotlin.math.min
  */
 class MobDataManager {
     val vanillaMultiplierNames = mutableMapOf<String, VanillaBonusEnum>()
+    var genericMaxHealth: Attribute? = null
 
     companion object {
         lateinit var instance: MobDataManager
@@ -201,6 +202,9 @@ class MobDataManager {
         lmEntity: LivingEntityWrapper,
         attribInfos: MutableList<AttributePreMod>
     ) {
+        if (genericMaxHealth == null)
+            genericMaxHealth = Utils.getAttribute(AttributeNames.MAX_HEALTH)
+
         for (info in attribInfos){
             val additionValue = info.multiplierResult.multiplierAmount
             val attrib = lmEntity.livingEntity.getAttribute(info.attribute) ?: return
@@ -209,27 +213,20 @@ class MobDataManager {
             if (lmEntity.entityType == EntityType.ZOMBIFIED_PIGLIN &&
                 info.attribute.toString() == Utils.getAttribute(AttributeNames.SPAWN_REINFORCEMENTS)!!.toString()
             ) {
-                return
+                continue
             }
 
-            val genericMaxHealth = Utils.getAttribute(AttributeNames.MAX_HEALTH)!!
-            var hasExistingDamage = false
-            var existingDamagePercent = 0f
+            var existingDamagePercent: Float? = null
 
-            if (info.attribute == genericMaxHealth){
-                val maxHealth = lmEntity.livingEntity.getAttribute(info.attribute)
-                if (maxHealth != null){
-                    val existingDamage = maxHealth.value - lmEntity.livingEntity.health
-                    if (existingDamage > 0.0){
-                        existingDamagePercent = (maxHealth.value.toFloat() - existingDamage.toFloat()) / maxHealth.value.toFloat()
-                        hasExistingDamage = true
-                    }
-                }
-            }
+            if (info.attribute == genericMaxHealth)
+                existingDamagePercent = getExistingDamagePercent(info, lmEntity)
 
             if (info.multiplierResult.baseModAmount != null){
                 val oldValue = attrib.baseValue
                 attrib.baseValue = info.multiplierResult.baseModAmount.toDouble()
+
+                if (info.attribute == genericMaxHealth && additionValue == 0.0f)
+                    checkHealth(lmEntity, attrib, existingDamagePercent)
 
                 DebugManager.log(DebugType.APPLY_BASE_MODIFIERS, lmEntity) {
                     "attrib: ${info.attribute}, old base: ${Utils.round(oldValue, 3)}, " +
@@ -247,20 +244,41 @@ class MobDataManager {
                         "addtion: ${Utils.round(additionValue.toDouble(), 3)}"
             }
 
-            // MAX_HEALTH specific: set health to max health
-            if (info.attribute == genericMaxHealth) {
-                val newHealth = if (hasExistingDamage)
-                    (attrib.value * existingDamagePercent).toFloat()
-                else
-                    attrib.value.toFloat()
-                try {
-                    if (lmEntity.livingEntity.health <= 0.0) return
-                    lmEntity.livingEntity.health = newHealth.toDouble().coerceAtLeast(1.0)
-                } catch (e: IllegalArgumentException) {
-                    DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity){
-                        "Error setting maxhealth = $newHealth, ${e.message}"
-                    }
-                }
+            if (info.attribute == genericMaxHealth)
+                checkHealth(lmEntity, attrib, existingDamagePercent)
+        }
+    }
+
+    private fun getExistingDamagePercent(
+        info: AttributePreMod,
+        lmEntity: LivingEntityWrapper
+    ): Float? {
+        val maxHealth = lmEntity.livingEntity.getAttribute(info.attribute)
+        if (maxHealth == null) return null
+
+        val existingDamage = maxHealth.value - lmEntity.livingEntity.health
+        return if (existingDamage > 0.0)
+            (maxHealth.value.toFloat() - existingDamage.toFloat()) / maxHealth.value.toFloat()
+        else
+            null
+    }
+
+    private fun checkHealth(
+        lmEntity: LivingEntityWrapper,
+        attrib: AttributeInstance,
+        existingDamagePercent: Float?
+    ){
+        // MAX_HEALTH specific: set health to max health
+        val newHealth = if (existingDamagePercent != null)
+            (attrib.value * existingDamagePercent).toFloat()
+        else
+            attrib.value.toFloat()
+        try {
+            if (lmEntity.livingEntity.health <= 0.0) return
+            lmEntity.livingEntity.health = newHealth.toDouble().coerceAtLeast(1.0)
+        } catch (e: IllegalArgumentException) {
+            DebugManager.log(DebugType.APPLY_MULTIPLIERS, lmEntity){
+                "Error setting maxhealth = $newHealth, ${e.message}"
             }
         }
     }
