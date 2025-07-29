@@ -310,8 +310,13 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
     override fun cloneItem(): Any {
         var copy: FineTuningAttributes? = null
         try {
+            copy = super.clone() as FineTuningAttributes
+            if (this.multipliers != null) copy.multipliers = mutableMapOf()
+            if (this.mobSpecificMultipliers != null) copy.mobSpecificMultipliers = mutableMapOf()
+            if (this.baseAttributeModifiers != null) copy.baseAttributeModifiers = mutableMapOf()
+            if (this.mobSpecificBaseModifiers != null) copy.mobSpecificBaseModifiers = mutableMapOf()
+
             synchronized(lockObject) {
-                copy = super.clone() as FineTuningAttributes
                 copyMultipliers(this, copy, true)
             }
         }
@@ -382,8 +387,6 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
         val sb = StringBuilder()
         if (this.getUseStacked()) sb.append("(all stk) ")
 
-        if (doNotMerge) sb.append("noMerge ")
-
         var hadItems = false
 
         if (!multipliers.isNullOrEmpty()) {
@@ -407,13 +410,14 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
         }
 
         if (!mobSpecificMultipliers.isNullOrEmpty()){
-            hadItems = formatMobSpecific(
+            if (formatMobSpecific(
                 mobSpecificMultipliers,
                 sb,
                 "mob specific",
                 hadItems,
                 lmEntity
-            )
+            ))
+                hadItems = true
         }
 
         if (!baseAttributeModifiers.isNullOrEmpty()){
