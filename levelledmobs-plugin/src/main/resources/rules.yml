@@ -403,9 +403,9 @@ custom-rules:
       worlds: 'world_the_end'
     strategies:
       distance-from-origin:
-        increase-level-distance: 200
-        start-distance: 1000
-        spawn-location:
+        ringed-tiers: 200
+        buffer-distance: 1000
+        origin-coordinates:
           x: 0
           z: 0
     settings:
