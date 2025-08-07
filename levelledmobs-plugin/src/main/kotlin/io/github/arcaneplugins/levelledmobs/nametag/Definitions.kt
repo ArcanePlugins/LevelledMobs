@@ -333,7 +333,7 @@ class Definitions{
         //    void saveWithoutId(net.minecraft.world.level.storage.ValueOutput) -> d
 
         try {
-            if (ver.minecraftVersion >= 1.21 && ver.minorVersion >= 6) {
+            if (ver.minorVersion >= 21 && ver.revision >= 6) {
                 /*
                     net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
                     net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
@@ -434,7 +434,7 @@ class Definitions{
         else {
             methodName = when (ver.majorVersionEnum) {
                 MinecraftMajorVersion.V1_21 -> {
-                    if (ver.revision >= 4 && ver.revision != 5)
+                    if (ver.revision >= 2 && ver.revision != 5)
                         "au"
                     else
                         "ar"
@@ -470,8 +470,6 @@ class Definitions{
         }
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
-        this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
-
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         methodName =
             if (ver.useMojangMappings) "set"
@@ -673,22 +671,17 @@ class Definitions{
 
         this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
-        if (ver.minorVersion >= 19) {
-            // net.minecraft.network.syncher.SynchedEntityData ->
-            // pre 1.20.5:
-            //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
-            // 1.20.5+:
-            //    net.minecraft.network.syncher.SynchedEntityData$DataItem[] itemsById ->
-            // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
+        // net.minecraft.network.syncher.SynchedEntityData ->
+        // pre 1.20.5:
+        //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
+        // 1.20.5+:
+        //    net.minecraft.network.syncher.SynchedEntityData$DataItem[] itemsById ->
+        // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
-            val methodName = if (this.isOneNinteenThreeOrNewer)
-                NmsMappings.getMapping("fieldInt2ObjectMap")
-            else
-                "f"
-
-            this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
-            fieldInt2ObjectMap!!.setAccessible(true)
-        }
+        val methodName = NmsMappings.getMapping("fieldInt2ObjectMap")
+        this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
+        fieldInt2ObjectMap!!.setAccessible(true)
+        Log.infTemp("fieldInt2ObjectMap: $fieldInt2ObjectMap")
 
         if (!ver.useOldEnums)
             fieldEquipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
