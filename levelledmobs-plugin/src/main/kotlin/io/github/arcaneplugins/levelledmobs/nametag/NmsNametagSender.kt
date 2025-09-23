@@ -198,7 +198,7 @@ class NmsNametagSender : NametagSender {
 
                 // .id()
                 val objDataId = def.methodDataWatcherGetId!!.invoke(objData) as Int
-                if (objDataId < 2 || objDataId > 3) continue
+                if (objDataId !in 2..3) continue
 
                 results.add(objData)
             }
@@ -221,7 +221,7 @@ class NmsNametagSender : NametagSender {
             if (itemsById.isEmpty()) return results
 
             for (objDataId in itemsById.keys) {
-                if (objDataId < 2 || objDataId > 3) continue
+                if (objDataId !in 2..3) continue
 
                 val objDataItem = itemsById[objDataId]
                 val accessor = def.methodGetAccessor!!.invoke(objDataItem)
@@ -263,7 +263,7 @@ class NmsNametagSender : NametagSender {
             return if (comp == null) Optional.empty() else Optional.of(comp)
         }
 
-        val leftText = if (displayNameIndex > 0) resolveText(mobName.substring(0, displayNameIndex)) else null
+        val leftText = if (displayNameIndex > 0) resolveText(mobName.take(displayNameIndex)) else null
 
         val rightText =
             if (mobName.length > displayNameIndex + displayName.length) resolveText(mobName.substring(displayNameIndex + displayName.length)) else null

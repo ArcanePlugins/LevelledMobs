@@ -253,9 +253,7 @@ class MobDataManager {
         info: AttributePreMod,
         lmEntity: LivingEntityWrapper
     ): Float? {
-        val maxHealth = lmEntity.livingEntity.getAttribute(info.attribute)
-        if (maxHealth == null) return null
-
+        val maxHealth = lmEntity.livingEntity.getAttribute(info.attribute) ?: return null
         val existingDamage = maxHealth.value - lmEntity.livingEntity.health
         return if (existingDamage > 0.0)
             (maxHealth.value.toFloat() - existingDamage.toFloat()) / maxHealth.value.toFloat()

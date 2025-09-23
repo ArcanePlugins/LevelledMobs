@@ -181,7 +181,7 @@ class PlayerDeathListener {
             )
         } else {
             val leftComp =
-                if (displayNameIndex > 0) cs.deserialize(mobName.substring(0, displayNameIndex)) else Component.empty()
+                if (displayNameIndex > 0) cs.deserialize(mobName.take(displayNameIndex)) else Component.empty()
             val rightComp =
                 if (mobName.length > displayNameIndex + 13) cs.deserialize(mobName.substring(displayNameIndex + 13)) else Component.empty()
 

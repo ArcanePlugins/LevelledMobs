@@ -103,7 +103,7 @@ class ServerVersionInfo {
         val bukkitVersion = Bukkit.getBukkitVersion()
         // 1.19.2-R0.1-SNAPSHOT --> 1.19.2
         val firstDash = bukkitVersion.indexOf("-")
-        val versions = bukkitVersion.substring(0, firstDash).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
+        val versions = bukkitVersion.take(firstDash).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()
         for (i in versions.indices) {
             when (i) {

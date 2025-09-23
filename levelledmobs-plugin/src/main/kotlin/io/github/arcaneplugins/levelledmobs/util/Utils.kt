@@ -439,7 +439,7 @@ object Utils {
             useSearch = matchL.substring(1)
             return inputL.endsWith(useSearch)
         } else {
-            useSearch = matchL.substring(0, matchL.length - 1)
+            useSearch = matchL.dropLast(1)
             return inputL.startsWith(useSearch)
         }
     }

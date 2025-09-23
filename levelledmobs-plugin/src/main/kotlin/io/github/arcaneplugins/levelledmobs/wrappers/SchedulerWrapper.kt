@@ -51,14 +51,13 @@ class SchedulerWrapper {
 
             val task = Consumer { _: ScheduledTask -> runnable!!.run() }
 
-            if (entity != null) {
+            if (entity != null)
                 entity!!.scheduler.run(main, task, null)
-            } else {
-                if (locationForRegionScheduler != null) {
+            else {
+                if (locationForRegionScheduler != null)
                     Bukkit.getRegionScheduler().run(main, locationForRegionScheduler!!, task)
-                } else {
+                else
                     Bukkit.getAsyncScheduler().runNow(main, task)
-                }
             }
         } else {
             if (runDirectlyInBukkit) {
@@ -68,11 +67,10 @@ class SchedulerWrapper {
 
             // if you provided an entity in the constructor, it is assumed the main thread needs to be used
             // since accessing entities asynchronously will usually result in an error
-            bukkitTask = if (entity != null) {
+            bukkitTask = if (entity != null)
                 Bukkit.getScheduler().runTask(main, runnable!!)
-            } else {
+            else
                 Bukkit.getScheduler().runTaskAsynchronously(main, runnable!!)
-            }
         }
     }
 
@@ -81,8 +79,7 @@ class SchedulerWrapper {
         repeatPeriodMS: Long
     ): SchedulerResult {
         if (main.ver.isRunningFolia) {
-            val task =
-                Consumer { _: ScheduledTask -> runnable!!.run() }
+            val task = Consumer { _: ScheduledTask -> runnable!!.run() }
             val scheduledTask = Bukkit.getAsyncScheduler().runAtFixedRate(
                 main, task, initialDelayMS, repeatPeriodMS, TimeUnit.MILLISECONDS
             )
@@ -93,7 +90,6 @@ class SchedulerWrapper {
             // 1 tick = ~ 50ms
             val convertedDelay = initialDelayMS / 50L
             val convertedPeriod = repeatPeriodMS / 50L
-
             val bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
                 main, runnable!!, convertedDelay, convertedPeriod
             )
@@ -106,13 +102,11 @@ class SchedulerWrapper {
         delayInTicks: Long
     ): SchedulerResult {
         if (main.ver.isRunningFolia) {
-            val task =
-                Consumer { _: ScheduledTask? -> runnable!!.run() }
-
+            val task = Consumer { _: ScheduledTask? -> runnable!!.run() }
             val scheduledTask: ScheduledTask?
-            if (this.entity != null) {
+            if (this.entity != null)
                 scheduledTask = entity!!.scheduler.runDelayed(main, task, null, delayInTicks)
-            } else {
+            else {
                 val milliseconds = delayInTicks * 50L
                 scheduledTask = Bukkit.getAsyncScheduler().runDelayed(
                     main, task, milliseconds, TimeUnit.MILLISECONDS
@@ -132,10 +126,9 @@ class SchedulerWrapper {
 
     val willRunDirectly: Boolean
         get() {
-            return if (main.ver.isRunningFolia) {
+            return if (main.ver.isRunningFolia)
                 runDirectlyInFolia
-            } else {
+            else
                 runDirectlyInBukkit
-            }
         }
 }

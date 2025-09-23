@@ -94,7 +94,7 @@ class PickedUpEquipment(
         for (key in pdcKey.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
             if (key.length < 3 || key.length % 2 != 0) continue
             val slotNumber = Character.getNumericValue(key[0])
-            if (slotNumber < 0 || slotNumber > 6) continue
+            if (slotNumber !in 0..6) continue
 
             slotMappings[slotNumber] = key.substring(2)
         }

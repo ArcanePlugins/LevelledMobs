@@ -94,9 +94,8 @@ class EntityDamageDebugListener : Listener {
         send(player, "&f&nAttribute Values:", false)
         for (attributeName in AttributeNames.entries) {
             val attribute = Utils.getAttribute(attributeName) ?: continue
-            val attributeInstance = lmEntity.livingEntity.getAttribute(attribute)
+            val attributeInstance = lmEntity.livingEntity.getAttribute(attribute) ?: continue
 
-            if (attributeInstance == null) continue
             if (Utils.round(attributeInstance.value) == 0.0) continue
 
             val sb = StringBuilder("&8&m->&b ")
@@ -124,9 +123,7 @@ class EntityDamageDebugListener : Listener {
             if (hadItems) {
                 sb.append("), base: ")
                 val remainingDigitsStr = attributeInstance.baseValue.toString()
-                val remainingDigits = remainingDigitsStr.substring(
-                    remainingDigitsStr.indexOf('.')
-                ).length - 1
+                val remainingDigits = remainingDigitsStr.substringAfter('.').length - 1
                 if (remainingDigits > 1)
                     sb.append(Utils.round(attributeInstance.baseValue), 3)
                 else

@@ -1541,8 +1541,7 @@ class RulesParser {
             else
                 fineTuning.multipliers
 
-            val cs = YmlParsingHelper.objToCS(csBase, useName)
-            if (cs == null) continue
+            val cs = YmlParsingHelper.objToCS(csBase, useName) ?: continue
 
             val parseResult = parseFineTuningValues(cs, useDefaults, isBaseModifier)
             if (isBaseModifier) {

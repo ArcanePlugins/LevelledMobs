@@ -153,7 +153,7 @@ class PlaceholderApiIntegration : PlaceholderExpansion() {
 
         if (nametag != null) {
             if (nametag.endsWith("&r")) {
-                nametag = nametag.substring(0, nametag.length - 2)
+                nametag = nametag.dropLast(2)
             }
             return nametag
         } else {

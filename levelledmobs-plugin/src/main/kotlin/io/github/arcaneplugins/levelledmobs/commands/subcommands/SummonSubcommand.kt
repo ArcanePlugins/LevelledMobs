@@ -22,9 +22,12 @@ import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import java.util.Locale
 import java.util.Random
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -392,7 +395,8 @@ object SummonSubcommand {
                 "summon-command-spawn-distance-from-player", 5
             )
             if (distFromPlayer > 0 && target != null) {
-                val locationTemp = getSpawnLocation(target, location, options.lmPlaceholder.entityType!!)
+                // val locationTemp = getSpawnLocation(target, location, options.lmPlaceholder.entityType!!)
+                val locationTemp = getSpawnLocation(location, options)
                 if (locationTemp == null) {
                     sender.sendMessage("Unable to find a suitable spawn location")
                     return
@@ -407,41 +411,19 @@ object SummonSubcommand {
             }
         }
 
-        repeat(options.amount) {
-            assert(location.world != null)
-            val useLevel = if (options.requestedLevel!!.hasLevelRange) ThreadLocalRandom.current().nextInt(
-                options.requestedLevel!!.levelRangeMin,
-                options.requestedLevel!!.levelRangeMax + 1
-            ) else options.requestedLevel!!.level
-
-            val entity = location.world
-                .spawnEntity(location, options.lmPlaceholder.entityType!!)
-
-            if (entity is LivingEntity) {
-                val lmEntity = LivingEntityWrapper.getInstance(entity)
-                lmEntity.summonedLevel = useLevel
-                lmEntity.isNewlySpawned = true
-                synchronized(LevelManager.summonedOrSpawnEggs_Lock) {
-                    main.levelManager.summonedOrSpawnEggs.put(lmEntity.livingEntity, null)
-                }
-                if (!options.nbtData.isNullOrEmpty()) {
-                    lmEntity.nbtData = mutableListOf(options.nbtData!!)
-                }
-                lmEntity.summonedSender = sender
-                synchronized(lmEntity.livingEntity.persistentDataContainer) {
-                    lmEntity.pdc
-                        .set(NamespacedKeys.wasSummoned, PersistentDataType.INTEGER, 1)
-                }
-                MobDataManager.populateAttributeCache(lmEntity)
-                main.levelInterface.applyLevelToMob(
-                    lmEntity, useLevel, true, options.override,
-                    mutableSetOf(AdditionalLevelInformation.NOT_APPLICABLE)
-                )
-                lmEntity.free()
-            }
+        val future = CompletableFuture<Boolean>()
+        val wrapper = SchedulerWrapper(options.player){
+            spawnMobs(sender, options, location)
+            future.complete(true)
         }
+        wrapper.runDirectlyInBukkit = true
+        wrapper.runDirectlyInFolia = sender is Player
+        wrapper.locationForRegionScheduler = location
+        wrapper.run()
 
-        val printResults: Boolean = main.helperSettings.getBoolean("print-lm-summon-results", true)
+        future.get(100L, TimeUnit.MILLISECONDS)
+
+        val printResults = main.helperSettings.getBoolean("print-lm-summon-results", true)
 
         when (options.summonType) {
             SummonType.HERE -> {
@@ -503,12 +485,55 @@ object SummonSubcommand {
         }
     }
 
+    private fun spawnMobs(
+        sender: CommandSender,
+        options: SummonMobOptions,
+        location: Location
+    ){
+        val main = LevelledMobs.instance
+
+        repeat(options.amount) {
+            assert(location.world != null)
+            val useLevel = if (options.requestedLevel!!.hasLevelRange) ThreadLocalRandom.current().nextInt(
+                options.requestedLevel!!.levelRangeMin,
+                options.requestedLevel!!.levelRangeMax + 1
+            ) else options.requestedLevel!!.level
+
+            val entity = location.world
+                .spawnEntity(location, options.lmPlaceholder.entityType!!)
+
+            if (entity is LivingEntity) {
+                val lmEntity = LivingEntityWrapper.getInstance(entity)
+                lmEntity.summonedLevel = useLevel
+                lmEntity.isNewlySpawned = true
+                synchronized(LevelManager.summonedOrSpawnEggs_Lock) {
+                    main.levelManager.summonedOrSpawnEggs.put(lmEntity.livingEntity, null)
+                }
+                if (!options.nbtData.isNullOrEmpty()) {
+                    lmEntity.nbtData = mutableListOf(options.nbtData!!)
+                }
+                lmEntity.summonedSender = sender
+                synchronized(lmEntity.livingEntity.persistentDataContainer) {
+                    lmEntity.pdc
+                        .set(NamespacedKeys.wasSummoned, PersistentDataType.INTEGER, 1)
+                }
+                MobDataManager.populateAttributeCache(lmEntity)
+                main.levelInterface.applyLevelToMob(
+                    lmEntity, useLevel, true, options.override,
+                    mutableSetOf(AdditionalLevelInformation.NOT_APPLICABLE)
+                )
+                lmEntity.free()
+            }
+        }
+    }
+
     private fun getSpawnLocation(
-        player: Player,
         location: Location,
-        entityType: EntityType
+        options: SummonMobOptions
     ): Location? {
+        // // val locationTemp = getSpawnLocation(target, location, options.lmPlaceholder.entityType!!)
         if (location.world == null) return null
+        val entityType = options.lmPlaceholder.entityType!!
 
         val main = LevelledMobs.instance
         var maxDistFromPlayer: Int? = main.helperSettings.getInt2(
@@ -530,15 +555,51 @@ object SummonSubcommand {
             ).toDouble(), maxDistFromPlayer.toDouble()
         ).toInt()
 
-        val blockCandidates = mutableListOf<Block>()
         val blocksNeeded = if (entityType == EntityType.ENDERMAN || entityType == EntityType.RAVAGER) 3
         else 2
+
+        val completableFuture = CompletableFuture<MutableList<Block>>()
+        val target = options.player!!
+        var wrapper = SchedulerWrapper(target){
+            val blockCandidates = getBlockCandidates(
+                minDistFromPlayer, maxDistFromPlayer, target, location
+            )
+            completableFuture.complete(blockCandidates)
+        }
+        wrapper.runDirectlyInBukkit = true
+        if (options.sender is Player) wrapper.runDirectlyInFolia = true
+        wrapper.run()
+        val blockCandidates = completableFuture.get(100L, TimeUnit.MILLISECONDS)
+        if (blockCandidates.isEmpty()) return null
+
+        blockCandidates.shuffle()
+
+        val futureCandidate = CompletableFuture<Location?>()
+        wrapper = SchedulerWrapper(target){
+            val foundLocation = checkBlockCandidates(blockCandidates, blocksNeeded, location.world)
+            futureCandidate.complete(foundLocation)
+        }
+        wrapper.runDirectlyInBukkit = true
+        if (options.sender is Player) wrapper.runDirectlyInFolia = true
+        wrapper.run()
+
+        val foundLocation = futureCandidate.get(500L, TimeUnit.MILLISECONDS)
+        return foundLocation
+    }
+
+    private fun getBlockCandidates(
+        minDistFromPlayer: Int,
+        maxDistFromPlayer: Int,
+        target: Player,
+        location: Location
+    ): MutableList<Block>{
+        val blockCandidates = mutableListOf<Block>()
 
         @Suppress("UNUSED_PARAMETER")
         for (i in 0..9) {
             val useDistance: Int = if (minDistFromPlayer != maxDistFromPlayer) ThreadLocalRandom.current()
                 .nextInt(minDistFromPlayer, maxDistFromPlayer) else maxDistFromPlayer
-            val startingLocation: Location = getLocationNearPlayer(player, location, useDistance)
+            val startingLocation = getLocationNearPlayer(target, location, useDistance)
             var tempLocation = startingLocation.clone()
             var foundBlock = false
             val maxYVariance = max((maxDistFromPlayer - useDistance).toDouble(), 10.0).toInt()
@@ -568,15 +629,19 @@ object SummonSubcommand {
             if (blockCandidates.size >= 10) break
         }
 
-        if (blockCandidates.isEmpty()) return null
+        return blockCandidates
+    }
 
-        blockCandidates.shuffle()
-
+    private fun checkBlockCandidates(
+        blockCandidates: MutableList<Block>,
+        blocksNeeded: Int,
+        world: World
+    ): Location? {
         // return first block from the candiates that has 2 air spaces above it
         for (block in blockCandidates) {
             var notGoodSpot = false
             for (i in 1 until blocksNeeded + 1) {
-                val temp = location.world.getBlockAt(block.x, block.y + i, block.z)
+                val temp = world.getBlockAt(block.x, block.y + i, block.z)
                 if (!temp.isPassable) {
                     notGoodSpot = true
                     break
@@ -604,33 +669,51 @@ object SummonSubcommand {
             rotation += 360.0
         }
 
-        if (0 <= rotation && rotation < 22.5) // N
-        {
-            newZ -= useDistFromPlayer
-        } else if (22.5 <= rotation && rotation < 67.5) { // NE
-            newX += useDistFromPlayer
-            newZ -= useDistFromPlayer
-        } else if (67.5 <= rotation && rotation < 112.5) // E
-        {
-            newX += useDistFromPlayer
-        } else if (112.5 <= rotation && rotation < 157.5) { // SE
-            newX += useDistFromPlayer
-            newZ += useDistFromPlayer
-        } else if (157.5 <= rotation && rotation < 202.5) // S
-        {
-            newZ += useDistFromPlayer
-        } else if (202.5 <= rotation && rotation < 247.5) { // SW
-            newX -= useDistFromPlayer
-            newZ += useDistFromPlayer
-        } else if (247.5 <= rotation && rotation < 292.5) // W
-        {
-            newX -= useDistFromPlayer
-        } else if (292.5 <= rotation && rotation < 337.5) { // NW
-            newX -= useDistFromPlayer
-            newZ -= useDistFromPlayer
-        } else  // N
-        {
-            newZ -= useDistFromPlayer
+        when (rotation) {
+            in 0.0..<22.5 // N
+                -> {
+                newZ -= useDistFromPlayer
+            }
+
+            in 22.5..<67.5 -> { // NE
+                newX += useDistFromPlayer
+                newZ -= useDistFromPlayer
+            }
+
+            in 67.5..<112.5 // E
+                -> {
+                newX += useDistFromPlayer
+            }
+
+            in 112.5..<157.5 -> { // SE
+                newX += useDistFromPlayer
+                newZ += useDistFromPlayer
+            }
+
+            in 157.5..<202.5 // S
+                -> {
+                newZ += useDistFromPlayer
+            }
+
+            in 202.5..<247.5 -> { // SW
+                newX -= useDistFromPlayer
+                newZ += useDistFromPlayer
+            }
+
+            in 247.5..<292.5 // W
+                -> {
+                newX -= useDistFromPlayer
+            }
+
+            in 292.5..<337.5 -> { // NW
+                newX -= useDistFromPlayer
+                newZ -= useDistFromPlayer
+            }
+
+            else  // N
+                -> {
+                newZ -= useDistFromPlayer
+            }
         }
 
         return Location(location.world, newX.toDouble(), location.blockY.toDouble(), newZ.toDouble())

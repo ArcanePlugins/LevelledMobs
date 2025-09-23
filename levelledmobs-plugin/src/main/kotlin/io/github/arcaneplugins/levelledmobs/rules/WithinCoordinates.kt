@@ -118,11 +118,10 @@ class WithinCoordinates {
         if (range1 == null && range2 == null) return false
 
         if (range1 != null && range2 != null) {
-            return if (range1 < range2) {
-                coord >= range1 && coord <= range2
-            } else {
-                coord >= range2 && coord <= range1
-            }
+            return if (range1 < range2)
+                coord in range1..range2
+            else
+                coord in range2..range1
         }
 
         val useRange = range1 ?: range2!!

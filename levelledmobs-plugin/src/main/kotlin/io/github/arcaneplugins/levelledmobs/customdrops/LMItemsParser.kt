@@ -54,7 +54,7 @@ class LMItemsParser {
         }
 
         val colon = materialName.indexOf(":")
-        item.externalPluginName = materialName.substring(0, colon)
+        item.externalPluginName = materialName.take(colon)
         item.externalItemId = materialName.substring(colon + 1)
         val lmitems = LM_Items.plugin
 
@@ -109,7 +109,7 @@ class LMItemsParser {
 
                 if (useKey.endsWith("-formula", ignoreCase = true)) {
                     value = evaluateFormula(useKey, value, info?.lmEntity)
-                    useKey = useKey.substring(0, useKey.length - 8)
+                    useKey = useKey.dropLast(8)
                 }
                 else if (value is String && value.contains("%")) {
                     if (info != null) {

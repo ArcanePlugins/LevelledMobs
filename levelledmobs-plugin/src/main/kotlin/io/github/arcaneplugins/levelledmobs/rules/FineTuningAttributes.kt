@@ -264,8 +264,7 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
             if (items == null) return false
 
             if (lmEntity != null){
-                val mobSpecificItems = items[lmEntity.nameIfBaby]
-                if (mobSpecificItems == null) return false
+                val mobSpecificItems = items[lmEntity.nameIfBaby] ?: return false
 
                 formatMultipliers(
                     mobSpecificItems,

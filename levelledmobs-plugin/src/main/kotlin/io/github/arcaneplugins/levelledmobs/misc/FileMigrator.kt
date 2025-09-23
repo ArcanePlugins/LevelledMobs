@@ -277,7 +277,7 @@ object  FileMigrator {
                     if (line.matches(regexPattern.toRegex())) {
                         val firstColon = line.indexOf(':')
                         val hasValues = line.length > firstColon + 1
-                        var key = line.substring(0, firstColon).replace("\t", "").trim { it <= ' ' }
+                        var key = line.take(firstColon).replace("\t", "").trim { it <= ' ' }
                         val keyOnly = key
                         var oldKey = key
                         if (isSettings && oldVersion < 32 && key.equals(
@@ -544,7 +544,7 @@ object  FileMigrator {
         key2: String
     ): Boolean {
         val lastPeriod = key2.lastIndexOf('.')
-        val checkKey = if (lastPeriod > 0) key2.substring(0, lastPeriod) else key2
+        val checkKey = if (lastPeriod > 0) key2.take(lastPeriod) else key2
 
         return (key1.equals(checkKey, ignoreCase = true))
     }
@@ -564,7 +564,7 @@ object  FileMigrator {
             return null
         }
 
-        return input.substring(0, lastPeriod)
+        return input.take(lastPeriod)
     }
 
     private fun getFirstNonCommentLine(input: List<String>): Int {
@@ -597,7 +597,7 @@ object  FileMigrator {
             if (useLine.matches(regexPattern.toRegex())) {
                 val firstColon = useLine.indexOf(':')
                 val hasValues = useLine.length > firstColon + 1
-                var key: String? = useLine.substring(0, firstColon).replace("\t", "").trim { it <= ' ' }
+                var key: String? = useLine.take(firstColon).replace("\t", "").trim { it <= ' ' }
                 val origKey = key
 
                 if (origKey!!.startsWith("-")) {

@@ -1003,7 +1003,7 @@ class CustomDropsParser(
         for (entTypeStr in typeNames.keys) {
             val isBaby = entTypeStr.endsWith("_2")
             val ent = EntityType.valueOf(
-                if (isBaby) entTypeStr.substring(0, entTypeStr.length - 2) else entTypeStr
+                if (isBaby) entTypeStr.dropLast(2) else entTypeStr
             )
             val dropInstance = if (isBaby) handler.customDropsitemsBabies[ent]!!
             else handler.getCustomDropsitems()[ent]!!
