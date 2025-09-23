@@ -470,6 +470,8 @@ class Definitions{
         }
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
+        this.methodGetEntityData = clazzEntity!!.getMethod(methodName)
+
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         methodName =
             if (ver.useMojangMappings) "set"
@@ -681,7 +683,6 @@ class Definitions{
         val methodName = NmsMappings.getMapping("fieldInt2ObjectMap")
         this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
         fieldInt2ObjectMap!!.setAccessible(true)
-        Log.infTemp("fieldInt2ObjectMap: $fieldInt2ObjectMap")
 
         if (!ver.useOldEnums)
             fieldEquipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
