@@ -17,10 +17,9 @@ object NmsMappings {
             "net.minecraft.network.syncher.DataWatcher",
             "net.minecraft.network.syncher.SynchedEntityData"
         )
-
         mappings["clazzDataWatcherBuilder"] = MappingInfo(
-            spigotName = $$"net.minecraft.network.syncher.DataWatcher$a",
-            mojangName = $$"net.minecraft.network.syncher.SynchedEntityData$Builder"
+             $$"net.minecraft.network.syncher.DataWatcher$a",
+             $$"net.minecraft.network.syncher.SynchedEntityData$Builder"
         )
         mappings["clazzDataWatcherValue"] = MappingInfo(
             $$"net.minecraft.network.syncher.DataWatcher$c",

@@ -8,7 +8,7 @@ version = version
 plugins {
     id("java")
     kotlin("jvm") version "2.2.20"
-    id("com.gradleup.shadow") version "9.1.0"
+    id("com.gradleup.shadow") version "9.2.2"
     id("idea")
     id("maven-publish")
 }

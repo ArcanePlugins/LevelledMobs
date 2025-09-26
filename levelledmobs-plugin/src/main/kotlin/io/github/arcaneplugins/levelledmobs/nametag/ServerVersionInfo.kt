@@ -83,7 +83,14 @@ class ServerVersionInfo {
     }
 
     private fun parsePaperVersion(){
-        val minecraftVersion = Bukkit.getServer().minecraftVersion
+        var minecraftVersion = Bukkit.getServer().minecraftVersion
+        val dash = minecraftVersion.indexOf("-")
+        if (dash > 0) // '1.21.9-rc1'
+            minecraftVersion = minecraftVersion.take(dash)
+        val space = minecraftVersion.indexOf(" ")
+        if (space > 0) // '1.21.9 Release Candidate 1'
+            minecraftVersion = minecraftVersion.take(space)
+
         // 1.20.4
         val versions = minecraftVersion.split(".")
         for (i in versions.indices) {

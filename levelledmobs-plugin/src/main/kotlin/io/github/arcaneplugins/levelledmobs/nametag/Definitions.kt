@@ -323,10 +323,6 @@ class Definitions{
         // these reflection items go here because they are optional
         // if they fail then only nbt-dump command will not be available
 
-        this.clazzCompoundTag = Class.forName(
-            "net.minecraft.nbt.NBTTagCompound"
-        )
-
         // 1.21.5 and older:
         //    net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> h
         // 1.21.6+:
@@ -349,8 +345,13 @@ class Definitions{
                 this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("saveWithoutId", clazzValueOutput)
                 this.methodBuildResult = this.clazzTagValueOutput!!.getDeclaredMethod("buildResult")
             }
-            else // pre 1.21.6:
+            else {
+                // pre 1.21.6:
+                this.clazzCompoundTag = Class.forName(
+                    "net.minecraft.nbt.NBTTagCompound"
+                )
                 this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("f", clazzCompoundTag)
+            }
         }
         catch (e: Exception){
             Log.war("Error getting reflection methods for nbt-dump operations: ${e.message}")
@@ -434,7 +435,9 @@ class Definitions{
         else {
             methodName = when (ver.majorVersionEnum) {
                 MinecraftMajorVersion.V1_21 -> {
-                    if (ver.revision >= 2 && ver.revision != 5)
+                    if (ver.revision >= 9)
+                        "aC"
+                    else if (ver.revision >= 2 && ver.revision != 5)
                         "au"
                     else
                         "ar"
@@ -491,6 +494,8 @@ class Definitions{
                 methodName =
                     if (ver.useMojangMappings)
                         "getId"
+                    else if (ver.revision >= 9)
+                        "az"
                     else if (ver.revision == 5)
                         "ao" // 1.21.5 only
                     else if (ver.revision >= 2)
