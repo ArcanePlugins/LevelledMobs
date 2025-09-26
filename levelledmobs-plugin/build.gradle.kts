@@ -29,7 +29,7 @@ idea {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") {
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
         exclude(group = "com.google.code.gson", module = "gson")
         exclude(group = "it.unimi.dsi", module = "fastutil")

@@ -196,7 +196,7 @@ class LevelManager : LevelInterface2 {
                 "MINECART_MOB_SPAWNER" -> EntityType.SPAWNER_MINECART
                 "MINECART_TNT" -> EntityType.TNT_MINECART
                 "PRIMED_TNT" -> EntityType.TNT
-                "SPLASH_POTION" -> EntityType.POTION
+                "SPLASH_POTION" -> EntityType.SPLASH_POTION
                 "THROWN_EXP_BOTTLE" -> EntityType.EXPERIENCE_BOTTLE
                 else -> EntityType.UNKNOWN
             }
