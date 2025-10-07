@@ -76,6 +76,10 @@ java {
 
 tasks {
     shadowJar {
+        manifest {
+            attributes["paperweight-mappings-namespace"] = "mojang"
+        }
+
         archiveFileName.set("LevelledMobs-$version.jar")
         dependencies{
             relocate("dev.jorel.commandapi", "io.github.arcaneplugins.levelledmobs.libs.commandapi")

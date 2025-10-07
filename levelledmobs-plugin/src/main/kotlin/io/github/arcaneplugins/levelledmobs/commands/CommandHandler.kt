@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.commands
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIBukkitConfig
 import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.CommandAPIPaperConfig
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.CommandFallback
@@ -20,11 +21,10 @@ object CommandHandler {
             LoadingStage.ON_LOAD -> {
                 try{
                     Log.inf("Loading commands")
-                    val commandCfg = CommandAPIBukkitConfig(LevelledMobs.instance)
+                    val commandCfg = CommandAPIPaperConfig(LevelledMobs.instance)
                         .silentLogs(true)
                         .verboseOutput(false)
-                        .skipReloadDatapacks(true)
-                        .beLenientForMinorVersions(true)
+                        .fallbackToLatestNMS(true)
                     CommandAPI.onLoad(commandCfg)
                     registerCommands()
                 }

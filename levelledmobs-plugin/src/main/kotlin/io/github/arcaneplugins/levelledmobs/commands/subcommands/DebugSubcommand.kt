@@ -3,7 +3,7 @@ package io.github.arcaneplugins.levelledmobs.commands.subcommands
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.ListArgumentBuilder
-import dev.jorel.commandapi.arguments.PlayerArgument
+import dev.jorel.commandapi.arguments.PlayerProfileArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
@@ -55,7 +55,7 @@ object DebugSubcommand {
             )
             .withSubcommands(
                 CommandAPICommand("nbt-dump")
-                    .withOptionalArguments(PlayerArgument("target")
+                    .withOptionalArguments(PlayerProfileArgument("target")
                         .includeSuggestions(ArgumentSuggestions.strings("target")))
                     .executes(CommandExecutor { sender, args -> nbtDump(sender, args) })
             )
@@ -65,7 +65,7 @@ object DebugSubcommand {
             )
             .withSubcommands(
                 CommandAPICommand("spawn-distance")
-                    .withOptionalArguments(PlayerArgument("target")
+                    .withOptionalArguments(PlayerProfileArgument("target")
                         .includeSuggestions(ArgumentSuggestions.strings("target")))
                     .executes(CommandExecutor { sender, args -> showSpawnDistance(sender, args) })
             )
