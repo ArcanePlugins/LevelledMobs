@@ -21,26 +21,30 @@ object InfoSubcommand {
             .withShortDescription("View info about the installed version of the plugin.")
             .withFullDescription("View info about the installed version of the plugin.")
             .executes(CommandExecutor { sender: CommandSender, _: CommandArguments ->
-                val main = LevelledMobs.instance
-                val listSeparator = main.messagesCfg.getString("command.levelledmobs.info.listSeparator", "&7, &f")!!
-                MessagesHelper.showMessage(
-                    sender,
-                    "command.levelledmobs.info.about",
-                    arrayOf(
-                        "%version%",
-                        "%description%",
-                        "%supportedVersions%",
-                        "%maintainers%",
-                        "%contributors%"
-                    ),
-                    arrayOf(
-                        main.description.version,
-                        main.description.description ?: "",
-                        "1.20 - 1.21",
-                        main.description.authors.joinToString(listSeparator),
-                        "See &8&nhttps://tinyurl.com/lm-contributors"
-                    )
-                )
+                showInfo(sender)
             })
+    }
+
+    fun showInfo(sender: CommandSender){
+        val main = LevelledMobs.instance
+        val listSeparator = main.messagesCfg.getString("command.levelledmobs.info.listSeparator", "&7, &f")!!
+        MessagesHelper.showMessage(
+            sender,
+            "command.levelledmobs.info.about",
+            arrayOf(
+                "%version%",
+                "%description%",
+                "%supportedVersions%",
+                "%maintainers%",
+                "%contributors%"
+            ),
+            arrayOf(
+                main.description.version,
+                main.description.description ?: "",
+                "1.20 - 1.21",
+                main.description.authors.joinToString(listSeparator),
+                "See &8&nhttps://tinyurl.com/lm-contributors"
+            )
+        )
     }
 }

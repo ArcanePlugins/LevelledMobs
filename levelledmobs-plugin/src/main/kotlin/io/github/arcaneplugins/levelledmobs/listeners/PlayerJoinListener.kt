@@ -68,11 +68,20 @@ class PlayerJoinListener : Listener {
             }
 
             if (CommandHandler.hadErrorLoading){
-                event.player.sendMessage(
-                    MessageUtils.colorizeAll(
-                        "&b&lLevelledMobs:&r &6There was an error loading the command framework.&r\n" +
-                                "Only the reload option will be available."
-                    ))
+                if (main.ver.isRunningSpigot){
+                    event.player.sendMessage(
+                        MessageUtils.colorizeAll(
+                            "&b&lLevelledMobs:&r &6The command framework is NOT supported on Spigot.&r\n" +
+                                    "Only a few commands will be available."
+                        ))
+                }
+                else{
+                    event.player.sendMessage(
+                        MessageUtils.colorizeAll(
+                            "&b&lLevelledMobs:&r &6There was an error loading the command framework.&r\n" +
+                                    "Only a few commands will be available."
+                        ))
+                }
             }
         }
     }

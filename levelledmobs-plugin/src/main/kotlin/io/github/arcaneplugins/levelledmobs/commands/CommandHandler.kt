@@ -28,9 +28,16 @@ object CommandHandler {
                     CommandAPI.onLoad(commandCfg)
                     registerCommands()
                 }
+                catch (_: NoClassDefFoundError){
+                    // this happens on spigot servers
+                    Log.sev("Unable to load command framework: NoClassDefFoundError")
+                    hadErrorLoading = true
+                    loadFallbackCommands()
+                }
                 catch (e: UnsupportedVersionException){
                     hadErrorLoading = true
-                    Log.sev(e.message!!)
+                    if (e.message != null)
+                        Log.sev(e.message!!)
                     Log.war("The plugin may continue to work with limited commands. Please see if an updated version of LevelledMobs is available.")
                     loadFallbackCommands()
                 }
@@ -42,7 +49,12 @@ object CommandHandler {
             }
 
             LoadingStage.ON_ENABLE -> {
-                if (!hadErrorLoading){
+                if (hadErrorLoading && LevelledMobs.instance.ver.isRunningSpigot){
+                    // only using inf so that the red color shows up on spigot
+                    Log.inf("&4The command framework is NOT supported on Spigot.&r\n" +
+                            "Only a few commands will be available.")
+                }
+                else {
                     Log.inf("Enabling commands")
                     CommandAPI.onEnable()
                 }
@@ -85,7 +97,12 @@ object CommandHandler {
     }
 
     private fun unregisterCommands(){
-        COMMANDS.forEach { cmd: CommandAPICommand -> CommandAPI.unregister(cmd.name) }
+        COMMANDS.forEach {
+            try {
+                CommandAPI.unregister(it.name)
+            }
+            catch (_: Exception){ }
+        }
     }
 
     enum class LoadingStage {

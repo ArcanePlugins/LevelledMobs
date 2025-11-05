@@ -110,13 +110,13 @@ class LevelledMobs : JavaPlugin() {
     override fun onEnable() {
         val timer = QuickTimer()
 
-        CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
         this.ver.load()
         if (ver.minecraftVersion <= 1.19){
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
         }
         NmsMappings.load()
         this.definitions.load()
+        CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
         EssentialsIntegration.load()
         this.nametagQueueManager.load()
         this.mainCompanion.load()
