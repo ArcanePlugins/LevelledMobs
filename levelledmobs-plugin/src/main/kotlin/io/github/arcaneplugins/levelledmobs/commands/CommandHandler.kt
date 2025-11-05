@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.commands
 
 import dev.jorel.commandapi.CommandAPI
-import dev.jorel.commandapi.CommandAPIBukkitConfig
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.CommandAPIPaperConfig
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException
