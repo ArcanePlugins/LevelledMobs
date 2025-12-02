@@ -42,7 +42,11 @@ class SchedulerWrapper {
     var runDirectlyInBukkit: Boolean = false
     val main = LevelledMobs.instance
 
-    fun run() {
+    fun runAsync() {
+        run(true)
+    }
+
+    fun run(doRunAsync: Boolean = false) {
         if (main.ver.isRunningFolia) {
             if (runDirectlyInFolia) {
                 runnable!!.run()
@@ -67,7 +71,7 @@ class SchedulerWrapper {
 
             // if you provided an entity in the constructor, it is assumed the main thread needs to be used
             // since accessing entities asynchronously will usually result in an error
-            bukkitTask = if (entity != null)
+            bukkitTask = if (entity != null && !doRunAsync)
                 Bukkit.getScheduler().runTask(main, runnable!!)
             else
                 Bukkit.getScheduler().runTaskAsynchronously(main, runnable!!)

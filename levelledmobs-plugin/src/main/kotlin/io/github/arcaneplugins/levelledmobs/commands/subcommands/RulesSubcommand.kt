@@ -36,6 +36,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.Locale
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.World
@@ -515,16 +516,29 @@ object RulesSubcommand {
 
         val scheduler = SchedulerWrapper { spawnParticles(location, world) }
         scheduler.locationForRegionScheduler = location
-        scheduler.run()
+        scheduler.runAsync()
     }
 
     private fun spawnParticles(location: Location, world: World) {
+        val particle = Particle.EFFECT
+        val spell = Particle.Spell(Color.PURPLE, 50f)
+
         try {
-            repeat(10) {
-                world.spawnParticle(Particle.EFFECT, location, 20, 0.0, 0.0, 0.0, 0.1)
-                Thread.sleep(50)
+            for (i in 1.. 40)    {
+                val scheduler = SchedulerWrapper{
+                    val yPos = (i * 0.05)
+                    world.spawnParticle(particle, location, 20, 0.0, yPos, 0.0, 0.1, spell)
+                }
+                scheduler.run()
+
+                // this thread is async, no blocking occurs
+                Thread.sleep(30)
             }
-        } catch (_: InterruptedException) {}
+        }
+        catch (_: InterruptedException) {}
+        catch (e: IllegalArgumentException){
+            Log.war("Unable to create particle effect, " + e.message)
+        }
     }
 
     private fun showEffectiveValues(

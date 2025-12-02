@@ -67,12 +67,13 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         val diff = if (isDescending) yStart - yEnd else yEnd - yStart
 
         // make sure the mob location isn't past the end or start
-        if (mobYLocation > highest)
-            mobYLocation = highest
-        if (mobYLocation < lowest)
-            mobYLocation = lowest
+        mobYLocation = mobYLocation.coerceAtMost(highest)
+        mobYLocation = mobYLocation.coerceAtLeast(lowest)
 
-        val distanceBelow = highest - mobYLocation
+        val distanceBelow = if (isDescending)
+            highest - mobYLocation
+        else
+            mobYLocation - lowest
 
         if (yPeriod != 0f) {
             val lvlPerPeriod = (maxLevel - minLevel) / yPeriod
