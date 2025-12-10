@@ -55,7 +55,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    maven("https://repo.md-5.net/content/groups/public/")
+    maven("https://mvn.lib.co.nz/public")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.essentialsx.net/releases/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
