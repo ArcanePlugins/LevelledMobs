@@ -1,11 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.arguments.ArgumentSuggestions
-import dev.jorel.commandapi.arguments.ListArgumentBuilder
-import dev.jorel.commandapi.arguments.StringArgument
-import dev.jorel.commandapi.executors.CommandArguments
-import dev.jorel.commandapi.executors.CommandExecutor
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import com.mojang.brigadier.tree.LiteralCommandNode
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.UUID
@@ -29,12 +28,14 @@ import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.Locale
+import java.util.concurrent.CompletableFuture
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
@@ -53,79 +54,87 @@ import org.bukkit.util.Vector
  * @author stumper66
  * @since 3.0.0
  */
-object RulesSubcommand {
-    fun createInstance(): CommandAPICommand{
-        return CommandAPICommand("rules")
-            .withPermission("levelledmobs.command.rules")
-            .withShortDescription("Used to view various rules.")
-            .withFullDescription("Used to view various rules.")
-            .executes(CommandExecutor { sender, _ ->
-                showMessage(sender, "command.levelledmobs.rules.incomplete-command") }
-            )
-            .withSubcommands(
-                CommandAPICommand("show-all")
-                    .withOptionalArguments(StringArgument("console")
-                        .includeSuggestions(ArgumentSuggestions.strings("console")))
-                    .executes(CommandExecutor { sender, args -> showAllRules(sender, args) })
-            )
-            .withSubcommands(
-                CommandAPICommand("show-rule")
-                    .withArguments(StringArgument("rulename")
-                        .replaceSuggestions(ArgumentSuggestions.strings { _ -> getAllRuleNames() }))
-                    .withOptionalArguments(StringArgument("console")
-                        .includeSuggestions(ArgumentSuggestions.strings("console")))
-                    .executes(CommandExecutor { sender, args -> showRule(sender, args) })
-            )
-            .withSubcommands(
-                CommandAPICommand("show-effective")
-                    .withOptionalArguments(
-                        ListArgumentBuilder<String>("values")
-                        .withList(mutableListOf("console", "looking-at"))
-                        .withStringMapper()
-                        .buildGreedy()
-                    )
-                    .executes(CommandExecutor { sender, args -> showEffectiveRules(sender, args) })
-            )
-            .withSubcommands(
-                CommandAPICommand("help-discord")
-                    .executes(CommandExecutor { sender, _ ->
-                        val message = MessagesHelper.getMessage("command.levelledmobs.rules.discord-invite")
-                        showHyperlink(sender, message, "https://discord.gg/arcaneplugins-752310043214479462")
-                    })
-            )
-            .withSubcommands(
-                CommandAPICommand("help-wiki")
-                    .executes(CommandExecutor { sender, _ ->
-                        val message = MessagesHelper.getMessage("command.levelledmobs.rules.wiki-link")
-                        showHyperlink(sender, message, "https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/")
-                    })
-            )
-            .withSubcommands(
-                CommandAPICommand("reset")
-                    .withOptionalArguments(StringArgument("difficulty")
-                        .includeSuggestions(ArgumentSuggestions.strings(
-                            "vanilla", "bronze", "silver", "gold", "platinum")))
-                    .withOptionalArguments(StringArgument("confirm"))
-                    .executes(CommandExecutor { sender, args -> resetRules(sender, args) })
-            )
-            .withSubcommands(
-                CommandAPICommand("force-all")
-                    .executes(CommandExecutor { sender, _ -> forceRelevel(sender) })
-            )
-            .withSubcommands(
-                CommandAPICommand("show-temp-disabled")
-                    .executes(CommandExecutor { sender, _ -> showTempDisabled(sender) })
-            )
+object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
+    override val description = "Used to view various rules."
+
+    fun buildCommand() : LiteralCommandNode<CommandSourceStack>{
+        return createLiteralCommand("rules")
+            .executes { ctx ->
+                val sender = ctx.source.sender
+                showMessage(sender, "command.levelledmobs.rules.incomplete-command")
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .then(createLiteralCommand("show-all")
+                .then(createStringArgument("console")
+                    .suggests { _, builder -> builder.suggest("console").buildFuture() }
+                    .executes { ctx -> showAllRules(ctx)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx ->
+                    showAllRules(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("show-rule")
+                .then(createStringArgument("rulename")
+                    .suggests { _, builder -> getAllRuleNames(builder) }
+                    .executes { ctx -> showRule(ctx)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx -> showRule(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("show-effective")
+                .then(createStringArgument("option1")
+                    .suggests { ctx, builder -> buildShowEffectiveSuggestions(ctx, builder) }
+                    .executes { ctx -> showEffectiveRules(ctx)
+                        return@executes Command.SINGLE_SUCCESS }
+                    .then(createStringArgument("option2")
+                        .suggests { ctx, builder -> buildShowEffectiveSuggestions(ctx, builder) }
+                        .executes { ctx -> showEffectiveRules(ctx)
+                            return@executes Command.SINGLE_SUCCESS }))
+                .executes { ctx -> showEffectiveRules(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("help-discord")
+                .executes { ctx -> val message = MessagesHelper.getMessage("command.levelledmobs.rules.discord-invite")
+                    showHyperlink(ctx.source.sender, message, "https://discord.gg/arcaneplugins-752310043214479462")
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("help-wiki")
+                .executes { ctx -> val message = MessagesHelper.getMessage("command.levelledmobs.rules.wiki-link")
+                    showHyperlink(ctx.source.sender, message, "https://arcaneplugins.gitbook.io/levelledmobs-the-ultimate-mob-levelling-solution/")
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("reset")
+                .then(createStringArgument("difficulty")
+                    .suggests { _, builder -> builder.suggest("vanilla").suggest("bronze").suggest("silver")
+                        .suggest("gold").suggest("platinum").buildFuture() }
+                    .executes { ctx -> resetRules(ctx)
+                        return@executes Command.SINGLE_SUCCESS }
+                    .then(createStringArgument("confirm")
+                        .suggests { _, builder -> builder.suggest("confirm").buildFuture() }
+                        .executes { ctx -> resetRules(ctx)
+                            return@executes Command.SINGLE_SUCCESS }))
+                .executes { ctx -> resetRules(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("force-all")
+                .executes { ctx -> forceRelevel(ctx.source.sender)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("show-temp-disabled")
+                .executes { ctx -> showTempDisabled(ctx.source.sender)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .build()
     }
 
     private fun showAllRules(
-        sender: CommandSender,
-        args: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ){
+        val sender = ctx.source.sender
         if (sender is Player)
             showMessage(sender,"command.levelledmobs.rules.console-rules")
 
-        val showOnConsole = (args.get("console") as? String != null)
+        val showOnConsole = sender is ConsoleCommandSender || getStringArgumentAsBool(ctx, "console")
         val main = LevelledMobs.instance
         val sb = StringBuilder()
 
@@ -157,13 +166,14 @@ object RulesSubcommand {
             sender.sendMessage(colorizeAll(sb.toString()))
     }
 
-    private fun getAllRuleNames(): Array<String>{
-        val allRuleNames = mutableListOf<String>()
+    private fun getAllRuleNames(
+        builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions> {
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
-            allRuleNames.add(ruleInfo.ruleName.replace(" ", "_"))
+            builder.suggest(ruleInfo.ruleName.replace(" ", "_"))
         }
 
-        return allRuleNames.toTypedArray()
+        return builder.buildFuture()
     }
 
     private fun showTempDisabled(sender: CommandSender) {
@@ -193,9 +203,9 @@ object RulesSubcommand {
                 var doContinue = false
                 synchronized(entity.persistentDataContainer) {
                     if (entity.persistentDataContainer.has(
-                                NamespacedKeys.wasSummoned,
-                                PersistentDataType.INTEGER
-                            )
+                            NamespacedKeys.wasSummoned,
+                            PersistentDataType.INTEGER
+                        )
                     ) {
                         doContinue = true  // was summon using lm summon command.  don't relevel it
                     }
@@ -218,18 +228,19 @@ object RulesSubcommand {
         showMessage(
             sender,
             "command.levelledmobs.rules.rules-reprocessed",
-            arrayOf("%entitycount%", "%worldcount%"),
-            arrayOf(entityCount.toString(), worldCount.toString())
+            mutableListOf("%entitycount%", "%worldcount%"),
+            mutableListOf(entityCount.toString(), worldCount.toString())
         )
     }
 
     private fun resetRules(
-        sender: CommandSender,
-        args: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ) {
-        val difficultyStr = args.get("difficulty") as? String
-        val confirm = args.get("confirm") as? String
-        if (difficultyStr == null) {
+        val sender = ctx.source.sender
+        val difficultyStr = getStringArgument(ctx, "difficulty")
+        val confirm = getStringArgumentAsBool(ctx, "confirm")
+
+        if (difficultyStr.isEmpty()) {
             showMessage(sender, "command.levelledmobs.rules.reset")
             return
         }
@@ -248,8 +259,12 @@ object RulesSubcommand {
             return
         }
 
-        if (confirm == null || !"confirm".equals(confirm, ignoreCase = true)) {
-            showMessage(sender, "command.levelledmobs.rules.reset-syntax", "%difficulty%", difficultyStr)
+        if (!confirm) {
+            showMessage(sender,
+                "command.levelledmobs.rules.reset-syntax",
+                "%difficulty%",
+                difficultyStr
+            )
             return
         }
 
@@ -357,15 +372,13 @@ object RulesSubcommand {
     }
 
     private fun showRule(
-        sender: CommandSender,
-        args: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ) {
-        val ruleName = args.get("rulename") as? String
-        var showOnConsole = sender is ConsoleCommandSender
-        if (args.get("console") as? String != null)
-            showOnConsole = true
+        val sender = ctx.source.sender
+        val ruleName = getStringArgument(ctx, "rulename")
+        val showOnConsole = sender is ConsoleCommandSender || getStringArgumentAsBool(ctx, "console")
 
-        if (ruleName == null) {
+        if (ruleName.isEmpty()) {
             showMessage(sender, "command.levelledmobs.rules.rule-name-missing")
             return
         }
@@ -400,9 +413,9 @@ object RulesSubcommand {
     }
 
     private fun showEffectiveRules(
-        sender: CommandSender,
-        args: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ) {
+        val sender = ctx.source.sender
         val player = sender as? Player
         if (player == null) {
             sender.sendMessage("Must be run by a player")
@@ -411,16 +424,14 @@ object RulesSubcommand {
 
         var showOnConsole = false
         var findNearbyEntities = true
-        val input = args.get("values")
-        if (input != null){
-            @Suppress("UNCHECKED_CAST") val inputValue = (input as java.util.ArrayList<String>).toMutableSet()
-            for (key in inputValue){
-                if ("console".equals(key, ignoreCase = true))
-                    showOnConsole = true
-                else if ("looking-at".equals(key, ignoreCase = true))
-                    findNearbyEntities = false
-            }
+
+        for (option in getOptionalResults(ctx, mutableListOf("option1", "option2"))) {
+            if ("console".equals(option, ignoreCase = true))
+                showOnConsole = true
+            else if ("looking-at".equals(option, ignoreCase = true))
+                findNearbyEntities = false
         }
+
         val lmEntity: LivingEntityWrapper = getMobBeingLookedAt(player, findNearbyEntities, player)
             ?: return
 
@@ -436,8 +447,8 @@ object RulesSubcommand {
         val mobLevel: String = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
         val messages = MessagesHelper.getMessage(
             "command.levelledmobs.rules.effective-rules",
-            arrayOf("%mobname%", "%entitytype%", "%location%", "%world%", "%level%"),
-            arrayOf(
+            mutableListOf("%mobname%", "%entitytype%", "%location%", "%world%", "%level%"),
+            mutableListOf(
                 entityName, lmEntity.nameIfBaby, locationStr, lmEntity.worldName,
                 mobLevel
             )
@@ -468,6 +479,28 @@ object RulesSubcommand {
 
         lmEntity.inUseCount.getAndIncrement()
         scheduler.runDelayed(25L)
+    }
+
+    private fun buildShowEffectiveSuggestions(
+        ctx: CommandContext<CommandSourceStack>,
+        builder: SuggestionsBuilder
+    ) : CompletableFuture<Suggestions>{
+        var hasConsole = false
+        var hasLookingAt = false
+        val words = getOptionalResults(ctx, mutableListOf("option1", "option2"))
+
+        for (i in 3..<words.size){
+            val word = words[i]
+            if (word.startsWith("console", ignoreCase = true))
+                hasConsole = true
+            else if (word.startsWith("looking-at", ignoreCase = true))
+                hasLookingAt = true
+        }
+
+        if (!hasConsole) builder.suggest("console")
+        if (!hasLookingAt) builder.suggest("looking-at")
+
+        return builder.buildFuture()
     }
 
     fun getMobBeingLookedAt(

@@ -1,78 +1,74 @@
 package io.github.arcaneplugins.levelledmobs.commands
 
-import dev.jorel.commandapi.CommandAPI
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.CommandAPIPaperConfig
-import dev.jorel.commandapi.exceptions.UnsupportedVersionException
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.CommandFallback
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.DebugSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.InfoSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.KillSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.ReloadSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.RulesSubcommand
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandMap
 
 object CommandHandler {
-    private val COMMANDS = mutableListOf<CommandAPICommand>()
     var hadErrorLoading = false
         private set
 
-    fun load(loadingStage: LoadingStage){
-        when (loadingStage) {
-            LoadingStage.ON_LOAD -> {
-                try{
-                    Log.inf("Loading commands")
-                    val commandCfg = CommandAPIPaperConfig(LevelledMobs.instance)
-                        .silentLogs(true)
-                        .verboseOutput(false)
-                        .fallbackToLatestNMS(true)
-                    CommandAPI.onLoad(commandCfg)
-                    registerCommands()
-                }
-                catch (_: NoClassDefFoundError){
-                    // this happens on spigot servers
-                    Log.sev("Unable to load command framework: NoClassDefFoundError")
-                    hadErrorLoading = true
-                    loadFallbackCommands()
-                }
-                catch (e: UnsupportedVersionException){
-                    hadErrorLoading = true
-                    if (e.message != null)
-                        Log.sev(e.message!!)
-                    Log.war("The plugin may continue to work with limited commands. Please see if an updated version of LevelledMobs is available.")
-                    loadFallbackCommands()
-                }
-                catch (e: Exception){
-                    hadErrorLoading = true
-                    loadFallbackCommands()
-                    throw e
-                }
-            }
-
-            LoadingStage.ON_ENABLE -> {
-                if (hadErrorLoading && LevelledMobs.instance.ver.isRunningSpigot){
-                    // only using inf so that the red color shows up on spigot
-                    Log.inf("&4The command framework is NOT supported on Spigot.&r\n" +
-                            "Only a few commands will be available.")
-                }
-                else {
-                    Log.inf("Enabling commands")
-                    CommandAPI.onEnable()
-                }
-            }
-
-            LoadingStage.ON_DISABLE -> {
-                if (!hadErrorLoading){
-                    Log.inf("Unregistering commands")
-                    unregisterCommands()
-                }
-            }
-
-            LoadingStage.FORCED -> {
-                if (!hadErrorLoading){
-                    Log.inf("Manually registering commands")
-                    registerCommands()
-                }
+    fun load(){
+        try {
+            LevelledMobs.instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
+                commands.registrar().register(
+                    buildMainCommand(),
+                    "Manage the LevelledMobs plugin",
+                    mutableListOf("lm", "lvlmobs", "leveledmobs")
+                )
             }
         }
+        catch (_: NoSuchMethodError) {
+            hadErrorLoading = true
+            Log.war("The plugin may continue to work with limited commands. Note that this is expected on Spigot servers.")
+            loadFallbackCommands()
+        }
+    }
+
+    private fun buildMainCommand() : LiteralCommandNode<CommandSourceStack> {
+        return Commands.literal("levelledmobs")
+            .requires{
+                cmdSender -> cmdSender.sender.hasPermission("levelledmobs.command.levelledmobs")
+            }
+            .executes { ctx ->
+                MessagesHelper.showMessage(ctx.source.sender, "command.levelledmobs.main-usage")
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .then(InfoSubcommand.buildCommand())
+            .then(DebugSubcommand.buildCommand())
+            .then(InfoSubcommand.buildCommand())
+            .then(ReloadSubcommand.buildCommand())
+            .then(KillSubcommand.buildCommand())
+            .then(RulesSubcommand.buildCommand())
+            .build()
+
+//        return Commands.literal("levelledmobs")
+//            .then(Commands.argument("target", ArgumentTypes.player())
+//                .executes { ctx ->
+//                    val playerSelector = ctx.getArgument("target", PlayerSelectorArgumentResolver::class.java)
+//                    val targetPlayer = playerSelector.resolve(ctx.source).first()
+//                    val sender = ctx.source.sender
+//
+//                    targetPlayer.sendPlainMessage("Test is a test")
+//                    sender.sendMessage("You are now partying with ${targetPlayer.name}!")
+//
+//                    return@executes Command.SINGLE_SUCCESS
+//                }
+//            )
+//            .build()
     }
 
     private fun loadFallbackCommands() {
@@ -87,27 +83,5 @@ object CommandHandler {
                 alias, LevelledMobs.instance.name, fallbackCommands
             )
         }
-    }
-
-    private fun registerCommands(){
-        COMMANDS.clear()
-        COMMANDS.add(LevelledMobsCommand.createInstance())
-        COMMANDS.forEach { cmd: CommandAPICommand -> cmd.register() }
-    }
-
-    private fun unregisterCommands(){
-        COMMANDS.forEach {
-            try {
-                CommandAPI.unregister(it.name)
-            }
-            catch (_: Exception){ }
-        }
-    }
-
-    enum class LoadingStage {
-        ON_LOAD,
-        ON_ENABLE,
-        ON_DISABLE,
-        FORCED
     }
 }

@@ -85,37 +85,30 @@ object MiscUtils {
         val results = mutableMapOf<String, String>()
 
         try {
-            //final Method method_getHandle = def.clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
-            val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
-
             val compoundTagClazz =
                 Class.forName("net.minecraft.nbt.NBTTagCompound")
-
             val compoundTag = compoundTagClazz.getConstructor().newInstance()
 
-            // net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> f
-            val saveWithoutId =
-                def.clazzEntity!!.getDeclaredMethod("f", compoundTagClazz)
-
-            saveWithoutId.invoke(internalLivingEntity, compoundTag)
-
-            // private final Map<String, NBTBase> tags;
-            // # {"fileName":"CompoundTag.java","id":"sourceFile"}
-            // net.minecraft.nbt.CompoundTag ->
-            //    java.util.Map tags ->
+            val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
+            val problemReporter = def.fieldDISCARDING!!.get(null)
+            val tagValueOutput = def.methodWithoutContext!!.invoke(def.clazzTagValueOutput, problemReporter)
+            def.methodSaveWithoutId!!.invoke(internalLivingEntity, tagValueOutput)
+            val test = def.methodBuildResult!!.invoke(tagValueOutput)
 
             val ver = LevelledMobs.instance.ver
             var methodName = if (ver.majorVersion >= 21) "tags" else "x"
+            //val tagsField = compoundTagClazz.getDeclaredField(methodName)
+            //tagsField.trySetAccessible()
+            val tagsMap = test as MutableMap<String, Any>
+            val bukkitValuesMap = tagsMap
 
-            val tagsField = compoundTagClazz.getDeclaredField(methodName)
-            tagsField.trySetAccessible()
-            val tagsMap = tagsField.get(compoundTag) as MutableMap<String, Any>
-
+            Log.infTemp("tagsMap: $tagsMap")
             // NBTTagCompound.java
             val bukkitValues = tagsMap["BukkitValues"] ?: return results
 
             // private final Map<String, NBTBase> tags; (again)
-            val bukkitValuesMap = tagsField.get(bukkitValues) as MutableMap<String, Any>
+            //val bukkitValuesMap = tagsField.get(bukkitValues) as MutableMap<String, Any>
+            //Log.infTemp("bukkitValuesMap: $bukkitValuesMap")
 
             for (nbtBase in bukkitValuesMap.entries){
                 // @Override

@@ -1,10 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.CommandArguments
-import dev.jorel.commandapi.executors.CommandExecutor
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.command.CommandSender
 
 /**
@@ -13,16 +14,17 @@ import org.bukkit.command.CommandSender
  * @author lokka30
  * @since v2.0.0
  */
-object InfoSubcommand {
-    fun createInstance(): CommandAPICommand? {
-        @Suppress("DEPRECATION")
-        return CommandAPICommand("info")
-            .withPermission("levelledmobs.command.info")
-            .withShortDescription("View info about the installed version of the plugin.")
-            .withFullDescription("View info about the installed version of the plugin.")
-            .executes(CommandExecutor { sender: CommandSender, _: CommandArguments ->
+object InfoSubcommand : CommandBase("levelledmobs.command.info") {
+    override val description = "View info about the installed version of the plugin."
+
+    fun buildCommand() : LiteralCommandNode<CommandSourceStack>{
+        return Commands.literal("info")
+            .executes { ctx ->
+                val sender = ctx.source.sender
                 showInfo(sender)
-            })
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .build()
     }
 
     fun showInfo(sender: CommandSender){
@@ -31,14 +33,14 @@ object InfoSubcommand {
         MessagesHelper.showMessage(
             sender,
             "command.levelledmobs.info.about",
-            arrayOf(
+            mutableListOf(
                 "%version%",
                 "%description%",
                 "%supportedVersions%",
                 "%maintainers%",
                 "%contributors%"
             ),
-            arrayOf(
+            mutableListOf(
                 main.description.version,
                 main.description.description ?: "",
                 "1.20 - 1.21",

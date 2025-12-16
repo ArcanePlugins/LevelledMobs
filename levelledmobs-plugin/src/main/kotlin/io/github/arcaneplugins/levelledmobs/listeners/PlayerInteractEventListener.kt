@@ -338,7 +338,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         info.spawnCount = cs.spawnCount
         info.spawnRange = cs.spawnRange
 
-        SpawnerSubcommand.generateSpawner(player, info)
+        //SpawnerSubcommand.generateSpawner(player, info)
     }
 
     private fun showInfo(
