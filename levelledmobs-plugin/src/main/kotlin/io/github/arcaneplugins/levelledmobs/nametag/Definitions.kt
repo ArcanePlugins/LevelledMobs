@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -139,6 +140,17 @@ class Definitions{
     var fieldEquipmentSlotAny: Field? = null
         private set
 
+    // Constructors
+    var ctorEntityDataAccessor: Constructor<*>? = null
+        private set
+    var ctorSynchedEntityData: Constructor<*>? = null
+        private set
+    var ctorSynchedEntityDataBuilder: Constructor<*>? = null
+        private set
+    var ctorPacket: Constructor<*>? = null
+        private set
+    var ctorAttributeModifier: Constructor<*>? = null
+
     // mythic mobs:
     var fieldMMmobManager: Field? = null
         private set
@@ -151,16 +163,21 @@ class Definitions{
     var fieldMMinternalName: Field? = null
         private set
 
-    // Constructors
-    var ctorEntityDataAccessor: Constructor<*>? = null
+    // Lib's Disguises
+    var clazzDisguise: Class<*>? = null
         private set
-    var ctorSynchedEntityData: Constructor<*>? = null
+    var clazzDisguiseAPI: Class<*>? = null
         private set
-    var ctorSynchedEntityDataBuilder: Constructor<*>? = null
+    var clazzLDFlagWatcher: Class<*>? = null
         private set
-    var ctorPacket: Constructor<*>? = null
+    var methodGetDisguise: Method? = null
         private set
-    var ctorAttributeModifier: Constructor<*>? = null
+    var methodIsDisguiseInUse: Method? = null
+        private set
+    var methodLDGetWather: Method? = null
+        private set
+    var methodLDSetCustomName: Method? = null
+        private set
 
     fun load(){
         ver = LevelledMobs.instance.ver
@@ -191,6 +208,7 @@ class Definitions{
             buildConstructors()
             buildNbtDumpRelatedStuff()
             buildMythicMobs()
+            buildLibsDisguises()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -730,9 +748,7 @@ class Definitions{
     private fun buildMythicMobs() {
         // io.lumine.mythic.bukkit.MythicBukkit
         val mmMain = Bukkit.getPluginManager().getPlugin("MythicMobs")
-        if (mmMain == null || !mmMain.isEnabled) {
-            return
-        }
+        if (mmMain == null || !mmMain.isEnabled) return
 
         this.clazzMMactiveMob = Class.forName("io.lumine.mythic.core.mobs.ActiveMob")
         this.clazzMMmobExecutor = Class.forName("io.lumine.mythic.core.mobs.MobExecutor")
@@ -759,6 +775,19 @@ class Definitions{
             "internalName"
         ) // string
         fieldMMinternalName!!.setAccessible(true)
+    }
+
+    private fun buildLibsDisguises(){
+        val ldMain = Bukkit.getPluginManager().getPlugin("LibsDisguises")
+        if (ldMain == null || !ldMain.isEnabled) return
+
+        clazzDisguise = Class.forName("me.libraryaddict.disguise.disguisetypes.Disguise")
+        clazzDisguiseAPI = Class.forName("me.libraryaddict.disguise.DisguiseAPI")
+        clazzLDFlagWatcher = Class.forName("me.libraryaddict.disguise.disguisetypes.FlagWatcher")
+        methodGetDisguise = clazzDisguiseAPI!!.getMethod("getDisguise", Entity::class.java)
+        methodIsDisguiseInUse = clazzDisguise!!.getMethod("isDisguiseInUse")
+        methodLDGetWather = clazzDisguise!!.getMethod("getWatcher")
+        methodLDSetCustomName = clazzLDFlagWatcher!!.getMethod("setCustomName", String::class.java)
     }
 
     fun setUseLegacySerializer(useLegacySerializer: Boolean) {

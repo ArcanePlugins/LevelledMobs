@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.util
 
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
@@ -53,20 +54,15 @@ object LibsDisguisesUtils {
         if (!isMobUsingLibsDisguises(lmEntity)) return
 
         //val disguise = lmEntity.libsDisguiseCache as me.libraryaddict.disguise.disguisetypes.Disguise
-        // me.libraryaddict.disguise.disguisetypes.Disguise
         val disguise = lmEntity.libsDisguiseCache
-
-        val clazzDisguise = Class.forName("me.libraryaddict.disguise.disguisetypes.Disguise")
-        val clazzFlagWatcher = Class.forName("me.libraryaddict.disguise.disguisetypes.FlagWatcher")
-        val methodGetWather = clazzDisguise.getMethod("getWatcher")
-        val methodSetCustomName = clazzFlagWatcher.getMethod("setCustomName", String::class.java)
 
         val wrapper = SchedulerWrapper(lmEntity.livingEntity) {
             // public FlagWatcher getWatcher()
             // public void setCustomName(String name)
             // disguise.watcher.customName = nametag
-            val watcher = methodGetWather.invoke(disguise)
-            methodSetCustomName.invoke(watcher, nametag)
+            val def = LevelledMobs.instance.definitions
+            val watcher = def.methodLDGetWather!!.invoke(disguise)
+            def.methodLDSetCustomName!!.invoke(watcher, nametag)
 
             lmEntity.free()
         }

@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
@@ -19,7 +18,6 @@ import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import java.util.TreeSet
 import java.util.concurrent.CompletableFuture
 import org.bukkit.Bukkit
@@ -65,14 +63,34 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                     return@executes Command.SINGLE_SUCCESS
                 })
             .then(createLiteralCommand("nbt-dump")
-                .then(Commands.argument("target", ArgumentTypes.player())
-                    .requires{
-                        cmdSender -> cmdSender.sender.hasPermission("$basePermission.nbt-dump")
-                    }
+                .then(createPlayerArgument("target")
                     .executes { ctx -> nbtDump(ctx)
                         return@executes Command.SINGLE_SUCCESS
                     })
                 .executes { ctx -> nbtDump(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("my-location")
+                .executes { ctx -> showPlayerLocation(ctx.source.sender)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("spawn-distance")
+                .then(createPlayerArgument("target")
+                    .executes { ctx -> showSpawnDistance(ctx)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx -> showSpawnDistance(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("lew-debug")
+                .executes { ctx -> showLEWDebug(ctx.source.sender)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("lew-clear")
+                .executes { ctx -> clearLEWCache(ctx.source.sender)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("show-customdrops")
+                .executes { ctx -> showCustomDrops(ctx.source.sender)
                     return@executes Command.SINGLE_SUCCESS
                 })
             .then(createLiteralCommand("show-pdc-keys")
@@ -83,15 +101,25 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                 .executes { ctx ->
                     showPDCKeys(ctx, false)
                     return@executes Command.SINGLE_SUCCESS
-                }
-            )
+                })
             .then(createLiteralCommand("show-plugin-definitions")
-                .executes { ctx ->
-                    showPluginDefinitions(ctx.source.sender)
+                .executes { ctx -> showPluginDefinitions(ctx.source.sender)
                     return@executes Command.SINGLE_SUCCESS
                 })
-            .then(createLiteralCommand("operation")
-                .then(createStringArgument("operation2")
+            .then(createLiteralCommand("enable")
+                .then(createStringArgument("category")
+                    .suggests { _, builder -> getDebugTypes(builder) }
+                    .executes { ctx -> enableOrDisableDebug(ctx, isEnable = true, isEnableAll = false)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx -> enableOrDisableDebug(ctx, isEnable = true, isEnableAll = false)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("enable-all")
+                .executes { ctx -> enableOrDisableDebug(ctx, isEnable = true, isEnableAll = true)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("damage-debug-output")
+                .then(createStringArgument("operation")
                     .suggests { _, builder -> builder.suggest("enable").suggest("disable").buildFuture() }
                     .executes { ctx -> processDamageDebugOutput(ctx)
                         return@executes Command.SINGLE_SUCCESS })
@@ -99,7 +127,39 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                     return@executes Command.SINGLE_SUCCESS
                 }
             )
+            .then(createLiteralCommand("enable-timer")
+                .then(createStringArgument("time")
+                    .then(createStringArgument("category")
+                        .suggests { _, builder -> getDebugTypes(builder) }
+                        .executes { ctx -> parseEnableTimer(ctx)
+                            return@executes Command.SINGLE_SUCCESS })
+                    .executes { ctx -> parseEnableTimer(ctx)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx -> parseEnableTimer(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                }
+            )
+            .then(createLiteralCommand("disable")
+                .executes { ctx -> enableOrDisableDebug(ctx, isEnable = false, isEnableAll = false)
+                    return@executes Command.SINGLE_SUCCESS
+                })
             .then(createFilterResultsCommand()) // filter-results
+            .then(createLiteralCommand("output-debug")
+                .then(createStringArgument("output")
+                    .suggests { _, builder -> getOutputToTypes(builder) }
+                    .executes { ctx -> parseOutputTo(ctx)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx -> parseOutputTo(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("view-debug-status")
+                .executes { ctx -> ctx.source.sender.sendMessage(LevelledMobs.instance.debugManager.getDebugStatus())
+                    return@executes Command.SINGLE_SUCCESS
+                })
+            .then(createLiteralCommand("view-queues")
+                .executes { ctx -> viewQueues(ctx.source.sender)
+                    return@executes Command.SINGLE_SUCCESS
+                })
             .build()
     }
 
@@ -108,7 +168,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
     ){
 
         val sender = ctx.source.sender
-        val operation = getStringArgument(ctx, "operation2", null)
+        val operation = getStringArgument(ctx, "operation", null)
         val debugMgr = LevelledMobs.instance.debugManager
 
         if (operation.isNullOrEmpty()){
@@ -154,7 +214,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
             .executes { ctx -> ctx.source.sender.sendMessage(genericMessage)
                 return@executes Command.SINGLE_SUCCESS }
             .then(createLiteralCommand("listen-for")
-                .then(createStringArgument("rulename")
+                .then(createStringArgument("value")
                     .suggests { _, builder -> getListenForValues(builder)  }
                     .executes { ctx -> updateEvaluationType(ctx)
                         return@executes Command.SINGLE_SUCCESS })
@@ -162,7 +222,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                     return@executes Command.SINGLE_SUCCESS
                 })
             .then(createLiteralCommand("set-distance-from-players")
-                .then(createNumberArgument("value")
+                .then(createStringArgument("value")
                     .executes { ctx -> parseNumberValue(ctx, NumberSettings.MAX_PLAYERS_DIST)
                         return@executes Command.SINGLE_SUCCESS })
                 .executes { ctx -> parseNumberValue(ctx, NumberSettings.MAX_PLAYERS_DIST)
@@ -177,6 +237,9 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
 
     private fun createSetHeightCommands() : LiteralCommandNode<CommandSourceStack>{
         return createLiteralCommand("set-y-height")
+            .executes { ctx -> showYHeightSettings(ctx.source.sender)
+                return@executes Command.SINGLE_SUCCESS
+            }
             .then(createLiteralCommand("min-y-height")
                 .then(createStringArgument("value")
                     .executes { ctx -> parseNumberValue(ctx, NumberSettings.MIN_Y_LEVEL)
@@ -242,7 +305,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
         listType: ListTypes
     ): LiteralCommandNode<CommandSourceStack>{
         return createLiteralCommand(commandName)
-            .executes { ctx -> parseTypeValues(ctx, listType, OperationType.ADD)
+            .executes { ctx -> parseTypeValues(ctx, listType, OperationType.VIEW)
                 return@executes Command.SINGLE_SUCCESS
             }
             .then(createLiteralCommand("add")
@@ -260,7 +323,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                 }
                 .then(createGreedyStringArgument("values")
                     .suggests { ctx, builder -> getUnusedListTypes(ctx, builder, listType, false) }
-                    .executes { ctx -> parseTypeValues(ctx, listType, OperationType.ADD)
+                    .executes { ctx -> parseTypeValues(ctx, listType, OperationType.REMOVE)
                         return@executes Command.SINGLE_SUCCESS
                     }))
             .then(createLiteralCommand("clear")
@@ -436,9 +499,9 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
 
         if (disableAfter != null) {
             val category = getStringArgument(ctx, "category")
-            if (category.isNotEmpty()) {
-                if (!parseEnableDebugCategory(category, sender)) return
-            }
+            if (category.isNotEmpty() && !parseEnableDebugCategory(category, sender))
+                return
+
             main.debugManager.disableAfter = disableAfter
             main.debugManager.disableAfterStr = input
             sender.sendMessage("Debug enabled for $input")
@@ -483,18 +546,19 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
     }
 
     private fun enableOrDisableDebug(
+        ctx: CommandContext<CommandSourceStack>,
         isEnable: Boolean,
-        isEnableAll: Boolean,
-        debugCategory: String?,
-        sender: CommandSender
+        isEnableAll: Boolean
     ){
         val main = LevelledMobs.instance
         val wasEnabled = main.debugManager.isEnabled
+        val sender = ctx.source.sender
+        val debugCategory = getStringArgument(ctx, "category")
 
         if (isEnable) {
             val wasTimerEnabled = main.debugManager.isTimerEnabled
             val enableAllChanged = main.debugManager.bypassAllFilters != isEnableAll
-            if (debugCategory != null) {
+            if (debugCategory.isNotEmpty()) {
                 if (!parseEnableDebugCategory(debugCategory, sender)) return
             }
             main.debugManager.enableDebug(sender, false, isEnableAll)
@@ -590,7 +654,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
     ) {
         val main = LevelledMobs.instance
         val sender = ctx.source.sender
-        val value = getStringArgument(ctx, "rule-name")
+        val value = getStringArgument(ctx, "value")
         if (value.isEmpty()) {
             sender.sendMessage("Current value: " + main.debugManager.listenFor)
             return
@@ -863,21 +927,21 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
         sender.sendMessage("Your location: $locationStr")
     }
 
-    private fun getDebugTypes(): MutableList<String> {
-        val list = mutableListOf<String>()
+    private fun getDebugTypes(builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
         for (debugType in DebugType.entries) {
-            list.add(debugType.toString().lowercase())
+            builder.suggest(debugType.toString().lowercase())
         }
-        return list
+        return builder.buildFuture()
     }
 
-    private fun getOutputToTypes(): Array<String>{
-        val values = mutableListOf<String>()
+    private fun getOutputToTypes(
+        builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions> {
         for (outputType in DebugManager.OutputTypes.entries) {
             if (LevelledMobs.instance.debugManager.outputType != outputType)
-                values.add(outputType.name.replace("_", "-").lowercase())
+                builder.suggest(outputType.name.replace("_", "-").lowercase())
         }
-        return values.toTypedArray()
+        return builder.buildFuture()
     }
 
     private fun getUnusedListTypes(

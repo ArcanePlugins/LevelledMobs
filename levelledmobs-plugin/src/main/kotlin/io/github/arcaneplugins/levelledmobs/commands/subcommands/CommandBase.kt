@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import java.util.regex.Pattern
 import org.bukkit.entity.Player
@@ -42,15 +43,12 @@ abstract class CommandBase(val basePermission: String) {
             }
     }
 
-//    internal fun setCommandPermission(
-//        ctx: CommandContext<CommandSourceStack>,
-//        argument: LiteralArgumentBuilder<CommandSourceStack>
-//    ){
-//        val lastNodeName = ctx.nodes.last().node.name
-//        argument.requires{
-//            cmdSender -> cmdSender.sender.hasPermission("$basePermission.$lastNodeName")
-//        }
-//    }
+    internal fun createPlayerArgument(name: String) : RequiredArgumentBuilder<CommandSourceStack, PlayerSelectorArgumentResolver> {
+        return Commands.argument(name, ArgumentTypes.player())
+            .requires{
+                cmdSender -> cmdSender.sender.hasPermission("$basePermission.$name")
+            }
+    }
 
     internal fun getPlayerArgument(
         ctx: CommandContext<CommandSourceStack>,
@@ -90,6 +88,18 @@ abstract class CommandBase(val basePermission: String) {
         catch (_: IllegalArgumentException){}
 
         return defaultValue
+    }
+
+    internal fun getIntegerArgument(
+        ctx: CommandContext<CommandSourceStack>,
+        name: String
+    ): Int?{
+        try{
+            return ctx.getArgument(name, Int::class.java)
+        }
+        catch (_: IllegalArgumentException){}
+
+        return null
     }
 
     // taken from:
