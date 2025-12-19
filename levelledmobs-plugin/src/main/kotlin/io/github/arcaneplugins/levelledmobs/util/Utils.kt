@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.util
 
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
@@ -197,6 +198,12 @@ object Utils {
             return true
         } catch (_: NumberFormatException) {
             return false
+        }
+    }
+
+    fun getOneToNineSuggestions(builder: SuggestionsBuilder){
+        for (i in 1..9){
+            builder.suggest(i)
         }
     }
 
@@ -609,22 +616,6 @@ object Utils {
             temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
 
         return temp.toMutableList()
-    }
-
-    // taken from:
-    // https://stackoverflow.com/questions/2817646/javascript-split-string-on-space-or-on-quotes-to-array
-    fun splitStringWithQuotes(myString: String): MutableList<String>{
-        val results = mutableListOf<String>()
-        val pattern = Pattern.compile("[^\\s\"]+|\"([^\"]*)\"")
-        val match = pattern.matcher(myString)
-        while (match.find()){
-            var temp = match.group(0)
-            if (temp.startsWith("\"") && temp.endsWith("\""))
-                temp = temp.substring(1, temp.length - 1)
-            results.add(temp)
-        }
-
-        return results
     }
 
     fun getEnchantment(

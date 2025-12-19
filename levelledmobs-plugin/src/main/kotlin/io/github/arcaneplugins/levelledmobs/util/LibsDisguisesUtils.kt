@@ -1,10 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.util
 
-import me.libraryaddict.disguise.DisguiseAPI
-import me.libraryaddict.disguise.disguisetypes.Disguise
+import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import org.bukkit.entity.Entity
 
 /**
  * Various methods for detecting or updating mobs using
@@ -25,15 +25,26 @@ object LibsDisguisesUtils {
     ): Boolean {
         if (!hasLibsDisguises) return false
 
-        val disguise: Disguise?
-        if (lmEntity.libsDisguiseCache != null) {
-            disguise = lmEntity.libsDisguiseCache as Disguise?
-        } else {
-            disguise = DisguiseAPI.getDisguise(lmEntity.livingEntity)
+        // now using reflection due to lib's maven repo being very unreliable
+        val clazzDisguise = Class.forName("me.libraryaddict.disguise.disguisetypes.Disguise")
+        val clazzDisguiseAPI = Class.forName("me.libraryaddict.disguise.DisguiseAPI")
+        val methodGetDisguise = clazzDisguiseAPI.getMethod("getDisguise", Entity::class.java)
+        val methodIsDisguiseInUse = clazzDisguise.getMethod("isDisguiseInUse")
+
+        val disguise: Any? // me.libraryaddict.disguise.disguisetypes.Disguise?
+
+        if (lmEntity.libsDisguiseCache != null)
+            disguise = lmEntity.libsDisguiseCache
+        else {
+            //disguise = me.libraryaddict.disguise.DisguiseAPI.getDisguise(lmEntity.livingEntity)
+            disguise = methodGetDisguise.invoke(null, lmEntity.livingEntity)
             lmEntity.libsDisguiseCache = disguise
         }
 
-        return disguise != null && disguise.isDisguiseInUse
+        return if (disguise != null)
+            methodIsDisguiseInUse.invoke(disguise) as Boolean
+        else
+            false
     }
 
     fun updateLibsDisguiseNametag(
@@ -42,9 +53,17 @@ object LibsDisguisesUtils {
     ) {
         if (!isMobUsingLibsDisguises(lmEntity)) return
 
-        val disguise = lmEntity.libsDisguiseCache as Disguise
+        //val disguise = lmEntity.libsDisguiseCache as me.libraryaddict.disguise.disguisetypes.Disguise
+        val disguise = lmEntity.libsDisguiseCache
+
         val wrapper = SchedulerWrapper(lmEntity.livingEntity) {
-            disguise.watcher.customName = nametag
+            // public FlagWatcher getWatcher()
+            // public void setCustomName(String name)
+            // disguise.watcher.customName = nametag
+            val def = LevelledMobs.instance.definitions
+            val watcher = def.methodLDGetWather!!.invoke(disguise)
+            def.methodLDSetCustomName!!.invoke(watcher, nametag)
+
             lmEntity.free()
         }
 

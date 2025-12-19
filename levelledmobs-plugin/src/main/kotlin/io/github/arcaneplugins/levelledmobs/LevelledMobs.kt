@@ -104,7 +104,6 @@ class LevelledMobs : JavaPlugin() {
 
     override fun onLoad() {
         instance = this
-        CommandHandler.load(CommandHandler.LoadingStage.ON_LOAD)
     }
 
     override fun onEnable() {
@@ -116,7 +115,7 @@ class LevelledMobs : JavaPlugin() {
         }
         NmsMappings.load()
         this.definitions.load()
-        CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
+        CommandHandler.load()
         EssentialsIntegration.load()
         this.nametagQueueManager.load()
         this.mainCompanion.load()
@@ -163,7 +162,6 @@ class LevelledMobs : JavaPlugin() {
         val disableTimer = QuickTimer()
         disableTimer.start()
 
-        CommandHandler.load(CommandHandler.LoadingStage.ON_DISABLE)
         levelManager.stopNametagAutoUpdateTask()
         mainCompanion.shutDownAsyncTasks()
 

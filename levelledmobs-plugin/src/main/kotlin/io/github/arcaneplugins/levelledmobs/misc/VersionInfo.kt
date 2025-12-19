@@ -25,8 +25,7 @@ class VersionInfo(
             thisVerSplit.add(intD)
         }
 
-        @Suppress("UNUSED_PARAMETER")
-        for (i in 4 until thisVerSplit.size) {
+        repeat(thisVerSplit.size - 4) {
             thisVerSplit.add(0)
         }
     }
