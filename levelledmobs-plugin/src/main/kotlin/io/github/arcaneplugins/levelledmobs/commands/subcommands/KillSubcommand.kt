@@ -1,21 +1,18 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
 import com.mojang.brigadier.Command
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
-import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
-import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
+import java.util.TreeSet
 import java.util.concurrent.CompletableFuture
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -35,7 +32,6 @@ import org.bukkit.entity.Zombie
 import org.bukkit.entity.ZombieVillager
 import org.bukkit.metadata.FixedMetadataValue
 
-
 /**
  * Allows you to kill LevelledMobs with various options including all levelled mobs, specific worlds
  * or levelled mobs in your proximity
@@ -52,7 +48,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
                 return@executes Command.SINGLE_SUCCESS
             }
             .then(createLiteralCommand("all")
-                .then(Commands.argument("all", StringArgumentType.greedyString())
+                .then(createGreedyStringArgument("all")
                     .suggests { _, builder -> buildTabSuggestions(builder) }
                     .executes { ctx -> processCmd(ctx, true)
                         return@executes Command.SINGLE_SUCCESS })
@@ -60,7 +56,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
                 return@executes Command.SINGLE_SUCCESS
             })
             .then(createLiteralCommand("near")
-                .then(Commands.argument("near", StringArgumentType.greedyString())
+                .then(createGreedyStringArgument("near")
                     .suggests { _, builder -> buildTabSuggestions(builder) }
                     .executes { ctx -> processCmd(ctx, false)
                         return@executes Command.SINGLE_SUCCESS })
@@ -75,6 +71,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         isAll: Boolean
     ){
         val sender = ctx.source.sender
+        commandSender = sender
         //TODO: make this work in Folia
         if (LevelledMobs.instance.ver.isRunningFolia) {
             sender.sendMessage("Sorry this command doesn't work in Folia")
@@ -85,20 +82,18 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         if (values == null) {
             if (sender is Player) {
                 if (isAll)
-                    processKillAll(sender, mutableListOf(sender.world), false, null)
+                    processKillAll(mutableListOf(sender.world), false, null)
                 else
-                    MessagesHelper.showMessage(sender, "command.levelledmobs.kill.near.usage")
+                    showMessage("command.levelledmobs.kill.near.usage")
             } else {
-                MessagesHelper.showMessage(sender,
+                showMessage(
                     if (isAll) "command.levelledmobs.kill.all.usage-console"
                     else "command.levelledmobs.kill.near.usage-console")
             }
             return
         }
 
-        val args =  splitStringWithQuotes(values)
-        Log.infTemp("test: $args")
-
+        val args = splitStringWithQuotes(values, false)
         var useNoDrops = false
         val rl = getLevelFromCommand(sender, args)
         val newArgs = mutableListOf<String>()
@@ -135,24 +130,24 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
 
         if (useArg.isEmpty()) {
             if (sender is Player)
-                processKillAll(sender, mutableListOf(sender.world), opts.useNoDrops, opts.requestedLevel)
+                processKillAll(mutableListOf(sender.world), opts.useNoDrops, opts.requestedLevel)
             else
-                MessagesHelper.showMessage(sender, "command.levelledmobs.kill.all.usage-console")
+                showMessage("command.levelledmobs.kill.all.usage-console")
         } else {
             if (useArg == "*") {
-                processKillAll(sender, Bukkit.getWorlds(), opts.useNoDrops, opts.requestedLevel)
+                processKillAll(Bukkit.getWorlds(), opts.useNoDrops, opts.requestedLevel)
                 return
             }
 
             val world = Bukkit.getWorld(useArg)
             if (world == null) {
-                MessagesHelper.showMessage(sender,
+                showMessage(
                     "command.levelledmobs.kill.all.invalid-world", "%world%",
                     useArg
                 )
                 return
             }
-            processKillAll(sender, mutableListOf(world), opts.useNoDrops, opts.requestedLevel)
+            processKillAll(mutableListOf(world), opts.useNoDrops, opts.requestedLevel)
         }
     }
 
@@ -161,12 +156,12 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         opts: Options
     ){
         if (sender !is BlockCommandSender && sender !is Player) {
-            MessagesHelper.showMessage(sender, "common.players-only")
+            showMessage("common.players-only")
             return
         }
 
         if (opts.args.isEmpty()){
-            MessagesHelper.showMessage(sender, "command.levelledmobs.kill.near.usage")
+            showMessage("command.levelledmobs.kill.near.usage")
             return
         }
 
@@ -174,9 +169,8 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         try {
             radius = opts.args[0].toInt()
         } catch (_: NumberFormatException) {
-            MessagesHelper.showMessage(sender,
-                "command.levelledmobs.kill.near.invalid-radius", "%radius%",
-                opts.args[0]
+            showMessage("command.levelledmobs.kill.near.invalid-radius", "%radius%",
+                opts.args.first()
             )
             return
         }
@@ -184,8 +178,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         val maxRadius = 1000
         if (radius > maxRadius) {
             radius = maxRadius
-            MessagesHelper.showMessage(sender,
-                "command.levelledmobs.kill.near.invalid-radius-max",
+            showMessage("command.levelledmobs.kill.near.invalid-radius-max",
                 "%maxRadius%", maxRadius.toString()
             )
         }
@@ -193,8 +186,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         val minRadius = 1
         if (radius < minRadius) {
             radius = minRadius
-            MessagesHelper.showMessage(sender,
-                "command.levelledmobs.kill.near.invalid-radius-min",
+            showMessage("command.levelledmobs.kill.near.invalid-radius-min",
                 "%minRadius%", minRadius.toString()
             )
         }
@@ -236,8 +228,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
             killed++
         }
 
-        MessagesHelper.showMessage(sender,
-            "command.levelledmobs.kill.near.success",
+        showMessage("command.levelledmobs.kill.near.success",
             mutableListOf("%killed%", "%skipped%", "%radius%"),
             mutableListOf(
                 killed.toString(), skipped.toString(),
@@ -250,15 +241,15 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
 
-        val args = splitStringWithQuotes(builder.input)
+        val args = splitStringWithQuotes(builder.input, true)
         if (args.size == 2) return builder.buildFuture()
         val lastArg = args[args.size - 1]
-
+        val prefix = StringBuilder()
+        val existingItems = mutableListOf<String>()
         var containsNoDrops = false
         var containsLevels = false
         var containsWorld = false
         val hasRemaining = builder.remaining.isNotEmpty() && !builder.remaining.endsWith(' ')
-        Log.infTemp("args len: ${args.size}, rem: ${builder.remaining}, start: ${builder.start}")
 
         if ("/levels".equals(lastArg, ignoreCase = true)) {
             Utils.getOneToNineSuggestions(builder)
@@ -267,6 +258,9 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
 
         for (i in 3..<args.size) {
             val arg = args[i]
+
+            existingItems.add(arg.lowercase())
+            prefix.append(arg).append(' ')
 
             if ("/nodrops".equals(arg, ignoreCase = true))
                 containsNoDrops = true
@@ -277,19 +271,23 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         }
 
         if ("all".equals(args[2], ignoreCase = true) && args.size <= 7) {
-            //val worlds = mutableListOf<String>()
+            val commandsList: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+            commandsList.addAll(mutableListOf("/nodrops", "/levels"))
+            if (args.isEmpty()) return builder.buildFuture()
 
-            if (!containsNoDrops)
-                builder.suggest("/nodrops")
+            args.forEach { arg ->
+                if (commandsList.contains(arg))
+                    commandsList.remove(arg)
+            }
 
-            if (!containsLevels)
-                builder.suggest("/levels")
+            commandsList.forEach { command -> builder.suggest("$prefix$command") }
 
             if (!containsWorld) {
                 for (world in Bukkit.getWorlds()) {
                     builder.suggest("*")
-                    if (LevelledMobs.instance.rulesManager.getRuleIsWorldAllowedInAnyRule(world))
-                        builder.suggest(world.name)
+                    if (LevelledMobs.instance.rulesManager.getRuleIsWorldAllowedInAnyRule(world) &&
+                        !existingItems.contains(world.name))
+                            builder.suggest("$prefix${world.name}")
                 }
             }
 
@@ -307,7 +305,6 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
             }
         }
 
-        //val result = mutableListOf<String>()
         if (!containsNoDrops)
             builder.suggest("/nodrops")
 
@@ -348,7 +345,6 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
     }
 
     private fun processKillAll(
-        sender: CommandSender,
         worlds: MutableList<World>,
         useNoDrops: Boolean,
         rl: RequestedLevel?
@@ -359,8 +355,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
 
         for (world in worlds) {
             for (entity in world.entities) {
-                if (entity !is LivingEntity)
-                    continue
+                if (entity !is LivingEntity) continue
 
                 if (!LevelledMobs.instance.levelInterface.isLevelled(entity))
                     continue
@@ -381,8 +376,7 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
             }
         }
 
-        MessagesHelper.showMessage(sender,
-            "command.levelledmobs.kill.all.success",
+        showMessage("command.levelledmobs.kill.all.success",
             mutableListOf("%killed%", "%skipped%", "%worlds%"),
             mutableListOf(
                 killed.toString(), skipped.toString(),

@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -12,7 +13,7 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import java.util.regex.Pattern
 import org.bukkit.entity.Player
 
-abstract class CommandBase(val basePermission: String) {
+abstract class CommandBase(val basePermission: String) : MessagesBase() {
     abstract val description: String
 
     internal fun createLiteralCommand(name: String): LiteralArgumentBuilder<CommandSourceStack> {
@@ -104,14 +105,18 @@ abstract class CommandBase(val basePermission: String) {
 
     // taken from:
     // https://stackoverflow.com/questions/2817646/javascript-split-string-on-space-or-on-quotes-to-array
-    fun splitStringWithQuotes(myString: String): MutableList<String>{
+    fun splitStringWithQuotes(
+        myString: String,
+        preserveQuotes: Boolean,
+    ): MutableList<String>{
         val results = mutableListOf<String>()
         val pattern = Pattern.compile("[^\\s\"]+|\"([^\"]*)\"")
         val match = pattern.matcher(myString)
         while (match.find()){
             var temp = match.group(0)
-            if (temp.startsWith("\"") && temp.endsWith("\""))
+            if (!preserveQuotes && temp.startsWith("\"") && temp.endsWith("\""))
                 temp = temp.substring(1, temp.length - 1)
+
             results.add(temp)
         }
 

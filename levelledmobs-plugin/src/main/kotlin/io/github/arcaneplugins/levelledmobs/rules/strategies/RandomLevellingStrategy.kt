@@ -171,7 +171,7 @@ class RandomLevellingStrategy : LevellingStrategy, Cloneable {
         val mergeMessage = if (shouldMerge) " (merge)" else ""
 
         return if (minLevel == 0)
-            return "$weightedRandomMap$mergeMessage"
+            "$weightedRandomMap$mergeMessage"
         else
             "$minLevel-$maxLevel: $weightedRandomMap$mergeMessage"
     }

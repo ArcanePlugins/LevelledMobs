@@ -166,7 +166,6 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
     private fun processDamageDebugOutput(
         ctx: CommandContext<CommandSourceStack>
     ){
-
         val sender = ctx.source.sender
         val operation = getStringArgument(ctx, "operation", null)
         val debugMgr = LevelledMobs.instance.debugManager
@@ -705,12 +704,12 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                     return
                 }
 
-                val inputValue = splitStringWithQuotes(input)
+                val inputValue = splitStringWithQuotes(input, false)
                 addOrRemoveItemsToList(sender, (operationType == OperationType.ADD), inputValue, listType)
             }
 
             else -> {
-                val inputSplit = splitStringWithQuotes(ctx.input)
+                val inputSplit = splitStringWithQuotes(ctx.input, false)
                 sender.sendMessage("Invalid option: " + inputSplit.last())
             }
         }
@@ -951,7 +950,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
         isAdd: Boolean
     ): CompletableFuture<Suggestions> {
         val result: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-        val input = splitStringWithQuotes(ctx.input)
+        val input = splitStringWithQuotes(ctx.input, false)
 
         val prefix = StringBuilder()
         val existingItems = mutableListOf<String>()

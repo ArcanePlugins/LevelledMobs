@@ -9,6 +9,9 @@ import io.github.arcaneplugins.levelledmobs.commands.subcommands.InfoSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.KillSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.ReloadSubcommand
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.RulesSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerEggCommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SummonSubcommand
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -47,28 +50,15 @@ object CommandHandler {
                 MessagesHelper.showMessage(ctx.source.sender, "command.levelledmobs.main-usage")
                 return@executes Command.SINGLE_SUCCESS
             }
-            .then(InfoSubcommand.buildCommand())
             .then(DebugSubcommand.buildCommand())
             .then(InfoSubcommand.buildCommand())
-            .then(ReloadSubcommand.buildCommand())
             .then(KillSubcommand.buildCommand())
+            .then(ReloadSubcommand.buildCommand())
             .then(RulesSubcommand.buildCommand())
+            .then(SpawnerEggCommand.buildCommand())
+            .then(SpawnerSubcommand.buildCommand())
+            .then(SummonSubcommand.buildCommand())
             .build()
-
-//        return Commands.literal("levelledmobs")
-//            .then(Commands.argument("target", ArgumentTypes.player())
-//                .executes { ctx ->
-//                    val playerSelector = ctx.getArgument("target", PlayerSelectorArgumentResolver::class.java)
-//                    val targetPlayer = playerSelector.resolve(ctx.source).first()
-//                    val sender = ctx.source.sender
-//
-//                    targetPlayer.sendPlainMessage("Test is a test")
-//                    sender.sendMessage("You are now partying with ${targetPlayer.name}!")
-//
-//                    return@executes Command.SINGLE_SUCCESS
-//                }
-//            )
-//            .build()
     }
 
     private fun loadFallbackCommands() {

@@ -1687,10 +1687,9 @@ class RulesParser {
         var customFormula: String? = null
         var useStacked = false
         var value = 0f
-        var count = 0
         var valueStr: String? = null
         var isAddition = false
-        for (obj in values) {
+        for ((count, obj) in values.withIndex()) {
             if (count > 2) break
 
             when (obj) {
@@ -1728,7 +1727,6 @@ class RulesParser {
                 }
             }
 
-            count++
         }
 
         if (value > Float.MIN_VALUE || !customFormula.isNullOrEmpty()) {

@@ -100,17 +100,14 @@ object MiscUtils {
             //val tagsField = compoundTagClazz.getDeclaredField(methodName)
             //tagsField.trySetAccessible()
             val tagsMap = test as MutableMap<String, Any>
-            val bukkitValuesMap = tagsMap
 
-            Log.infTemp("tagsMap: $tagsMap")
             // NBTTagCompound.java
             val bukkitValues = tagsMap["BukkitValues"] ?: return results
 
             // private final Map<String, NBTBase> tags; (again)
             //val bukkitValuesMap = tagsField.get(bukkitValues) as MutableMap<String, Any>
-            //Log.infTemp("bukkitValuesMap: $bukkitValuesMap")
 
-            for (nbtBase in bukkitValuesMap.entries){
+            for (nbtBase in tagsMap.entries){
                 // @Override
                 // public NBTTagType<NBTTagCompound> getType()
                 // net.minecraft.nbt.CompoundTag ->

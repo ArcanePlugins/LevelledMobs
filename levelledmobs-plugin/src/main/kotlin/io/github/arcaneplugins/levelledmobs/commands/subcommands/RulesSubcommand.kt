@@ -16,7 +16,6 @@ import io.github.arcaneplugins.levelledmobs.annotations.DoNotMerge
 import io.github.arcaneplugins.levelledmobs.annotations.DoNotShow
 import io.github.arcaneplugins.levelledmobs.annotations.RuleFieldInfo
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
-import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper.showMessage
 import io.github.arcaneplugins.levelledmobs.enums.RuleType
 import io.github.arcaneplugins.levelledmobs.listeners.EntitySpawnListener
 import io.github.arcaneplugins.levelledmobs.misc.EffectiveInfo
@@ -60,8 +59,8 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
     fun buildCommand() : LiteralCommandNode<CommandSourceStack>{
         return createLiteralCommand("rules")
             .executes { ctx ->
-                val sender = ctx.source.sender
-                showMessage(sender, "command.levelledmobs.rules.incomplete-command")
+                commandSender = ctx.source.sender
+                showMessage("command.levelledmobs.rules.incomplete-command")
                 return@executes Command.SINGLE_SUCCESS
             }
             .then(createLiteralCommand("show-all")
@@ -117,7 +116,8 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
                     return@executes Command.SINGLE_SUCCESS
                 })
             .then(createLiteralCommand("force-all")
-                .executes { ctx -> forceRelevel(ctx.source.sender)
+                .executes { ctx -> commandSender = ctx.source.sender
+                    forceRelevel()
                     return@executes Command.SINGLE_SUCCESS
                 })
             .then(createLiteralCommand("show-temp-disabled")
@@ -131,8 +131,9 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         ctx: CommandContext<CommandSourceStack>
     ){
         val sender = ctx.source.sender
+        commandSender = sender
         if (sender is Player)
-            showMessage(sender,"command.levelledmobs.rules.console-rules")
+            showMessage("command.levelledmobs.rules.console-rules")
 
         val showOnConsole = sender is ConsoleCommandSender || getStringArgumentAsBool(ctx, "console")
         val main = LevelledMobs.instance
@@ -180,10 +181,10 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         LevelledMobs.instance.rulesManager.showTempDisabledRules(sender)
     }
 
-    private fun forceRelevel(sender: CommandSender) {
+    private fun forceRelevel() {
         //TODO: make this work in Folia
         if (LevelledMobs.instance.ver.isRunningFolia) {
-            sender.sendMessage("Sorry this command doesn't work in Folia")
+            commandSender!!.sendMessage("Sorry this command doesn't work in Folia")
             return
         }
 
@@ -191,7 +192,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         var entityCount = 0
         val main = LevelledMobs.instance
 
-        main.reloadLM(sender)
+        main.reloadLM(commandSender!!)
         val isUsingPlayerLevelling = main.rulesManager.isPlayerLevellingEnabled()
 
         for (world in Bukkit.getWorlds()) {
@@ -225,9 +226,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
             }
         }
 
-        showMessage(
-            sender,
-            "command.levelledmobs.rules.rules-reprocessed",
+        showMessage("command.levelledmobs.rules.rules-reprocessed",
             mutableListOf("%entitycount%", "%worldcount%"),
             mutableListOf(entityCount.toString(), worldCount.toString())
         )
@@ -237,11 +236,12 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         ctx: CommandContext<CommandSourceStack>
     ) {
         val sender = ctx.source.sender
+        commandSender = sender
         val difficultyStr = getStringArgument(ctx, "difficulty")
         val confirm = getStringArgumentAsBool(ctx, "confirm")
 
         if (difficultyStr.isEmpty()) {
-            showMessage(sender, "command.levelledmobs.rules.reset")
+            showMessage("command.levelledmobs.rules.reset")
             return
         }
 
@@ -255,13 +255,12 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         }
 
         if (difficulty == ResetDifficulty.UNSPECIFIED) {
-            showMessage(sender, "command.levelledmobs.rules.invalid-difficulty", "%difficulty%", difficultyStr)
+            showMessage("command.levelledmobs.rules.invalid-difficulty", "%difficulty%", difficultyStr)
             return
         }
 
         if (!confirm) {
-            showMessage(sender,
-                "command.levelledmobs.rules.reset-syntax",
+            showMessage("command.levelledmobs.rules.reset-syntax",
                 "%difficulty%",
                 difficultyStr
             )
@@ -278,7 +277,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         val main = LevelledMobs.instance
         val prefix = main.configUtils.prefix
         if (sender != null) {
-            showMessage(sender,
+            MessagesHelper.showMessage(sender,
                 "command.levelledmobs.rules.resetting", "%difficulty%",
                 difficulty.toString()
             )
@@ -346,7 +345,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         }
 
         if (sender != null) {
-            showMessage(sender, "command.levelledmobs.rules.reset-complete")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.rules.reset-complete")
             main.reloadLM(sender)
         }
     }
@@ -374,12 +373,12 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
     private fun showRule(
         ctx: CommandContext<CommandSourceStack>
     ) {
-        val sender = ctx.source.sender
+        commandSender = ctx.source.sender
         val ruleName = getStringArgument(ctx, "rulename")
-        val showOnConsole = sender is ConsoleCommandSender || getStringArgumentAsBool(ctx, "console")
+        val showOnConsole = commandSender!! is ConsoleCommandSender || getStringArgumentAsBool(ctx, "console")
 
         if (ruleName.isEmpty()) {
-            showMessage(sender, "command.levelledmobs.rules.rule-name-missing")
+            showMessage("command.levelledmobs.rules.rule-name-missing")
             return
         }
 
@@ -393,7 +392,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         }
 
         if (rule == null) {
-            showMessage(sender, "command.levelledmobs.rules.rule-name-invalid")
+            showMessage("command.levelledmobs.rules.rule-name-invalid")
             return
         }
 
@@ -409,13 +408,14 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         if (showOnConsole)
             Log.inf(sb.toString())
         else
-            sender.sendMessage(colorizeAll(sb.toString()))
+            commandSender!!.sendMessage(colorizeAll(sb.toString()))
     }
 
     private fun showEffectiveRules(
         ctx: CommandContext<CommandSourceStack>
     ) {
         val sender = ctx.source.sender
+        commandSender = ctx.source.sender
         val player = sender as? Player
         if (player == null) {
             sender.sendMessage("Must be run by a player")
@@ -472,7 +472,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
             mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
-            showEffectiveValues(sender, lmEntity, showOnConsole, mobHash)
+            showEffectiveValues(lmEntity, showOnConsole, mobHash)
             lmEntity.free()
             if (showOnConsole) sender.sendMessage("Effective rules have been printed in the console")
         }
@@ -530,9 +530,9 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         }
 
         if (!findNearbyEntities && livingEntity == null)
-            showMessage(sender, "command.levelledmobs.rules.no-entities-visible")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.rules.no-entities-visible")
         else if (findNearbyEntities && entities.isEmpty())
-            showMessage(sender, "command.levelledmobs.rules.no-entities-near")
+            MessagesHelper.showMessage(sender, "command.levelledmobs.rules.no-entities-near")
         else {
             if (findNearbyEntities)
                 livingEntity = entities[entities.firstKey()]
@@ -575,7 +575,6 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
     }
 
     private fun showEffectiveValues(
-        sender: CommandSender,
         lmEntity: LivingEntityWrapper,
         showOnConsole: Boolean,
         mobHash: String?
@@ -594,7 +593,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
                 )
             }
             else
-                showMessage(sender, "command.levelledmobs.rules.no-effective-rules")
+                showMessage("command.levelledmobs.rules.no-effective-rules")
 
             return
         }
@@ -671,69 +670,12 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
             values[externalMobTypeMisc] = lmEntity.mobExternalTypes.toString()
         }
 
-        var hadConditions = false
-        var hadApplySettings = false
-        var hadStrategies = false
-        var hadMisc = false
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.CONDITION }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadConditions){
-                hadConditions = true
-                sb.append("\n&lConditions:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadApplySettings){
-                hadApplySettings = true
-                sb.append("\n&lApply Settings&r:")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.STRATEGY }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadStrategies){
-                hadStrategies = true
-                sb.append("\n&lStrategies:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType != RuleType.CONDITION &&
-                    v.key.ruleType != RuleType.APPLY_SETTING &&
-                    v.key.ruleType != RuleType.STRATEGY &&
-                    v.key.ruleType != RuleType.NO_CATEGORY }
-            .iterator()
-        ){
-            if (!hadMisc){
-                hadMisc = true
-                sb.append("\n&lMisc:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
+        RuleInfo.formatRule(sb, values)
 
         if (showOnConsole)
             Log.inf(sb.toString())
         else
-            sender.sendMessage(colorizeAll(sb.toString()))
+            commandSender!!.sendMessage(colorizeAll(sb.toString()))
     }
 
     private fun getPlayerLevellingFormatting(

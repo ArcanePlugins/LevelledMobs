@@ -20,6 +20,7 @@ import java.util.TreeMap
 import org.bukkit.Particle
 import org.bukkit.block.Biome
 import org.bukkit.generator.structure.Structure
+import kotlin.collections.iterator
 
 
 /**
@@ -182,11 +183,79 @@ class RuleInfo(
     @field:ExcludeFromHash @field:RuleFieldInfo("chunk kill options", RuleType.APPLY_SETTING)
     var chunkKillOptions: ChunkKillOptions? = null
 
+    companion object{
+        fun formatRule(
+            sb: StringBuilder,
+            values: MutableMap<RuleSortingInfo, String>
+        ){
+            var hadConditions = false
+            var hadApplySettings = false
+            var hadStrategies = false
+            var hadMisc = false
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType == RuleType.CONDITION }
+                .sortedBy { v -> v.key.fieldName }
+                .iterator()
+            ){
+                if (!hadConditions){
+                    hadConditions = true
+                    sb.append("\n&lConditions:&r")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
+                .sortedBy { v -> v.key.fieldName }
+                .iterator()
+            ){
+                if (!hadApplySettings){
+                    hadApplySettings = true
+                    sb.append("\n&lApply Settings&r:")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType == RuleType.STRATEGY }
+                .sortedBy { v -> v.key.fieldName }
+                .iterator()
+            ){
+                if (!hadStrategies){
+                    hadStrategies = true
+                    sb.append("\n&lStrategies:&r")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType != RuleType.CONDITION &&
+                        v.key.ruleType != RuleType.APPLY_SETTING &&
+                        v.key.ruleType != RuleType.STRATEGY &&
+                        v.key.ruleType != RuleType.NO_CATEGORY }
+                .iterator()
+            ){
+                if (!hadMisc){
+                    hadMisc = true
+                    sb.append("\n&lMisc:&r")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+        }
+    }
+
     fun mergePresetRules(preset: RuleInfo?) {
         if (preset == null) return
 
         try {
             for (f in preset::javaClass.get().declaredFields) {
+                if (f.name == "Companion") continue
+
                 f.trySetAccessible()
 
                 if (f.isAnnotationPresent(DoNotMerge::class.java)) continue
@@ -361,64 +430,7 @@ class RuleInfo(
             e.printStackTrace()
         }
 
-        var hadConditions = false
-        var hadApplySettings = false
-        var hadStrategies = false
-        var hadMisc = false
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.CONDITION }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadConditions){
-                hadConditions = true
-                sb.append("\n&lConditions:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadApplySettings){
-                hadApplySettings = true
-                sb.append("\n&lApply Settings&r:")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.STRATEGY }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadStrategies){
-                hadStrategies = true
-                sb.append("\n&lStrategies:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType != RuleType.CONDITION &&
-                    v.key.ruleType != RuleType.APPLY_SETTING &&
-                    v.key.ruleType != RuleType.STRATEGY &&
-                    v.key.ruleType != RuleType.NO_CATEGORY }
-            .iterator()
-        ){
-            if (!hadMisc){
-                hadMisc = true
-                sb.append("\n&lMisc:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
+        formatRule(sb, values)
 
         return sb.toString()
     }

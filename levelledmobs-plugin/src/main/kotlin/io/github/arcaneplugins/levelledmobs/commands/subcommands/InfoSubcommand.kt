@@ -5,7 +5,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.command.CommandSender
 
 /**
@@ -18,10 +17,9 @@ object InfoSubcommand : CommandBase("levelledmobs.command.info") {
     override val description = "View info about the installed version of the plugin."
 
     fun buildCommand() : LiteralCommandNode<CommandSourceStack>{
-        return Commands.literal("info")
+        return createLiteralCommand("info")
             .executes { ctx ->
-                val sender = ctx.source.sender
-                showInfo(sender)
+                showInfo(ctx.source.sender)
                 return@executes Command.SINGLE_SUCCESS
             }
             .build()
@@ -30,8 +28,7 @@ object InfoSubcommand : CommandBase("levelledmobs.command.info") {
     fun showInfo(sender: CommandSender){
         val main = LevelledMobs.instance
         val listSeparator = main.messagesCfg.getString("command.levelledmobs.info.listSeparator", "&7, &f")!!
-        MessagesHelper.showMessage(
-            sender,
+        MessagesHelper.showMessage(sender,
             "command.levelledmobs.info.about",
             mutableListOf(
                 "%version%",

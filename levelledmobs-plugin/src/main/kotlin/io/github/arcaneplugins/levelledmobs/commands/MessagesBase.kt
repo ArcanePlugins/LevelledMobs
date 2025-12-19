@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender
  * @since 3.3.0
  */
 open class MessagesBase{
-    protected var messageLabel: String? = null
+    protected var messageLabel = "lm"
     protected var commandSender: CommandSender? = null
 
     protected fun showMessage(path: String) {
@@ -21,7 +21,7 @@ open class MessagesBase{
             throw NullPointerException("CommandSender must be set before calling showMessage")
         }
 
-        showMessage(path, commandSender!!, messageLabel!!)
+        showMessage(path, commandSender!!, messageLabel)
     }
 
     companion object{
@@ -41,8 +41,8 @@ open class MessagesBase{
         @JvmStatic
         protected fun getMessage(
             path: String,
-            replaceWhat: Array<String>,
-            replaceWith: Array<String>
+            replaceWhat: MutableList<String>,
+            replaceWith: MutableList<String>
         ): MutableList<String> {
             if (replaceWhat.size != replaceWith.size) {
                 throw ArrayIndexOutOfBoundsException(
@@ -75,15 +75,15 @@ open class MessagesBase{
     ) {
         showMessage(
             path,
-            arrayOf(replaceWhat),
-            arrayOf(replaceWith)
+            mutableListOf(replaceWhat),
+            mutableListOf(replaceWith)
         )
     }
 
     protected fun showMessage(
         path: String,
-        replaceWhat: Array<String>,
-        replaceWith: Array<String>
+        replaceWhat: MutableList<String>,
+        replaceWith: MutableList<String>
     ) {
         if (commandSender == null) {
             throw NullPointerException("CommandSender must be set before calling showMessage")
@@ -95,8 +95,8 @@ open class MessagesBase{
 
     protected fun showMessage(
         path: String,
-        replaceWhat: Array<String>,
-        replaceWith: Array<String>,
+        replaceWhat: MutableList<String>,
+        replaceWith: MutableList<String>,
         sender: CommandSender
     ) {
         val messages = getMessage(path, replaceWhat, replaceWith)

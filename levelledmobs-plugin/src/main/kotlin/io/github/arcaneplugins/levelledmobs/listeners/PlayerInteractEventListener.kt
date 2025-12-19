@@ -5,6 +5,7 @@ import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerBaseClass
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerBaseClass.CustomSpawnerInfo
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerSubcommand
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
@@ -163,25 +164,15 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         if (eggName.isNullOrEmpty()) eggName = "LM Spawn Egg"
 
         if (event.clickedBlock!!.blockData.material == Material.SPAWNER) {
-            val info = CustomSpawnerInfo()
+            val info = CustomSpawnerInfo(false)
             info.minLevel = minLevel
             info.maxLevel = maxLevel
             info.spawnType = spawnType
             info.customDropId = customDropId
-            if (meta.persistentDataContainer
-                    .has(NamespacedKeys.keySpawnerCustomName, PersistentDataType.STRING)
-            ) {
-                info.customName = meta.persistentDataContainer
-                    .get(NamespacedKeys.keySpawnerCustomName, PersistentDataType.STRING)
-            }
-            if (meta.persistentDataContainer
-                    .has(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING)
-            ) {
-                info.lore = meta.persistentDataContainer
-                    .get(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING)
-            }
 
+            SpawnerBaseClass.setMetaItems(meta, info, eggName)
             convertSpawner(event, info)
+
             return true
         }
 
@@ -290,7 +281,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
     }
 
     private fun copySpawner(player: Player, cs: CreatureSpawner) {
-        val info = CustomSpawnerInfo()
+        val info = CustomSpawnerInfo(false)
         info.player = player
         val pdc = cs.persistentDataContainer
 
@@ -338,7 +329,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         info.spawnCount = cs.spawnCount
         info.spawnRange = cs.spawnRange
 
-        //SpawnerSubcommand.generateSpawner(player, info)
+        SpawnerSubcommand.generateSpawner(info)
     }
 
     private fun showInfo(
