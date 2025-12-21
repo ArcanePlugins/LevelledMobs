@@ -13,9 +13,8 @@ class StringReplacer(var text: String) {
     fun replaceIfExists(target: String, operation: Supplier<String?>?) {
         val newText = operation?.get()
 
-        if (text.contains(target)) {
+        if (text.contains(target))
             replace(target, newText)
-        }
     }
 
     fun replace(replace: String, replaceWith: Double) {

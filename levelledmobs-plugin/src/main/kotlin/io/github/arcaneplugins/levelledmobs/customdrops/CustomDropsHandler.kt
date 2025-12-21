@@ -66,9 +66,8 @@ class CustomDropsHandler {
         private set
 
     fun load(){
-        if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
+        if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement())
             this.lmItemsParser = LMItemsParser()
-        }
     }
 
     fun clearDrops(){

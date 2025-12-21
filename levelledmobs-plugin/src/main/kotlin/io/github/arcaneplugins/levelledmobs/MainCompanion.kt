@@ -104,9 +104,7 @@ class MainCompanion{
     private fun getSettingsVersion(): Int {
         val main = LevelledMobs.instance
         val file = File(main.dataFolder, "settings.yml")
-        if (!file.exists()) {
-            return 0
-        }
+        if (!file.exists()) return 0
 
         main.helperSettings.cs = YamlConfiguration.loadConfiguration(file)
         return main.helperSettings.getInt("file-version")
@@ -161,16 +159,12 @@ class MainCompanion{
         val main = LevelledMobs.instance
         val debugsEnabled = main.helperSettings.cs.getStringList("debug-misc")
 
-        if (debugsEnabled.isEmpty()) {
-            return
-        }
+        if (debugsEnabled.isEmpty()) return
 
         var useAllDebugs = false
         var addedDebugs = false
         for (debug in debugsEnabled) {
-            if (debug.isNullOrEmpty()) {
-                continue
-            }
+            if (debug.isNullOrEmpty()) continue
 
             if ("*".equals(debug, ignoreCase = true)) {
                 useAllDebugs = true
@@ -186,9 +180,7 @@ class MainCompanion{
             }
         }
 
-        if (useAllDebugs) {
-            main.debugManager.filterDebugTypes.clear()
-        }
+        if (useAllDebugs) main.debugManager.filterDebugTypes.clear()
 
         if (addedDebugs && !main.debugManager.isEnabled) {
             val useSender = if (this.reloadSender != null) this.reloadSender else Bukkit.getConsoleSender()
@@ -414,18 +406,14 @@ class MainCompanion{
             }
         }
 
-        if (chunkInfos.isEmpty()) {
-            return false
-        }
+        if (chunkInfos.isEmpty()) return false
 
         for (chunkInfo in chunkInfos) {
-            if (!chunkInfo.containsKey(userId)) {
-                continue
-            }
+            if (!chunkInfo.containsKey(userId)) continue
+
             val instant = chunkInfo[userId]
-            if (Duration.between(instant, Instant.now()).toSeconds() <= 30L) {
+            if (Duration.between(instant, Instant.now()).toSeconds() <= 30L)
                 return true
-            }
         }
 
         return false
@@ -506,9 +494,9 @@ class MainCompanion{
                     } else if (isOutOfDate) {
                         // for some reason config#getStringList doesn't allow defaults??
 
-                        updateResult = if (main.messagesCfg.contains("other.update-notice.messages")) {
+                        updateResult = if (main.messagesCfg.contains("other.update-notice.messages"))
                             main.messagesCfg.getStringList("other.update-notice.messages")
-                        } else {
+                        else {
                             mutableListOf(
                                 "LevelledMobs Update Checker Notice:",
                                 "Your LevelledMobs version is outdated! Please update to" +
@@ -561,9 +549,8 @@ class MainCompanion{
         main.mobsQueueManager.stop()
         main.nametagQueueManager.stop()
         hashMapCleanUp?.cancelTask()
-        if (!main.ver.isRunningFolia) {
+        if (!main.ver.isRunningFolia)
             Bukkit.getScheduler().cancelTasks(main)
-        }
     }
 
     private fun buildUniversalGroups() {
@@ -588,19 +575,17 @@ class MainCompanion{
 
         passiveMobsGroup.add(snowGolem)
 
-        if (versionInfo.minorVersion >= 19) {
+        if (versionInfo.minorVersion >= 19)
             passiveMobsGroup.addAll(Compat119.getPassiveMobs())
-        }
-        if (versionInfo.minorVersion >= 20) {
-            passiveMobsGroup.addAll(Compat120.getPassiveMobs())
-        }
-        if (versionInfo.minorVersion >= 21) {
-            passiveMobsGroup.addAll(Compat121.getPassiveMobs())
-        }
 
-        if (versionInfo.minorVersion >= 19) {
+        if (versionInfo.minorVersion >= 20)
+            passiveMobsGroup.addAll(Compat120.getPassiveMobs())
+
+        if (versionInfo.minorVersion >= 21)
+            passiveMobsGroup.addAll(Compat121.getPassiveMobs())
+
+        if (versionInfo.minorVersion >= 19)
             hostileMobsGroup.addAll(Compat119.getHostileMobs())
-        }
 
         // include interfaces: WaterMob
         aquaticMobsGroup.addAll(mutableListOf(
@@ -610,9 +595,8 @@ class MainCompanion{
             EntityType.TURTLE
         ))
 
-        if (versionInfo.minorVersion >= 19) {
+        if (versionInfo.minorVersion >= 19)
             aquaticMobsGroup.addAll(getAquaticMobs())
-        }
     }
 
     fun addRecentlyJoinedPlayer(player: Player?) {

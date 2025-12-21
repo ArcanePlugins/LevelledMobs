@@ -35,39 +35,35 @@ class CustomDropInstance {
     }
 
     fun combineDrop(dropInstance: CustomDropInstance?) {
-        if (dropInstance == null) {
+        if (dropInstance == null)
             throw NullPointerException("dropInstance")
-        }
 
         this.overrideStockDrops = dropInstance.overrideStockDrops
 
-        if (dropInstance.utilizesGroupIds) {
+        if (dropInstance.utilizesGroupIds)
             this.utilizesGroupIds = true
-        }
 
         customItems.addAll(dropInstance.customItems)
     }
 
     fun getMobOrGroupName(): String {
-        return if (this.associatedMob != null) {
+        return if (this.associatedMob != null)
             associatedMob!!.name
-        } else if (this.entityGroup != null) {
+        else if (this.entityGroup != null)
             entityGroup!!.name
-        } else {
+        else
             "" // this return should never happen
-        }
     }
 
     val getOverrideStockDrops: Boolean
         get() = this.overrideStockDrops != null && this.overrideStockDrops!!
 
     override fun toString(): String {
-        return if (this.associatedMob != null) {
+        return if (this.associatedMob != null)
             if (getOverrideStockDrops) associatedMob!!.name + " - override" else associatedMob!!.name
-        } else if (this.entityGroup != null) {
+        else if (this.entityGroup != null)
             if (getOverrideStockDrops) "$entityGroup - override" else entityGroup.toString()
-        } else {
+        else
             "CustomDropInstance"
-        }
     }
 }

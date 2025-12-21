@@ -27,16 +27,14 @@ class LivingEntityPlaceholder : LivingEntityWrapperBase(), LivingEntityInterface
         ): LivingEntityPlaceholder {
             val leph: LivingEntityPlaceholder
 
-            if (location.world == null) {
+            if (location.world == null)
                 throw NullPointerException("World can't be null")
-            }
 
             synchronized(cachedplaceholdersLock) {
-                leph = if (cache.empty()) {
+                leph = if (cache.empty())
                     LivingEntityPlaceholder()
-                } else {
+                else
                     cache.pop()
-                }
             }
 
             leph.populateEntityData(entityType, location, location.world)
@@ -55,12 +53,8 @@ class LivingEntityPlaceholder : LivingEntityWrapperBase(), LivingEntityInterface
     }
 
     override fun free() {
-        if (inUseCount.decrementAndGet() > 0) {
-            return
-        }
-        if (!isPopulated) {
-            return
-        }
+        if (inUseCount.decrementAndGet() > 0) return
+        if (!isPopulated) return
 
         clearEntityData()
         synchronized(cachedplaceholdersLock) {

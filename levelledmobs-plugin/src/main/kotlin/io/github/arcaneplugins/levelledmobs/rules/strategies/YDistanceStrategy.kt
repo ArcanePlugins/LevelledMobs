@@ -20,25 +20,21 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
     override var shouldMerge: Boolean = false
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
-        if (levellingStrategy is YDistanceStrategy) {
+        if (levellingStrategy is YDistanceStrategy)
             mergeYDistanceStrategy(levellingStrategy as YDistanceStrategy?)
-        }
     }
 
     private fun mergeYDistanceStrategy(yds: YDistanceStrategy?) {
-        if (yds == null) {
-            return
-        }
+        if (yds == null) return
 
-        if (yds.startingYLevel != null) {
+        if (yds.startingYLevel != null)
             this.startingYLevel = yds.startingYLevel
-        }
-        if (yds.endingYLevel != null) {
+
+        if (yds.endingYLevel != null)
             this.endingYLevel = yds.endingYLevel
-        }
-        if (yds.yPeriod != null) {
+
+        if (yds.yPeriod != null)
             this.yPeriod = yds.yPeriod
-        }
     }
 
     override fun toString(): String {
@@ -95,9 +91,8 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(
             lmEntity
         )
-        if (variance == null || variance == 0) {
+        if (variance == null || variance == 0)
             return 0
-        }
 
         val change = ThreadLocalRandom.current().nextInt(0, variance + 1)
 

@@ -54,7 +54,6 @@ class EntityDamageDebugListener : Listener {
         // Make sure the player has debug perm
         if (!player.hasPermission("levelledmobs.debug")) return
 
-
         // Don't spam the player's chat
         val entityId = lmEntity.livingEntity.entityId.toString()
         if (cooldownMap.containsKey(player.uniqueId)) {

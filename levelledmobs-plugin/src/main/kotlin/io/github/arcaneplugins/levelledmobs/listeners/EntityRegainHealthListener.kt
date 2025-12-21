@@ -19,14 +19,11 @@ class EntityRegainHealthListener : Listener {
     // When the mob regains health, try to update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
-        if (event.entity !is LivingEntity) {
-            return
-        }
+        if (event.entity !is LivingEntity) return
 
         // Make sure the mob is levelled
-        if (!LevelledMobs.instance.levelManager.isLevelled(event.entity as LivingEntity)) {
+        if (!LevelledMobs.instance.levelManager.isLevelled(event.entity as LivingEntity))
             return
-        }
 
         val lmEntity = LivingEntityWrapper.getInstance((event.entity as LivingEntity))
         MobDataManager.populateAttributeCache(lmEntity)

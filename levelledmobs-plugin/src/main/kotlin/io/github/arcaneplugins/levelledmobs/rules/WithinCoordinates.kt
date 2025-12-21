@@ -29,11 +29,11 @@ class WithinCoordinates {
         if (number == null) return true
 
         var infinityDirection = InfinityDirection.NONE
-        if ("-" == number) {
+        if ("-" == number)
             infinityDirection = InfinityDirection.DESCENDING
-        } else if ("+" == number) {
+        else if ("+" == number)
             infinityDirection = InfinityDirection.ASCENDING
-        } else if (isInteger(number)) {
+        else if (isInteger(number)) {
             val num = number.toInt()
             when (axis) {
                 Axis.X -> {

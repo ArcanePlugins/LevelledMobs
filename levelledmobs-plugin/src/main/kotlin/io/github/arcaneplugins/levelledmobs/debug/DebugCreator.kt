@@ -74,18 +74,13 @@ object DebugCreator {
                 zipOut?.close()
                 fis?.close()
                 fos?.close()
-            } catch (_: Exception) {
-            }
+            } catch (_: Exception) { }
         }
 
         val serverInfo = File(pluginDir, "serverinfo.txt")
-        if (serverInfo.exists()) {
-            serverInfo.delete()
-        }
+        if (serverInfo.exists()) serverInfo.delete()
 
-        if (result) {
-            sender.sendMessage("Created file: " + zipFile.absolutePath)
-        }
+        if (result) sender.sendMessage("Created file: " + zipFile.absolutePath)
     }
 
     private fun generateSystemInfo(): String {
@@ -103,45 +98,36 @@ object DebugCreator {
             shaDigest = MessageDigest.getInstance("SHA-256")
         } catch (_: Exception) { }
 
-        sb.append(main.description.name)
-        sb.append(" ")
+        sb.append(main.description.name).append(" ")
         sb.append(main.description.version)
         sb.append(System.lineSeparator())
-        sb.append("file size: ")
-        sb.append(String.format("%,d", lmFile.length()))
+        sb.append("file size: ").append(String.format("%,d", lmFile.length()))
         sb.append(System.lineSeparator())
         sb.append("sha256 hash: ")
-        if (shaDigest != null) {
+        if (shaDigest != null)
             sb.append(getFileChecksum(shaDigest, lmFile))
-        } else {
+        else
             sb.append("(error)")
-        }
+
         sb.append(System.lineSeparator())
 
-        sb.append("server build: ")
-        sb.append(Bukkit.getServer().version)
+        sb.append("server build: ").append(Bukkit.getServer().version)
         sb.append(System.lineSeparator())
-        sb.append("bukkit version: ")
-        sb.append(Bukkit.getBukkitVersion())
+        sb.append("bukkit version: ").append(Bukkit.getBukkitVersion())
         sb.append(System.lineSeparator())
-        sb.append("player count: ")
-        sb.append(Bukkit.getOnlinePlayers().size)
+        sb.append("player count: ").append(Bukkit.getOnlinePlayers().size)
         sb.append("/")
         sb.append(main.maxPlayersRecorded)
-        sb.append(System.lineSeparator())
-        sb.append(System.lineSeparator())
+        sb.append(System.lineSeparator()).append(System.lineSeparator())
         sb.append("plugins:\n")
 
         val plugins: MutableList<String> = ArrayList(Bukkit.getPluginManager().plugins.size)
         val sbPlugins = StringBuilder()
         for (p in Bukkit.getPluginManager().plugins) {
             sbPlugins.setLength(0)
-            if (!p.isEnabled) {
-                sbPlugins.append("(disabled) ")
-            }
+            if (!p.isEnabled) sbPlugins.append("(disabled) ")
 
-            sbPlugins.append(p.name)
-            sbPlugins.append(" ")
+            sbPlugins.append(p.name).append(" ")
             sbPlugins.append(p.description.version)
             sbPlugins.append(" - ")
             sbPlugins.append(p.description.description)

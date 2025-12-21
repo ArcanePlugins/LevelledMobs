@@ -57,15 +57,13 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         val levelDistance = (distanceFromSpawn - bufferDistance).coerceAtLeast(0f)
         val variance = LevelledMobs.instance.rulesManager.getRuleMaxRandomVariance(lmEntity)
         var varianceAdded = 0
-        if (variance != null) {
+        if (variance != null)
             varianceAdded = ThreadLocalRandom.current().nextInt(0, variance + 1)
-        }
 
         var ringedTiers =
             if (this.ringedTiers == null) 1f else ringedTiers!!
-        if (ringedTiers == 0f) {
+        if (ringedTiers == 0f)
             ringedTiers = 1f
-        }
 
         //Get the level thats meant to be at a given distance
         var spawnDistanceAssignment =
@@ -78,9 +76,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             spawnDistanceAssignment = 0f
         }
 
-        if (!heightModIsEnabled) {
+        if (!heightModIsEnabled)
             return spawnDistanceAssignment
-        }
 
         return generateBlendedLevel(lmEntity, spawnDistanceAssignment)
     }
@@ -90,15 +87,12 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
         if (levellingStrategy == null) return
-        if (levellingStrategy is SpawnDistanceStrategy) {
+        if (levellingStrategy is SpawnDistanceStrategy)
             mergeSpawnDistanceStrategy(levellingStrategy as SpawnDistanceStrategy?)
-        }
     }
 
     private fun mergeSpawnDistanceStrategy(sds: SpawnDistanceStrategy?) {
-        if (sds == null) {
-            return
-        }
+        if (sds == null) return
 
         try {
             for (f in sds.javaClass.declaredFields) {
@@ -132,13 +126,11 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             )
         }
 
-        if (this.originCoordX != null) {
+        if (this.originCoordX != null)
             sb.append(" x: ").append(this.originCoordX)
-        }
 
-        if (this.originCoordZ != null) {
+        if (this.originCoordZ != null)
             sb.append(" z: ").append(this.originCoordZ)
-        }
 
         return sb.toString()
     }
@@ -175,9 +167,8 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
         result += spawnDistanceLevelAssignment
         val variance = RulesManager.instance.getRuleMaxRandomVariance(lmEntity)
 
-        if (variance != null && variance > 0) {
+        if (variance != null && variance > 0)
             result += ThreadLocalRandom.current().nextInt(0, variance + 1).toFloat()
-        }
 
         return result
     }

@@ -142,20 +142,17 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         for (rpi in main.rulesParsingManager.rulePresets.values) {
             sb.append(
                 "\n&r--------------------------------- Preset rule ----------------------------------"
-            )
-                .append(rpi.formatRulesVisually(false, mutableListOf("ruleIsEnabled")))
+            ).append(rpi.formatRulesVisually(false, mutableListOf("ruleIsEnabled")))
         }
 
         sb.append(
             "\n&r--------------------------------- Default values -------------------------------"
-        )
-            .append(main.rulesParsingManager.defaultRule!!.formatRulesVisually())
+        ).append(main.rulesParsingManager.defaultRule!!.formatRulesVisually())
 
         for (rpi in main.rulesParsingManager.customRules) {
             sb.append(
                 "\n&r--------------------------------- Custom rule ----------------------------------"
-            )
-                .append(rpi.formatRulesVisually())
+            ).append(rpi.formatRulesVisually())
         }
         sb.append(
             "\n&r--------------------------------------------------------------------------------------"

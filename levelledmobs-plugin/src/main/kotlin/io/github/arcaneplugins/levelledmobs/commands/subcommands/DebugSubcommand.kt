@@ -402,9 +402,8 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
 
     private fun showPluginDefinitions(sender: CommandSender){
         val ext = ExternalCompatibilityManager.instance
-        if (ext.externalPluginDefinitions.isEmpty()){
+        if (ext.externalPluginDefinitions.isEmpty())
             sender.sendMessage("No external plugins defined")
-        }
 
         val sb = StringBuilder("Currently defined plugins:")
         for (plugin in ext.externalPluginDefinitions.values){
@@ -424,9 +423,8 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
             return
         }
         doNbtDump(ctx)
-        if (ctx.source.sender !is ConsoleCommandSender) {
+        if (ctx.source.sender !is ConsoleCommandSender)
             ctx.source.sender.sendMessage("NBT data has been written to the console")
-        }
     }
 
     private fun doNbtDump(ctx: CommandContext<CommandSourceStack>) {
@@ -535,9 +533,8 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                 .lowercase()
         )
 
-        if (main.debugManager.outputType !== DebugManager.OutputTypes.TO_CONSOLE) {
+        if (main.debugManager.outputType !== DebugManager.OutputTypes.TO_CONSOLE)
             sender.sendMessage("WARNING: sending debug messages to chat can cause huge chat spam.")
-        }
     }
 
     private fun showCustomDrops(sender: CommandSender) {
@@ -557,9 +554,9 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
         if (isEnable) {
             val wasTimerEnabled = main.debugManager.isTimerEnabled
             val enableAllChanged = main.debugManager.bypassAllFilters != isEnableAll
-            if (debugCategory.isNotEmpty()) {
-                if (!parseEnableDebugCategory(debugCategory, sender)) return
-            }
+            if (debugCategory.isNotEmpty() && !parseEnableDebugCategory(debugCategory, sender))
+                return
+
             main.debugManager.enableDebug(sender, false, isEnableAll)
             if (wasEnabled && !enableAllChanged) {
                 if (wasTimerEnabled) sender.sendMessage("Debugging is already enabled, disabled timer")
@@ -707,11 +704,6 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                 val inputValue = splitStringWithQuotes(input, false)
                 addOrRemoveItemsToList(sender, (operationType == OperationType.ADD), inputValue, listType)
             }
-
-            else -> {
-                val inputSplit = splitStringWithQuotes(ctx.input, false)
-                sender.sendMessage("Invalid option: " + inputSplit.last())
-            }
         }
     }
 
@@ -799,9 +791,9 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                         if (actualRuleName != null) {
                             dm.filterRuleNames.add(actualRuleName.replace(" ", "_"))
                             optionsAddedOrRemoved.add(actualRuleName)
-                        } else {
-                            sender.sendMessage("Invalid rule name: $ruleName")
                         }
+                        else
+                            sender.sendMessage("Invalid rule name: $ruleName")
                     } else {
                         dm.filterRuleNames.remove(ruleName)
                         optionsAddedOrRemoved.add(ruleName)
@@ -823,7 +815,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
             }
         }
         if (optionsAddedOrRemoved.isNotEmpty()) {
-            val useName: String = listType.name.replace("_", " ").lowercase()
+            val useName = listType.name.replace("_", " ").lowercase()
             if (isAdd) sender.sendMessage("Added values to $useName : $optionsAddedOrRemoved")
             else sender.sendMessage("Removed values from $useName: $optionsAddedOrRemoved")
         }

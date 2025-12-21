@@ -25,9 +25,8 @@ object  FileMigrator {
         var whiteSpace = 0
 
         for (element in line) {
-            if (element != ' ') {
-                break
-            }
+            if (element != ' ') break
+
             whiteSpace++
         }
         return if (whiteSpace == 0) 0 else whiteSpace / 2
@@ -45,11 +44,11 @@ object  FileMigrator {
         }
 
         constructor(value: String?, depth: Int, isListValue: Boolean) {
-            if (isListValue) {
+            if (isListValue)
                 addListValue(value)
-            } else {
+            else
                 this.simpleValue = value
-            }
+
             this.depth = depth
         }
 
@@ -57,26 +56,24 @@ object  FileMigrator {
             get() = valueList != null
 
         fun addListValue(value: String?) {
-            if (valueList == null) {
+            if (valueList == null)
                 valueList = mutableListOf()
-            }
+
             valueList!!.add(value)
         }
 
         override fun toString(): String {
             if (this.isList) {
-                return if (this.valueList == null || valueList!!.isEmpty()) {
+                return if (this.valueList == null || valueList!!.isEmpty())
                     super.toString()
-                } else {
+                else
                     this.valueList!!.joinToString(",")
-                }
             }
 
-            return if (this.simpleValue == null) {
+            return if (this.simpleValue == null)
                 super.toString()
-            } else {
+            else
                 simpleValue!!
-            }
         }
     }
 
@@ -91,14 +88,11 @@ object  FileMigrator {
         list: MutableList<String>,
         currentKey: String?
     ): String? {
-        if (list.isEmpty()) {
-            return currentKey
-        }
+        if (list.isEmpty()) return currentKey
 
         var result = list.joinToString(".")
-        if (currentKey != null) {
+        if (currentKey != null)
             result += ".$currentKey"
-        }
 
         return result
     }
@@ -116,9 +110,8 @@ object  FileMigrator {
             content.replace("overall_chance:", "overall-chance:")
             content.replace("overall_permission:", "overall-permission:")
             val foundFileVersion = "file-version:.*?\\d+".toRegex().find(content.text)
-            if (foundFileVersion != null){
+            if (foundFileVersion != null)
                 content.replace(foundFileVersion.value, "file-version: 12")
-            }
 
             Files.writeString(
                 to.toPath(), content.text, StandardCharsets.UTF_8,
@@ -140,14 +133,12 @@ object  FileMigrator {
         section1: KeySectionInfo,
         section2: KeySectionInfo
     ): Boolean {
-        if (section1.lines.size != section2.lines.size) {
+        if (section1.lines.size != section2.lines.size)
             return false
-        }
 
         for (i in section1.lines.indices) {
-            if (section1.lines[i] != section2.lines[i]) {
+            if (section1.lines[i] != section2.lines[i])
                 return false
-            }
         }
 
         return true
@@ -171,9 +162,9 @@ object  FileMigrator {
 
             if (line.startsWith("# ||  Section")) {
                 val foundSectionNumber: Int = extractSectionNumber(line)
-                if (foundSectionNumber > 0) {
+                if (foundSectionNumber > 0)
                     sectionNumber = foundSectionNumber
-                }
+
                 sectionStartingLine = 0
             }
 
@@ -182,33 +173,32 @@ object  FileMigrator {
                 foundNonComment = false
             }
 
-            if (line.startsWith("#") || line.isEmpty()) {
+            if (line.startsWith("#") || line.isEmpty())
                 continue
-            }
 
             if (!foundNonComment) {
-                if (sectionStartingLine > 0) {
+                if (sectionStartingLine > 0)
                     sectionStartingLine = i
-                }
+
                 foundNonComment = true
             }
 
             if (depth == 0) {
-                if (keySection != null) {
+                if (keySection != null)
                     sections[keyName!!] = keySection
-                }
 
                 keySection = KeySectionInfo()
                 keySection.lineNumber = i
                 keySection.sectionNumber = sectionNumber
                 keySection.sectionStartingLine = sectionStartingLine
                 keyName = line
-            } else keySection?.lines?.add(origline)
+            }
+            else
+                keySection?.lines?.add(origline)
         }
 
-        if (keySection != null) {
+        if (keySection != null)
             sections[keyName!!] = keySection
-        }
 
         return sections
     }
@@ -218,13 +208,11 @@ object  FileMigrator {
         val m = p.matcher(input)
         if (m.find() && m.groupCount() == 1) {
             var temp = m.group(1)
-            if (temp.length > 1 && temp[0] == '0') {
+            if (temp.length > 1 && temp[0] == '0')
                 temp = temp.substring(1)
-            }
 
-            if (Utils.isInteger(temp)) {
+            if (Utils.isInteger(temp))
                 return temp.toInt()
-            }
         }
 
         return 0
@@ -294,9 +282,9 @@ object  FileMigrator {
                                 currentKey.removeAt(currentKey.size - 1)
                             }
                             key = getKeyFromList(currentKey, key)!!
-                        } else {
-                            key = getKeyFromList(currentKey, key)!!
                         }
+                        else
+                            key = getKeyFromList(currentKey, key)!!
 
                         if (!hasValues) {
                             currentKey.add(keyOnly)
@@ -382,10 +370,10 @@ object  FileMigrator {
                             if ((isSettings && (oldVersion < 28) && key.equals(
                                     useCustomDrops, ignoreCase = true
                                 ) &&
-                                        oldConfigMap.containsKey(useCustomDrops) &&
-                                        oldConfigMap[useCustomDrops]!!.simpleValue.equals(
-                                            "true", ignoreCase = true
-                                        ))
+                                    oldConfigMap.containsKey(useCustomDrops) &&
+                                    oldConfigMap[useCustomDrops]!!.simpleValue.equals(
+                                        "true", ignoreCase = true
+                                    ))
                             ) {
                                 if (showMessages) {
                                     Log.inf(
@@ -407,20 +395,18 @@ object  FileMigrator {
                                 // here's where we add values from the old config not present in the new
                                 for (entry in oldConfigMap.entries) {
                                     val oldValue = entry.key
-                                    if (!oldValue!!.startsWith(parentKey)) {
+                                    if (!oldValue!!.startsWith(parentKey))
                                         continue
-                                    }
-                                    if (newConfigMap.containsKey(oldValue)) {
+
+                                    if (newConfigMap.containsKey(oldValue))
                                         continue
-                                    }
-                                    if (!isEntitySameSubkey(parentKey, oldValue)) {
+
+                                    if (!isEntitySameSubkey(parentKey, oldValue))
                                         continue
-                                    }
 
                                     val fiOld = entry.value
-                                    if (fiOld!!.isList) {
-                                        continue
-                                    }
+                                    if (fiOld!!.isList) continue
+
                                     val padding: String = getPadding(depth * 2)
                                     val newline =
                                         padding + getEndingKey(oldValue) + ": " + fiOld.simpleValue
@@ -449,9 +435,9 @@ object  FileMigrator {
                                     line = line.replace(value, migratedValue)
                                     newConfigLines[currentLine] = line
                                 }
-                            } else {
-                                valuesMatched++
                             }
+                            else
+                                valuesMatched++
                         }
                     } else if (line.trim { it <= ' ' }.startsWith("-")) {
                         val key = getKeyFromList(currentKey, null)
@@ -498,9 +484,9 @@ object  FileMigrator {
                     if (temp.endsWith("nomultiplier:") || temp.endsWith("nospawner:")) {
                         temp += " true"
                         newConfigLines.add(temp)
-                    } else {
-                        newConfigLines.add(oldConfigLines[i])
                     }
+                    else
+                        newConfigLines.add(oldConfigLines[i])
                 }
             }
 
@@ -527,9 +513,7 @@ object  FileMigrator {
         var count = 0
 
         for (element in text) {
-            if (element == '.') {
-                count++
-            }
+            if (element == '.') count++
         }
 
         return count
@@ -551,18 +535,14 @@ object  FileMigrator {
 
     private fun getEndingKey(input: String): String {
         val lastPeriod = input.lastIndexOf('.')
-        if (lastPeriod < 0) {
-            return input
-        }
+        if (lastPeriod < 0) return input
 
         return input.substring(lastPeriod + 1)
     }
 
     private fun getParentKey(input: String): String? {
         val lastPeriod = input.lastIndexOf('.')
-        if (lastPeriod < 0) {
-            return null
-        }
+        if (lastPeriod < 0) return null
 
         return input.take(lastPeriod)
     }
@@ -570,9 +550,9 @@ object  FileMigrator {
     private fun getFirstNonCommentLine(input: List<String>): Int {
         for (lineNum in input.indices) {
             val line = input[lineNum].replace("\t", "").trim { it <= ' ' }
-            if (line.startsWith("#") || line.isEmpty()) {
+            if (line.startsWith("#") || line.isEmpty())
                 continue
-            }
+
             return lineNum
         }
 
@@ -589,11 +569,9 @@ object  FileMigrator {
         for (line in input) {
             val depth = getFieldDepth(line)
             val useLine = line.replace("\t", "").trim { it <= ' ' }
-            if (useLine.startsWith("#") || useLine.isEmpty()) {
+            if (useLine.startsWith("#") || useLine.isEmpty())
                 continue
-            }
 
-            //if (line.contains(":")) {
             if (useLine.matches(regexPattern.toRegex())) {
                 val firstColon = useLine.indexOf(':')
                 val hasValues = useLine.length > firstColon + 1
@@ -633,9 +611,8 @@ object  FileMigrator {
 
                 if (!hasValues) {
                     currentKey.add(origKey)
-                    if (!configMap.containsKey(key)) {
+                    if (!configMap.containsKey(key))
                         configMap[key] = FieldInfo(null, depth)
-                    }
                 } else {
                     val value = useLine.substring(firstColon + 1).trim { it <= ' ' }
                     val fi = FieldInfo(value, depth)
@@ -648,9 +625,9 @@ object  FileMigrator {
                 if (configMap.containsKey(key)) {
                     val fi = configMap[key]
                     fi!!.addListValue(value)
-                } else {
-                    configMap[key] = FieldInfo(value, depth, true)
                 }
+                else
+                    configMap[key] = FieldInfo(value, depth, true)
             }
         }
 

@@ -32,13 +32,11 @@ class CommandFallback(
         if ("reload".equals(args[0], ignoreCase = true)){
             main.reloadLM(sender)
 
-            if (main.mainCompanion.hadRulesLoadError && sender is Player) {
+            if (main.mainCompanion.hadRulesLoadError && sender is Player)
                 sender.sendMessage(FileLoader.getFileLoadErrorMessage())
-            }
         }
-        else if ("info".equals(args[0], ignoreCase = true)){
+        else if ("info".equals(args[0], ignoreCase = true))
             InfoSubcommand.showInfo(sender)
-        }
 
         return true
     }

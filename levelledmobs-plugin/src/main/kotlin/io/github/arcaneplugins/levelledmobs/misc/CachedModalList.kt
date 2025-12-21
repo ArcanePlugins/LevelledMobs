@@ -30,37 +30,23 @@ class CachedModalList<T> : Cloneable {
     }
 
     fun isIncludedInList(item: T, lmEntity: LivingEntityWrapper?): Boolean {
-        if (this.includeAll) {
-            return true
-        }
-        if (this.excludeAll) {
-            return false
-        }
-        if (this.isEmpty()) {
-            return true
-        }
+        if (this.includeAll) return true
+        if (this.excludeAll) return false
+        if (this.isEmpty()) return true
 
         if (lmEntity != null) {
             for (group in lmEntity.getApplicableGroups()) {
-                if (excludedGroups.contains(group)) {
-                    return false
-                }
+                if (excludedGroups.contains(group)) return false
             }
 
-            if (excludedList.contains(item)) {
-                return false
-            }
+            if (excludedList.contains(item)) return false
 
             for (group in lmEntity.getApplicableGroups()) {
-                if (includedGroups.contains(group)) {
-                    return true
-                }
+                if (includedGroups.contains(group)) return true
             }
         }
 
-        if (excludedList.contains(item)) {
-            return false
-        }
+        if (excludedList.contains(item)) return false
 
         return this.isBlacklist || includedList.contains(item)
     }
@@ -98,45 +84,39 @@ class CachedModalList<T> : Cloneable {
     override fun toString(): String {
         val sb = StringBuilder()
         if (includedList.isNotEmpty()) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("lst: ")
             applySpecialFormatting(this.includedList, sb)
         }
         if (this.includeAll) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("all included")
         }
 
         if (includedGroups.isNotEmpty()) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("grps: ")
             sb.append(this.includedGroups)
         }
 
         if (this.excludeAll) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("all excluded")
         }
 
         if (excludedList.isNotEmpty()) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("ex-lst: ")
             applySpecialFormatting(this.excludedList, sb)
         }
         if (excludedGroups.isNotEmpty()) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("ex-grps: ")
             sb.append(this.excludedGroups)
         }
@@ -180,11 +160,7 @@ class CachedModalList<T> : Cloneable {
         includedGroups.addAll(cachedModalList.includedGroups)
         excludedGroups.addAll(cachedModalList.excludedGroups)
 
-        if (cachedModalList.includeAll) {
-            this.includeAll = true
-        }
-        if (cachedModalList.excludeAll) {
-            this.excludeAll = true
-        }
+        if (cachedModalList.includeAll) this.includeAll = true
+        if (cachedModalList.excludeAll) this.excludeAll = true
     }
 }

@@ -89,14 +89,12 @@ class CustomDropItem() : CustomDropBase(
         }
 
     fun setDamageRangeFromString(numberOrNumberRange: String?): Boolean {
-        if (numberOrNumberRange.isNullOrEmpty()) {
+        if (numberOrNumberRange.isNullOrEmpty())
             return false
-        }
 
         if (!numberOrNumberRange.contains("-")) {
-            if (!Utils.isInteger(numberOrNumberRange)) {
+            if (!Utils.isInteger(numberOrNumberRange))
                 return false
-            }
 
             this.damage = numberOrNumberRange.toInt()
             this.hasDamageRange = false
@@ -106,9 +104,8 @@ class CustomDropItem() : CustomDropBase(
         }
 
         val nums = numberOrNumberRange.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        if (nums.size != 2) {
+        if (nums.size != 2)
             return false
-        }
 
         if (!Utils.isInteger(nums[0].trim { it <= ' ' }) || !Utils.isInteger(
                 nums[1].trim { it <= ' ' })
@@ -136,11 +133,10 @@ class CustomDropItem() : CustomDropBase(
         }
 
     fun getDamageAsString(): String {
-        return if (this.hasDamageRange) {
+        return if (this.hasDamageRange)
             "$damageRangeMin-$damageRangeMax"
-        } else {
+        else
             damage.toString()
-        }
     }
 
     var itemStacks: MutableList<ItemStack>? = null

@@ -37,11 +37,11 @@ class LMItemsParser {
         item: CustomDropItem
     ): Boolean {
         if (!ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
-            if (ExternalCompatibilityManager.hasLMItemsInstalled) {
+            if (ExternalCompatibilityManager.hasLMItemsInstalled)
                 Log.war("customdrops.yml references external item '$materialName' but LM_Items is an old version")
-            } else {
+            else
                 Log.war("customdrops.yml references external item '$materialName' but LM_Items is not installed")
-            }
+
             return false
         }
 
@@ -115,9 +115,9 @@ class LMItemsParser {
                     if (info != null) {
                         value = main.levelManager.replaceStringPlaceholders(
                             value, info.lmEntity!!,true,info.mobKiller,false)
-                    } else if (ExternalCompatibilityManager.hasPapiInstalled) {
-                        value = ExternalCompatibilityManager.getPapiPlaceholder(null, value,null)
                     }
+                    else if (ExternalCompatibilityManager.hasPapiInstalled)
+                        value = ExternalCompatibilityManager.getPapiPlaceholder(null, value,null)
                 }
 
                 (itemRequest.extras as Hashtable<String, Any>)[useKey] = value
@@ -154,11 +154,10 @@ class LMItemsParser {
 
             // on server startup show as warning message
             // after reload show as debug
-            if (main.mainCompanion.hasFinishedLoading) {
+            if (main.mainCompanion.hasFinishedLoading)
                 DebugManager.log(DebugType.CUSTOM_DROPS) { msg }
-            } else {
+            else
                 Log.war(msg)
-            }
 
             main.customDropsHandler.customDropsParser.invalidExternalItems.add(msg)
 
@@ -170,9 +169,9 @@ class LMItemsParser {
                 item.itemStacks = result.itemStacks as MutableList<ItemStack>
             else
                 item.itemStack = result.itemStack
-        } else {
-            item.itemStack = itemStack
         }
+        else
+            item.itemStack = itemStack
 
         return true
     }

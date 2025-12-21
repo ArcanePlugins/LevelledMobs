@@ -18,9 +18,8 @@ class MetricsInfo {
 
     private fun isCustomDropsEnabed(): Boolean {
         for (ruleInfo in LevelledMobs.instance.rulesManager.rulesInEffect) {
-            if (ruleInfo.customDropsUseForMobs != null && ruleInfo.customDropsUseForMobs!!) {
+            if (ruleInfo.customDropsUseForMobs != null && ruleInfo.customDropsUseForMobs!!)
                 return true
-            }
         }
 
         return false
@@ -45,39 +44,36 @@ class MetricsInfo {
             if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.restrictionsMaxLevel == null) 1
             else LevelledMobs.instance.rulesParsingManager.defaultRule!!.restrictionsMaxLevel!!
 
-        return if (maxLevel >= 500) {
+        return if (maxLevel >= 500)
             "500+"
-        } else if (maxLevel > 100) {
+        else if (maxLevel > 100)
             "101-499"
-        } else if (maxLevel > 50) {
+        else if (maxLevel > 50)
             "51-100"
-        } else if (maxLevel > 24) {
+        else if (maxLevel > 24)
             "25-50"
-        } else if (maxLevel > 10) {
+        else if (maxLevel > 10)
             "11-24"
-        } else {
+        else
             "1-10"
-        }
     }
 
     fun getCustomRulesUsed(): String {
         // 0, 1-2, 3-4, 5+
         var rulesEnabledCount = 0
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.customRules) {
-            if (ruleInfo.ruleIsEnabled) {
+            if (ruleInfo.ruleIsEnabled)
                 rulesEnabledCount++
-            }
         }
 
-        return if (rulesEnabledCount > 4) {
+        return if (rulesEnabledCount > 4)
             "5+"
-        } else if (rulesEnabledCount > 2) {
+        else if (rulesEnabledCount > 2)
             "3-4"
-        } else if (rulesEnabledCount > 0) {
+        else if (rulesEnabledCount > 0)
             "1-2"
-        } else {
+        else
             "0"
-        }
     }
 
     fun getLevellingStrategy(): String {
@@ -132,44 +128,38 @@ class MetricsInfo {
     fun customEntityNamesCount(): String {
         // 0, 1-3, 4-8, 9-12, 13+
         var count = 0
-        if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides != null) {
+        if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides != null)
             count += LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverrides!!.size
-        }
-        if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverridesLevel != null) {
-            count += LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverridesLevel!!.size
-        }
 
-        return if (count > 12) {
+        if (LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverridesLevel != null)
+            count += LevelledMobs.instance.rulesParsingManager.defaultRule!!.entityNameOverridesLevel!!.size
+
+        return if (count > 12)
             "13+"
-        } else if (count > 8) {
+        else if (count > 8)
             "9-12"
-        } else if (count > 3) {
+        else if (count > 3)
             "4-8"
-        } else if (count > 0) {
+        else if (count > 0)
             "1-3"
-        } else {
+        else
             "0"
-        }
     }
 
     fun usesNbtData(): String {
-        if (!ExternalCompatibilityManager.hasNbtApiInstalled) {
+        if (!ExternalCompatibilityManager.hasNbtApiInstalled)
             return "No"
-        }
 
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
-            if (!ruleInfo.ruleIsEnabled) {
+            if (!ruleInfo.ruleIsEnabled)
                 continue
-            }
 
-            if (ruleInfo.mobNBTData != null && ruleInfo.mobNBTData!!.isNotEmpty) {
+            if (ruleInfo.mobNBTData != null && ruleInfo.mobNBTData!!.isNotEmpty)
                 return "Yes"
-            }
         }
 
-        if (isCustomDropsEnabed() && LevelledMobs.instance.customDropsHandler.customDropsParser.dropsUtilizeNBTAPI) {
+        if (isCustomDropsEnabed() && LevelledMobs.instance.customDropsHandler.customDropsParser.dropsUtilizeNBTAPI)
             return "Yes"
-        }
 
         return "No"
     }
@@ -188,9 +178,8 @@ class MetricsInfo {
         }
 
         for (ruleInfo in LevelledMobs.instance.rulesParsingManager.getAllRules()) {
-            if (!ruleInfo.ruleIsEnabled) {
+            if (!ruleInfo.ruleIsEnabled)
                 continue
-            }
 
             if (ruleInfo.enabledExtCompats != null) {
                 for ((compat, enabled) in ruleInfo.enabledExtCompats!!.entries) {
@@ -199,9 +188,8 @@ class MetricsInfo {
                     ) {
                         continue
                     }
-                    if (enabled) {
-                        results[compat.toString()] = 1
-                    }
+                    if (enabled) results[compat.toString()] = 1
+
                 }
             }
         }

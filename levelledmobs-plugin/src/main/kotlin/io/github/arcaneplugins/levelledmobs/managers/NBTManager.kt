@@ -105,19 +105,19 @@ object NBTManager {
             if (objectsBefore.containsKey(key) && objectsAfter.containsKey(key)
                 && objectsBefore[key] != value
             ) {
-                if (applyResult.objectsUpdated == null) {
+                if (applyResult.objectsUpdated == null)
                     applyResult.objectsUpdated = mutableListOf()
-                }
+
                 applyResult.objectsUpdated!!.add("$key:$value")
             } else if (!objectsBefore.containsKey(key) && objectsAfter.containsKey(key)) {
-                if (applyResult.objectsAdded == null) {
+                if (applyResult.objectsAdded == null)
                     applyResult.objectsAdded = mutableListOf()
-                }
+
                 applyResult.objectsAdded!!.add("$key:$value")
             } else if (objectsBefore.containsKey(key) && !objectsAfter.containsKey(key)) {
-                if (applyResult.objectsRemoved == null) {
+                if (applyResult.objectsRemoved == null)
                     applyResult.objectsRemoved = mutableListOf()
-                }
+
                 applyResult.objectsRemoved!!.add("$key:$value")
             }
         }

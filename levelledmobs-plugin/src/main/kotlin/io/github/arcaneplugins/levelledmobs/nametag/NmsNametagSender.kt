@@ -157,9 +157,7 @@ class NmsNametagSender : NametagSender {
 
         try {
             val itemsById = def.fieldInt2ObjectMap!![entityDataPreClone] as Map<Int, Any>
-            if (itemsById.isEmpty()) {
-                return null
-            }
+            if (itemsById.isEmpty()) return null
 
             for (objDataItem in itemsById.values) {
                 val accessor = def.methodGetAccessor!!.invoke(objDataItem)
@@ -271,9 +269,9 @@ class NmsNametagSender : NametagSender {
             if (def.useTranslationComponents) getTranslatableComponent(def.getTranslationKey(livingEntity)) else getTextComponent(
                 livingEntity.name
             )
-        } else {
-            getTextComponent(resolveText(nametag.overriddenName))
         }
+        else
+            getTextComponent(resolveText(nametag.overriddenName))
 
         // for whatever reason if you use an empty component,
         // the nametag will get duplicated with each call of this function

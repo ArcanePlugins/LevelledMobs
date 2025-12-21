@@ -62,9 +62,8 @@ object MessagesHelper {
         messages = Utils.replaceAllInList(messages, "%label%", "")
         messages = Utils.colorizeAllInList(messages)
 
-        if (messages.isEmpty()) {
-            return ""
-        }
+        if (messages.isEmpty()) return ""
+
         return if (messages.size == 1)
             messages.first()
         else

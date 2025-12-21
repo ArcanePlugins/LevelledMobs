@@ -7,7 +7,7 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.3.0"
     id("com.gradleup.shadow") version "9.2.2"
     id("idea")
     id("maven-publish")
@@ -28,7 +28,7 @@ idea {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
         exclude(group = "com.google.code.gson", module = "gson")
@@ -37,18 +37,10 @@ dependencies {
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT") // https://repo.papermc.io/#browse/browse:maven-public:dev%2Ffolia%2Ffolia-api
     implementation("com.github.Redempt:Crunch:2.0.3") // https://redempt.dev/com/github/Redempt/Crunch
     implementation("org.bstats:bstats-bukkit:3.1.0") // https://mvnrepository.com/artifact/org.bstats/bstats-bukkit
-    // implementation("dev.jorel:commandapi-bukkit-shade:9.3.0") // https://github.com/JorelAli/CommandAPI
-    // stumper66's fork: https://github.com/stumper66/CommandAPI
-    // now found in the lib directory
-
-    //compileOnly("LibsDisguises:LibsDisguises:10.0.44-SNAPSHOT") // https://repo.md-5.net/#browse/browse:public:LibsDisguises%2FLibsDisguises
     compileOnly("me.clip:placeholderapi:2.11.6") // https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.1.0-SNAPSHOT") // https://maven.enginehub.org/repo/com/sk89q/worldguard/worldguard-bukkit/
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.0") // https://mvnrepository.com/artifact/de.tr7zw/item-nbt-api-plugin
     compileOnly("io.github.stumper66:LM_Items:1.3.0") // https://mvnrepository.com/artifact/io.github.stumper66/LM_Items
-
-    //implementation("com.github.Traqueur-dev.CommandsAPI:platform-spigot:4.3.1")
-    //implementation(fileTree("lib") { include("*.jar") })
 }
 
 repositories {
@@ -56,7 +48,6 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    //maven("https://mvn.lib.co.nz/public")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.essentialsx.net/releases/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -84,7 +75,6 @@ tasks {
 
         archiveFileName.set("LevelledMobs-$version.jar")
         dependencies{
-            //relocate("dev.jorel.commandapi", "io.github.arcaneplugins.levelledmobs.libs.commandapi")
             relocate("org.bstats", "io.github.arcaneplugins.levelledmobs.libs.bstats")
             relocate("redempt.crunch", "io.github.arcaneplugins.levelledmobs.libs.crunch")
             relocate("org.jetbrains.annotations", "io.github.arcaneplugins.levelledmobs.libs.jetbrains.annotations")

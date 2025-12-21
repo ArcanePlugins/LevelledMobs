@@ -27,9 +27,8 @@ class EntityTargetListener : Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onTarget(event: EntityTargetEvent) {
-        if (event.entity !is LivingEntity) {
+        if (event.entity !is LivingEntity)
             return
-        }
 
         val main = LevelledMobs.instance
         if (event.target == null) {
@@ -40,9 +39,8 @@ class EntityTargetListener : Listener {
         }
 
         // Must target a player and must be a living entity
-        if (event.target !is Player) {
+        if (event.target !is Player)
             return
-        }
 
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
 
@@ -53,9 +51,9 @@ class EntityTargetListener : Listener {
                 return
             }
 
-            if (lmEntity.getMobLevel < 0) {
+            if (lmEntity.getMobLevel < 0)
                 lmEntity.reEvaluateLevel = true
-            }
+
             main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
             return
         }

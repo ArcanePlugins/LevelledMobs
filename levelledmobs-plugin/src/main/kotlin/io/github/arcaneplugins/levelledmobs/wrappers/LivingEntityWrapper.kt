@@ -508,11 +508,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
         get() {
-            if (this._skylightLevelAtSpawn != null)
-                return _skylightLevelAtSpawn!!
-
-            if (!getPDCLock())
-                return currentSkyLightLevel
+            if (this._skylightLevelAtSpawn != null) return _skylightLevelAtSpawn!!
+            if (!getPDCLock()) return currentSkyLightLevel
 
             var hadError = false
             var succeeded = false

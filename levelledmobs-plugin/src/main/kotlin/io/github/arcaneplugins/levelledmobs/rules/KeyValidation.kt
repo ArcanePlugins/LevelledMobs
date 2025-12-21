@@ -2,6 +2,13 @@ package io.github.arcaneplugins.levelledmobs.rules
 
 import java.util.TreeSet
 
+/**
+ * Holds all valid configuration options for settings and rules
+ * so it knows if an invalid option or value is used
+ *
+ * @author stumper66
+ * @since 4.1.5
+ */
 object KeyValidation {
     val mainRuleSection = mutableSetOf(
         "is-enabled",

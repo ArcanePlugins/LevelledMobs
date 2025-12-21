@@ -48,8 +48,7 @@ class KillSkipConditions {
     }
 
     private fun appendValue(sb: StringBuilder, value: String){
-        if (sb.isNotEmpty())
-            sb.append(", ")
+        if (sb.isNotEmpty()) sb.append(", ")
 
         sb.append(value)
     }

@@ -69,7 +69,6 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
 
         if (!doCopy && !doShowInfo) return
 
-
         if (event.clickedBlock == null
             || event.clickedBlock!!.type != Material.SPAWNER
         ) return
@@ -97,9 +96,9 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         if (event.item == null) return false
 
         val meta = event.item!!.itemMeta ?: return false
-        if (event.clickedBlock == null) {
+        if (event.clickedBlock == null)
             return false
-        }
+
         if (!meta.persistentDataContainer
                 .has(NamespacedKeys.spawnerEgg, PersistentDataType.INTEGER)
         ) {
@@ -119,18 +118,16 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         ) {
             val temp = meta.persistentDataContainer
                 .get(NamespacedKeys.keySpawnerMinLevel, PersistentDataType.INTEGER)
-            if (temp != null) {
+            if (temp != null)
                 minLevel = temp
-            }
         }
         if (meta.persistentDataContainer
                 .has(NamespacedKeys.keySpawnerMaxLevel, PersistentDataType.INTEGER)
         ) {
             val temp = meta.persistentDataContainer
                 .get(NamespacedKeys.keySpawnerMaxLevel, PersistentDataType.INTEGER)
-            if (temp != null) {
+            if (temp != null)
                 maxLevel = temp
-            }
         }
         if (meta.persistentDataContainer
                 .has(NamespacedKeys.keySpawnerCustomDropId, PersistentDataType.STRING)
@@ -348,9 +345,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
                 )
                 sb.append("&r\n")
             }
-        } else {
+        } else
             sb.append("Vanilla Spawner\n")
-        }
 
         addSpawnerAttributeFromPdcInt(
             "min level", NamespacedKeys.keySpawnerMinLevel, pdc,

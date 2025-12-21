@@ -22,12 +22,10 @@ class ConfigUtils{
 
     fun load() {
         // anything less than 3 breaks the formula
-        if (SETTINGS_CREEPER_MAX_RADIUS < 3) {
-            SETTINGS_CREEPER_MAX_RADIUS = 3
-        }
-        if (SETTINGS_SPAWN_DISTANCE_FROM_PLAYER < 1) {
-            SETTINGS_SPAWN_DISTANCE_FROM_PLAYER = 1
-        }
+        SETTINGS_CREEPER_MAX_RADIUS =
+            SETTINGS_CREEPER_MAX_RADIUS.coerceAtLeast(3)
+        SETTINGS_SPAWN_DISTANCE_FROM_PLAYER =
+            SETTINGS_SPAWN_DISTANCE_FROM_PLAYER.coerceAtLeast(1)
     }
 
     val prefix: String

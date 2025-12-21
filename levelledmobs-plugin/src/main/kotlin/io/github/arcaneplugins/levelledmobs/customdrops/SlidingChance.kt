@@ -120,14 +120,13 @@ class SlidingChance : Cloneable {
             return lastFormulaResult.toString()
 
         return if (this.lastMatchedTier != null) {
-            if (lastMatchedTier!!.min == lastMatchedTier!!.max) {
+            if (lastMatchedTier!!.min == lastMatchedTier!!.max)
                 lastResult.toString()
-            } else {
+            else
                 "$lastMatchedTier: $lastResult"
-            }
-        } else {
-            chance.toString()
         }
+        else
+            chance.toString()
     }
 
     public override fun clone(): Any {

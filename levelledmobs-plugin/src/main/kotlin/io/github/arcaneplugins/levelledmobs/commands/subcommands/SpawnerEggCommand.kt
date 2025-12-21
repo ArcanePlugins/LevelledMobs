@@ -141,9 +141,8 @@ object SpawnerEggCommand : SpawnerBaseClass("levelledmobs.command.spawner-egg") 
     private fun generateEgg(
         info: CustomSpawnerInfo
     ) {
-        if (info.customName != null) {
+        if (info.customName != null)
             info.customName = colorizeAll(info.customName)
-        }
 
         val materialName = info.spawnType.name + "_SPAWN_EGG"
         val material = Material.getMaterial(materialName)

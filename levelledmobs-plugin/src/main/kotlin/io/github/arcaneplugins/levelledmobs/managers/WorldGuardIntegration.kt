@@ -19,12 +19,9 @@ object WorldGuardIntegration {
     ): MutableSet<String> {
         val wgRegions = mutableSetOf<String>()
 
-        if (lmInterface.world == null) {
-            return wgRegions
-        }
+        if (lmInterface.world == null) return wgRegions
 
-        val regions = getRegionSet(lmInterface)
-            ?: return wgRegions
+        val regions = getRegionSet(lmInterface) ?: return wgRegions
 
         for (region in regions) {
             wgRegions.add(region.id)
@@ -37,9 +34,7 @@ object WorldGuardIntegration {
         lmInterface: LivingEntityInterface): MutableList<String> {
         val wgOwners = mutableListOf<String>()
 
-        if (lmInterface.world == null) {
-            return wgOwners
-        }
+        if (lmInterface.world == null) return wgOwners
 
         val regions = getRegionSet(lmInterface)
             ?: return wgOwners
@@ -47,11 +42,10 @@ object WorldGuardIntegration {
         for (region in regions)  {
             if (region.owners.players != null) {
                 for (id in region.owners.uniqueIds)  {
-                    val player = Bukkit.getPlayer(id!!)
+                    val player = Bukkit.getPlayer(id)
                     val playerName = player?.name ?: "unknown"
-                    if (!wgOwners.contains(playerName)) {
+                    if (!wgOwners.contains(playerName))
                         wgOwners.add(playerName)
-                    }
                 }
             }
         }

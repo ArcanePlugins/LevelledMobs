@@ -19,34 +19,26 @@ class MergeableStringList {
     }
 
     constructor(item: String?, doMerge: Boolean){
-        if (item == null) {
-            return
-        }
+        if (item == null) return
 
         items.add(item)
         this.doMerge = doMerge
     }
 
     fun setItemFromString(input: String?) {
-        if (input == null) {
-            return
-        }
+        if (input == null) return
 
         items.add(input)
     }
 
     fun setItemFromList(input: Collection<String>?) {
-        if (input == null) {
-            return
-        }
+        if (input == null) return
 
         items.addAll(input)
     }
 
     fun mergeFromList(input: Collection<String>?) {
-        if (input == null) {
-            return
-        }
+        if (input == null) return
 
         items.addAll(input)
     }
@@ -58,21 +50,17 @@ class MergeableStringList {
         get() = !this.isEmpty
 
     override fun toString(): String {
-        if (items.isEmpty()) {
-            return super.toString()
-        }
+        if (items.isEmpty()) return super.toString()
 
         val sb = StringBuilder()
-        if (items.size == 1) {
+        if (items.size == 1)
             sb.append(items[0])
-        } else {
+        else
             sb.append(items)
-        }
 
         if (doMerge) {
-            if (sb.isNotEmpty()) {
-                sb.append(" ")
-            }
+            if (sb.isNotEmpty()) sb.append(" ")
+
             sb.append("(merge)")
         }
 

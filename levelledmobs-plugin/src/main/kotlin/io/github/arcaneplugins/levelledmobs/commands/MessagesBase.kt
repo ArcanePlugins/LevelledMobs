@@ -85,9 +85,8 @@ open class MessagesBase{
         replaceWhat: MutableList<String>,
         replaceWith: MutableList<String>
     ) {
-        if (commandSender == null) {
+        if (commandSender == null)
             throw NullPointerException("CommandSender must be set before calling showMessage")
-        }
 
         val messages = getMessage(path, replaceWhat, replaceWith)
         messages.forEach(Consumer { s: String -> commandSender!!.sendMessage(s) })

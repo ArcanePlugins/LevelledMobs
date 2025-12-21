@@ -20,9 +20,8 @@ object Log {
     }
 
     fun inf(msg: String?) {
-        if (serverIsSpigot) {
+        if (serverIsSpigot)
             Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
-        }
         else{
             LevelledMobs.instance.logger.info(
                 MessageUtils.colorizeAll(msg)

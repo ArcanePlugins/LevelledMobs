@@ -36,9 +36,8 @@ class PlayerJoinListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onJoin(event: PlayerJoinEvent) {
-        if (event.player.isOp && main.debugManager.playerThatEnabledDebug == null) {
+        if (event.player.isOp && main.debugManager.playerThatEnabledDebug == null)
             main.debugManager.playerThatEnabledDebug = event.player
-        }
 
         main.mainCompanion.checkSettingsWithMaxPlayerOptions()
         main.mainCompanion.addRecentlyJoinedPlayer(event.player)
@@ -50,9 +49,8 @@ class PlayerJoinListener : Listener {
             updateNametagsInWorldAsync(event.player, event.player.world.entities)
 
         if (event.player.isOp) {
-            if (main.mainCompanion.hadRulesLoadError) {
+            if (main.mainCompanion.hadRulesLoadError)
                 event.player.sendMessage(FileLoader.getFileLoadErrorMessage())
-            }
 
             if (NotifyManager.opHasMessage){
                 event.player.sendMessage(NotifyManager.pendingMessage!!)
@@ -94,30 +92,28 @@ class PlayerJoinListener : Listener {
         try {
             for (i in keys.indices) {
                 val useKey = keys[i]
-                if (!player.persistentDataContainer.has(useKey, PersistentDataType.STRING)) {
+                if (!player.persistentDataContainer.has(useKey, PersistentDataType.STRING))
                     continue
-                }
 
                 val netherCoords = player.persistentDataContainer
                     .get(useKey, PersistentDataType.STRING)
-                if (netherCoords == null) {
+                if (netherCoords == null)
                     continue
-                }
+
                 val coords = netherCoords.split(",")
-                if (coords.size != 4) {
+                if (coords.size != 4)
                     continue
-                }
+
                 val world = Bukkit.getWorld(coords[0]) ?: continue
                 val location = Location(
                     world, coords[1].toInt().toDouble(),
                     coords[2].toInt().toDouble(), coords[3].toInt().toDouble()
                 )
 
-                if (i == 0) {
+                if (i == 0)
                     main.mainCompanion.setPlayerNetherPortalLocation(player, location)
-                } else {
+                else
                     main.mainCompanion.setPlayerWorldPortalLocation(player, location)
-                }
             }
         } catch (e: Exception) {
             Log.war(
@@ -131,17 +127,15 @@ class PlayerJoinListener : Listener {
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         main.mainCompanion.checkSettingsWithMaxPlayerOptions(true)
 
-        if (main.placeholderApiIntegration != null) {
+        if (main.placeholderApiIntegration != null)
             main.placeholderApiIntegration!!.playedLoggedOut(event.player)
-        }
 
         main.mainCompanion.spawnerCopyIds.remove(event.player.uniqueId)
         main.mainCompanion.spawnerInfoIds.remove(event.player.uniqueId)
         main.nametagTimerChecker.addPlayerToQueue(PlayerQueueItem(event.player, false))
 
-        if (main.placeholderApiIntegration != null) {
+        if (main.placeholderApiIntegration != null)
             main.placeholderApiIntegration!!.removePlayer(event.player)
-        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -154,9 +148,8 @@ class PlayerJoinListener : Listener {
         // on spigot API .getTo is nullable but not Paper
         // only update tags if teleported to a different world
         @Suppress("SENSELESS_COMPARISON")
-        if (event.to != null && event.to.world != null && event.from.world != null && event.from.world != event.to.world) {
+        if (event.to != null && event.to.world != null && event.from.world != null && event.from.world != event.to.world)
             updateNametagsInWorldAsync(event.player, event.to.world.entities)
-        }
     }
 
     private fun updateNametagsInWorldAsync(player: Player, entities: List<Entity>) {
@@ -167,27 +160,19 @@ class PlayerJoinListener : Listener {
 
     private fun updateNametagsInWorld(player: Player, entities: List<Entity>) {
         val currentPlayers = Bukkit.getOnlinePlayers().size
-        if (currentPlayers > main.maxPlayersRecorded) {
+        if (currentPlayers > main.maxPlayersRecorded)
             main.maxPlayersRecorded = currentPlayers
-        }
 
         for (entity in entities) {
-            if (entity !is LivingEntity) {
-                continue
-            }
+            if (entity !is LivingEntity) continue
 
             // mob must be alive
-            if (!entity.isValid) {
-                continue
-            }
+            if (!entity.isValid) continue
 
             // mob must be levelled
-            if (!main.levelManager.isLevelled(entity)) {
-                continue
-            }
+            if (!main.levelManager.isLevelled(entity)) continue
 
             val lmEntity = LivingEntityWrapper.getInstance(entity)
-
             val nametag = main.levelManager.getNametag(lmEntity, isDeathNametag = false, preserveMobName = false)
             main.levelManager.updateNametag(lmEntity, nametag, mutableListOf(player))
             lmEntity.free()

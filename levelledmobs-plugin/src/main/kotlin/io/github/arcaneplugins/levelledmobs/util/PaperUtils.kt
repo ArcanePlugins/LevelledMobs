@@ -32,9 +32,8 @@ object PaperUtils {
         meta: ItemMeta,
         lore: List<String>?
     ) {
-        if (lore == null) {
-            return
-        }
+        if (lore == null) return
+
         val newLore = mutableListOf<Component>()
 
         for (loreLine in lore) {
@@ -52,9 +51,7 @@ object PaperUtils {
         meta: ItemMeta,
         displayName: String?
     ) {
-        if (displayName == null) {
-            return
-        }
+        if (displayName == null) return
 
         meta.displayName(
             Component.text().decoration(TextDecoration.ITALIC, false).append(
@@ -66,9 +63,8 @@ object PaperUtils {
     fun getPlayerDisplayName(
         player: Player?
     ): String {
-        if (player == null) {
-            return ""
-        }
+        if (player == null) return ""
+
         val comp = player.displayName()
         return if (comp is TextComponent) {
             if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) {
@@ -78,8 +74,8 @@ object PaperUtils {
                 LegacyComponentSerializer.legacySection()
                     .serialize(comp)
             }
-        } else {
-            comp.toString() // this is never happen but just in case.  it will return a bunch of garbage
         }
+        else
+            comp.toString() // this is never happen but just in case.  it will return a bunch of garbage
     }
 }

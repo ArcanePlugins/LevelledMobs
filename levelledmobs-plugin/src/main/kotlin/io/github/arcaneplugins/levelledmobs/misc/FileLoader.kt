@@ -89,20 +89,20 @@ object FileLoader {
                 )
             }
 
-            if (isCustomDrops) {
+            if (isCustomDrops)
                 FileMigrator.copyCustomDrops(backedupFile, file, fileVersion)
-            } else if (!isRules) {
+            else if (!isRules)
                 FileMigrator.copyYmlValues(backedupFile, file, fileVersion)
-            } else {
+             else {
                 Log.war("Your rules file is pre-4.0. A backup has been made and it will be reset to default.")
                 RulesSubcommand.resetRules(null, RulesSubcommand.ResetDifficulty.SILVER)
             }
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file)
-        } else if (!isRules) {
-            checkFileVersion(file, compatibleVersion, ymlHelper.getInt( "file-version"))
         }
+        else if (!isRules)
+            checkFileVersion(file, compatibleVersion, ymlHelper.getInt( "file-version"))
 
         return cfg
     }
@@ -132,9 +132,7 @@ object FileLoader {
         compatibleVersion: Int,
         installedVersion: Int
     ) {
-        if (compatibleVersion == installedVersion) {
-            return
-        }
+        if (compatibleVersion == installedVersion) return
 
         val what = if (installedVersion < compatibleVersion) "outdated"
         else "ahead of the compatible version of this file for this version of the plugin"

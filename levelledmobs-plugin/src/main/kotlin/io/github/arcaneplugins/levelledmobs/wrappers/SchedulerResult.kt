@@ -28,11 +28,10 @@ class SchedulerResult {
     }
 
     fun cancelTask() {
-        if (isRunningFolia) {
+        if (isRunningFolia)
             if (foliaTask != null) foliaTask!!.cancel()
-        } else {
+        else
             if (regularTask != null) regularTask!!.cancel()
-        }
     }
 
     fun isCancelled(): Boolean {

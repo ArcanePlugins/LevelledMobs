@@ -207,10 +207,6 @@ object Utils {
         }
     }
 
-    val oneToNine = mutableListOf(
-        "1", "2", "3", "4", "5", "6", "7", "8", "9"
-    )
-
     fun replaceAllInList(
         oldList: MutableList<String>,
         replaceWhat: String,
@@ -424,9 +420,8 @@ object Utils {
         input: String,
         match: String
     ): Boolean {
-        if (!match.contains("*")) {
+        if (!match.contains("*"))
             return input.equals(match, ignoreCase = true)
-        }
 
         val chopped = match.split("\\*".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         // 0 = *, 1 = text, 2 = *
@@ -561,30 +556,26 @@ object Utils {
             "ms", "millisecond", "milliseconds" -> duration = Duration.ofMillis(time)
             "s", "second", "seconds" -> {
                 duration = Duration.ofSeconds(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusMillis((1000.0 * remainder).toLong())
-                }
             }
 
             "m", "minute", "minutes" -> {
                 duration = Duration.ofMinutes(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusMillis((60000.0 * remainder).toLong())
-                }
             }
 
             "h", "hour", "hours" -> {
                 duration = Duration.ofHours(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusMillis((3600000.0 * remainder).toLong())
-                }
             }
 
             "d", "day", "days" -> {
                 duration = Duration.ofDays(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusSeconds((86400.0 * remainder).toLong())
-                }
             }
 
             "" -> duration = if (useMS) Duration.ofMillis(time) else Duration.ofSeconds(time)

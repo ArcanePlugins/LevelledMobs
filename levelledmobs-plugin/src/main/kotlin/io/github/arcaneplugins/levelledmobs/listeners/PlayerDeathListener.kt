@@ -22,9 +22,8 @@ class PlayerDeathListener : Listener {
     private val settingName = "player-death-event"
 
     fun load(){
-        if (LevelledMobs.instance.ver.isRunningPaper && paperListener == null) {
+        if (LevelledMobs.instance.ver.isRunningPaper && paperListener == null)
             paperListener = PlayerDeathListener()
-        }
 
         val priority = LevelledMobs.instance.mainCompanion.getEventPriority(settingName, EventPriority.NORMAL)
         if (lastPriority != null){
@@ -54,9 +53,8 @@ class PlayerDeathListener : Listener {
     private fun onPlayerDeath(event: PlayerDeathEvent) {
         // returns false if not a translatable component, in which case just use the old method
         // this can happen if another plugin has butchered the event by using the deprecated method (*cough* mythic mobs)
-        if (!LevelledMobs.instance.ver.isRunningPaper || !paperListener!!.onPlayerDeathEvent(event)) {
+        if (!LevelledMobs.instance.ver.isRunningPaper || !paperListener!!.onPlayerDeathEvent(event))
             nonPaperPlayerDeath(event)
-        }
     }
 
     private fun nonPaperPlayerDeath(event: PlayerDeathEvent) {

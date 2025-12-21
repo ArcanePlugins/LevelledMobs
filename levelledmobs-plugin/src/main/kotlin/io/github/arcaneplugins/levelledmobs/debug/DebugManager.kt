@@ -3,7 +3,6 @@ package io.github.arcaneplugins.levelledmobs.debug
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import java.time.Duration
 import java.time.Instant
-import java.util.Locale
 import java.util.function.Supplier
 import io.github.arcaneplugins.levelledmobs.LivingEntityInterface
 import io.github.arcaneplugins.levelledmobs.rules.RuleInfo
@@ -78,9 +77,7 @@ class DebugManager {
     private fun disableTimer() {
         isTimerEnabled = false
 
-        if (this.timerTask == null) {
-            return
-        }
+        if (this.timerTask == null) return
 
         timerTask!!.cancelTask()
         this.timerTask = null
@@ -316,26 +313,23 @@ class DebugManager {
                 msg += ", result: $ruleResult"
         }
 
-        if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CONSOLE) {
+        if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CONSOLE)
             Log.inf("&8[&bDebug: $debugType&8]&7 $msg")
-        }
+
         if (outputType == OutputTypes.TO_BOTH || outputType == OutputTypes.TO_CHAT) {
-            if (playerThatEnabledDebug == null) {
+            if (playerThatEnabledDebug == null)
                 Log.inf("No player to send chat messages to")
-            } else {
+            else {
                 playerThatEnabledDebug!!.sendMessage(
-                    colorizeAll(
-                        "&8[&bDebug: $debugType&8]&7 $msg"
-                    )
+                    colorizeAll("&8[&bDebug: $debugType&8]&7 $msg")
                 )
             }
         }
     }
 
     private fun getPlayers(): MutableList<Player>? {
-        if (filterPlayerNames.isEmpty()) {
+        if (filterPlayerNames.isEmpty())
             return Bukkit.getOnlinePlayers().toMutableList()
-        }
 
         val players = mutableListOf<Player>()
         for (playerName in filterPlayerNames) {
@@ -387,7 +381,7 @@ class DebugManager {
 
         if (listenFor != ListenFor.BOTH) {
             sb.append("\n- Listen for: ")
-            sb.append(listenFor.name.lowercase(Locale.getDefault()))
+            sb.append(listenFor.name.lowercase())
         }
 
         if (maxPlayerDistance != null) {
@@ -408,7 +402,7 @@ class DebugManager {
 
         if (outputType != OutputTypes.TO_CONSOLE) {
             sb.append("\n- Output to: ")
-            sb.append(outputType.name.lowercase(Locale.getDefault()))
+            sb.append(outputType.name.lowercase())
         }
 
         return sb.toString()
@@ -456,9 +450,9 @@ class DebugManager {
             disableDebug()
 
             val msg = "Debug timer has elapsed, debugging is now disabled"
-            if (outputType == OutputTypes.TO_CONSOLE || outputType == OutputTypes.TO_BOTH) {
+            if (outputType == OutputTypes.TO_CONSOLE || outputType == OutputTypes.TO_BOTH)
                 Log.inf(msg)
-            }
+
             if ((outputType == OutputTypes.TO_CHAT || outputType == OutputTypes.TO_BOTH)
                 && playerThatEnabledDebug != null
             ) {
@@ -478,9 +472,9 @@ class DebugManager {
 
         val duration = Duration.between(Instant.now(), timerEndTime)
         val secondsLeft = duration.seconds.toInt()
-        if (secondsLeft < 60) {
+        if (secondsLeft < 60)
             return if (secondsLeft == 1) "1 second" else "$secondsLeft seconds"
-        } else if (secondsLeft < 3600) {
+        else if (secondsLeft < 3600) {
             val minutes = floor(secondsLeft.toDouble() / 60.0).toInt()
             val newSeconds = secondsLeft % 60
             val sb = StringBuilder()

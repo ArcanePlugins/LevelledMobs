@@ -6,6 +6,7 @@ import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.WeakHashMap
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -43,37 +44,25 @@ class EquippedItemsInfo {
         ): EquippedItemsInfo{
             val equipment = EquippedItemsInfo()
 
-            var temp = lmEntity.pdc.get(NamespacedKeys.equipment0, PersistentDataType.BYTE_ARRAY)
-            if (temp != null){
-                equipment.mainHand = ItemStack.deserializeBytes(temp)
-            }
-
-            temp = lmEntity.pdc.get(NamespacedKeys.equipment1, PersistentDataType.BYTE_ARRAY)
-            if (temp != null){
-                equipment.offhand = ItemStack.deserializeBytes(temp)
-            }
-
-            temp = lmEntity.pdc.get(NamespacedKeys.equipment2, PersistentDataType.BYTE_ARRAY)
-            if (temp != null){
-                equipment.helmet = ItemStack.deserializeBytes(temp)
-            }
-
-            temp = lmEntity.pdc.get(NamespacedKeys.equipment3, PersistentDataType.BYTE_ARRAY)
-            if (temp != null){
-                equipment.chestplate = ItemStack.deserializeBytes(temp)
-            }
-
-            temp = lmEntity.pdc.get(NamespacedKeys.equipment4, PersistentDataType.BYTE_ARRAY)
-            if (temp != null){
-                equipment.leggings = ItemStack.deserializeBytes(temp)
-            }
-
-            temp = lmEntity.pdc.get(NamespacedKeys.equipment5, PersistentDataType.BYTE_ARRAY)
-            if (temp != null){
-                equipment.boots = ItemStack.deserializeBytes(temp)
-            }
+            equipment.mainHand = getItemFromPDC(NamespacedKeys.equipment0, lmEntity)
+            equipment.offhand = getItemFromPDC(NamespacedKeys.equipment1, lmEntity)
+            equipment.helmet = getItemFromPDC(NamespacedKeys.equipment2, lmEntity)
+            equipment.chestplate = getItemFromPDC(NamespacedKeys.equipment3, lmEntity)
+            equipment.leggings = getItemFromPDC(NamespacedKeys.equipment4, lmEntity)
+            equipment.boots = getItemFromPDC(NamespacedKeys.equipment5, lmEntity)
 
             return equipment
+        }
+
+        private fun getItemFromPDC(
+            key: NamespacedKey,
+            lmEntity: LivingEntityWrapper
+        ): ItemStack? {
+            val temp = lmEntity.pdc.get(key, PersistentDataType.BYTE_ARRAY)
+            return if (temp != null)
+                ItemStack.deserializeBytes(temp)
+            else
+                null
         }
     }
 
@@ -95,29 +84,22 @@ class EquippedItemsInfo {
     private fun saveEquipmentToPDC(
         lmEntity: LivingEntityWrapper
     ){
-        if (isItemAllowedForSerialization(mainHand)){
-            val serialized = mainHand!!.serializeAsBytes()
-            lmEntity.pdc.set(NamespacedKeys.equipment0, PersistentDataType.BYTE_ARRAY, serialized)
-        }
-        if (isItemAllowedForSerialization(offhand)){
-            val serialized = offhand!!.serializeAsBytes()
-            lmEntity.pdc.set(NamespacedKeys.equipment1, PersistentDataType.BYTE_ARRAY, serialized)
-        }
-        if (isItemAllowedForSerialization(helmet)){
-            val serialized = helmet!!.serializeAsBytes()
-            lmEntity.pdc.set(NamespacedKeys.equipment2, PersistentDataType.BYTE_ARRAY, serialized)
-        }
-        if (isItemAllowedForSerialization(chestplate)){
-            val serialized = chestplate!!.serializeAsBytes()
-            lmEntity.pdc.set(NamespacedKeys.equipment3, PersistentDataType.BYTE_ARRAY, serialized)
-        }
-        if (isItemAllowedForSerialization(leggings)){
-            val serialized = leggings!!.serializeAsBytes()
-            lmEntity.pdc.set(NamespacedKeys.equipment4, PersistentDataType.BYTE_ARRAY, serialized)
-        }
-        if (isItemAllowedForSerialization(boots)){
-            val serialized = boots!!.serializeAsBytes()
-            lmEntity.pdc.set(NamespacedKeys.equipment5, PersistentDataType.BYTE_ARRAY, serialized)
+        saveItemToPDC(mainHand, NamespacedKeys.equipment0, lmEntity)
+        saveItemToPDC(offhand, NamespacedKeys.equipment1, lmEntity)
+        saveItemToPDC(helmet, NamespacedKeys.equipment2, lmEntity)
+        saveItemToPDC(chestplate, NamespacedKeys.equipment3, lmEntity)
+        saveItemToPDC(leggings, NamespacedKeys.equipment4, lmEntity)
+        saveItemToPDC(boots, NamespacedKeys.equipment5, lmEntity)
+    }
+
+    private fun saveItemToPDC(
+        item: ItemStack?,
+        key: NamespacedKey,
+        lmEntity: LivingEntityWrapper
+    ) {
+        if (isItemAllowedForSerialization(item)){
+            val serialized = item!!.serializeAsBytes()
+            lmEntity.pdc.set(key, PersistentDataType.BYTE_ARRAY, serialized)
         }
     }
 

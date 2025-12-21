@@ -199,9 +199,9 @@ object SummonSubcommand : CommandBase("levelledmobs.command.summon"){
                     var world: World? = null
 
                     val target = Bukkit.getPlayer(arg)
-                    if (target == null) {
+                    if (target == null)
                         offline = true
-                    } else if (sender is Player) {
+                    else if (sender is Player) {
                         // Vanished player compatibility.
                         if (!sender.canSee(target) && !sender.isOp)
                             offline = true

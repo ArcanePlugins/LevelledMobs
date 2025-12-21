@@ -149,9 +149,9 @@ class ServerVersionInfo {
         }
 
         // example: v1_18_R2
-        if (nmsRegex.find()) {
+        if (nmsRegex.find())
             this.nmsVersion = nmsRegex.group(1)
-        } else if (!isRunningPaper) {
+        else if (!isRunningPaper) {
             LevelledMobs.instance.logger.warning(
                 "LevelledMobs: NMSHandler, Could not match regex for bukkit version: " + Bukkit.getServer()
                     .javaClass.canonicalName

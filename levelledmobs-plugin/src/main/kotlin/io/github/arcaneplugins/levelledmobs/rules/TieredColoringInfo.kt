@@ -51,11 +51,10 @@ class TieredColoringInfo : Cloneable {
                     return null
                 }
 
-                if (i == 0) {
+                if (i == 0)
                     coloringInfo.minLevel = num.toInt()
-                } else {
+                else
                     coloringInfo.maxLevel = num.toInt()
-                }
             }
 
             return coloringInfo
@@ -63,11 +62,10 @@ class TieredColoringInfo : Cloneable {
     }
 
     override fun toString(): String {
-        return if (isDefault) {
+        return if (isDefault)
             text + "default&r"
-        } else {
+        else
             "$text$minLevel-$maxLevel&r"
-        }
     }
 
     fun cloneItem(): TieredColoringInfo? {

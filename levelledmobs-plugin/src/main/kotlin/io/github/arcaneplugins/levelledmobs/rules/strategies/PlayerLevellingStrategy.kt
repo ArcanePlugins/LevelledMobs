@@ -42,9 +42,8 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             lmEntity
         )
 
-        if (options == null || !options.getEnabled) {
+        if (options == null || !options.getEnabled)
             return 0f
-        }
 
         val player = lmEntity.associatedPlayer ?: return 0f
 
@@ -55,9 +54,10 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             lmEntity.associatedPlayer, lmEntity, variableToUse
         )
 
-        val origLevelSource =
-                if (playerLevelSourceResult.isNumericResult) playerLevelSourceResult.numericResult
-                else 1f
+        val origLevelSource = if (playerLevelSourceResult.isNumericResult)
+                playerLevelSourceResult.numericResult
+            else
+                1f
 
         applyValueToPdc(lmEntity, playerLevelSourceResult)
         val levelSource = (origLevelSource * scale).coerceAtLeast(0f)
@@ -69,9 +69,10 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
         if (options.getMatchVariable) {
             results.min = levelSource
             results.max = results.min
-        } else if (options.getVariableAsMax) {
+        }
+        else if (options.getVariableAsMax)
             results.max = levelSource
-        } else {
+        else {
             var foundMatch = false
             for (tier in options.levelTiers) {
                 var meetsMin = false
@@ -88,12 +89,12 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 }
 
                 if (meetsMin && meetsMax || hasStringMatch) {
-                    if (tier.valueRanges!!.min> 0f) {
+                    if (tier.valueRanges!!.min> 0f)
                         results.min = tier.valueRanges!!.min
-                    }
-                    if (tier.valueRanges!!.max > 0f) {
+
+                    if (tier.valueRanges!!.max > 0f)
                         results.max = tier.valueRanges!!.max
-                    }
+
                     tierMatched = tier.toString()
                     foundMatch = true
                     break
@@ -120,9 +121,8 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
                 if (options.outputCap != null) {
                     results.max = results.max.coerceAtMost(options.outputCap!!)
                     return calculateResult(results)
-                } else {
+                } else
                     return 0f
-                }
             }
         }
 
@@ -136,9 +136,8 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
             results.min = results.min.coerceAtMost(results.max)
 
             varianceDebug = ", var: ${playerLevelSourceResult.randomVarianceResult}"
-        } else {
+        } else
             varianceDebug = ""
-        }
 
         if (options.outputCap != null) {
             results.max = results.max.coerceAtMost(options.outputCap!!)
@@ -195,32 +194,30 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
     }
 
     override fun mergeRule(levellingStrategy: LevellingStrategy?) {
-        if (levellingStrategy == null || levellingStrategy !is PlayerLevellingStrategy) {
+        if (levellingStrategy == null || levellingStrategy !is PlayerLevellingStrategy)
             return
-        }
 
         levelTiers.addAll(levellingStrategy.levelTiers)
-        if (levellingStrategy.matchVariable != null) {
+        if (levellingStrategy.matchVariable != null)
             this.matchVariable = levellingStrategy.matchVariable
-        }
-        if (levellingStrategy.usevariableAsMax != null) {
+
+        if (levellingStrategy.usevariableAsMax != null)
             this.usevariableAsMax = levellingStrategy.usevariableAsMax
-        }
-        if (levellingStrategy.playerVariableScale != null) {
+
+        if (levellingStrategy.playerVariableScale != null)
             this.playerVariableScale = levellingStrategy.playerVariableScale
-        }
-        if (levellingStrategy.outputCap != null) {
+
+        if (levellingStrategy.outputCap != null)
             this.outputCap = levellingStrategy.outputCap
-        }
-        if (variable != null) {
+
+        if (variable != null)
             this.variable = levellingStrategy.variable
-        }
-        if (levellingStrategy.enabled != null) {
+
+        if (levellingStrategy.enabled != null)
             this.enabled = levellingStrategy.enabled
-        }
-        if (levellingStrategy.recheckPlayers != null) {
+
+        if (levellingStrategy.recheckPlayers != null)
             this.recheckPlayers = levellingStrategy.recheckPlayers
-        }
     }
 
     override fun cloneItem(): LevellingStrategy {
@@ -269,73 +266,60 @@ class PlayerLevellingStrategy : LevellingStrategy, Cloneable {
     override fun toString(): String {
         val sb = StringBuilder()
 
-        if (!getEnabled) {
+        if (!getEnabled)
             sb.append("(disabled)")
-        }
 
         if (variable != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
-            sb.append("var: ")
-            sb.append(variable)
+            if (sb.isNotEmpty()) sb.append(", ")
+
+            sb.append("var: ").append(variable)
         }
 
         if (getMatchVariable) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("match-plr-lvl")
         }
 
         if (getVariableAsMax) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("use-plr-max-lvl")
         }
 
         if (playerVariableScale != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
-            sb.append("scale: ")
-            sb.append(playerVariableScale)
+            if (sb.isNotEmpty()) sb.append(", ")
+
+            sb.append("scale: ").append(playerVariableScale)
         }
 
         if (outputCap != null) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
-            sb.append("cap: ")
-            sb.append(outputCap)
+            if (sb.isNotEmpty()) sb.append(", ")
+
+            sb.append("cap: ").append(outputCap)
         }
 
         if (levelTiers.isNotEmpty()) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append(levelTiers)
         }
 
         if (decreaseOutput) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("decrease-lvl")
         }
 
         if (getRecheckPlayers) {
-            if (sb.isNotEmpty()) {
-                sb.append(", ")
-            }
+            if (sb.isNotEmpty()) sb.append(", ")
+
             sb.append("rechk-plr")
         }
 
-        return if (sb.isEmpty()) {
+        return if (sb.isEmpty())
             super.toString()
-        } else {
+        else
             sb.toString()
-        }
     }
 }
