@@ -147,7 +147,7 @@ class CustomDropsParser(
             val mobTypeOrGroups = item.split(";")
 
             for (mobTypeOrGroupPre in mobTypeOrGroups) {
-                var mobTypeOrGroup = mobTypeOrGroupPre.trim { it <= ' ' }
+                var mobTypeOrGroup = mobTypeOrGroupPre.trim()
                 if (mobTypeOrGroup.isEmpty()) continue
                 if (mobTypeOrGroup.lowercase().startsWith("file-version"))
                     continue
@@ -560,7 +560,7 @@ class CustomDropsParser(
             val excludes = ymlHelper.getString("excludemobs")!!.split(";")
             item.excludedMobs.clear()
             for (exclude in excludes) {
-                item.excludedMobs.add(exclude.trim { it <= ' ' })
+                item.excludedMobs.add(exclude.trim())
             }
         }
 

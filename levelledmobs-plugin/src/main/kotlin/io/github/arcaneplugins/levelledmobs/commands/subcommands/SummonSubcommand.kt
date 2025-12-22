@@ -19,7 +19,6 @@ import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import java.util.Locale
 import java.util.Random
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
@@ -764,7 +763,7 @@ object SummonSubcommand : CommandBase("levelledmobs.command.summon"){
         builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions>{
         for (entityType in EntityType.entries) {
-            builder.suggest(entityType.toString().lowercase(Locale.getDefault()))
+            builder.suggest(entityType.toString().lowercase())
         }
 
         return builder.buildFuture()

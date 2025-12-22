@@ -107,13 +107,13 @@ class CustomDropItem() : CustomDropBase(
         if (nums.size != 2)
             return false
 
-        if (!Utils.isInteger(nums[0].trim { it <= ' ' }) || !Utils.isInteger(
-                nums[1].trim { it <= ' ' })
+        if (!Utils.isInteger(nums[0].trim()) ||
+            !Utils.isInteger(nums[1].trim())
         ) {
             return false
         }
-        this.damageRangeMin = nums[0].trim { it <= ' ' }.toInt()
-        this.damageRangeMax = nums[1].trim { it <= ' ' }.toInt()
+        this.damageRangeMin = nums[0].trim().toInt()
+        this.damageRangeMax = nums[1].trim().toInt()
         this.hasDamageRange = true
 
         return true

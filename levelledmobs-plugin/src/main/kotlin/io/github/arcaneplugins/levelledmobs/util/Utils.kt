@@ -17,7 +17,6 @@ import io.papermc.paper.registry.RegistryKey
 import java.time.Duration
 import java.time.Instant
 import java.util.AbstractMap
-import java.util.Locale
 import java.util.regex.Pattern
 import org.bukkit.Chunk
 import org.bukkit.GameMode
@@ -67,9 +66,9 @@ object Utils {
         val ver = LevelledMobs.instance.ver
 
         val key = if (name.contains(":"))
-            NamespacedKey.fromString(name.lowercase(Locale.getDefault()))
+            NamespacedKey.fromString(name.lowercase())
         else
-            NamespacedKey.minecraft(name.lowercase(Locale.getDefault()))
+            NamespacedKey.minecraft(name.lowercase())
 
         if (key == null) return null
 
@@ -150,8 +149,8 @@ object Utils {
         var count = 0
         var position0 = 0
         var position1: Int
-        val upperString = message.uppercase(Locale.getDefault())
-        val upperPattern = replaceWhat.uppercase(Locale.getDefault())
+        val upperString = message.uppercase()
+        val upperPattern = replaceWhat.uppercase()
         val inc = (message.length / replaceWhat.length) *
                 (replaceTo.length - replaceWhat.length)
         val chars = CharArray((message.length + max(0.0, inc.toDouble())).toInt())
@@ -245,13 +244,13 @@ object Utils {
      */
     fun capitalize(str: String): String {
         val builder = StringBuilder()
-        val words = str.lowercase(Locale.getDefault()).split(" ".toRegex()).dropLastWhile { it.isEmpty() }
+        val words = str.lowercase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray() // each word separated from str
         for (i in words.indices) {
             val word = words[i]
             if (word.isEmpty()) continue
 
-            builder.append(word[0].toString().uppercase(Locale.getDefault())) // capitalize first letter
+            builder.append(word[0].toString().uppercase()) // capitalize first letter
             if (word.length > 1)
                 builder.append(word.substring(1)) // append the rest of the word
 
@@ -430,8 +429,8 @@ object Utils {
             return input.equals(match, ignoreCase = true)
         }
 
-        val inputL = input.lowercase(Locale.getDefault())
-        val matchL = match.lowercase(Locale.getDefault())
+        val inputL = input.lowercase()
+        val matchL = match.lowercase()
 
         val useSearch: String
         if (matchL.startsWith("*") && matchL.endsWith("*")) {
@@ -521,7 +520,7 @@ object Utils {
         val time: Long
         var remainder = 0.0
         var numberPart = if (match.group(1) != null) match.group(1) else match.group(2)
-        var unit = if (match.group(1) != null) match.group(2).lowercase(Locale.getDefault()) else ""
+        var unit = if (match.group(1) != null) match.group(2).lowercase() else ""
 
         if (isInteger(input)) {
             // number only, no time unit was specified
@@ -620,14 +619,14 @@ object Utils {
                 RegistryKey.ENCHANTMENT
             )
             enchantment = registry.get(
-                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
+                NamespacedKey.minecraft(enchantName.lowercase())
             )
         }
         else{
             // legacy versions < 1.21
             @Suppress("DEPRECATION")
             enchantment = Registry.ENCHANTMENT.get(
-                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
+                NamespacedKey.minecraft(enchantName.lowercase())
             )
         }
 

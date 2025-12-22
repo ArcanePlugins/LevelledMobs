@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.util.Locale
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.managers.ExternalCompatibilityManager
 import io.github.arcaneplugins.levelledmobs.enums.ExternalCompatibility
@@ -32,7 +31,7 @@ class MetricsInfo {
         val main = LevelledMobs.instance
         val usesHealthIndicator =
             (main.rulesParsingManager.defaultRule!!.healthIndicator != null) && main.rulesParsingManager.defaultRule!!.nametag != null &&
-                    main.rulesParsingManager.defaultRule!!.nametag!!.lowercase(Locale.getDefault())
+                    main.rulesParsingManager.defaultRule!!.nametag!!.lowercase()
                         .contains("%health-indicator%")
 
         return convertBooleanToString(usesHealthIndicator)

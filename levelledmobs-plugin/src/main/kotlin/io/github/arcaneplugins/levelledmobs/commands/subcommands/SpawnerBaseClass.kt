@@ -66,9 +66,9 @@ abstract class SpawnerBaseClass(
             for (i in nameStartFlag..nameEndFlag) {
                 if (i > 0) sb.append(" ")
 
-                sb.append(args[i].trim { it <= ' ' })
+                sb.append(args[i].trim())
             }
-            keyValue = sb.toString().trim { it <= ' ' }
+            keyValue = sb.toString().trim()
             keyValue = keyValue.substring(1, keyValue.length - 1)
         }
         else

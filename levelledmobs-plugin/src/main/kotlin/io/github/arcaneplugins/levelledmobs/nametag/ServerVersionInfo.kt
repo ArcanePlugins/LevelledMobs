@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.bukkit.Bukkit
@@ -134,11 +133,11 @@ class ServerVersionInfo {
         if (nmsShortRegex.find()) {
             // example: 1.18
             var versionStr = nmsShortRegex
-                .group(1).uppercase(Locale.getDefault())
+                .group(1).uppercase()
 
             try {
                 this.majorVersionEnum =
-                    MinecraftMajorVersion.valueOf(versionStr.uppercase(Locale.getDefault()))
+                    MinecraftMajorVersion.valueOf(versionStr.uppercase())
                 versionStr = versionStr.replace("_", ".").replace("V", "")
                 this.minecraftVersion = versionStr.toDouble()
             } catch (e: Exception) {

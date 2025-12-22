@@ -2,7 +2,6 @@
 
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.util.Locale
 import java.util.TreeMap
 import java.util.TreeSet
 import java.util.regex.Pattern
@@ -117,7 +116,7 @@ class RulesParser {
             for (item in useList!!) {
                 if (item.trim().isEmpty()) continue
 
-                if ("*" == item.trim { it <= ' ' }) {
+                if ("*" == item.trim()) {
                     cachedModalList.includeAll = true
                     continue
                 }
@@ -174,10 +173,10 @@ class RulesParser {
                 if (group!!.trim().isEmpty()) continue
 
                 var invalidGroup = false
-                if (group.lowercase(Locale.getDefault()).startsWith("all_")) {
+                if (group.lowercase().startsWith("all_")) {
                     try {
                         val customGroup = CustomUniversalGroups.valueOf(
-                            group.uppercase(Locale.getDefault())
+                            group.uppercase()
                         )
                         results.add(customGroup.toString())
                         continue
@@ -348,7 +347,7 @@ class RulesParser {
                                     if (i == 0) vanillaBonusModalList.includedList else vanillaBonusModalList.excludedList
 
                                 val vanillaBonus =
-                                    VanillaBonusEnum.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                                    VanillaBonusEnum.valueOf(item.trim().uppercase())
                                 modalList.add(vanillaBonus)
                             }
                             ModalListParsingTypes.STRUCTURE -> {
@@ -372,7 +371,7 @@ class RulesParser {
                                         RegistryKey.STRUCTURE
                                     )
                                     structure = registry.get(
-                                        NamespacedKey.minecraft(key.lowercase(Locale.getDefault()))
+                                        NamespacedKey.minecraft(key.lowercase())
                                     )
                                 }
                                 else{
@@ -587,7 +586,7 @@ class RulesParser {
         if (presets.isEmpty()) return
 
         for (checkName: String in presets) {
-            val checkNameTrimmed = checkName.trim { it <= ' ' }
+            val checkNameTrimmed = checkName.trim()
 
             if (!rulePresets.containsKey(checkNameTrimmed)) {
                 val ruleName = parsingInfo.presetName?: parsingInfo.ruleName
@@ -802,7 +801,7 @@ class RulesParser {
         for (nametagVisEnum: String in nametagVisibility) {
             try {
                 val nametagVisibilityEnum = NametagVisibilityEnum.valueOf(
-                    nametagVisEnum.uppercase(Locale.getDefault())
+                    nametagVisEnum.uppercase()
                 )
                 nametagVisibilityEnums.add(nametagVisibilityEnum)
             } catch (_: Exception) {
@@ -876,7 +875,7 @@ class RulesParser {
         }
 
         try {
-            parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase(Locale.getDefault()))
+            parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase())
         } catch (_: Exception) {
             Log.war(
                 "Invalid value in spawner-particles: $particle, in rule: "
@@ -945,7 +944,7 @@ class RulesParser {
         if (mobCustomNameStatus != null) {
             try {
                 parsingInfo.conditionsMobCustomnameStatus = MobCustomNameStatus.valueOf(
-                    mobCustomNameStatus.uppercase(Locale.getDefault())
+                    mobCustomNameStatus.uppercase()
                 )
             } catch (_: Exception) {
                 Log.war("Invalid value for $mobCustomNameStatus")
@@ -956,7 +955,7 @@ class RulesParser {
         if (mobTamedStatus != null) {
             try {
                 parsingInfo.conditionsMobTamedStatus = MobTamedStatus.valueOf(
-                    mobTamedStatus.uppercase(Locale.getDefault())
+                    mobTamedStatus.uppercase()
                 )
             } catch (_: Exception) {
                 Log.war("Invalid value for $mobTamedStatus")
@@ -1086,7 +1085,7 @@ class RulesParser {
             WithinCoordinates.Axis.Z
         )) {
             for (keyStart in mutableListOf("start-", "end-")) {
-                val key = keyStart + axis.name.lowercase(Locale.getDefault())
+                val key = keyStart + axis.name.lowercase()
                 val isStart = "start-" == keyStart
                 val value = YmlParsingHelper.getString(cs, key)
 
@@ -1345,7 +1344,7 @@ class RulesParser {
             val tiers = mutableMapOf<Int, String>()
 
             for (name in csTiers.getKeys(false)) {
-                val name2 = name.lowercase(Locale.getDefault()).replace("tier-", "")
+                val name2 = name.lowercase().replace("tier-", "")
 
                 if ("default".equals(name, ignoreCase = true)) {
                     if (csTiers.getString(name).isNullOrEmpty())
@@ -1509,7 +1508,7 @@ class RulesParser {
             for (mobName in csCustom.getKeys(false)) {
                 var checkName = mobName
                 var doNotMerge: Boolean? = null
-                if (checkName.lowercase(Locale.getDefault()).startsWith("baby_"))
+                if (checkName.lowercase().startsWith("baby_"))
                     checkName = checkName.substring(5)
 
                 if ("merge".equals(mobName, ignoreCase = true))
@@ -1527,7 +1526,7 @@ class RulesParser {
                 }
 
                 try {
-                    EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
+                    EntityType.valueOf(checkName.uppercase())
                 } catch (_: IllegalArgumentException) {
                     Log.war(
                         "Invalid entity type: $mobName for fine-tuning in rule: ${parsingInfo.ruleName}"
@@ -1583,7 +1582,7 @@ class RulesParser {
         val results = mutableMapOf<Addition, Multiplier>()
 
         for (item in cs.getKeys(false)) {
-            when (item.lowercase(Locale.getDefault())) {
+            when (item.lowercase()) {
                 "merge" -> doNotMerge = !ymlHelper.getBoolean(item, true)
                 "use-stacked" -> useStacked = ymlHelper.getBoolean2(item, useStacked)
                 "do-not-merge" -> doNotMerge = ymlHelper.getBoolean(item, false)
@@ -1594,7 +1593,7 @@ class RulesParser {
                         lmMultiplier = LMMultiplier
                             .valueOf(
                                 item.replace("-", "_")
-                                    .uppercase(Locale.getDefault())
+                                    .uppercase()
                             )
                     } catch (_: Exception) {
                         Log.war("Invalid multiplier: $item")

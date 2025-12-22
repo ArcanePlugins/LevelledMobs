@@ -37,7 +37,6 @@ import java.io.File
 import java.io.InvalidObjectException
 import java.time.Duration
 import java.time.Instant
-import java.util.Locale
 import java.util.UUID
 import java.util.WeakHashMap
 import java.util.function.Consumer
@@ -172,7 +171,7 @@ class MainCompanion{
             }
 
             try {
-                val debugType = DebugType.valueOf(debug.uppercase(Locale.getDefault()))
+                val debugType = DebugType.valueOf(debug.uppercase())
                 main.debugManager.filterDebugTypes.add(debugType)
                 addedDebugs = true
             } catch (_: Exception) {

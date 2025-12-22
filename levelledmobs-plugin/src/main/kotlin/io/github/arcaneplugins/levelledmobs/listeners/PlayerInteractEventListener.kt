@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
-import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
@@ -50,9 +49,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         commandSender = event.player
         messageLabel = "lm"
 
-        if (event.material.name.lowercase(Locale.getDefault()).endsWith("_spawn_egg")) {
+        if (event.material.name.lowercase().endsWith("_spawn_egg"))
             if (processLMSpawnEgg(event)) return
-        }
 
         val main = LevelledMobs.instance
         if (main.mainCompanion.spawnerInfoIds.isEmpty() && main.mainCompanion.spawnerCopyIds.isEmpty())

@@ -45,7 +45,7 @@ class TieredColoringInfo : Cloneable {
             }
 
             for (i in 0..1) {
-                val num = numbers[i].trim { it <= ' ' }
+                val num = numbers[i].trim()
                 if (!isInteger(num)) {
                     Log.war("Invalid number in tiered coloring key: $key")
                     return null

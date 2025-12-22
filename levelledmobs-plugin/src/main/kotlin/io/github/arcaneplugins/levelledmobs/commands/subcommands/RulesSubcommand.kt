@@ -33,7 +33,6 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
-import java.util.Locale
 import java.util.concurrent.CompletableFuture
 import org.bukkit.Bukkit
 import org.bukkit.Color
@@ -242,7 +241,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
             return
         }
 
-        val difficulty: ResetDifficulty = when (difficultyStr.lowercase(Locale.getDefault())) {
+        val difficulty: ResetDifficulty = when (difficultyStr.lowercase()) {
             "vanilla" -> ResetDifficulty.VANILLA
             "bronze" -> ResetDifficulty.BRONZE
             "silver" -> ResetDifficulty.SILVER

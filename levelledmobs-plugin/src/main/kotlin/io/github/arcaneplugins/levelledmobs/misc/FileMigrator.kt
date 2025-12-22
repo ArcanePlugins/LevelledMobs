@@ -6,7 +6,6 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.regex.Pattern
@@ -158,7 +157,7 @@ object  FileMigrator {
             val origline = contents[i]
 
             val depth = getFieldDepth(origline)
-            val line = origline.replace("\t", "").trim { it <= ' ' }
+            val line = origline.replace("\t", "").trim()
 
             if (line.startsWith("# ||  Section")) {
                 val foundSectionNumber: Int = extractSectionNumber(line)
@@ -257,7 +256,7 @@ object  FileMigrator {
                 while (currentLine < newConfigLines.size) {
                     var line = newConfigLines[currentLine]
                     val depth = getFieldDepth(line)
-                    if (line.trim { it <= ' ' }.startsWith("#") || line.trim { it <= ' ' }.isEmpty()) {
+                    if (line.trim().startsWith("#") || line.trim().isEmpty()) {
                         currentLine++
                         continue
                     }
@@ -265,7 +264,7 @@ object  FileMigrator {
                     if (line.matches(regexPattern.toRegex())) {
                         val firstColon = line.indexOf(':')
                         val hasValues = line.length > firstColon + 1
-                        var key = line.take(firstColon).replace("\t", "").trim { it <= ' ' }
+                        var key = line.take(firstColon).replace("\t", "").trim()
                         val keyOnly = key
                         var oldKey = key
                         if (isSettings && oldVersion < 32 && key.equals(
@@ -275,9 +274,9 @@ object  FileMigrator {
                             oldKey = "nametag-auto-update-task-period"
                         }
 
-                        if (depth == 0) {
+                        if (depth == 0)
                             currentKey.clear()
-                        } else if (currentKey.size > depth) {
+                        else if (currentKey.size > depth) {
                             while (currentKey.size > depth) {
                                 currentKey.removeAt(currentKey.size - 1)
                             }
@@ -351,11 +350,11 @@ object  FileMigrator {
                             }
                         } else if (oldConfigMap.containsKey(oldKey)) {
                             keysMatched++
-                            val value = line.substring(firstColon + 1).trim { it <= ' ' }
+                            val value = line.substring(firstColon + 1).trim()
                             val fi = oldConfigMap[oldKey]
                             val migratedValue = fi!!.simpleValue
 
-                            if (key.lowercase(Locale.getDefault()).startsWith("file-version")) {
+                            if (key.lowercase().startsWith("file-version")) {
                                 currentLine++
                                 continue
                             }
@@ -439,9 +438,9 @@ object  FileMigrator {
                             else
                                 valuesMatched++
                         }
-                    } else if (line.trim { it <= ' ' }.startsWith("-")) {
+                    } else if (line.trim().startsWith("-")) {
                         val key = getKeyFromList(currentKey, null)
-                        val value = line.trim { it <= ' ' }.substring(1).trim { it <= ' ' }
+                        val value = line.trim().substring(1).trim()
 
                         // we have an array value present in the new config but not the old, so it must've been removed
                         if ((oldConfigMap.containsKey(key) && oldConfigMap[key]!!.isList
@@ -465,9 +464,9 @@ object  FileMigrator {
                 var startAt = 0
 
                 for (i in newConfigLines.indices) {
-                    val line = newConfigLines[i].trim { it <= ' ' }
+                    val line = newConfigLines[i].trim()
 
-                    if (line.lowercase(Locale.getDefault()).startsWith("file-version")) {
+                    if (line.lowercase().startsWith("file-version")) {
                         startAt = i + 1
                         break
                     }
@@ -549,7 +548,7 @@ object  FileMigrator {
 
     private fun getFirstNonCommentLine(input: List<String>): Int {
         for (lineNum in input.indices) {
-            val line = input[lineNum].replace("\t", "").trim { it <= ' ' }
+            val line = input[lineNum].replace("\t", "").trim()
             if (line.startsWith("#") || line.isEmpty())
                 continue
 
@@ -568,14 +567,14 @@ object  FileMigrator {
 
         for (line in input) {
             val depth = getFieldDepth(line)
-            val useLine = line.replace("\t", "").trim { it <= ' ' }
+            val useLine = line.replace("\t", "").trim()
             if (useLine.startsWith("#") || useLine.isEmpty())
                 continue
 
             if (useLine.matches(regexPattern.toRegex())) {
                 val firstColon = useLine.indexOf(':')
                 val hasValues = useLine.length > firstColon + 1
-                var key: String? = useLine.take(firstColon).replace("\t", "").trim { it <= ' ' }
+                var key: String? = useLine.take(firstColon).replace("\t", "").trim()
                 val origKey = key
 
                 if (origKey!!.startsWith("-")) {
@@ -584,7 +583,7 @@ object  FileMigrator {
                             currentKey.removeAt(currentKey.size - 1)
                         }
                     }
-                    val temp = origKey.substring(1).trim { it <= ' ' }
+                    val temp = origKey.substring(1).trim()
                     var tempKey: String
                     for (i in 0..99) {
                         tempKey = "$temp[$i]"
@@ -614,14 +613,14 @@ object  FileMigrator {
                     if (!configMap.containsKey(key))
                         configMap[key] = FieldInfo(null, depth)
                 } else {
-                    val value = useLine.substring(firstColon + 1).trim { it <= ' ' }
+                    val value = useLine.substring(firstColon + 1).trim()
                     val fi = FieldInfo(value, depth)
                     fi.hasValue = true
                     configMap[key] = fi
                 }
             } else if (useLine.startsWith("-")) {
                 val key = getKeyFromList(currentKey, null)
-                val value = useLine.trim { it <= ' ' }.substring(1).trim { it <= ' ' }
+                val value = useLine.trim().substring(1).trim()
                 if (configMap.containsKey(key)) {
                     val fi = configMap[key]
                     fi!!.addListValue(value)
