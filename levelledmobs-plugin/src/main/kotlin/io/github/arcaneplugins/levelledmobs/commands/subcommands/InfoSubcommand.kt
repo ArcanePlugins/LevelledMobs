@@ -40,7 +40,7 @@ object InfoSubcommand : CommandBase("levelledmobs.command.info") {
             mutableListOf(
                 main.description.version,
                 main.description.description ?: "",
-                "1.20 - 1.21",
+                "1.21",
                 main.description.authors.joinToString(listSeparator),
                 "See &8&nhttps://tinyurl.com/lm-contributors"
             )

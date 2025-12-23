@@ -43,15 +43,21 @@ object MiscUtils {
     fun getNBTDump(
         livingEntity: LivingEntity
     ): String {
+        return getNBTDumpObj(livingEntity)?.toString() ?: return ""
+    }
+
+    fun getNBTDumpObj(
+        livingEntity: LivingEntity
+    ): Any? {
         val def = LevelledMobs.instance.definitions
         val ver = LevelledMobs.instance.ver
-        val useNewMethod = (ver.minecraftVersion >= 1.21 && ver.minorVersion >= 6
+        val useNewerMethod = (ver.minecraftVersion >= 1.21 && ver.revision >= 6
                 || ver.minecraftVersion >= 1.22)
 
         try {
             val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
 
-            if (useNewMethod) {
+            if (useNewerMethod) {
                 /*
                     net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
                     net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
@@ -62,19 +68,19 @@ object MiscUtils {
                 val problemReporter = def.fieldDISCARDING!!.get(null)
                 val tagValueOutput = def.methodWithoutContext!!.invoke(def.clazzTagValueOutput, problemReporter)
                 def.methodSaveWithoutId!!.invoke(internalLivingEntity, tagValueOutput)
-                return def.methodBuildResult!!.invoke(tagValueOutput).toString()
+                return def.methodBuildResult!!.invoke(tagValueOutput)
             }
             else{
                 val compoundTag = def.clazzCompoundTag!!.getConstructor().newInstance()
                 def.methodSaveWithoutId!!.invoke(internalLivingEntity, compoundTag)
 
-                return compoundTag.toString()
+                return compoundTag
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
 
-        return ""
+        return null
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -83,62 +89,23 @@ object MiscUtils {
     ): MutableMap<String, String> {
         val def = LevelledMobs.instance.definitions
         val results = mutableMapOf<String, String>()
+        val nbtCompountTag = getNBTDumpObj(livingEntity) ?: ""
 
-        try {
-            val compoundTagClazz =
-                Class.forName("net.minecraft.nbt.NBTTagCompound")
-            val compoundTag = compoundTagClazz.getConstructor().newInstance()
+        val value = def.fieldTags!!.get(nbtCompountTag) as MutableMap<String, Any>
+        val compoundBukkitValues = value["BukkitValues"]
+        val bukkitValues = def.fieldTags!!.get(compoundBukkitValues) as MutableMap<String, Any>
 
-            val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
-            val problemReporter = def.fieldDISCARDING!!.get(null)
-            val tagValueOutput = def.methodWithoutContext!!.invoke(def.clazzTagValueOutput, problemReporter)
-            def.methodSaveWithoutId!!.invoke(internalLivingEntity, tagValueOutput)
-            val test = def.methodBuildResult!!.invoke(tagValueOutput)
+        for (entry in bukkitValues.entries) {
+            var byteArraySize = -1
+            val classType = def.methodGetType!!.invoke(entry.value)
+            val className = (def.methodGetName!!.invoke(classType) as String).lowercase()
+            if (entry.value.javaClass.isAssignableFrom(def.classByteArrayTag!!))
+                byteArraySize = def.methodByteArrayTagSize!!.invoke(entry.value) as Int
 
-            val ver = LevelledMobs.instance.ver
-            var methodName = if (ver.majorVersion >= 21) "tags" else "x"
-            //val tagsField = compoundTagClazz.getDeclaredField(methodName)
-            //tagsField.trySetAccessible()
-            val tagsMap = test as MutableMap<String, Any>
-
-            // NBTTagCompound.java
-            val bukkitValues = tagsMap["BukkitValues"] ?: return results
-
-            // private final Map<String, NBTBase> tags; (again)
-            //val bukkitValuesMap = tagsField.get(bukkitValues) as MutableMap<String, Any>
-
-            for (nbtBase in tagsMap.entries){
-                // @Override
-                // public NBTTagType<NBTTagCompound> getType()
-                // net.minecraft.nbt.CompoundTag ->
-                //     net.minecraft.nbt.TagType getType() ->
-                methodName = if (ver.majorVersion >= 21) "getType" else "c"
-                val getTypeMethod = nbtBase.value::javaClass.get().getMethod(methodName)
-                val type = getTypeMethod.invoke(nbtBase.value)
-                // @Override
-                // public String getName()
-                // net.minecraft.nbt.TagType ->
-                //    java.lang.String getName() ->
-                methodName = if (ver.majorVersion >= 21) "getName" else "a"
-                val getNameMethod =  type::class.java.getDeclaredMethod(methodName)
-                // all classes are public but for some reason acts like it is private
-                getNameMethod.trySetAccessible()
-
-                val valueType = getNameMethod.invoke(type).toString().lowercase()
-                if ("byte[]" == valueType) {
-                    // NBTTagByteArray.java: public int size()
-                    val methodSize = nbtBase.value.javaClass.getDeclaredMethod("size")
-                    val byteSize = (methodSize.invoke(nbtBase.value))
-                    results[nbtBase.key] = "type: &b$valueType&r, size: &b$byteSize&r"
-                    //Log.inf("key: '&b${nbtBase.key}&r', type: '&b$valueType&r', size: &b$byteSize&r")
-                }
-                else
-                    results[nbtBase.key] = "type: &b$valueType&r, value: &b${nbtBase.value}&r"
-                    //Log.inf("key: '&b${nbtBase.key}&r', type: '&b$valueType&r', value: '&b${nbtBase.value}&r'")
-            }
-
-        } catch (ex: Exception) {
-            ex.printStackTrace()
+            results[entry.key] = if (byteArraySize >= 0)
+                "(byte array size $byteArraySize)"
+            else
+                "${entry.value}  ($className)"
         }
 
         return results.toSortedMap()
@@ -150,9 +117,8 @@ object MiscUtils {
         val sb = StringBuilder()
 
         for (result in results) {
-            if (result.objectsAdded == null) {
+            if (result.objectsAdded == null)
                 continue
-            }
 
             for (i in 0 until result.objectsAdded!!.size) {
                 if (i > 0)

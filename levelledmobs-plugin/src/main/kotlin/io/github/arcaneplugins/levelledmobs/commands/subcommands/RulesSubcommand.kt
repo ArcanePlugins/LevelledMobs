@@ -549,14 +549,18 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
     }
 
     private fun spawnParticles(location: Location, world: World) {
-        val particle = Particle.EFFECT
-        val spell = Particle.Spell(Color.PURPLE, 50f)
+        val ver = LevelledMobs.instance.ver
+        val useSpell = (ver.minecraftVersion >= 1.21 && ver.revision >= 9
+            || ver.majorVersion >= 22)
 
         try {
             for (i in 1.. 40)    {
                 val scheduler = SchedulerWrapper{
                     val yPos = (i * 0.05)
-                    world.spawnParticle(particle, location, 20, 0.0, yPos, 0.0, 0.1, spell)
+                    if (useSpell)
+                        createParticlesWithSpell(location, yPos)
+                    else
+                        world.spawnParticle(Particle.EFFECT, location, 20, 0.0, 0.0, 0.0, 0.1)
                 }
                 scheduler.run()
 
@@ -568,6 +572,15 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         catch (e: IllegalArgumentException){
             Log.war("Unable to create particle effect, " + e.message)
         }
+    }
+
+    private fun createParticlesWithSpell(
+        location: Location,
+        yPos: Double
+    ){
+        val particle = Particle.EFFECT
+        val spell = Particle.Spell(Color.PURPLE, 50f)
+        location.world.spawnParticle(particle, location, 20, 0.0, yPos, 0.0, 0.1, spell)
     }
 
     private fun showEffectiveValues(

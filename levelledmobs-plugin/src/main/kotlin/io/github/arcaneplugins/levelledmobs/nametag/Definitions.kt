@@ -65,6 +65,17 @@ class Definitions{
         private set
     private var clazzEntityTypes: Class<*>? = null
     var clazzEquipmentSlotGroup: Class<*>? = null
+        private set
+    var clazzNbtCompount: Class<*>? = null
+        private set
+
+    var classByteArrayTag: Class<*>? = null
+        private set
+    var clazzNBTTagType: Class<*>? = null
+        private set
+    var clazzNBTBase: Class<*>? = null
+        private set
+
 
     // mythic mobs:
     private var clazzMMmobExecutor: Class<*>? = null
@@ -122,6 +133,12 @@ class Definitions{
         private set
     var methodDataWatcherItemValue: Method? = null
         private set
+    var methodGetName: Method? = null
+        private set
+    var methodGetType: Method? = null
+        private set
+    var methodByteArrayTagSize: Method? = null
+        private set
 
     // mythic mobs:
     var methodMMgetActiveMob: Method? = null
@@ -129,6 +146,7 @@ class Definitions{
 
     // fields
     var fieldDISCARDING: Field? = null
+        private set
     var fieldOPTIONALCOMPONENT: Field? = null
         private set
     var fieldBOOLEAN: Field? = null
@@ -138,6 +156,8 @@ class Definitions{
     var fieldInt2ObjectMap: Field? = null
         private set
     var fieldEquipmentSlotAny: Field? = null
+        private set
+    var fieldTags: Field? = null
         private set
 
     // Constructors
@@ -347,7 +367,18 @@ class Definitions{
         //    void saveWithoutId(net.minecraft.world.level.storage.ValueOutput) -> d
 
         try {
-            if (ver.minorVersion >= 21 && ver.revision >= 6) {
+            this.clazzNbtCompount = Class.forName("net.minecraft.nbt.NBTTagCompound")
+            this.classByteArrayTag = Class.forName("net.minecraft.nbt.ByteArrayTag")
+            this.clazzNBTTagType = Class.forName("net.minecraft.nbt.NBTTagType")
+            this.clazzNBTBase = Class.forName("net.minecraft.nbt.NBTBase")
+
+            this.methodGetName = clazzNBTTagType!!.getDeclaredMethod("getName")
+            this.methodGetType = clazzNBTBase!!.getDeclaredMethod("getType")
+            this.methodByteArrayTagSize = classByteArrayTag!!.getMethod("size")
+            this.fieldTags = clazzNbtCompount!!.getDeclaredField("tags")
+            fieldTags!!.trySetAccessible()
+
+            if (ver.minorVersion >= 21 && ver.revision >= 6 || ver.minorVersion >= 22) {
                 /*
                     net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
                     net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
