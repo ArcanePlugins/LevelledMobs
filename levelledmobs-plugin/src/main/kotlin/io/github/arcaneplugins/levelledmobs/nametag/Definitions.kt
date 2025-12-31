@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -32,6 +33,12 @@ class Definitions{
     var mm: MiniMessage? = null
 
     // classes:
+    var clazzCompoundTag: Class<*>? = null
+        private set
+    private var clazzProblemReport: Class<*>? = null
+    private var clazzValueOutput: Class<*>? = null
+    var clazzTagValueOutput: Class<*>? = null
+        private set
     private var clazzIChatMutableComponent: Class<*>? = null
     private var clazzIChatBaseComponent: Class<*>? = null
     var clazzTranslatableComponent: Class<*>? = null
@@ -58,6 +65,17 @@ class Definitions{
         private set
     private var clazzEntityTypes: Class<*>? = null
     var clazzEquipmentSlotGroup: Class<*>? = null
+        private set
+    var clazzNbtCompount: Class<*>? = null
+        private set
+
+    var classByteArrayTag: Class<*>? = null
+        private set
+    var clazzNBTTagType: Class<*>? = null
+        private set
+    var clazzNBTBase: Class<*>? = null
+        private set
+
 
     // mythic mobs:
     private var clazzMMmobExecutor: Class<*>? = null
@@ -65,6 +83,12 @@ class Definitions{
     private var clazzMMmobType: Class<*>? = null
 
     // methods:
+    var methodSaveWithoutId: Method? = null
+        private set
+    var methodWithoutContext: Method? = null
+        private set
+    var methodBuildResult: Method? = null
+        private set
     var methodDataWatcherBuilderBuild: Method? = null
         private set
     var methodDataWatcherBuilderDefine: Method? = null
@@ -109,12 +133,20 @@ class Definitions{
         private set
     var methodDataWatcherItemValue: Method? = null
         private set
+    var methodGetName: Method? = null
+        private set
+    var methodGetType: Method? = null
+        private set
+    var methodByteArrayTagSize: Method? = null
+        private set
 
     // mythic mobs:
     var methodMMgetActiveMob: Method? = null
         private set
 
     // fields
+    var fieldDISCARDING: Field? = null
+        private set
     var fieldOPTIONALCOMPONENT: Field? = null
         private set
     var fieldBOOLEAN: Field? = null
@@ -125,6 +157,19 @@ class Definitions{
         private set
     var fieldEquipmentSlotAny: Field? = null
         private set
+    var fieldTags: Field? = null
+        private set
+
+    // Constructors
+    var ctorEntityDataAccessor: Constructor<*>? = null
+        private set
+    var ctorSynchedEntityData: Constructor<*>? = null
+        private set
+    var ctorSynchedEntityDataBuilder: Constructor<*>? = null
+        private set
+    var ctorPacket: Constructor<*>? = null
+        private set
+    var ctorAttributeModifier: Constructor<*>? = null
 
     // mythic mobs:
     var fieldMMmobManager: Field? = null
@@ -138,16 +183,21 @@ class Definitions{
     var fieldMMinternalName: Field? = null
         private set
 
-    // Constructors
-    var ctorEntityDataAccessor: Constructor<*>? = null
+    // Lib's Disguises
+    var clazzDisguise: Class<*>? = null
         private set
-    var ctorSynchedEntityData: Constructor<*>? = null
+    var clazzDisguiseAPI: Class<*>? = null
         private set
-    var ctorSynchedEntityDataBuilder: Constructor<*>? = null
+    var clazzLDFlagWatcher: Class<*>? = null
         private set
-    var ctorPacket: Constructor<*>? = null
+    var methodGetDisguise: Method? = null
         private set
-    var ctorAttributeModifier: Constructor<*>? = null
+    var methodIsDisguiseInUse: Method? = null
+        private set
+    var methodLDGetWather: Method? = null
+        private set
+    var methodLDSetCustomName: Method? = null
+        private set
 
     fun load(){
         ver = LevelledMobs.instance.ver
@@ -176,7 +226,9 @@ class Definitions{
             buildSimpleMethods()
             buildFields()
             buildConstructors()
+            buildNbtDumpRelatedStuff()
             buildMythicMobs()
+            buildLibsDisguises()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -305,6 +357,56 @@ class Definitions{
         }
     }
 
+    private fun buildNbtDumpRelatedStuff(){
+        // these reflection items go here because they are optional
+        // if they fail then only nbt-dump command will not be available
+
+        // 1.21.5 and older:
+        //    net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> h
+        // 1.21.6+:
+        //    void saveWithoutId(net.minecraft.world.level.storage.ValueOutput) -> d
+
+        try {
+            this.clazzNbtCompount = Class.forName("net.minecraft.nbt.NBTTagCompound")
+            this.classByteArrayTag = Class.forName("net.minecraft.nbt.ByteArrayTag")
+            this.clazzNBTTagType = Class.forName("net.minecraft.nbt.NBTTagType")
+            this.clazzNBTBase = Class.forName("net.minecraft.nbt.NBTBase")
+
+            this.methodGetName = clazzNBTTagType!!.getDeclaredMethod("getName")
+            this.methodGetType = clazzNBTBase!!.getDeclaredMethod("getType")
+            this.methodByteArrayTagSize = classByteArrayTag!!.getMethod("size")
+            this.fieldTags = clazzNbtCompount!!.getDeclaredField("tags")
+            fieldTags!!.trySetAccessible()
+
+            if (ver.minorVersion >= 21 && ver.revision >= 6 || ver.minorVersion >= 22) {
+                /*
+                    net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
+                    net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
+                    entity.saveWithoutId(tvo);
+                    net.minecraft.nbt.CompoundTag tag = tvo.buildResult();
+                */
+                this.clazzProblemReport = Class.forName("net.minecraft.util.ProblemReporter")
+                this.fieldDISCARDING = clazzProblemReport!!.getDeclaredField("DISCARDING")
+                this.clazzValueOutput = Class.forName("net.minecraft.world.level.storage.ValueOutput")
+                this.clazzTagValueOutput = Class.forName("net.minecraft.world.level.storage.TagValueOutput")
+                this.methodWithoutContext =
+                    clazzTagValueOutput!!.getDeclaredMethod("createWithoutContext", clazzProblemReport)
+                this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("saveWithoutId", clazzValueOutput)
+                this.methodBuildResult = this.clazzTagValueOutput!!.getDeclaredMethod("buildResult")
+            }
+            else {
+                // pre 1.21.6:
+                this.clazzCompoundTag = Class.forName(
+                    "net.minecraft.nbt.NBTTagCompound"
+                )
+                this.methodSaveWithoutId = clazzEntity!!.getDeclaredMethod("f", clazzCompoundTag)
+            }
+        }
+        catch (e: Exception){
+            Log.war("Error getting reflection methods for nbt-dump operations: ${e.message}")
+        }
+    }
+
     private fun getMethodComponentAppend() {
         if (ver.isRunningPaper) return // spigot only stuff here
 
@@ -382,7 +484,9 @@ class Definitions{
         else {
             methodName = when (ver.majorVersionEnum) {
                 MinecraftMajorVersion.V1_21 -> {
-                    if (ver.revision >= 4 && ver.revision != 5)
+                    if (ver.revision >= 9)
+                        "aC"
+                    else if (ver.revision >= 2 && ver.revision != 5)
                         "au"
                     else
                         "ar"
@@ -439,6 +543,8 @@ class Definitions{
                 methodName =
                     if (ver.useMojangMappings)
                         "getId"
+                    else if (ver.revision >= 9)
+                        "az"
                     else if (ver.revision == 5)
                         "ao" // 1.21.5 only
                     else if (ver.revision >= 2)
@@ -621,22 +727,16 @@ class Definitions{
 
         this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
-        if (ver.minorVersion >= 19) {
-            // net.minecraft.network.syncher.SynchedEntityData ->
-            // pre 1.20.5:
-            //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
-            // 1.20.5+:
-            //    net.minecraft.network.syncher.SynchedEntityData$DataItem[] itemsById ->
-            // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
+        // net.minecraft.network.syncher.SynchedEntityData ->
+        // pre 1.20.5:
+        //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById ->
+        // 1.20.5+:
+        //    net.minecraft.network.syncher.SynchedEntityData$DataItem[] itemsById ->
+        // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
 
-            val methodName = if (this.isOneNinteenThreeOrNewer)
-                NmsMappings.getMapping("fieldInt2ObjectMap")
-            else
-                "f"
-
-            this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
-            fieldInt2ObjectMap!!.setAccessible(true)
-        }
+        val methodName = NmsMappings.getMapping("fieldInt2ObjectMap")
+        this.fieldInt2ObjectMap = clazzDataWatcher!!.getDeclaredField(methodName)
+        fieldInt2ObjectMap!!.setAccessible(true)
 
         if (!ver.useOldEnums)
             fieldEquipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
@@ -679,9 +779,7 @@ class Definitions{
     private fun buildMythicMobs() {
         // io.lumine.mythic.bukkit.MythicBukkit
         val mmMain = Bukkit.getPluginManager().getPlugin("MythicMobs")
-        if (mmMain == null || !mmMain.isEnabled) {
-            return
-        }
+        if (mmMain == null || !mmMain.isEnabled) return
 
         this.clazzMMactiveMob = Class.forName("io.lumine.mythic.core.mobs.ActiveMob")
         this.clazzMMmobExecutor = Class.forName("io.lumine.mythic.core.mobs.MobExecutor")
@@ -708,6 +806,19 @@ class Definitions{
             "internalName"
         ) // string
         fieldMMinternalName!!.setAccessible(true)
+    }
+
+    private fun buildLibsDisguises(){
+        val ldMain = Bukkit.getPluginManager().getPlugin("LibsDisguises")
+        if (ldMain == null || !ldMain.isEnabled) return
+
+        clazzDisguise = Class.forName("me.libraryaddict.disguise.disguisetypes.Disguise")
+        clazzDisguiseAPI = Class.forName("me.libraryaddict.disguise.DisguiseAPI")
+        clazzLDFlagWatcher = Class.forName("me.libraryaddict.disguise.disguisetypes.FlagWatcher")
+        methodGetDisguise = clazzDisguiseAPI!!.getMethod("getDisguise", Entity::class.java)
+        methodIsDisguiseInUse = clazzDisguise!!.getMethod("isDisguiseInUse")
+        methodLDGetWather = clazzDisguise!!.getMethod("getWatcher")
+        methodLDSetCustomName = clazzLDFlagWatcher!!.getMethod("setCustomName", String::class.java)
     }
 
     fun setUseLegacySerializer(useLegacySerializer: Boolean) {

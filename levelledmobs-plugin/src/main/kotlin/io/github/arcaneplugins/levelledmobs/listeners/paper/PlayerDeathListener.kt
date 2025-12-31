@@ -38,27 +38,25 @@ class PlayerDeathListener {
 
     fun onPlayerDeathEvent(event: PlayerDeathEvent): Boolean {
         this.shouldCancelEvent = false
-        if (event.deathMessage() == null) {
-            return true
-        }
-        if (event.deathMessage() !is TranslatableComponent) {
+        if (event.deathMessage() == null) return true
+
+        if (event.deathMessage() !is TranslatableComponent)
             return false
-        }
 
         val lmEntity = getPlayersKiller(event)
         val main = LevelledMobs.instance
 
         if (lmEntity == null) {
-            if (main.placeholderApiIntegration != null) {
+            if (main.placeholderApiIntegration != null)
                 main.placeholderApiIntegration!!.putPlayerOrMobDeath(event.entity, null, true)
-            }
+
             if (this.shouldCancelEvent) event.isCancelled = true
             return true
         }
 
-        if (main.placeholderApiIntegration != null) {
+        if (main.placeholderApiIntegration != null)
             main.placeholderApiIntegration!!.putPlayerOrMobDeath(event.entity, lmEntity, true)
-        }
+
         lmEntity.free()
 
         if (this.shouldCancelEvent) event.isCancelled = true
@@ -77,21 +75,17 @@ class PlayerDeathListener {
         var killer: LivingEntity? = null
 
         if (damager is Projectile) {
-            if (damager.shooter is LivingEntity) {
+            if (damager.shooter is LivingEntity)
                 killer = damager.shooter as LivingEntity?
-            }
-        } else if (damager is LivingEntity) {
+        }
+        else if (damager is LivingEntity)
             killer = damager
-        }
 
-        if (killer == null || killer.name.isEmpty() || killer is Player) {
+        if (killer == null || killer.name.isEmpty() || killer is Player)
             return null
-        }
 
         val lmKiller = LivingEntityWrapper.getInstance(killer)
-        if (!lmKiller.isLevelled) {
-            return lmKiller
-        }
+        if (!lmKiller.isLevelled) return lmKiller
 
         val player = event.player
 
@@ -100,13 +94,11 @@ class PlayerDeathListener {
             isDeathNametag = true,
             preserveMobName = true
         )
-        if (mobNametag.nametagNonNull.isEmpty()) {
+        if (mobNametag.nametagNonNull.isEmpty())
             return lmKiller
-        }
 
-        if (mobNametag.isNullOrEmpty || "disabled".equals(mobNametag.nametagNonNull, ignoreCase = true)) {
+        if (mobNametag.isNullOrEmpty || "disabled".equals(mobNametag.nametagNonNull, ignoreCase = true))
             return lmKiller
-        }
 
         updateDeathMessage(event, mobNametag)
 
@@ -130,12 +122,10 @@ class PlayerDeathListener {
             for (c in tc.arguments()) {
                 val tc2 = c.asComponent() as? TranslatableComponent
                 if (tc2 != null) {
-                    if ("chat.square_brackets" == tc2.key()) {
-                        // this is when the mob was holding a weapon
+                    if ("chat.square_brackets" == tc2.key()) // this is when the mob was holding a weapon
                         itemComp = tc2
-                    } else {
+                    else
                         mobKey = tc2.key()
-                    }
                 }
             }
         }
@@ -143,12 +133,10 @@ class PlayerDeathListener {
             @Suppress("DEPRECATION")
             for (c in tc.args()) {
                 if (c is TranslatableComponent) {
-                    if ("chat.square_brackets" == c.key()) {
-                        // this is when the mob was holding a weapon
+                    if ("chat.square_brackets" == c.key()) // this is when the mob was holding a weapon
                         itemComp = c
-                    } else {
+                    else
                         mobKey = c.key()
-                    }
                 }
             }
         }
@@ -181,7 +169,7 @@ class PlayerDeathListener {
             )
         } else {
             val leftComp =
-                if (displayNameIndex > 0) cs.deserialize(mobName.substring(0, displayNameIndex)) else Component.empty()
+                if (displayNameIndex > 0) cs.deserialize(mobName.take(displayNameIndex)) else Component.empty()
             val rightComp =
                 if (mobName.length > displayNameIndex + 13) cs.deserialize(mobName.substring(displayNameIndex + 13)) else Component.empty()
 

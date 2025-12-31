@@ -55,6 +55,4 @@ class MobPreLevelEvent(
     override fun setCancelled(cancelled: Boolean) {
         this.cancelled = cancelled
     }
-
-
 }

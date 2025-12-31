@@ -32,10 +32,11 @@ class CommandFallback(
         if ("reload".equals(args[0], ignoreCase = true)){
             main.reloadLM(sender)
 
-            if (main.mainCompanion.hadRulesLoadError && sender is Player) {
+            if (main.mainCompanion.hadRulesLoadError && sender is Player)
                 sender.sendMessage(FileLoader.getFileLoadErrorMessage())
-            }
         }
+        else if ("info".equals(args[0], ignoreCase = true))
+            InfoSubcommand.showInfo(sender)
 
         return true
     }
@@ -46,7 +47,7 @@ class CommandFallback(
         args: Array<String>
     ): MutableList<String> {
         return if (args.size == 1)
-            mutableListOf("reload")
+            mutableListOf("reload", "info")
         else
             mutableListOf()
     }

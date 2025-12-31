@@ -2,7 +2,6 @@
 
 package io.github.arcaneplugins.levelledmobs.rules
 
-import java.util.Locale
 import java.util.TreeMap
 import java.util.TreeSet
 import java.util.regex.Pattern
@@ -85,18 +84,16 @@ class RulesParser {
             var cs2: ConfigurationSection? = null
             var useList: MutableList<String>? = null
 
-            if (simpleStringOrArray is java.util.ArrayList<*>) {
+            if (simpleStringOrArray is java.util.ArrayList<*>)
                 useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
-            } else if (simpleStringOrArray is String) {
+            else if (simpleStringOrArray is String)
                 useList = mutableListOf(simpleStringOrArray)
-            }
 
-            if (useList == null) {
+            if (useList == null)
                 cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
-            }
-            if (cs2 == null && useList == null) {
+
+            if (cs2 == null && useList == null)
                 return defaultValue
-            }
 
             if (cs2 != null) {
                 for (key in cs2.getKeys(false)) {
@@ -117,21 +114,18 @@ class RulesParser {
             }
 
             for (item in useList!!) {
-                if (item.trim { it <= ' ' }.isEmpty()) {
-                    continue
-                }
-                if ("*" == item.trim { it <= ' ' }) {
+                if (item.trim().isEmpty()) continue
+
+                if ("*" == item.trim()) {
                     cachedModalList.includeAll = true
                     continue
                 }
-                if (emptyArrayPattern.matcher(item).matches()) {
+                if (emptyArrayPattern.matcher(item).matches())
                     continue
-                }
+
                 cachedModalList.includedList.add(item)
             }
-            if (cs2 == null) {
-                return cachedModalList
-            }
+            if (cs2 == null) return cachedModalList
 
             val allowedGroups = YmlParsingHelper.getKeyNameFromConfig(cs2, MLINCLUDEDGROUPS)
             val excludedList = YmlParsingHelper.getKeyNameFromConfig(cs2, MLEXCLUDEDITEMS)
@@ -139,10 +133,9 @@ class RulesParser {
             cachedModalList.includedGroups = getSetOfGroups(cs2, allowedGroups)
 
             for (item in YmlParsingHelper.getListFromConfigItem(cs2, excludedList)) {
-                if (item.trim { it <= ' ' }.isEmpty()) {
-                    continue
-                }
-                if ("*" == item.trim { it <= ' ' }) {
+                if (item.trim().isEmpty()) continue
+
+                if ("*" == item.trim()) {
                     cachedModalList.excludeAll = true
                     continue
                 }
@@ -150,9 +143,8 @@ class RulesParser {
             }
             cachedModalList.excludedGroups = getSetOfGroups(cs2, excludedGroups)
 
-            if (cachedModalList.isEmpty() && !cachedModalList.includeAll && !cachedModalList.excludeAll) {
+            if (cachedModalList.isEmpty() && !cachedModalList.includeAll && !cachedModalList.excludeAll)
                 return defaultValue
-            }
 
             return cachedModalList
         }
@@ -170,24 +162,21 @@ class RulesParser {
             }
 
             val results: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-            if (foundKeyName == null) {
+            if (foundKeyName == null)
                 return results
-            }
 
             val groups = cs.getStringList(foundKeyName)
-            if (groups.isEmpty() && cs.getString(foundKeyName) != null) {
+            if (groups.isEmpty() && cs.getString(foundKeyName) != null)
                 groups.add(cs.getString(foundKeyName))
-            }
 
             for (group in groups) {
-                if (group!!.trim { it <= ' ' }.isEmpty()) {
-                    continue
-                }
+                if (group!!.trim().isEmpty()) continue
+
                 var invalidGroup = false
-                if (group.lowercase(Locale.getDefault()).startsWith("all_")) {
+                if (group.lowercase().startsWith("all_")) {
                     try {
                         val customGroup = CustomUniversalGroups.valueOf(
-                            group.uppercase(Locale.getDefault())
+                            group.uppercase()
                         )
                         results.add(customGroup.toString())
                         continue
@@ -195,15 +184,13 @@ class RulesParser {
                         invalidGroup = true
                     }
                 }
-                if (LevelledMobs.instance.customMobGroups.containsKey(group)) {
+                if (LevelledMobs.instance.customMobGroups.containsKey(group))
                     results.add(group)
-                } else {
+                else
                     invalidGroup = true
-                }
 
-                if (invalidGroup) {
+                if (invalidGroup)
                     Log.war("Invalid group: $group")
-                }
             }
 
             return results
@@ -215,9 +202,7 @@ class RulesParser {
             type: ModalListParsingTypes,
             ruleInfo: RuleInfo
         ): CachedModalList<*>? {
-            if (cs == null) {
-                return defaultValue
-            }
+            if (cs == null) return defaultValue
 
             val mlpi = ModalListParsingInfo(type)
 
@@ -266,18 +251,16 @@ class RulesParser {
             var cs2: ConfigurationSection? = null
             var useList: MutableList<String>? = null
 
-            if (simpleStringOrArray is ArrayList<*>) {
+            if (simpleStringOrArray is ArrayList<*>)
                 useList = (simpleStringOrArray as ArrayList<String>).toMutableList()
-            } else if (simpleStringOrArray is String) {
+            else if (simpleStringOrArray is String)
                 useList = mutableListOf(simpleStringOrArray)
-            }
 
-            if (useList == null) {
+            if (useList == null)
                 cs2 = YmlParsingHelper.objToCS(cs, useKeyName)
-            }
-            if (cs2 == null && useList == null) {
+
+            if (cs2 == null && useList == null)
                 return defaultValue
-            }
 
             if (cs2 != null) {
                 for (key in cs2.getKeys(false)) {
@@ -295,54 +278,47 @@ class RulesParser {
                 for (group in YmlParsingHelper.getListFromConfigItem(
                     cs2, MLINCLUDEDGROUPS)
                 ) {
-                    if (group.trim { it <= ' ' }.isEmpty()) {
-                        continue
-                    }
-                    if (mlpi.groupMapping == null || !mlpi.groupMapping!!.containsKey(group)) {
+                    if (group.trim().isEmpty()) continue
+
+                    if (mlpi.groupMapping == null || !mlpi.groupMapping!!.containsKey(group))
                         Log.war("invalid ${mlpi.itemName} group: $group")
-                    } else {
+                    else
                         cachedModalList.includedGroups.add(group)
-                    }
                 }
 
                 for (group in YmlParsingHelper.getListFromConfigItem(
                     cs2, MLEXCLUDEDGROUPS)
                 ){
-                    if (group.trim { it <= ' ' }.isEmpty()) {
-                        continue
-                    }
-                    if (!LevelledMobs.instance.rulesManager.biomeGroupMappings.containsKey(group)) {
+                    if (group.trim().isEmpty()) continue
+
+                    if (!LevelledMobs.instance.rulesManager.biomeGroupMappings.containsKey(group))
                         Log.war("invalid ${mlpi.itemName} group: $group")
-                    } else {
+                    else
                         cachedModalList.excludedGroups.add(group)
-                    }
                 }
             }
 
             for (i in 0..1) {
                 // 0 is included list, 1 is excluded list
                 val invalidWord = if (i == 0) "included" else "excluded"
-                val configKeyname: String =
-                    if (i == 0) MLINCLUDEDLIST else MLEXCLUDEDITEMS
+                val configKeyname = if (i == 0) MLINCLUDEDLIST else MLEXCLUDEDITEMS
                 if (i == 1 && cs2 == null) break
 
-                if (cs2 != null) {
+                if (cs2 != null)
                     useList = YmlParsingHelper.getListFromConfigItem(cs2, configKeyname)
-                }
 
                 for (item in useList!!) {
-                    if (item.trim { it <= ' ' }.isEmpty()) {
-                        continue
-                    }
-                    if ("*" == item.trim { it <= ' ' }) {
+                    if (item.trim().isEmpty()) continue
+
+                    if ("*" == item.trim()) {
                         if (i == 0) cachedModalList.includeAll = true
                         else cachedModalList.excludeAll = true
 
                         continue
                     }
-                    if (emptyArrayPattern.matcher(item).matches()) {
+                    if (emptyArrayPattern.matcher(item).matches())
                         continue
-                    }
+
                     try {
                         when (mlpi.type) {
                             ModalListParsingTypes.BIOME -> {
@@ -371,7 +347,7 @@ class RulesParser {
                                     if (i == 0) vanillaBonusModalList.includedList else vanillaBonusModalList.excludedList
 
                                 val vanillaBonus =
-                                    VanillaBonusEnum.valueOf(item.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                                    VanillaBonusEnum.valueOf(item.trim().uppercase())
                                 modalList.add(vanillaBonus)
                             }
                             ModalListParsingTypes.STRUCTURE -> {
@@ -386,8 +362,8 @@ class RulesParser {
 
                                 val input = item.trim().split(":")
                                 if (input.isEmpty()) continue
-                                val namespace = if (input.size == 1) NamespacedKey.MINECRAFT_NAMESPACE else input[0]
-                                val key = if (input.size == 1) input[0].lowercase() else input[1].lowercase()
+                                val namespace = if (input.size == 1) NamespacedKey.MINECRAFT_NAMESPACE else input.first()
+                                val key = if (input.size == 1) input.first().lowercase() else input[1].lowercase()
                                 val structure: Structure?
 
                                 if (LevelledMobs.instance.ver.isRunningPaper && LevelledMobs.instance.ver.minorVersion >= 21){
@@ -395,7 +371,7 @@ class RulesParser {
                                         RegistryKey.STRUCTURE
                                     )
                                     structure = registry.get(
-                                        NamespacedKey.minecraft(key.lowercase(Locale.getDefault()))
+                                        NamespacedKey.minecraft(key.lowercase())
                                     )
                                 }
                                 else{
@@ -466,12 +442,11 @@ class RulesParser {
             LevelledMobs.instance.rulesManager.rulesInEffect.add(ruleInfo)
 
             ruleMappings[ruleInfo.ruleName] = ruleInfo
-            if (ruleInfo.conditionsChance != null) {
+            if (ruleInfo.conditionsChance != null)
                 main.rulesManager.anyRuleHasChance = true
-            }
-            if (ruleInfo.conditionsWGregions != null || ruleInfo.conditionsWGregionOwners != null) {
+
+            if (ruleInfo.conditionsWGregions != null || ruleInfo.conditionsWGregionOwners != null)
                 main.rulesManager.hasAnyWGCondition = true
-            }
         }
 
         synchronized(RulesManager.ruleLocker) {
@@ -490,9 +465,9 @@ class RulesParser {
 
     fun getAllRules(includePresets: Boolean): MutableList<RuleInfo> {
         val results = mutableListOf<RuleInfo>()
-        if (this.defaultRule != null) {
+        if (this.defaultRule != null)
             results.add(this.defaultRule!!)
-        }
+
         if (includePresets) results.addAll(rulePresets.values)
         results.addAll(this.customRules)
 
@@ -569,9 +544,7 @@ class RulesParser {
 
     private fun parseCustomRules(rulesSection: Any?): MutableList<RuleInfo> {
         val results = mutableListOf<RuleInfo>()
-        if (rulesSection == null) {
-            return results
-        }
+        if (rulesSection == null) return results
 
         for (hashMap in rulesSection as MutableList<MutableMap<String, Any>>) {
             val cs = YmlParsingHelper.objToCS2(hashMap)
@@ -613,7 +586,7 @@ class RulesParser {
         if (presets.isEmpty()) return
 
         for (checkName: String in presets) {
-            val checkNameTrimmed = checkName.trim { it <= ' ' }
+            val checkNameTrimmed = checkName.trim()
 
             if (!rulePresets.containsKey(checkNameTrimmed)) {
                 val ruleName = parsingInfo.presetName?: parsingInfo.ruleName
@@ -636,16 +609,15 @@ class RulesParser {
             if (!name.isNullOrEmpty() && value != null) {
 
                 val coloringInfo: TieredColoringInfo? =
-                    if ("default".equals(name, ignoreCase = true)) {
-                    TieredColoringInfo.createDefault(value)
-                } else {
-                    TieredColoringInfo.createFromString(name, value)
-                }
+                    if ("default".equals(name, ignoreCase = true))
+                        TieredColoringInfo.createDefault(value)
+                    else
+                        TieredColoringInfo.createFromString(name, value)
 
                 if (coloringInfo != null) {
-                    if (parsingInfo.tieredColoringInfos == null) {
+                    if (parsingInfo.tieredColoringInfos == null)
                         parsingInfo.tieredColoringInfos = mutableListOf()
-                    }
+
                     parsingInfo.tieredColoringInfos!!.add(coloringInfo)
                 }
             }
@@ -676,14 +648,12 @@ class RulesParser {
                 val names2 = mutableListOf<String>()
 
                 for (nameFromList in names) {
-                    if (nameFromList.isNotEmpty()) {
+                    if (nameFromList.isNotEmpty())
                         names2.add(nameFromList)
-                    }
                 }
 
-                if (names2.isNotEmpty()) {
+                if (names2.isNotEmpty())
                     entityNames[name] = mobNames
-                }
             } else if (cs.getString(name) != null) {
                 if ("merge".equals(name, ignoreCase = true)) {
                     parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name)
@@ -700,19 +670,16 @@ class RulesParser {
                         YmlParsingHelper.objToCS(cs, name),
                         name
                     )
-                    if (!tiers.isNullOrEmpty()) {
-                        levelTiers[name] = tiers
-                    }
+                    if (!tiers.isNullOrEmpty()) levelTiers[name] = tiers
                 }
             }
         }
 
-        if (entityNames.isNotEmpty()) {
+        if (entityNames.isNotEmpty())
             parsingInfo.entityNameOverrides = entityNames
-        }
-        if (levelTiers.isNotEmpty()) {
+
+        if (levelTiers.isNotEmpty())
             parsingInfo.entityNameOverridesLevel = levelTiers
-        }
     }
 
     private fun parseNumberRange(
@@ -727,25 +694,20 @@ class RulesParser {
             val names = cs.getStringList(name)
             val tier = LevelTierMatching()
 
-            if ("merge".equals(name, ignoreCase = true)) {
+            if ("merge".equals(name, ignoreCase = true))
                 continue
-            }
 
             tier.mobName = name
 
-            if (names.isNotEmpty()) {
-                // an array of names was provided
+            if (names.isNotEmpty()) // an array of names was provided
                 tier.names = names
-            } else if (cs.getString(name) != null) {
-                // a string was provided
+            else if (cs.getString(name) != null) // a string was provided
                 tier.names = mutableListOf(cs.getString(name)!!)
-            }
 
-            if (!tier.setRangeFromString(keyName)) {
+            if (!tier.setRangeFromString(keyName))
                 Log.war("Invalid number range: $keyName")
-            } else if (tier.names!!.isNotEmpty()) {
+            else if (tier.names!!.isNotEmpty())
                 levelTiers.add(tier)
-            }
         }
 
         return levelTiers
@@ -755,7 +717,7 @@ class RulesParser {
         if (cs == null) return
 
         val ymlHelper = YmlParsingHelper(cs)
-        parseFineTuning(YmlParsingHelper.objToCS(cs, "attribute-modifier"))
+        parseFineTuning(cs)
         parseEntityNameOverride(YmlParsingHelper.objToCS(cs, "entity-name-override"))
         parseTieredColoring(YmlParsingHelper.objToCS(cs, "tiered-coloring"))
         parseHealthIndicator(YmlParsingHelper.objToCS(cs, "health-indicator"))
@@ -839,7 +801,7 @@ class RulesParser {
         for (nametagVisEnum: String in nametagVisibility) {
             try {
                 val nametagVisibilityEnum = NametagVisibilityEnum.valueOf(
-                    nametagVisEnum.uppercase(Locale.getDefault())
+                    nametagVisEnum.uppercase()
                 )
                 nametagVisibilityEnums.add(nametagVisibilityEnum)
             } catch (_: Exception) {
@@ -866,9 +828,8 @@ class RulesParser {
         opts.disableItemBoost = ymlHelper.getBoolean2( "disable-item-boost-on-chunk-max", null)
         opts.disableXpDrops = ymlHelper.getBoolean2( "disable-xp-boost-on-chunk-max", null)
 
-        if (!opts.isDefault) {
+        if (!opts.isDefault)
             parsingInfo.chunkKillOptions = opts
-        }
     }
 
     private fun parseDeathMessages(csParent: ConfigurationSection) {
@@ -900,9 +861,8 @@ class RulesParser {
             }
         }
 
-        if (!deathMessages.isEmpty) {
+        if (!deathMessages.isEmpty)
             parsingInfo.deathMessages = deathMessages
-        }
     }
 
     private fun parseSpawnerParticle(particle: String?) {
@@ -915,7 +875,7 @@ class RulesParser {
         }
 
         try {
-            parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase(Locale.getDefault()))
+            parsingInfo.spawnerParticle = Particle.valueOf(particle.uppercase())
         } catch (_: Exception) {
             Log.war(
                 "Invalid value in spawner-particles: $particle, in rule: "
@@ -933,24 +893,23 @@ class RulesParser {
 
             val nbt = YmlParsingHelper.getString(cs2, "data", null)
             val nbtList = YmlParsingHelper.getStringSet(cs2, "data")
-            if (nbt == null && nbtList.isEmpty()) {
+            if (nbt == null && nbtList.isEmpty())
                 return
-            }
+
             val doMerge = YmlParsingHelper.getBoolean(cs2, "merge", false)
 
             if (nbtList.isNotEmpty()) {
                 parsingInfo.mobNBTData = MergeableStringList()
                 parsingInfo.mobNBTData!!.setItemFromList(nbtList)
                 parsingInfo.mobNBTData!!.doMerge = doMerge
-            } else {
-                parsingInfo.mobNBTData = MergeableStringList(nbt, doMerge)
             }
+            else
+                parsingInfo.mobNBTData = MergeableStringList(nbt, doMerge)
         } else if (temp is Collection<*>) {
             parsingInfo.mobNBTData = MergeableStringList()
             parsingInfo.mobNBTData!!.setItemFromList(temp as Collection<String>)
-        } else if (temp is String) {
+        } else if (temp is String)
             parsingInfo.mobNBTData = MergeableStringList(temp)
-        }
     }
 
     private fun parseConditions(cs: ConfigurationSection?) {
@@ -985,7 +944,7 @@ class RulesParser {
         if (mobCustomNameStatus != null) {
             try {
                 parsingInfo.conditionsMobCustomnameStatus = MobCustomNameStatus.valueOf(
-                    mobCustomNameStatus.uppercase(Locale.getDefault())
+                    mobCustomNameStatus.uppercase()
                 )
             } catch (_: Exception) {
                 Log.war("Invalid value for $mobCustomNameStatus")
@@ -996,7 +955,7 @@ class RulesParser {
         if (mobTamedStatus != null) {
             try {
                 parsingInfo.conditionsMobTamedStatus = MobTamedStatus.valueOf(
-                    mobTamedStatus.uppercase(Locale.getDefault())
+                    mobTamedStatus.uppercase()
                 )
             } catch (_: Exception) {
                 Log.war("Invalid value for $mobTamedStatus")
@@ -1105,15 +1064,13 @@ class RulesParser {
 
         for (pluginName in compats.includedList){
             val checkName = pluginName.replace("_", "-")
-            if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
+            if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName))
                 Log.war("no external plugin definition found for: '$checkName'")
-            }
         }
         for (pluginName in compats.excludedList){
             val checkName = pluginName.replace("_", "-")
-            if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName)){
+            if (!ExternalCompatibilityManager.instance.externalPluginDefinitions.containsKey(checkName))
                 Log.war("no external plugin definition found for: '$checkName'")
-            }
         }
     }
 
@@ -1128,13 +1085,12 @@ class RulesParser {
             WithinCoordinates.Axis.Z
         )) {
             for (keyStart in mutableListOf("start-", "end-")) {
-                val key = keyStart + axis.name.lowercase(Locale.getDefault())
+                val key = keyStart + axis.name.lowercase()
                 val isStart = "start-" == keyStart
                 val value = YmlParsingHelper.getString(cs, key)
 
-                if (!mdr.parseAxis(value, axis, isStart)) {
+                if (!mdr.parseAxis(value, axis, isStart))
                     Log.war("rule: ${parsingInfo.ruleName}, invalid value for $key: $value")
-                }
             }
         }
 
@@ -1240,13 +1196,14 @@ class RulesParser {
 
     private fun parseCustomStrategy(cs: ConfigurationSection, keyName: String){
         val underScore = keyName.indexOf("_")
-        val customName = if ("custom".equals(keyName, ignoreCase = true)) {
-            null
-        } else if (underScore <= 0 || underScore == keyName.length - 1 ||
-            "custom".equals(keyName, ignoreCase = true)){
-            Log.war("Modifier '$keyName' must have a unique name specified")
-            return
-        } else
+        val customName = if ("custom".equals(keyName, ignoreCase = true))
+                null
+            else if (underScore <= 0 || underScore == keyName.length - 1 ||
+                "custom".equals(keyName, ignoreCase = true)){
+                Log.war("Modifier '$keyName' must have a unique name specified")
+                return
+            }
+        else
             keyName.substring(underScore + 1)
 
         val csCustom = YmlParsingHelper.objToCS(cs, keyName) ?: return
@@ -1325,11 +1282,10 @@ class RulesParser {
 
         val result = parseMinMaxValue(mutableSetOf(numberPair), "skylight-level")
 
-        return if (result.isEmpty()) {
+        return if (result.isEmpty())
             null
-        } else {
+        else
             result.iterator().next()
-        }
     }
 
     private fun parseMinMaxValue(
@@ -1354,17 +1310,15 @@ class RulesParser {
 
                 if (i == 0) {
                     minAndMax.min = parsedNum.toFloat()
-                    if (split.size == 1) {
+                    if (split.size == 1)
                         minAndMax.max = parsedNum.toFloat()
-                    }
-                } else {
-                    minAndMax.max = parsedNum.toFloat()
                 }
+                else
+                    minAndMax.max = parsedNum.toFloat()
             }
 
-            if (hadInvalidValue) {
-                continue
-            }
+            if (hadInvalidValue) continue
+
             result.add(minAndMax)
         }
 
@@ -1390,14 +1344,13 @@ class RulesParser {
             val tiers = mutableMapOf<Int, String>()
 
             for (name in csTiers.getKeys(false)) {
-                val name2 = name.lowercase(Locale.getDefault()).replace("tier-", "")
+                val name2 = name.lowercase().replace("tier-", "")
 
                 if ("default".equals(name, ignoreCase = true)) {
-                    if (csTiers.getString(name).isNullOrEmpty()) {
+                    if (csTiers.getString(name).isNullOrEmpty())
                         Log.war("No value entered for colored tier: $name")
-                    } else {
+                    else
                         tiers[0] = csTiers.getString(name)!!
-                    }
 
                     continue
                 }
@@ -1414,22 +1367,19 @@ class RulesParser {
                 }
 
                 val tierNumber = name2.toInt()
-                if (tiers.containsKey(tierNumber)) {
+                if (tiers.containsKey(tierNumber))
                     Log.war("Duplicate tier: $name")
-                } else {
+                else
                     tiers[tierNumber] = tierValue
-                }
             }
-            if (tiers.isNotEmpty()) {
+            if (tiers.isNotEmpty())
                 indicator.tiers = tiers
-            }
         }
 
-        if (parsingInfo.healthIndicator != null && parsingInfo.healthIndicator!!.doMerge) {
+        if (parsingInfo.healthIndicator != null && parsingInfo.healthIndicator!!.doMerge)
             parsingInfo.healthIndicator!!.merge(indicator)
-        } else {
+        else
             parsingInfo.healthIndicator = indicator
-        }
     }
 
     private fun parsePlayerLevellingOptions(cs: ConfigurationSection?) {
@@ -1495,9 +1445,9 @@ class RulesParser {
                 levelTiers.add(info)
         }
 
-        if (levelTiers.isNotEmpty()) {
+        if (levelTiers.isNotEmpty())
             options.levelTiers.addAll(levelTiers)
-        }
+
         options.defaultLevelTier = defaultTier
     }
 
@@ -1507,115 +1457,167 @@ class RulesParser {
     ) {
         val spawnLocation = YmlParsingHelper.objToCS(cs, "origin-coordinates") ?: return
 
-        if (!"spawn".equals(spawnLocation.getString("x"), ignoreCase = true)) {
+        if (!"spawn".equals(spawnLocation.getString("x"), ignoreCase = true))
             sds.originCoordX = spawnLocation.getDouble("x").toFloat()
-        }
 
-        if (!"spawn".equals(spawnLocation.getString("z"), ignoreCase = true)) {
+        if (!"spawn".equals(spawnLocation.getString("z"), ignoreCase = true))
             sds.originCoordZ = spawnLocation.getDouble("z").toFloat()
-        }
     }
 
-    private fun parseFineTuning(cs: ConfigurationSection?) {
-        if (cs == null) return
+    private fun parseFineTuning(
+        csBase: ConfigurationSection?
+    ) {
+        if (csBase == null) return
 
         parsingInfo.vanillaBonuses = buildCachedModalOfType(
-            cs,
+            csBase,
             parsingInfo.vanillaBonuses, ModalListParsingTypes.VANILLA_BONUSES,
             parsingInfo
         ) as CachedModalList<VanillaBonusEnum>?
-        parsingInfo.allMobMultipliers = parseFineTuningValues(cs, parsingInfo.allMobMultipliers)
+        var fineTuning: FineTuningAttributes? = null
+        val namesList = mutableListOf("base-attribute-modifier", "attribute-modifier")
+        val namesList2 = mutableListOf("custom-base-attribute-modifier", "custom-attribute-modifier")
 
-        val csCustom = YmlParsingHelper.objToCS(cs, "custom-attribute-modifier") ?: return
-        val fineTuning: MutableMap<String, FineTuningAttributes> = TreeMap(
-            String.CASE_INSENSITIVE_ORDER
-        )
+        for ((loopNum, useName) in namesList.withIndex()) {
+            // first loop = base mods, second loop = modifiers
+            val isBaseModifier = (loopNum == 0)
+            val useName2 = namesList2[loopNum]
+            if (fineTuning == null) fineTuning = FineTuningAttributes()
 
-        for (mobName in csCustom.getKeys(false)) {
-            var checkName = mobName
-            if (checkName.lowercase(Locale.getDefault()).startsWith("baby_")) {
-                checkName = checkName.substring(5)
+            val useDefaults = if (isBaseModifier)
+                fineTuning.baseAttributeModifiers
+            else
+                fineTuning.multipliers
+
+            val cs = YmlParsingHelper.objToCS(csBase, useName) ?: continue
+
+            val parseResult = parseFineTuningValues(cs, useDefaults, isBaseModifier)
+            if (isBaseModifier) {
+                fineTuning.baseAttributeModifiers = parseResult.result
+                fineTuning.doNotMergeAllBaseMods = parseResult.doNotMerge
+            }
+            else {
+                fineTuning.multipliers = parseResult.result
+                fineTuning.doNotMergeAllMultipliers = parseResult.doNotMerge
             }
 
-            try {
-                EntityType.valueOf(checkName.uppercase(Locale.getDefault()))
-            } catch (_: IllegalArgumentException) {
-                Log.war(
-                    "Invalid entity type: $mobName for fine-tuning in rule: "
-                            + parsingInfo.ruleName
+            if (parseResult.doNotMergeAny) fineTuning.doNotMerge = true
+
+            val mobSpecificMultipliers = mutableMapOf<String, MutableMap<Addition, Multiplier>>()
+            val csCustom = YmlParsingHelper.objToCS(cs, useName2) ?: continue
+            for (mobName in csCustom.getKeys(false)) {
+                var checkName = mobName
+                var doNotMerge: Boolean? = null
+                if (checkName.lowercase().startsWith("baby_"))
+                    checkName = checkName.substring(5)
+
+                if ("merge".equals(mobName, ignoreCase = true))
+                    doNotMerge = !csCustom.getBoolean(mobName)
+                else if ("do-not-merge".equals(mobName, ignoreCase = true))
+                    doNotMerge = csCustom.getBoolean(mobName)
+
+                if (doNotMerge != null){
+                    if (isBaseModifier)
+                        fineTuning.doNotMergeMobSpecificBaseMods = doNotMerge
+                    else
+                        fineTuning.doNotMergeMobSpecificMultipliers = doNotMerge
+
+                    continue
+                }
+
+                try {
+                    EntityType.valueOf(checkName.uppercase())
+                } catch (_: IllegalArgumentException) {
+                    Log.war(
+                        "Invalid entity type: $mobName for fine-tuning in rule: ${parsingInfo.ruleName}"
+                    )
+                    continue
+                }
+
+                val parseResult2 = parseFineTuningValues(
+                    YmlParsingHelper.objToCS(csCustom, mobName),
+                    null,
+                    isBaseModifier
                 )
-                continue
+
+                if (parseResult2.doNotMerge){
+                    if (isBaseModifier)
+                        fineTuning.doNotMergeMobSpecificBaseMods = true
+                    else
+                        fineTuning.doNotMergeMobSpecificMultipliers = true
+                }
+
+                if (parseResult2.result == null) continue
+
+                mobSpecificMultipliers[mobName] = parseResult2.result
             }
 
-            val attribs = parseFineTuningValues(
-                YmlParsingHelper.objToCS(csCustom, mobName), null
-            )
-            if (attribs == null) continue
-
-            fineTuning[mobName] = attribs
-        }
-
-        if (fineTuning.isNotEmpty()) {
-            if (parsingInfo.specificMobMultipliers != null) {
-                parsingInfo.specificMobMultipliers!!.putAll(fineTuning)
-            } else {
-                parsingInfo.specificMobMultipliers = fineTuning
+            if (!mobSpecificMultipliers.isEmpty()) {
+                if (isBaseModifier)
+                    fineTuning.mobSpecificBaseModifiers = mobSpecificMultipliers
+                else
+                    fineTuning.mobSpecificMultipliers = mobSpecificMultipliers
             }
         }
+
+        if (fineTuning != null && !fineTuning.isEmpty)
+            parsingInfo.mobMultipliers = fineTuning
     }
 
     private fun parseFineTuningValues(
         cs: ConfigurationSection?,
-        defaults: FineTuningAttributes?
-    ): FineTuningAttributes? {
-        //if (cs == null) return defaults?.cloneItem() as FineTuningAttributes
-        if (cs == null) return defaults
+        defaults: MutableMap<Addition, Multiplier>?,
+        isBaseModifier: Boolean,
+    ): FineTuningParseResult {
+        if (cs == null) return FineTuningParseResult(false
+            , doNotMergeAny = false
+            , result = defaults
+        )
 
+        var useStacked: Boolean? = null
         val ymlHelper = YmlParsingHelper(cs)
-        val doMerge = ymlHelper.getBoolean( "merge", true)
-        val attribs =
-            if (parsingInfo.allMobMultipliers != null && doMerge)
-                parsingInfo.allMobMultipliers!!.cloneItem() as FineTuningAttributes
-            else
-                FineTuningAttributes()
+        var doNotMerge = !ymlHelper.getBoolean( "merge", true) // for backwards compat
+        val doNotMergeAny = ymlHelper.getBoolean( "do-not-merge-any", false)
+
+        val results = mutableMapOf<Addition, Multiplier>()
 
         for (item in cs.getKeys(false)) {
-            when (item.lowercase(Locale.getDefault())) {
-                "use-stacked" -> attribs.useStacked = ymlHelper.getBoolean2(item, attribs.useStacked)
-                "do-not-merge" -> attribs.doNotMerge = ymlHelper.getBoolean(item, false)
-                "merge" -> attribs.doNotMerge = !ymlHelper.getBoolean(item, true)
-                "vanilla-bonus", "custom-attribute-modifier" -> {}
+            when (item.lowercase()) {
+                "merge" -> doNotMerge = !ymlHelper.getBoolean(item, true)
+                "use-stacked" -> useStacked = ymlHelper.getBoolean2(item, useStacked)
+                "do-not-merge" -> doNotMerge = ymlHelper.getBoolean(item, false)
+                "vanilla-bonus", "custom-attribute-modifier", "custom-base-attribute-modifier", "do-not-merge-any" -> {}
                 else -> {
                     var lmMultiplier: LMMultiplier
                     try {
                         lmMultiplier = LMMultiplier
                             .valueOf(
                                 item.replace("-", "_")
-                                    .uppercase(Locale.getDefault())
+                                    .uppercase()
                             )
                     } catch (_: Exception) {
                         Log.war("Invalid multiplier: $item")
                         continue
                     }
 
-                    val addition = attribs.getAdditionFromLMMultiplier(lmMultiplier)
-                    val multiplier = parseFineTuningValues2(cs, addition, item)
-                    if (multiplier != null) {
-                        attribs.addItem(addition, multiplier)
-                    }
+                    val addition = FineTuningAttributes.getAdditionFromLMMultiplier(lmMultiplier)
+                    val multiplier = parseFineTuningValues2(cs, addition, item, isBaseModifier)
+                    if (multiplier != null) results[addition] = multiplier
                 }
             }
         }
 
-        if (attribs.isEmpty) return defaults
-
-        return attribs
+        return if (results.isEmpty())
+            FineTuningParseResult(doNotMerge, doNotMergeAny, defaults)
+        else
+            FineTuningParseResult(doNotMerge, doNotMergeAny, results)
     }
 
     private fun parseFineTuningValues2(
         cs: ConfigurationSection,
         addition: Addition,
-        item: String
+        item: String,
+        isBaseModifier: Boolean
     ): Multiplier? {
         val values = cs.getList(item)
         if (values == null) {
@@ -1623,9 +1625,9 @@ class RulesParser {
             val value = YmlParsingHelper.getFloat2(cs, item, null)
 
             return if (value != null)
-                Multiplier(addition, false, value, null, false)
+                Multiplier(addition, false, value, null, isAddition = false, isBaseModifier)
             else if (formula != null)
-                Multiplier(addition, false, null, formula, true)
+                Multiplier(addition, false, null, formula, isAddition = true, isBaseModifier)
             else
                 null
         }
@@ -1633,10 +1635,9 @@ class RulesParser {
         var customFormula: String? = null
         var useStacked = false
         var value = 0f
-        var count = 0
         var valueStr: String? = null
         var isAddition = false
-        for (obj in values) {
+        for ((count, obj) in values.withIndex()) {
             if (count > 2) break
 
             when (obj) {
@@ -1668,18 +1669,15 @@ class RulesParser {
                     else if (isDouble(obj))
                         value = obj.toFloat()
 
-
                     valueStr = obj
                     if (useStacked) customFormula = null
                 }
             }
-
-            count++
         }
 
         if (value > Float.MIN_VALUE || !customFormula.isNullOrEmpty()) {
             return Multiplier(
-                addition, useStacked, value, customFormula, isAddition
+                addition, useStacked, value, customFormula, isAddition, false
             )
         }
 

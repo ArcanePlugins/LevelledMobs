@@ -16,48 +16,42 @@ class RequestedLevel {
     var hadInvalidArguments = false
 
     fun setMinAllowedLevel(level: Int) {
-        if (this.hasLevelRange && this.levelRangeMin < level) {
+        if (this.hasLevelRange && this.levelRangeMin < level)
             this.levelRangeMin = level
-        } else if (!this.hasLevelRange && this.level < levelRangeMax) {
+        else if (!this.hasLevelRange && this.level < levelRangeMax)
             this.level = level
-        }
     }
 
     fun setMaxAllowedLevel(level: Int) {
-        if (this.hasLevelRange && this.levelRangeMax > level) {
+        if (this.hasLevelRange && this.levelRangeMax > level)
             this.levelRangeMax = level
-        } else if (!this.hasLevelRange && this.level > level) {
+        else if (!this.hasLevelRange && this.level > level)
             this.level = level
-        }
     }
 
     val levelMin: Int
         get() {
-            return if (this.hasLevelRange) {
+            return if (this.hasLevelRange)
                 levelRangeMin
-            } else {
+            else
                 level
-            }
         }
 
     val levelMax: Int
         get() {
-            return if (this.hasLevelRange) {
+            return if (this.hasLevelRange)
                 levelRangeMax
-            } else {
+            else
                 level
-            }
         }
 
     fun setLevelFromString(numberOrNumberRange: String?): Boolean {
-        if (numberOrNumberRange.isNullOrEmpty()) {
+        if (numberOrNumberRange.isNullOrEmpty())
             return false
-        }
 
         if (!numberOrNumberRange.contains("-")) {
-            if (!isInteger(numberOrNumberRange)) {
+            if (!isInteger(numberOrNumberRange))
                 return false
-            }
 
             this.level = numberOrNumberRange.toInt()
             this.hasLevelRange = false
@@ -65,27 +59,24 @@ class RequestedLevel {
         }
 
         val nums = numberOrNumberRange.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        if (nums.size != 2) {
-            return false
-        }
+        if (nums.size != 2) return false
 
-        if (!isInteger(nums[0].trim { it <= ' ' }) || !isInteger(
-            nums[1].trim { it <= ' ' })
+        if (!isInteger(nums[0].trim()) || !isInteger(
+            nums[1].trim())
         ) {
             return false
         }
-        this.levelRangeMin = nums[0].trim { it <= ' ' }.toInt()
-        this.levelRangeMax = nums[1].trim { it <= ' ' }.toInt()
+        this.levelRangeMin = nums[0].trim().toInt()
+        this.levelRangeMax = nums[1].trim().toInt()
         this.hasLevelRange = true
 
         return true
     }
 
     override fun toString(): String {
-        return if (this.hasLevelRange) {
+        return if (this.hasLevelRange)
             "$levelRangeMin-$levelRangeMax"
-        } else {
-            level.toString()
-        }
+        else
+            "$level"
     }
 }

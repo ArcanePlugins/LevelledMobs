@@ -1,29 +1,20 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.arguments.ArgumentSuggestions
-import dev.jorel.commandapi.arguments.ListArgumentBuilder
-import dev.jorel.commandapi.arguments.StringArgument
-import dev.jorel.commandapi.executors.CommandArguments
-import dev.jorel.commandapi.executors.CommandExecutor
-import java.util.Locale
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.tree.LiteralCommandNode
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
-import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
-import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
-import io.github.arcaneplugins.levelledmobs.util.PaperUtils
-import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
-import io.github.arcaneplugins.levelledmobs.util.Utils
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 
 /**
  * Gives the user a specialized spawner that only spawns mobs within certain level criteria
@@ -31,68 +22,61 @@ import org.bukkit.persistence.PersistentDataType
  * @author stumper66
  * @since 3.0.0
  */
-object SpawnerSubcommand : SpawnerBaseClass() {
-    fun createInstance(): CommandAPICommand{
-        return CommandAPICommand("spawner")
-            .withPermission("levelledmobs.command.spawner")
-            .withShortDescription("Various commands for creating spawner cubes.")
-            .withFullDescription("Various commands for creating spawner cubes.")
-            .executes(CommandExecutor { sender, _ ->
-                MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.usage")
+object SpawnerSubcommand : SpawnerBaseClass("levelledmobs.command.spawner") {
+    override val description = "Various commands for creating spawner cubes."
+
+    fun buildCommand() : LiteralCommandNode<CommandSourceStack> {
+        return createLiteralCommand("spawner")
+            .executes { ctx -> commandSender = ctx.source.sender
+                showMessage("command.levelledmobs.spawner.usage")
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .then(createLiteralCommand("create")
+                .then(createGreedyStringArgument("values")
+                    .suggests { ctx, builder -> buildTabSuggestions(allSpawnerOptions, ctx, builder) }
+                    .executes { ctx -> processResults(ctx, OperationEnum.CREATE)
+                        return@executes Command.SINGLE_SUCCESS
+                    })
+            .executes { ctx -> processResults(ctx, OperationEnum.CREATE)
+                return@executes Command.SINGLE_SUCCESS
             })
-            .withSubcommands(
-                CommandAPICommand("create")
-                .executes(CommandExecutor { sender, args ->
-                    processResults(sender, args, OperationEnum.CREATE)
-                })
-                .withOptionalArguments(
-                    ListArgumentBuilder<String>("values")
-                        .allowAnyValue(true)
-                        .allowDuplicates(true)
-                        .withList { info -> buildTabSuggestions(allSpawnerOptions, info) }
-                        .withStringMapper()
-                        .buildGreedy()
-                )
-            )
-            .withSubcommands(
-                CommandAPICommand("copy")
-                    .executes(CommandExecutor { sender, args ->
-                        if (sender !is Player)
-                            MessagesHelper.showMessage(sender, "common.players-only")
-                        else
-                            processResults(sender, args, OperationEnum.COPY)
+            .then(createLiteralCommand("copy")
+                .then(createStringArgument("value")
+                    .suggests { _, builder -> builder.suggest("on").suggest("off").buildFuture() }
+                    .executes { ctx -> processResults(ctx, OperationEnum.COPY)
+                        return@executes Command.SINGLE_SUCCESS
                     })
-                    .withOptionalArguments(StringArgument("value")
-                        .replaceSuggestions(ArgumentSuggestions.strings("on", "off"))
-                    )
-            )
-            .withSubcommands(
-                CommandAPICommand("info")
-                    .executes(CommandExecutor { sender, args ->
-                        if (sender !is Player)
-                            MessagesHelper.showMessage(sender, "common.players-only")
-                        else
-                            processResults(sender, args, OperationEnum.INFO)
+            .executes { ctx -> processResults(ctx, OperationEnum.COPY)
+                return@executes Command.SINGLE_SUCCESS
+            })
+            .then(createLiteralCommand("info")
+                .then(createStringArgument("value")
+                    .suggests { _, builder -> builder.suggest("on").suggest("off").buildFuture() }
+                    .executes { ctx -> processResults(ctx, OperationEnum.INFO)
+                        return@executes Command.SINGLE_SUCCESS
                     })
-                    .withOptionalArguments(StringArgument("value")
-                        .replaceSuggestions(ArgumentSuggestions.strings("on", "off"))
-                    )
-            )
+            .executes { ctx -> processResults(ctx, OperationEnum.INFO)
+                return@executes Command.SINGLE_SUCCESS
+            })
+            .build()
     }
 
     private fun processResults(
-        sender: CommandSender,
-        input: CommandArguments,
+        ctx: CommandContext<CommandSourceStack>,
         operation: OperationEnum
     ) {
-        if (input.rawArgs.isEmpty()){
+        commandSender = ctx.source.sender
+        val sender = ctx.source.sender
+        val args = splitStringWithQuotes(ctx.input, false)
+
+        if (args.size <= 2) {
             when (operation){
                 OperationEnum.CREATE -> {
-                    MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.usage")
+                    showMessage("command.levelledmobs.spawner.usage")
                 }
                 OperationEnum.COPY -> {
                     val playerId = (sender as Player).uniqueId
-                    MessagesHelper.showMessage(sender,
+                    showMessage(
                         if (MainCompanion.instance.spawnerCopyIds.contains(playerId))
                             "command.levelledmobs.spawner.copy.status-enabled"
                         else
@@ -101,7 +85,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
                 }
                 OperationEnum.INFO -> {
                     val playerId = (sender as Player).uniqueId
-                    MessagesHelper.showMessage(sender,
+                    showMessage(
                         if (MainCompanion.instance.spawnerInfoIds.contains(playerId))
                             "command.levelledmobs.spawner.info.status-enabled"
                         else
@@ -112,7 +96,6 @@ object SpawnerSubcommand : SpawnerBaseClass() {
             return
         }
 
-        val args = Utils.splitStringWithQuotes(input.rawArgs[0])
         var hasGivePlayer = false
         for (i in 0 until args.size) {
             if ("/giveplayer".equals(args[i], ignoreCase = true)) {
@@ -134,68 +117,70 @@ object SpawnerSubcommand : SpawnerBaseClass() {
 
         when (operation) {
             OperationEnum.CREATE -> parseCreateCommand(sender, args)
-            OperationEnum.COPY -> parseCopyCommand(sender, input)
-            OperationEnum.INFO -> parseInfoCommand(sender, input)
+            OperationEnum.COPY -> parseCopyCommand(ctx)
+            OperationEnum.INFO -> parseInfoCommand(ctx)
         }
     }
 
     private fun parseInfoCommand(
-        sender: CommandSender,
-        input: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ) {
+        val sender = ctx.source.sender
+        commandSender = sender
         val playerId = (sender as Player).uniqueId
         val main = LevelledMobs.instance
-        val value = input.get("value") as String
+        val value = getStringArgument(ctx, "value")
 
         if ("on".equals(value, ignoreCase = true)) {
             if (main.mainCompanion.spawnerCopyIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable copy first
-                copyGotDisabled(sender, playerId)
+                copyGotDisabled(playerId)
             }
 
             main.mainCompanion.spawnerInfoIds.add(playerId)
             MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.info.enabled")
-        } else if ("off".equals(value, ignoreCase = true)) {
-            infoGotDisabled(sender, playerId)
         }
+        else if ("off".equals(value, ignoreCase = true))
+            infoGotDisabled(playerId)
     }
 
     private val allSpawnerOptions = mutableListOf(
-        "/name", "/customdropid", "/spawntype", "/giveplayer", "/lore", "/minlevel", "/maxlevel",
-        "/delay",
-        "/maxnearbyentities", "/minspawndelay", "/maxspawndelay", "/requiredplayerrange",
-        "/spawncount", "/spawnrange", "/nolore"
+        "/name", "/customdropid", "/spawntype", "/giveplayer",
+        "/lore", "/minlevel", "/maxlevel", "/delay",
+        "/maxnearbyentities", "/minspawndelay", "/maxspawndelay",
+        "/requiredplayerrange", "/spawncount", "/spawnrange", "/nolore"
     )
 
     private fun parseCopyCommand(
-        sender: CommandSender,
-        input: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ) {
         val main = LevelledMobs.instance
+        val sender = ctx.source.sender
         val playerId = (sender as Player).uniqueId
-        val value = input.get("value") as String
+        val value = getStringArgument(ctx, "value")
 
         if ("on".equals(value, ignoreCase = true)) {
             if (main.mainCompanion.spawnerInfoIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable info first
-                infoGotDisabled(sender, playerId)
+                infoGotDisabled(playerId)
             }
 
             main.mainCompanion.spawnerCopyIds.add(playerId)
-            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.copy.enabled")
-        } else if ("off".equals(value, ignoreCase = true)) {
-            copyGotDisabled(sender, playerId)
+            showMessage("command.levelledmobs.spawner.copy.enabled")
         }
+        else if ("off".equals(value, ignoreCase = true))
+            copyGotDisabled(playerId)
+
     }
 
-    private fun copyGotDisabled(sender: CommandSender, playerId: UUID) {
+    private fun copyGotDisabled(playerId: UUID) {
         MainCompanion.instance.spawnerCopyIds.remove(playerId)
-        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.copy.disabled")
+        showMessage("command.levelledmobs.spawner.copy.disabled")
     }
 
-    private fun infoGotDisabled(sender: CommandSender, playerId: UUID) {
+    private fun infoGotDisabled(playerId: UUID) {
         MainCompanion.instance.spawnerInfoIds.remove(playerId)
-        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.info.disabled")
+        showMessage("command.levelledmobs.spawner.info.disabled")
     }
 
     private fun parseCreateCommand(
@@ -204,10 +189,8 @@ object SpawnerSubcommand : SpawnerBaseClass() {
     ) {
         hadInvalidArg = false
 
-        val info = CustomSpawnerInfo()
-        if (sender is Player) {
-            info.player = sender
-        }
+        val info = CustomSpawnerInfo(false)
+        if (sender is Player) info.player = sender
 
         // arguments with no values go here:
         for (i in 1 until args.size) {
@@ -222,12 +205,9 @@ object SpawnerSubcommand : SpawnerBaseClass() {
             val mustBeANumber = (i > 4)
             val command = allSpawnerOptions[i]
             val foundValue = getArgValue(command, args, mustBeANumber)
-            if (hadInvalidArg) {
-                return
-            }
-            if (foundValue.isNullOrEmpty()) {
-                continue
-            }
+            if (hadInvalidArg) return
+
+            if (foundValue.isNullOrEmpty()) continue
 
             when (command) {
                 "/name" -> info.customName = foundValue
@@ -235,7 +215,7 @@ object SpawnerSubcommand : SpawnerBaseClass() {
                 "/lore" -> info.customLore = foundValue
                 "/spawntype" -> {
                     try {
-                        info.spawnType = EntityType.valueOf(foundValue.uppercase(Locale.getDefault()))
+                        info.spawnType = EntityType.valueOf(foundValue.uppercase())
                     } catch (_: Exception) {
                         sender.sendMessage("Invalid spawn type: $foundValue")
                         return
@@ -271,223 +251,31 @@ object SpawnerSubcommand : SpawnerBaseClass() {
         }
 
         if (info.minLevel == -1 && info.maxLevel == -1) {
-            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.no-level-specified")
+            showMessage("command.levelledmobs.spawner.no-level-specified")
             return
         }
 
         if (info.player == null) {
-            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.no-player-specified")
+            showMessage("command.levelledmobs.spawner.no-player-specified")
             return
         }
 
-        generateSpawner(sender, info)
+        generateSpawner(info)
     }
 
     fun generateSpawner(
-        sender: CommandSender,
         info: CustomSpawnerInfo
     ) {
-        if (info.customName != null) {
+        if (info.customName != null)
             info.customName = colorizeAll(info.customName)
-        }
 
         val item = ItemStack(Material.SPAWNER)
         val meta = item.itemMeta
-        if (meta != null) {
-            setMetaItems(meta, info, "LM Spawner")
-
-            meta.persistentDataContainer
-                .set(NamespacedKeys.keySpawner, PersistentDataType.INTEGER, 1)
-            meta.persistentDataContainer
-                .set(
-                    NamespacedKeys.keySpawnerMinLevel, PersistentDataType.INTEGER,
-                    info.minLevel
-                )
-            meta.persistentDataContainer
-                .set(
-                    NamespacedKeys.keySpawnerMaxLevel, PersistentDataType.INTEGER,
-                    info.maxLevel
-                )
-            if (!info.customDropId.isNullOrEmpty()) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerCustomDropId,
-                        PersistentDataType.STRING, info.customDropId!!
-                    )
-            }
-            if (info.spawnType != EntityType.UNKNOWN) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerSpawnType, PersistentDataType.STRING,
-                        info.spawnType.toString()
-                    )
-            }
-            if (info.spawnRange != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerSpawnRange,
-                        PersistentDataType.INTEGER, info.spawnRange!!
-                    )
-            }
-            if (info.minSpawnDelay != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerMinSpawnDelay,
-                        PersistentDataType.INTEGER, info.minSpawnDelay!!
-                    )
-            }
-            if (info.maxSpawnDelay != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerMaxSpawnDelay,
-                        PersistentDataType.INTEGER, info.maxSpawnDelay!!
-                    )
-            }
-            if (info.spawnCount != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerSpawnCount,
-                        PersistentDataType.INTEGER, info.spawnCount!!
-                    )
-            }
-            if (info.requiredPlayerRange != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerRequiredPlayerRange,
-                        PersistentDataType.INTEGER, info.requiredPlayerRange!!
-                    )
-            }
-            if (info.maxNearbyEntities != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerMaxNearbyEntities,
-                        PersistentDataType.INTEGER, info.maxNearbyEntities!!
-                    )
-            }
-            if (info.delay != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerDelay, PersistentDataType.INTEGER,
-                        info.delay!!
-                    )
-            }
-            if (info.customName != null) {
-                meta.persistentDataContainer
-                    .set(
-                        NamespacedKeys.keySpawnerCustomName, PersistentDataType.STRING,
-                        info.customName!!
-                    )
-            }
-
-            item.setItemMeta(meta)
-        }
-
-        var useInvSlotNum = info.player!!.inventory.heldItemSlot
-        if (info.player!!.inventory.getItem(useInvSlotNum) != null) {
-            useInvSlotNum = -1
-        }
-
-        if (useInvSlotNum == -1) {
-            for (i in 0..35) {
-                if (info.player!!.inventory.getItem(i) == null) {
-                    useInvSlotNum = i
-                    break
-                }
-            }
-        }
-
-        if (useInvSlotNum == -1) {
-            MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.inventory-full", info.player!!.name, "")
-            return
-        }
-
-        info.player!!.inventory.setItem(useInvSlotNum, item)
-        val playerName: String = if (LevelledMobs.instance.ver.isRunningPaper) PaperUtils.getPlayerDisplayName(info.player)
-        else SpigotUtils.getPlayerDisplayName(info.player)
-
-        val message = getMessage(
-            "command.levelledmobs.spawner.spawner-give-message-console",
-            arrayOf("%minlevel%", "%maxlevel%", "%playername%"),
-            arrayOf(info.minLevel.toString(), info.maxLevel.toString(), playerName)
-        )
-
-        if (message.isNotEmpty()) {
-            Log.inf(message[0].replace(LevelledMobs.instance.configUtils.prefix + " ", ""))
-        }
-
-        MessagesHelper.showMessage(sender, "command.levelledmobs.spawner.spawner-give-message", info.player!!.name, "")
+        val defaultName = "LM Spawner"
+        setMetadata(item, info, defaultName)
+        setMetaItems(meta, info, defaultName)
+        giveItemToPlayer(item, info)
     }
-
-//    override fun parseTabCompletions(
-//        sender: CommandSender,
-//        args: Array<String>
-//    ): MutableList<String> {
-//        if (!sender.hasPermission("levelledmobs.command.spawner")) {
-//            return mutableListOf()
-//        }
-//
-//        if (args.size <= 2) {
-//            return mutableListOf("copy", "create", "info")
-//        }
-//
-//        if ("create".equals(args[1], ignoreCase = true)) {
-//            return tabCompletionsCreate(args)
-//        } else if (("info".equals(args[1], ignoreCase = true) || "copy".equals(args[1], ignoreCase = true))
-//            && args.size == 3
-//        ) {
-//            return mutableListOf("on", "off")
-//        }
-//
-//        return mutableListOf()
-//    }
-//
-//    private fun tabCompletionsCreate(
-//        args: Array<String>
-//    ): MutableList<String> {
-//        if (args[args.size - 2].isNotEmpty()) {
-//            when (args[args.size - 2].lowercase(Locale.getDefault())) {
-//                "/spawntype" -> {
-//                    val entityNames: MutableList<String> = LinkedList()
-//                    for (entityType in EntityType.entries) {
-//                        entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
-//                    }
-//                    return entityNames
-//                }
-//
-//                "/delay" -> {
-//                    return mutableListOf("0")
-//                }
-//
-//                "/minspawndelay" -> {
-//                    return mutableListOf("200")
-//                }
-//
-//                "/maxspawndelay" -> {
-//                    return mutableListOf("800")
-//                }
-//
-//                "/maxnearbyentities", "/requiredplayerrange" -> {
-//                    return mutableListOf("16")
-//                }
-//
-//                "/spawncount", "/spawnrange" -> {
-//                    return mutableListOf("4")
-//                }
-//
-//                "/giveplayer" -> {
-//                    val players: MutableList<String> = LinkedList()
-//                    for (player in Bukkit.getOnlinePlayers()) {
-//                        players.add(player.name)
-//                    }
-//                    players.sortWith(String.CASE_INSENSITIVE_ORDER)
-//                    return players
-//                }
-//            }
-//        }
-//
-//        //return checkTabCompletion(allSpawnerOptions, args)
-//        return mutableListOf()
-//    }
 
     private enum class OperationEnum {
         CREATE,

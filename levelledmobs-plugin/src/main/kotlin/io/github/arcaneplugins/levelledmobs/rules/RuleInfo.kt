@@ -15,10 +15,12 @@ import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
+import java.util.Objects
 import java.util.TreeMap
 import org.bukkit.Particle
 import org.bukkit.block.Biome
 import org.bukkit.generator.structure.Structure
+import kotlin.collections.iterator
 
 
 /**
@@ -176,20 +178,84 @@ class RuleInfo(
     var conditionsGamemode: CachedModalList<String>? = null
     @field:RuleFieldInfo("within coordinates", RuleType.CONDITION)
     var conditionsWithinCoords: WithinCoordinates? = null
-    @field:RuleFieldInfo("all mob multipliers", RuleType.APPLY_SETTING)
-    var allMobMultipliers: FineTuningAttributes? = null
-    @field:RuleFieldInfo("mob specific multipliers", RuleType.APPLY_SETTING)
-    var specificMobMultipliers: MutableMap<String, FineTuningAttributes>? = null
+    @field:RuleFieldInfo("mob multipliers", RuleType.APPLY_SETTING)
+    var mobMultipliers: FineTuningAttributes? = null
     @field:ExcludeFromHash @field:RuleFieldInfo("chunk kill options", RuleType.APPLY_SETTING)
     var chunkKillOptions: ChunkKillOptions? = null
 
-    fun mergePresetRules(preset: RuleInfo?) {
-        if (preset == null) {
-            return
+    companion object{
+        fun formatRule(
+            sb: StringBuilder,
+            values: MutableMap<RuleSortingInfo, String>
+        ){
+            var hadConditions = false
+            var hadApplySettings = false
+            var hadStrategies = false
+            var hadMisc = false
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType == RuleType.CONDITION }
+                .sortedBy { v -> v.key.fieldName }
+                .iterator()
+            ){
+                if (!hadConditions){
+                    hadConditions = true
+                    sb.append("\n&lConditions:&r")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
+                .sortedBy { v -> v.key.fieldName }
+                .iterator()
+            ){
+                if (!hadApplySettings){
+                    hadApplySettings = true
+                    sb.append("\n&lApply Settings&r:")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType == RuleType.STRATEGY }
+                .sortedBy { v -> v.key.fieldName }
+                .iterator()
+            ){
+                if (!hadStrategies){
+                    hadStrategies = true
+                    sb.append("\n&lStrategies:&r")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
+
+            for (item in values.asSequence()
+                .filter { v -> v.key.ruleType != RuleType.CONDITION &&
+                        v.key.ruleType != RuleType.APPLY_SETTING &&
+                        v.key.ruleType != RuleType.STRATEGY &&
+                        v.key.ruleType != RuleType.NO_CATEGORY }
+                .iterator()
+            ){
+                if (!hadMisc){
+                    hadMisc = true
+                    sb.append("\n&lMisc:&r")
+                }
+                sb.append("\n   ").append(item.key.fieldName)
+                    .append(": ").append(item.value)
+            }
         }
+    }
+
+    fun mergePresetRules(preset: RuleInfo?) {
+        if (preset == null) return
 
         try {
             for (f in preset::javaClass.get().declaredFields) {
+                if (f.name == "Companion") continue
+
                 f.trySetAccessible()
 
                 if (f.isAnnotationPresent(DoNotMerge::class.java)) continue
@@ -207,26 +273,16 @@ class RuleInfo(
                     if (ruleValue != null && mergableRule.doMerge) {
                         (ruleValue as MergableRule).merge(mergableRule.cloneItem() as MergableRule)
                         skipSettingValue = true
-                    } else {
-                        presetValue = mergableRule.cloneItem()
                     }
+                    else
+                        presetValue = mergableRule.cloneItem()
                 } else if (f.name == "entityNameOverrides_Level" && this.entityNameOverridesLevel != null) {
                     entityNameOverridesLevel!!.putAll(
                         presetValue as MutableMap<String, MutableList<LevelTierMatching>>
                     )
                     skipSettingValue = true
-                } else if (f.name == "specificMobMultipliers") {
-                    val mergingPreset = presetValue as MutableMap<String, FineTuningAttributes>
-                    if (this.specificMobMultipliers == null) {
-                        this.specificMobMultipliers = mutableMapOf()
-                    }
-
-                    for ((key, value) in mergingPreset) {
-                        specificMobMultipliers!![key] = value.cloneItem() as FineTuningAttributes
-                    }
-
-                    skipSettingValue = true
-                } else if (f.name == "customDropDropTableIds") {
+                }
+                else if (f.name == "customDropDropTableIds") {
                     val mergingPreset = presetValue as MutableList<String>
                     customDropDropTableIds.addAll(mergingPreset)
 
@@ -274,18 +330,17 @@ class RuleInfo(
                     skipSettingValue = true
                 }
 
-                if (presetValue is TieredColoringInfo) {
+                if (presetValue is TieredColoringInfo)
                     presetValue = presetValue.cloneItem()!!
-                }
 
                 if (presetValue == MobCustomNameStatus.NOT_SPECIFIED ||
                     presetValue == MobTamedStatus.NOT_SPECIFIED) {
                     continue
                 }
 
-                if (!skipSettingValue) {
+                if (!skipSettingValue)
                     this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
-                }
+
                 ruleSourceNames[f.name] = preset.ruleName
             }
         } catch (e: IllegalAccessException) {
@@ -299,6 +354,19 @@ class RuleInfo(
     ){
         override fun toString(): String {
             return "$ruleType: $fieldName"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is RuleSortingInfo)
+                return false
+
+            return other.ruleType == this.ruleType &&
+                other.fieldName == this.fieldName
+        }
+
+        override fun hashCode(): Int {
+            return Objects.hash(ruleType, fieldName)
         }
     }
 
@@ -349,9 +417,8 @@ class RuleInfo(
                 if (value.toString().equals("NONE", ignoreCase = true)) continue
 
                 if (value is CachedModalList<*>) {
-                    if (value.isEmpty() && !value.includeAll && !value.excludeAll) {
+                    if (value.isEmpty() && !value.includeAll && !value.excludeAll)
                         continue
-                    }
                 }
                 val ruleInfo = RuleSortingInfo(
                     ruleInfoType,
@@ -363,72 +430,14 @@ class RuleInfo(
             e.printStackTrace()
         }
 
-        var hadConditions = false
-        var hadApplySettings = false
-        var hadStrategies = false
-        var hadMisc = false
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.CONDITION }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadConditions){
-                hadConditions = true
-                sb.append("\n&lConditions:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadApplySettings){
-                hadApplySettings = true
-                sb.append("\n&lApply Settings&r:")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType == RuleType.STRATEGY }
-            .sortedBy { v -> v.key.fieldName }
-            .iterator()
-        ){
-            if (!hadStrategies){
-                hadStrategies = true
-                sb.append("\n&lStrategies:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
-
-        for (item in values.asSequence()
-            .filter { v -> v.key.ruleType != RuleType.CONDITION &&
-                    v.key.ruleType != RuleType.APPLY_SETTING &&
-                    v.key.ruleType != RuleType.STRATEGY &&
-                    v.key.ruleType != RuleType.NO_CATEGORY }
-            .iterator()
-        ){
-            if (!hadMisc){
-                hadMisc = true
-                sb.append("\n&lMisc:&r")
-            }
-            sb.append("\n   ").append(item.key.fieldName)
-                .append(": ").append(item.value)
-        }
+        formatRule(sb, values)
 
         return sb.toString()
     }
 
     override fun toString(): String {
-        if (this.ruleName.isEmpty()) {
+        if (this.ruleName.isEmpty())
             return super.toString()
-        }
 
         return this.ruleName
     }

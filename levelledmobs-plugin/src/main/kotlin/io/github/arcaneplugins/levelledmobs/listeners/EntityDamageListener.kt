@@ -256,7 +256,7 @@ class EntityDamageListener : Listener {
             event.damage.toFloat() + shooter.main.mobDataManager.getAdditionsForLevel(
                 shooter,
                 Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.damage.toFloat()
-            ).amount
+            ).multiplierAmount
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, shooter) {
             "damage: &b${event.damage}&7, new damage: &b$newDamage&7"
         }
@@ -282,7 +282,7 @@ class EntityDamageListener : Listener {
         event.damage = lmEntity.main.mobDataManager.getAdditionsForLevel(
             lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE,
             event.damage.toFloat()
-        ).amount.toDouble() // use ranged attack damage value
+        ).multiplierAmount.toDouble() // use ranged attack damage value
         DebugManager.log(DebugType.RANGED_DAMAGE_MODIFICATION, livingEntity)
         { "old damage: &b: $oldDamage&r, new damage: &b${event.damage}&r" }
         lmEntity.free()

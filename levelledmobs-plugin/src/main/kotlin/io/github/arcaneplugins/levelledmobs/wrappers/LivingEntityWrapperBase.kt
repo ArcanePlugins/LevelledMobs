@@ -42,7 +42,10 @@ abstract class LivingEntityWrapperBase {
     val distanceFromSpawn: Double
         get() {
             if (_distanceFromSpawn == null) {
-                _distanceFromSpawn = world.spawnLocation.distance(location)
+                _distanceFromSpawn = if (location.world == world)
+                    world.spawnLocation.distance(location)
+                else
+                    0.0
             }
 
             return _distanceFromSpawn!!

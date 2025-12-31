@@ -194,7 +194,13 @@ class ExternalCompatibilityManager {
                     "getPapiPlaceholder: input size (${inputList.size}) did not match results size (${papiResults.size})"
                 }
                 for (i in 0..<papiResults.size) {
-                    results = results.replace(inputList[i], invalidPlaceholderReplacement)
+                    val currentResult = papiResults[i]
+                    val currentInput = inputList[i]
+
+                    results = if (currentResult.isEmpty() || currentResult == currentInput)
+                        results.replace(currentInput, invalidPlaceholderReplacement)
+                    else
+                        results.replace(currentInput, currentResult)
                 }
 
                 return results
@@ -214,29 +220,24 @@ class ExternalCompatibilityManager {
 
         private fun isMobOfSimplePets(lmEntity: LivingEntityWrapper): Boolean {
             val plugin = Bukkit.getPluginManager().getPlugin("SimplePets")
-            if (plugin == null || !plugin.isEnabled) {
+            if (plugin == null || !plugin.isEnabled)
                 return false
-            }
 
             // version 5 uses the API, older versions we'll check for metadata
             if (plugin.description.version.startsWith("4")) {
                 for (meta in lmEntity.livingEntity.getMetadata("pet")) {
-                    if (meta.asString().isNotEmpty()) {
-                        return true
-                    }
+                    if (meta.asString().isNotEmpty()) return true
                 }
 
                 return false
-            } else {
-                return isSimplePets(lmEntity)
             }
+            else
+                return isSimplePets(lmEntity)
         }
 
         fun isMythicMob(lmEntity: LivingEntityWrapper): Boolean {
             val p = Bukkit.getPluginManager().getPlugin("MythicMobs")
-            if (p == null || !p.isEnabled) {
-                return false
-            }
+            if (p == null || !p.isEnabled) return false
 
             val mmKey = NamespacedKey(p, "type")
             synchronized(lmEntity.livingEntity.persistentDataContainer) {
@@ -245,14 +246,10 @@ class ExternalCompatibilityManager {
         }
 
         fun getMythicMobInternalName(lmEntity: LivingEntityWrapper): String {
-            if (!isMythicMob(lmEntity)) {
-                return ""
-            }
+            if (!isMythicMob(lmEntity))  return ""
 
             val p = Bukkit.getPluginManager().getPlugin("MythicMobs")
-            if (p == null || !p.isEnabled) {
-                return ""
-            }
+            if (p == null || !p.isEnabled) return ""
 
             val mmKey = NamespacedKey(p, "type")
             synchronized(lmEntity.livingEntity.persistentDataContainer) {
@@ -284,17 +281,12 @@ class ExternalCompatibilityManager {
          * @return if MythicMobs compatibility enabled and entity is from MythicMobs
          */
         private fun isMobOfMythicMobs(lmEntity: LivingEntityWrapper): Boolean {
-            if (!hasMythicMobsInstalled) {
-                return false
-            }
-            if (lmEntity.isMobOfExternalType) {
-                return true
-            }
+            if (!hasMythicMobsInstalled) return false
+            if (lmEntity.isMobOfExternalType) return true
 
             val isExternalType = isMythicMob(lmEntity)
-            if (isExternalType) {
+            if (isExternalType)
                 lmEntity.setMobExternalType("MYTHIC-MOBS")
-            }
 
             return isExternalType
         }
@@ -346,9 +338,8 @@ class ExternalCompatibilityManager {
         private fun isMobOfCitizens(lmEntity: LivingEntityWrapper): Boolean {
             val isExternalType = isMobOfCitizens(lmEntity.livingEntity)
 
-            if (isExternalType) {
+            if (isExternalType)
                 lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS.toString())
-            }
 
             return isExternalType
         }
@@ -360,11 +351,10 @@ class ExternalCompatibilityManager {
         fun getWGRegionsAtLocation(
             lmInterface: LivingEntityInterface
         ): MutableSet<String> {
-            if (!hasWorldGuardInstalled) {
-                return mutableSetOf()
-            }
-
-            return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface)
+            return if (hasWorldGuardInstalled)
+                WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface)
+            else
+                mutableSetOf()
         }
 
         fun getPlayerHomeLocation(
@@ -373,9 +363,8 @@ class ExternalCompatibilityManager {
         ): PlayerHomeCheckResult {
             if (allowBed && player.world.environment != World.Environment.NETHER) {
                 val bedLocation = player.bedSpawnLocation
-                if (bedLocation != null) {
+                if (bedLocation != null)
                     return PlayerHomeCheckResult(null, bedLocation, "bed")
-                }
             }
 
             return EssentialsIntegration.getHomeLocation(player)
@@ -406,14 +395,10 @@ class ExternalCompatibilityManager {
 
         private fun isMobOfEliteBosses(lmEntity: LivingEntityWrapper): Boolean {
             val plugin = Bukkit.getPluginManager().getPlugin("EliteBosses")
-            if (plugin == null || !plugin.isEnabled) {
-                return false
-            }
+            if (plugin == null || !plugin.isEnabled) return false
 
             for (meta in lmEntity.livingEntity.getMetadata("EliteBosses")) {
-                if (meta.asInt() > 0) {
-                    return true
-                }
+                if (meta.asInt() > 0) return true
             }
 
             return false

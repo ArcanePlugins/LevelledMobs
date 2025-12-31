@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.bukkit.Bukkit
@@ -83,7 +82,14 @@ class ServerVersionInfo {
     }
 
     private fun parsePaperVersion(){
-        val minecraftVersion = Bukkit.getServer().minecraftVersion
+        var minecraftVersion = Bukkit.getServer().minecraftVersion
+        val dash = minecraftVersion.indexOf("-")
+        if (dash > 0) // '1.21.9-rc1'
+            minecraftVersion = minecraftVersion.take(dash)
+        val space = minecraftVersion.indexOf(" ")
+        if (space > 0) // '1.21.9 Release Candidate 1'
+            minecraftVersion = minecraftVersion.take(space)
+
         // 1.20.4
         val versions = minecraftVersion.split(".")
         for (i in versions.indices) {
@@ -103,7 +109,7 @@ class ServerVersionInfo {
         val bukkitVersion = Bukkit.getBukkitVersion()
         // 1.19.2-R0.1-SNAPSHOT --> 1.19.2
         val firstDash = bukkitVersion.indexOf("-")
-        val versions = bukkitVersion.substring(0, firstDash).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
+        val versions = bukkitVersion.take(firstDash).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()
         for (i in versions.indices) {
             when (i) {
@@ -127,11 +133,11 @@ class ServerVersionInfo {
         if (nmsShortRegex.find()) {
             // example: 1.18
             var versionStr = nmsShortRegex
-                .group(1).uppercase(Locale.getDefault())
+                .group(1).uppercase()
 
             try {
                 this.majorVersionEnum =
-                    MinecraftMajorVersion.valueOf(versionStr.uppercase(Locale.getDefault()))
+                    MinecraftMajorVersion.valueOf(versionStr.uppercase())
                 versionStr = versionStr.replace("_", ".").replace("V", "")
                 this.minecraftVersion = versionStr.toDouble()
             } catch (e: Exception) {
@@ -142,9 +148,9 @@ class ServerVersionInfo {
         }
 
         // example: v1_18_R2
-        if (nmsRegex.find()) {
+        if (nmsRegex.find())
             this.nmsVersion = nmsRegex.group(1)
-        } else if (!isRunningPaper) {
+        else if (!isRunningPaper) {
             LevelledMobs.instance.logger.warning(
                 "LevelledMobs: NMSHandler, Could not match regex for bukkit version: " + Bukkit.getServer()
                     .javaClass.canonicalName

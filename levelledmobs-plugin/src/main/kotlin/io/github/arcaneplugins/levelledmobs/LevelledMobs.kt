@@ -104,19 +104,18 @@ class LevelledMobs : JavaPlugin() {
 
     override fun onLoad() {
         instance = this
-        CommandHandler.load(CommandHandler.LoadingStage.ON_LOAD)
     }
 
     override fun onEnable() {
         val timer = QuickTimer()
 
-        CommandHandler.load(CommandHandler.LoadingStage.ON_ENABLE)
         this.ver.load()
-        if (ver.minecraftVersion <= 1.19){
+        if (ver.minecraftVersion < 1.21){
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
         }
         NmsMappings.load()
         this.definitions.load()
+        CommandHandler.load()
         EssentialsIntegration.load()
         this.nametagQueueManager.load()
         this.mainCompanion.load()
@@ -163,7 +162,6 @@ class LevelledMobs : JavaPlugin() {
         val disableTimer = QuickTimer()
         disableTimer.start()
 
-        CommandHandler.load(CommandHandler.LoadingStage.ON_DISABLE)
         levelManager.stopNametagAutoUpdateTask()
         mainCompanion.shutDownAsyncTasks()
 

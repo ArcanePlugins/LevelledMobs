@@ -137,8 +137,7 @@ class MobsQueueManager {
                 }
             }
 
-            if (!offeredItem)
-                item.lmEntity.free()
+            if (!offeredItem) item.lmEntity.free()
         }
     }
 

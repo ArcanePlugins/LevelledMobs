@@ -121,9 +121,8 @@ class ExternalPluginDetection(
                     }
                 }
 
-                if (keyValue.isNullOrEmpty()){
+                if (keyValue.isNullOrEmpty())
                     return requirement != RequirementTypes.CONTAINS
-                }
 
                 val itContains = keyValue.contains(this.requirementValue!!, ignoreCase = true)
                 return if (requirement == RequirementTypes.CONTAINS)
@@ -145,9 +144,8 @@ class ExternalPluginDetection(
                 if (!keyExists) return false
                 val keyValues = lmEntity.livingEntity.getMetadata(keyName)
 
-                if (keyValues.isEmpty()){
+                if (keyValues.isEmpty())
                     return requirement != RequirementTypes.CONTAINS
-                }
 
                 for (value in keyValues){
                     if (value == null) continue
@@ -178,7 +176,6 @@ class ExternalPluginDetection(
             if (namespaceKey == null){
                 namespaceKey = NamespacedKey(cachedPlugin!!, keyName)
                 cachedMamespaceKey = namespaceKey
-
             }
 
             if (!lmEntity.pdc.has(namespaceKey, PersistentDataType.STRING)) return ""

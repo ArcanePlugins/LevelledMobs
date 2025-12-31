@@ -17,9 +17,7 @@ object ComponentUtils {
         component: Any,
         appendingComponent: Any?
     ) {
-        if (appendingComponent == null) {
-            return
-        }
+        if (appendingComponent == null) return
 
         try {
             def.methodComponentAppend!!.invoke(component, appendingComponent)
@@ -55,9 +53,8 @@ object ComponentUtils {
     ): Any? {
         try {
             if (ver.minecraftVersion >= 1.19) {
-                if (args.isNullOrEmpty() || args[0] == null) {
+                if (args.isNullOrEmpty() || args[0] == null)
                     return def.methodTranslatable!!.invoke(null, key)
-                }
 
                 return def.methodTranslatableWithArgs!!.invoke(null, key, args)
             } else {

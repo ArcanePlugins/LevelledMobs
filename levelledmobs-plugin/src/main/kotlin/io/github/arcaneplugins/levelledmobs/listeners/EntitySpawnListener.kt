@@ -91,7 +91,10 @@ class EntitySpawnListener : Listener{
                 delayedProcessMob(lmEntity, event, mobProcessDelay)
             else
                 preProcessmob(lmEntity, event, 0)
+
+            lmEntity.free()
         }
+
         scheduler.runDirectlyInBukkit = true
         scheduler.run()
     }
@@ -129,7 +132,6 @@ class EntitySpawnListener : Listener{
                 else
                     delayedAddToQueue(lmEntity, event, amountToDelay)
 
-                lmEntity.free()
                 return
             }
         } else if (event is SpawnerSpawnEvent) {
@@ -139,10 +141,7 @@ class EntitySpawnListener : Listener{
                 updateMobForPlayerLevelling(lmEntity)
         }
 
-        if (!processMobSpawns) {
-            lmEntity.free()
-            return
-        }
+        if (!processMobSpawns) return
 
         if (!hasBuiltCache) {
             lmEntity.buildCacheIfNeeded()
@@ -150,8 +149,6 @@ class EntitySpawnListener : Listener{
         }
 
         main.mobsQueueManager.addToQueue(QueueItem(lmEntity, event))
-
-        lmEntity.free()
     }
 
     private fun delayedProcessMob(
@@ -166,8 +163,6 @@ class EntitySpawnListener : Listener{
 
         lmEntity.inUseCount.getAndIncrement()
         scheduler.runDelayed(delay.toLong())
-
-        lmEntity.free()
     }
 
     private fun delayedAddToQueue(
@@ -197,9 +192,8 @@ class EntitySpawnListener : Listener{
         val useParticle = main.rulesManager.getSpawnerParticle(lmEntity)
         val particleCount = main.rulesManager.getSpawnerParticleCount(lmEntity)
 
-        if (useParticle != null && particleCount > 0) {
+        if (useParticle != null && particleCount > 0)
             createParticleEffect(cs.location.add(0.5, 1.0, 0.5), useParticle, particleCount)
-        }
 
         val minLevel = cs.persistentDataContainer
             .get(NamespacedKeys.keySpawnerMinLevel, PersistentDataType.INTEGER)
@@ -270,12 +264,11 @@ class EntitySpawnListener : Listener{
         event: Event?
     ) {
         // this function runs in an async thread
-        if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled) {
+        if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled)
             return
-        }
-        if (!lmEntity.isPopulated) {
+
+        if (!lmEntity.isPopulated)
             return
-        }
 
         val main = LevelledMobs.instance
         var additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE
@@ -532,9 +525,8 @@ class EntitySpawnListener : Listener{
                 .sortedBy { it.first }
                 .map { it.second }
 
-            if (MainCompanion.instance.excludePlayersInCreative){
+            if (MainCompanion.instance.excludePlayersInCreative)
                 temp = temp.filter { e: Entity -> (e as Player).gameMode != GameMode.CREATIVE }
-            }
 
             return temp.toMutableList()
         }

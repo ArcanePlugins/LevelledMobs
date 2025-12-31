@@ -114,16 +114,14 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             val lew: LivingEntityWrapper
 
             synchronized(cachedLM_Wrappers_Lock) {
-                lew = if (cache.empty()) {
+                lew = if (cache.empty())
                     LivingEntityWrapper()
-                } else {
+                else
                     cache.pop()
-                }
             }
 
-            if (LevelledMobs.instance.cacheCheck == null) {
+            if (LevelledMobs.instance.cacheCheck == null)
                 LevelledMobs.instance.cacheCheck = cache
-            }
 
             lew.livingEntity = livingEntity
             lew.inUseCount.set(1)
@@ -163,12 +161,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     override fun free() {
-        if (inUseCount.decrementAndGet() > 0) {
-            return
-        }
-        if (!isPopulated) {
-            return
-        }
+        if (inUseCount.decrementAndGet() > 0) return
+        if (!isPopulated) return
 
         clearEntityData()
         synchronized(cachedLM_Wrappers_Lock) {
@@ -235,7 +229,10 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
             isBuildingCache = true
             this.mobLevel =
-                if (main.levelInterface.isLevelled(livingEntity)) main.levelInterface.getLevelOfMob(livingEntity) else null
+                if (main.levelInterface.isLevelled(livingEntity))
+                    main.levelInterface.getLevelOfMob(livingEntity)
+                else
+                    null
 
             try {
                 this.wasSummoned = pdc.has(
@@ -245,9 +242,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             } catch (_: Exception) {}
 
             if (main.rulesManager.hasAnyWGCondition) this.spawnedWGRegions =
-                ExternalCompatibilityManager.getWGRegionsAtLocation(
-                    this
-                )
+                ExternalCompatibilityManager.getWGRegionsAtLocation(this)
 
             this.hasCache = true
             // the lines below must remain after hasCache = true to prevent stack overflow
@@ -266,9 +261,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         } catch (e: InterruptedException) {
             Log.war("exception in buildCache: " + e.message)
         } finally {
-            if (cacheLock.isHeldByCurrentThread) {
+            if (cacheLock.isHeldByCurrentThread)
                 cacheLock.unlock()
-            }
         }
     }
 
@@ -277,9 +271,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             // try up to 3 times to get a lock
             var retryCount = 0
             while (true) {
-                if (pdcLock.tryLock(15, TimeUnit.MILLISECONDS)) {
+                if (pdcLock.tryLock(15, TimeUnit.MILLISECONDS))
                     return true
-                }
 
                 val callingFunction = Thread.currentThread().stackTrace[1]
                 retryCount++
@@ -302,9 +295,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     private fun releasePDCLock() {
-        if (pdcLock.isHeldByCurrentThread) {
+        if (pdcLock.isHeldByCurrentThread)
             pdcLock.unlock()
-        }
     }
 
     fun invalidateCache() {
@@ -315,9 +307,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     fun buildCacheIfNeeded(){
-        if (!hasCache) {
-            buildCache()
-        }
+        if (!hasCache) buildCache()
     }
 
     private fun checkChanceRules(
@@ -331,23 +321,17 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
         val sbAllowed = StringBuilder()
         for (ruleInfo in result.allApplicableRulesMadeChance) {
-            if (sbAllowed.isNotEmpty()) {
-                sbAllowed.append(";")
-            }
+            if (sbAllowed.isNotEmpty()) sbAllowed.append(";")
             sbAllowed.append(ruleInfo.ruleName)
         }
 
         val sbDenied = StringBuilder()
         for (ruleInfo in result.allApplicableRulesDidNotMakeChance) {
-            if (sbDenied.isNotEmpty()) {
-                sbDenied.append(";")
-            }
+            if (sbDenied.isNotEmpty()) sbDenied.append(";")
             sbDenied.append(ruleInfo.ruleName)
         }
 
-        if (!getPDCLock()) {
-            return
-        }
+        if (!getPDCLock()) return
 
         try {
             @Suppress("UNUSED_PARAMETER")
@@ -382,9 +366,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     private fun cachePrevChanceResults() {
-        if (!main.rulesManager.anyRuleHasChance) {
-            return
-        }
+        if (!main.rulesManager.anyRuleHasChance) return
 
         var rulesPassed: String? = null
         var rulesDenied: String? = null
@@ -409,9 +391,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
 
-        if (rulesPassed == null && rulesDenied == null) {
-            return
-        }
+        if (rulesPassed == null && rulesDenied == null) return
+
         val results = mutableMapOf<String, Boolean>()
 
         if (rulesPassed != null) {
@@ -449,9 +430,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     }
 
     fun getNametagCooldownTime(): Long {
-        if (!hasCache) {
-            buildCache()
-        }
+        if (!hasCache) buildCache()
 
         return this.nametagCooldownTime
     }
@@ -474,18 +453,14 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
 
     override fun getApplicableRules(): MutableList<RuleInfo> {
-        if (!hasCache) {
-            buildCache()
-        }
+        if (!hasCache) buildCache()
 
         return this.applicableRules
     }
 
     val getMobLevel: Int
         get() {
-            if (!hasCache) {
-                buildCache()
-            }
+            if (!hasCache) buildCache()
 
             return if (this.mobLevel == null) 0
             else mobLevel!!
@@ -506,9 +481,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     val isBabyMob: Boolean
         get() {
-            if (livingEntity is Ageable) {
+            if (livingEntity is Ageable)
                 return !((livingEntity as Ageable).isAdult)
-            }
 
             return false
         }
@@ -517,9 +491,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         set(value) {
             this._skylightLevelAtSpawn = value
 
-            if (!getPDCLock()) {
-                return
-            }
+            if (!getPDCLock()) return
 
             try {
                 if (!livingEntity.persistentDataContainer
@@ -536,13 +508,9 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
         get() {
-            if (this._skylightLevelAtSpawn != null) {
-                return _skylightLevelAtSpawn!!
-            }
+            if (this._skylightLevelAtSpawn != null) return _skylightLevelAtSpawn!!
+            if (!getPDCLock()) return currentSkyLightLevel
 
-            if (!getPDCLock()) {
-                return currentSkyLightLevel
-            }
             var hadError = false
             var succeeded = false
 
@@ -598,9 +566,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         set(value) {
             this._sourceSpawnerName = value
 
-            if (!getPDCLock()) {
-                return
-            }
+            if (!getPDCLock()) return
+
             try {
                 if (value == null && pdc.has(
                         NamespacedKeys.sourceSpawnerName,
@@ -619,9 +586,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
         get() {
-            if (this._sourceSpawnerName != null) {
+            if (this._sourceSpawnerName != null)
                 return this._sourceSpawnerName
-            }
 
             if (getPDCLock()) {
                 try {
@@ -640,9 +606,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                 }
             }
 
-            if (this._sourceSpawnerName == null) {
+            if (this._sourceSpawnerName == null)
                 this._sourceSpawnerName = "(none)"
-            }
 
             return this._sourceSpawnerName
         }
@@ -651,9 +616,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         set(value) {
             this._sourceSpawnerName = value
 
-            if (!getPDCLock()) {
-                return
-            }
+            if (!getPDCLock()) return
+
             try {
                 if (value == null && pdc.has(
                         NamespacedKeys.sourceSpawnerName,
@@ -672,9 +636,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
         get() {
-            if (this._sourceSpawnEggName != null) {
+            if (this._sourceSpawnEggName != null)
                 return this._sourceSpawnEggName
-            }
 
             if (getPDCLock()) {
                 try {
@@ -689,9 +652,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                 }
             }
 
-            if (this._sourceSpawnEggName == null) {
+            if (this._sourceSpawnEggName == null)
                 this._sourceSpawnEggName = "(none)"
-            }
 
             return this._sourceSpawnEggName
         }
@@ -703,16 +665,13 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         }
 
     val isMobTamed: Boolean
-        get() {
-            return (livingEntity is Tameable && (livingEntity as Tameable).isTamed)
-        }
+        get() = (livingEntity is Tameable && (livingEntity as Tameable).isTamed)
 
     fun setMobExternalType(
         externalType: String
     ) {
-        if (!mobExternalTypes.contains(externalType)) {
+        if (!mobExternalTypes.contains(externalType))
             mobExternalTypes.add(externalType)
-        }
     }
 
     val isMobOfExternalType: Boolean
@@ -730,9 +689,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     var overridenEntityName: String?
         set(value) {
-            if (!getPDCLock()) {
-                return
-            }
+            if (!getPDCLock()) return
+
             try {
                 if (value != null)
                     pdc.set(NamespacedKeys.overridenEntityNameKey, PersistentDataType.STRING, value)
@@ -743,9 +701,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             }
         }
         get() {
-            if (!getPDCLock()) {
-                return null
-            }
+            if (!getPDCLock()) return null
 
             try {
                 return pdc.get(NamespacedKeys.overridenEntityNameKey, PersistentDataType.STRING)
@@ -756,10 +712,10 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     val wgRegionName: String
         get() {
-            if (spawnedWGRegions.isEmpty()) {
-                return ""
-            }
-            return spawnedWGRegions.first()
+            return if (spawnedWGRegions.isEmpty())
+                ""
+            else
+                spawnedWGRegions.first()
         }
 
     fun populateShowShowLMNametag(){
@@ -769,9 +725,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     var shouldShowLMNametag: Boolean
         set(value) {
             _shouldShowLMNametag = value
-            if (!getPDCLock()) {
-                return
-            }
+            if (!getPDCLock()) return
 
             try {
                 if (value && pdc.has(
@@ -794,9 +748,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         get() {
             if (_shouldShowLMNametag != null) return _shouldShowLMNametag!!
 
-            if (!getPDCLock()) {
-                return true
-            }
+            if (!getPDCLock()) return true
 
             try {
                 _shouldShowLMNametag = !pdc.has(NamespacedKeys.denyLmNametag, PersistentDataType.INTEGER)
@@ -809,9 +761,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
     override var spawnedTimeOfDay: Int
         set(value) {
-            if (!getPDCLock()) {
-                return
-            }
+            if (!getPDCLock()) return
 
             try {
                 @Suppress("UNUSED_PARAMETER")
@@ -854,9 +804,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
                         NamespacedKeys.spawnedTimeOfDay,
                         PersistentDataType.INTEGER
                     )
-                    if (result != null) {
-                        return result
-                    }
+                    if (result != null) return result
                 }
             }
 
@@ -866,9 +814,7 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
     override var wasSummoned: Boolean = false
         private set
         get() {
-        if (!hasCache) {
-            buildCache()
-        }
+        if (!hasCache) buildCache()
 
         return field
     }
@@ -877,16 +823,15 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         val groups: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
 
         for ((key, mobNames) in main.customMobGroups) {
-            if (mobNames.contains(this.typeName)) {
+            if (mobNames.contains(this.typeName))
                 groups.add(key)
-            }
         }
 
         groups.add(CustomUniversalGroups.ALL_MOBS.toString())
 
-        if (this.mobLevel != null) {
+        if (this.mobLevel != null)
             groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS.toString())
-        }
+
         val eType = livingEntity.type
 
         if (livingEntity is Monster || livingEntity is Enemy
@@ -900,15 +845,13 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString())
         }
 
-        if (livingEntity.world.environment == World.Environment.NORMAL) {
+        if (livingEntity.world.environment == World.Environment.NORMAL)
             groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS.toString())
-        } else if (livingEntity.world.environment == World.Environment.NETHER) {
+        else if (livingEntity.world.environment == World.Environment.NETHER)
             groups.add(CustomUniversalGroups.ALL_NETHER_MOBS.toString())
-        }
 
-        if (livingEntity is Flying || flyingMobNames.contains(eType.name.uppercase())) {
+        if (livingEntity is Flying || flyingMobNames.contains(eType.name.uppercase()))
             groups.add(CustomUniversalGroups.ALL_FLYING_MOBS.toString())
-        }
 
         // why bats aren't part of Flying interface is beyond me
         if ((livingEntity !is Flying && livingEntity !is WaterMob
@@ -923,13 +866,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
             groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString())
         }
 
-        if (livingEntity is AbstractVillager || livingEntity is Bat){
+        if (livingEntity is AbstractVillager || livingEntity is Bat)
             groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString())
-        }
 
         return groups
     }
 
     val hashCode: Int
-        get() = livingEntity.hashCode()
+        get() = if (isPopulated) livingEntity.hashCode() else 0
 }

@@ -1,10 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
-import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerBaseClass
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerBaseClass.CustomSpawnerInfo
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerSubcommand
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
@@ -49,9 +49,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         commandSender = event.player
         messageLabel = "lm"
 
-        if (event.material.name.lowercase(Locale.getDefault()).endsWith("_spawn_egg")) {
+        if (event.material.name.lowercase().endsWith("_spawn_egg"))
             if (processLMSpawnEgg(event)) return
-        }
 
         val main = LevelledMobs.instance
         if (main.mainCompanion.spawnerInfoIds.isEmpty() && main.mainCompanion.spawnerCopyIds.isEmpty())
@@ -67,7 +66,6 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         )
 
         if (!doCopy && !doShowInfo) return
-
 
         if (event.clickedBlock == null
             || event.clickedBlock!!.type != Material.SPAWNER
@@ -96,9 +94,9 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         if (event.item == null) return false
 
         val meta = event.item!!.itemMeta ?: return false
-        if (event.clickedBlock == null) {
+        if (event.clickedBlock == null)
             return false
-        }
+
         if (!meta.persistentDataContainer
                 .has(NamespacedKeys.spawnerEgg, PersistentDataType.INTEGER)
         ) {
@@ -118,18 +116,16 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         ) {
             val temp = meta.persistentDataContainer
                 .get(NamespacedKeys.keySpawnerMinLevel, PersistentDataType.INTEGER)
-            if (temp != null) {
+            if (temp != null)
                 minLevel = temp
-            }
         }
         if (meta.persistentDataContainer
                 .has(NamespacedKeys.keySpawnerMaxLevel, PersistentDataType.INTEGER)
         ) {
             val temp = meta.persistentDataContainer
                 .get(NamespacedKeys.keySpawnerMaxLevel, PersistentDataType.INTEGER)
-            if (temp != null) {
+            if (temp != null)
                 maxLevel = temp
-            }
         }
         if (meta.persistentDataContainer
                 .has(NamespacedKeys.keySpawnerCustomDropId, PersistentDataType.STRING)
@@ -163,25 +159,15 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         if (eggName.isNullOrEmpty()) eggName = "LM Spawn Egg"
 
         if (event.clickedBlock!!.blockData.material == Material.SPAWNER) {
-            val info = CustomSpawnerInfo()
+            val info = CustomSpawnerInfo(false)
             info.minLevel = minLevel
             info.maxLevel = maxLevel
             info.spawnType = spawnType
             info.customDropId = customDropId
-            if (meta.persistentDataContainer
-                    .has(NamespacedKeys.keySpawnerCustomName, PersistentDataType.STRING)
-            ) {
-                info.customName = meta.persistentDataContainer
-                    .get(NamespacedKeys.keySpawnerCustomName, PersistentDataType.STRING)
-            }
-            if (meta.persistentDataContainer
-                    .has(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING)
-            ) {
-                info.lore = meta.persistentDataContainer
-                    .get(NamespacedKeys.keySpawnerLore, PersistentDataType.STRING)
-            }
 
+            SpawnerBaseClass.setMetaItems(meta, info, eggName)
             convertSpawner(event, info)
+
             return true
         }
 
@@ -290,7 +276,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
     }
 
     private fun copySpawner(player: Player, cs: CreatureSpawner) {
-        val info = CustomSpawnerInfo()
+        val info = CustomSpawnerInfo(false)
         info.player = player
         val pdc = cs.persistentDataContainer
 
@@ -338,7 +324,7 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
         info.spawnCount = cs.spawnCount
         info.spawnRange = cs.spawnRange
 
-        SpawnerSubcommand.generateSpawner(player, info)
+        SpawnerSubcommand.generateSpawner(info)
     }
 
     private fun showInfo(
@@ -357,9 +343,8 @@ class PlayerInteractEventListener : MessagesBase(), Listener {
                 )
                 sb.append("&r\n")
             }
-        } else {
+        } else
             sb.append("Vanilla Spawner\n")
-        }
 
         addSpawnerAttributeFromPdcInt(
             "min level", NamespacedKeys.keySpawnerMinLevel, pdc,

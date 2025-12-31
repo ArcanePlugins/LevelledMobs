@@ -38,16 +38,14 @@ class CombustListener: Listener {
             EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.STRAY,
             EntityType.DROWNED, EntityType.PHANTOM
         )
-        if (!entityTypesCanBurnInSunlight2.contains(event.entity.type)) {
+        if (!entityTypesCanBurnInSunlight2.contains(event.entity.type))
             return
-        }
 
         if (event.entity is LivingEntity) {
             val equipment = (event.entity as LivingEntity).equipment
 
-            if (equipment != null && equipment.helmet != null && equipment.helmet.type != Material.AIR) {
+            if (equipment != null && equipment.helmet != null && equipment.helmet.type != Material.AIR)
                 return
-            }
         }
 
         val lmEntity = LivingEntityWrapper.getInstance(event.entity as LivingEntity)
@@ -57,10 +55,7 @@ class CombustListener: Listener {
             return
         }
 
-        var newHealth = lmEntity.livingEntity.health - multiplier
-        if (newHealth < 0.0) {
-            newHealth = 0.0
-        }
+        val newHealth = (lmEntity.livingEntity.health - multiplier).coerceAtLeast(0.0)
 
         if (lmEntity.livingEntity.health <= 0.0) {
             lmEntity.free()
@@ -68,9 +63,8 @@ class CombustListener: Listener {
         }
         lmEntity.livingEntity.health = newHealth
 
-        if (lmEntity.isLevelled) {
+        if (lmEntity.isLevelled)
             LevelledMobs.instance.levelManager.updateNametag(lmEntity)
-        }
 
         lmEntity.free()
     }

@@ -33,9 +33,8 @@ class EntityNametagListener: Listener {
 
         val main = LevelledMobs.instance
         // Must be a levelled mob
-        if (!main.levelManager.isLevelled(event.rightClicked as LivingEntity)) {
+        if (!main.levelManager.isLevelled(event.rightClicked as LivingEntity))
             return
-        }
 
         val lmEntity = LivingEntityWrapper.getInstance(event.rightClicked as LivingEntity)
         val level = main.rulesManager.getRuleMobMaxLevel(lmEntity)
@@ -49,6 +48,5 @@ class EntityNametagListener: Listener {
 
         main.levelManager.updateNametag(lmEntity)
         lmEntity.free()
-
     }
 }

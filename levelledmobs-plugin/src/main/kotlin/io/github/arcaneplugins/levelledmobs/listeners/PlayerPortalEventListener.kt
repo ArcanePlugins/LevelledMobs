@@ -22,15 +22,12 @@ import org.bukkit.scheduler.BukkitRunnable
 class PlayerPortalEventListener : Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     fun onPlayerPortalEvent(event: PlayerPortalEvent) {
-        if (event.cause != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+        if (event.cause != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)
             return
-        }
-        if (event.to.world == null) {
-            return
-        }
-        val isToNether = (event.to.world.environment
-                == World.Environment.NETHER)
 
+        if (event.to.world == null) return
+
+        val isToNether = (event.to.world.environment == World.Environment.NETHER)
         val player = event.player
         val main = LevelledMobs.instance
 
@@ -40,11 +37,10 @@ class PlayerPortalEventListener : Listener {
 
         val runnable: BukkitRunnable = object : BukkitRunnable() {
             override fun run() {
-                if (isToNether) {
+                if (isToNether)
                     main.mainCompanion.setPlayerNetherPortalLocation(player, player.location)
-                } else {
+                else
                     main.mainCompanion.setPlayerWorldPortalLocation(player, player.location)
-                }
 
                 try {
                     if (isToNether) {

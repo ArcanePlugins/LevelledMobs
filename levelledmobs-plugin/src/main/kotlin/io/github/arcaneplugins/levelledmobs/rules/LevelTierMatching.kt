@@ -20,9 +20,8 @@ class LevelTierMatching {
         get () = minLevel != null || maxLevel != null
 
     fun isApplicableToMobLevel(mobLevel: Int): Boolean {
-        if (!this.hasLevelRestriction) {
+        if (!this.hasLevelRestriction)
             return true
-        }
 
         val meetsMin = minLevel == null || mobLevel >= minLevel!!
         val meetsMax = maxLevel == null || mobLevel <= maxLevel!!
@@ -51,17 +50,17 @@ class LevelTierMatching {
 
     override fun toString(): String {
         if (!hasLevelRestriction) {
-            return if (names != null && names!!.isNotEmpty()) {
+            return if (names != null && names!!.isNotEmpty())
                 names.toString()
-            } else if (sourceTierName != null) {
-                if (valueRanges == null) {
+            else if (sourceTierName != null) {
+                if (valueRanges == null)
                     sourceTierName!!
-                } else {
+                else
                     "$sourceTierName: $valueRanges"
-                }
-            } else {
-                "(empty)"
+
             }
+            else
+                "(empty)"
         }
 
         if (minLevel != null && maxLevel != null) {

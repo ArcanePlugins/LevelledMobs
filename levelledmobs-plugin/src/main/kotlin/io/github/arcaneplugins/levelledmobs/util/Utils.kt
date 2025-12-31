@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.util
 
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
@@ -16,7 +17,6 @@ import io.papermc.paper.registry.RegistryKey
 import java.time.Duration
 import java.time.Instant
 import java.util.AbstractMap
-import java.util.Locale
 import java.util.regex.Pattern
 import org.bukkit.Chunk
 import org.bukkit.GameMode
@@ -66,9 +66,9 @@ object Utils {
         val ver = LevelledMobs.instance.ver
 
         val key = if (name.contains(":"))
-            NamespacedKey.fromString(name.lowercase(Locale.getDefault()))
+            NamespacedKey.fromString(name.lowercase())
         else
-            NamespacedKey.minecraft(name.lowercase(Locale.getDefault()))
+            NamespacedKey.minecraft(name.lowercase())
 
         if (key == null) return null
 
@@ -149,8 +149,8 @@ object Utils {
         var count = 0
         var position0 = 0
         var position1: Int
-        val upperString = message.uppercase(Locale.getDefault())
-        val upperPattern = replaceWhat.uppercase(Locale.getDefault())
+        val upperString = message.uppercase()
+        val upperPattern = replaceWhat.uppercase()
         val inc = (message.length / replaceWhat.length) *
                 (replaceTo.length - replaceWhat.length)
         val chars = CharArray((message.length + max(0.0, inc.toDouble())).toInt())
@@ -200,9 +200,11 @@ object Utils {
         }
     }
 
-    val oneToNine = mutableListOf(
-        "1", "2", "3", "4", "5", "6", "7", "8", "9"
-    )
+    fun getOneToNineSuggestions(builder: SuggestionsBuilder){
+        for (i in 1..9){
+            builder.suggest(i)
+        }
+    }
 
     fun replaceAllInList(
         oldList: MutableList<String>,
@@ -242,13 +244,13 @@ object Utils {
      */
     fun capitalize(str: String): String {
         val builder = StringBuilder()
-        val words = str.lowercase(Locale.getDefault()).split(" ".toRegex()).dropLastWhile { it.isEmpty() }
+        val words = str.lowercase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray() // each word separated from str
         for (i in words.indices) {
             val word = words[i]
             if (word.isEmpty()) continue
 
-            builder.append(word[0].toString().uppercase(Locale.getDefault())) // capitalize first letter
+            builder.append(word[0].toString().uppercase()) // capitalize first letter
             if (word.length > 1)
                 builder.append(word.substring(1)) // append the rest of the word
 
@@ -417,9 +419,8 @@ object Utils {
         input: String,
         match: String
     ): Boolean {
-        if (!match.contains("*")) {
+        if (!match.contains("*"))
             return input.equals(match, ignoreCase = true)
-        }
 
         val chopped = match.split("\\*".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         // 0 = *, 1 = text, 2 = *
@@ -428,8 +429,8 @@ object Utils {
             return input.equals(match, ignoreCase = true)
         }
 
-        val inputL = input.lowercase(Locale.getDefault())
-        val matchL = match.lowercase(Locale.getDefault())
+        val inputL = input.lowercase()
+        val matchL = match.lowercase()
 
         val useSearch: String
         if (matchL.startsWith("*") && matchL.endsWith("*")) {
@@ -439,7 +440,7 @@ object Utils {
             useSearch = matchL.substring(1)
             return inputL.endsWith(useSearch)
         } else {
-            useSearch = matchL.substring(0, matchL.length - 1)
+            useSearch = matchL.dropLast(1)
             return inputL.startsWith(useSearch)
         }
     }
@@ -519,7 +520,7 @@ object Utils {
         val time: Long
         var remainder = 0.0
         var numberPart = if (match.group(1) != null) match.group(1) else match.group(2)
-        var unit = if (match.group(1) != null) match.group(2).lowercase(Locale.getDefault()) else ""
+        var unit = if (match.group(1) != null) match.group(2).lowercase() else ""
 
         if (isInteger(input)) {
             // number only, no time unit was specified
@@ -554,30 +555,26 @@ object Utils {
             "ms", "millisecond", "milliseconds" -> duration = Duration.ofMillis(time)
             "s", "second", "seconds" -> {
                 duration = Duration.ofSeconds(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusMillis((1000.0 * remainder).toLong())
-                }
             }
 
             "m", "minute", "minutes" -> {
                 duration = Duration.ofMinutes(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusMillis((60000.0 * remainder).toLong())
-                }
             }
 
             "h", "hour", "hours" -> {
                 duration = Duration.ofHours(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusMillis((3600000.0 * remainder).toLong())
-                }
             }
 
             "d", "day", "days" -> {
                 duration = Duration.ofDays(time)
-                if (remainder > 0.0) {
+                if (remainder > 0.0)
                     duration = duration.plusSeconds((86400.0 * remainder).toLong())
-                }
             }
 
             "" -> duration = if (useMS) Duration.ofMillis(time) else Duration.ofSeconds(time)
@@ -611,22 +608,6 @@ object Utils {
         return temp.toMutableList()
     }
 
-    // taken from:
-    // https://stackoverflow.com/questions/2817646/javascript-split-string-on-space-or-on-quotes-to-array
-    fun splitStringWithQuotes(myString: String): MutableList<String>{
-        val results = mutableListOf<String>()
-        val pattern = Pattern.compile("[^\\s\"]+|\"([^\"]*)\"")
-        val match = pattern.matcher(myString)
-        while (match.find()){
-            var temp = match.group(0)
-            if (temp.startsWith("\"") && temp.endsWith("\""))
-                temp = temp.substring(1, temp.length - 1)
-            results.add(temp)
-        }
-
-        return results
-    }
-
     fun getEnchantment(
         enchantName: String
     ): Enchantment?{
@@ -638,14 +619,14 @@ object Utils {
                 RegistryKey.ENCHANTMENT
             )
             enchantment = registry.get(
-                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
+                NamespacedKey.minecraft(enchantName.lowercase())
             )
         }
         else{
             // legacy versions < 1.21
             @Suppress("DEPRECATION")
             enchantment = Registry.ENCHANTMENT.get(
-                NamespacedKey.minecraft(enchantName.lowercase(Locale.getDefault()))
+                NamespacedKey.minecraft(enchantName.lowercase())
             )
         }
 

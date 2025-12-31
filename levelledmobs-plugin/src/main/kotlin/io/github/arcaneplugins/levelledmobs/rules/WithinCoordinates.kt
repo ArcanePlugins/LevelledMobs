@@ -29,11 +29,11 @@ class WithinCoordinates {
         if (number == null) return true
 
         var infinityDirection = InfinityDirection.NONE
-        if ("-" == number) {
+        if ("-" == number)
             infinityDirection = InfinityDirection.DESCENDING
-        } else if ("+" == number) {
+        else if ("+" == number)
             infinityDirection = InfinityDirection.ASCENDING
-        } else if (isInteger(number)) {
+        else if (isInteger(number)) {
             val num = number.toInt()
             when (axis) {
                 Axis.X -> {
@@ -118,11 +118,10 @@ class WithinCoordinates {
         if (range1 == null && range2 == null) return false
 
         if (range1 != null && range2 != null) {
-            return if (range1 < range2) {
-                coord >= range1 && coord <= range2
-            } else {
-                coord >= range2 && coord <= range1
-            }
+            return if (range1 < range2)
+                coord in range1..range2
+            else
+                coord in range2..range1
         }
 
         val useRange = range1 ?: range2!!

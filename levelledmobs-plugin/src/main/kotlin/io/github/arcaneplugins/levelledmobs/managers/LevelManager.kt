@@ -104,7 +104,6 @@ class LevelManager : LevelInterface2 {
      */
     var forcedBlockedEntityTypes = mutableSetOf<EntityType>()
 
-
     fun load(){
         attributeStringList.putAll(mutableMapOf(
             "%max-health%" to Utils.getAttribute(AttributeNames.MAX_HEALTH)!!,
@@ -196,7 +195,7 @@ class LevelManager : LevelInterface2 {
                 "MINECART_MOB_SPAWNER" -> EntityType.SPAWNER_MINECART
                 "MINECART_TNT" -> EntityType.TNT_MINECART
                 "PRIMED_TNT" -> EntityType.TNT
-                "SPLASH_POTION" -> EntityType.POTION
+                "SPLASH_POTION" -> EntityType.SPLASH_POTION
                 "THROWN_EXP_BOTTLE" -> EntityType.EXPERIENCE_BOTTLE
                 else -> EntityType.UNKNOWN
             }
@@ -240,7 +239,7 @@ class LevelManager : LevelInterface2 {
         var useMaxLevel = maxLevel
 
         if (useMinLevel == -1 || useMaxLevel == -1) {
-            val levels: MinAndMaxHolder = getMinAndMaxLevels(lmEntity)
+            val levels = getMinAndMaxLevels(lmEntity)
             if (useMinLevel == -1)
                 useMinLevel = levels.minAsInt
 
@@ -286,9 +285,7 @@ class LevelManager : LevelInterface2 {
         }
 
         // if no levelling strategy was selected then we just use a random number between min and max
-        if (useMinLevel == useMaxLevel) {
-            return useMinLevel
-        }
+        if (useMinLevel == useMaxLevel) return useMinLevel
 
         val generatedLevel = constructLevel(numberResult, lmEntity)
             .coerceAtMost(useMaxLevel)
@@ -310,8 +307,7 @@ class LevelManager : LevelInterface2 {
                 val msg = if (formula == formulaPre)
                     "   formula: '$formula'"
                 else
-                    "   formulaPre: '$formulaPre'\n" +
-                    "   formula: '$formula'"
+                    "   formulaPre: '$formulaPre'\n   formula: '$formula'"
 
                 "result (error, ${evalResult.error})\n$msg" }
             throw EvaluationException()
@@ -323,11 +319,9 @@ class LevelManager : LevelInterface2 {
             val msg = if (formula == formulaPre)
                 "   formula: '$formula'"
             else
-                "   formulaPre: '$formulaPre'\n" +
-                        "   formula: '$formula'"
+                "   formulaPre: '$formulaPre'\n   formula: '$formula'"
 
             "result $result\n$msg"}
-
         return result
     }
 
@@ -412,9 +406,9 @@ class LevelManager : LevelInterface2 {
                 usePlayerLevel = true
             }
 
-            if (usePlayerLevel) {
+            if (usePlayerLevel)
                 origLevelSource = player.level.toFloat()
-            } else {
+            else {
                 val l = player.location
                 if (papiResult.isNullOrEmpty()) {
                     origLevelSource = player.level.toFloat()
@@ -493,7 +487,6 @@ class LevelManager : LevelInterface2 {
                 hasOverride = true
 
             if (dropResult.hasOverride) hasOverride = true
-            //if (hasOverride) removeVanillaDrops(lmEntity)
             if (hasOverride) removeVanillaDrops(lmEntity, currentDrops)
 
         }
@@ -505,7 +498,7 @@ class LevelManager : LevelInterface2 {
             val additionValue = main.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_ITEM_DROP, 2.0f
-            ).amount
+            ).multiplierAmount
             if (additionValue == Float.MIN_VALUE) {
                 DebugManager.log(DebugType.SET_LEVELLED_ITEM_DROPS, lmEntity) {
                     "removing any drops present"
@@ -574,8 +567,7 @@ class LevelManager : LevelInterface2 {
     ): MutableList<ItemStack>{
         val removedItems = mutableListOf<ItemStack>()
         val pickedUpItems = PickedUpEquipment(lmEntity).getMobPickedUpItems()
-        if (pickedUpItems.isEmpty())
-            return removedItems
+        if (pickedUpItems.isEmpty()) return removedItems
 
         val iteratorPickedUpItems = pickedUpItems.listIterator()
 
@@ -636,7 +628,7 @@ class LevelManager : LevelInterface2 {
             val dropAddition: Float = LevelledMobs.instance.mobDataManager.getAdditionsForLevel(
                 lmEntity,
                 Addition.CUSTOM_XP_DROP, 3.0f
-            ).amount
+            ).multiplierAmount
             var newXp = 0.0
 
             if (dropAddition == Float.MIN_VALUE) {
@@ -674,9 +666,9 @@ class LevelManager : LevelInterface2 {
         var nametag: StringReplacer
         var customDeathMessage: String? = null
         val main = LevelledMobs.instance
-        if (isDeathNametag) {
+        if (isDeathNametag)
             nametag = StringReplacer(main.rulesManager.getRuleNametagCreatureDeath(lmEntity))
-        } else {
+        else {
             checkLockedNametag(lmEntity)
 
             val nametagText =
@@ -686,9 +678,8 @@ class LevelManager : LevelInterface2 {
             nametag = StringReplacer(nametagText)
         }
 
-        if ("disabled".equals(nametag.text, ignoreCase = true) || "none".equals(nametag.text, ignoreCase = true)) {
+        if ("disabled".equals(nametag.text, ignoreCase = true) || "none".equals(nametag.text, ignoreCase = true))
             return NametagResult(null)
-        }
 
         if (isDeathNametag) {
             val deathMessage = main.rulesManager.getDeathMessage(lmEntity)
@@ -779,13 +770,12 @@ class LevelManager : LevelInterface2 {
         synchronized(lmEntity.livingEntity.persistentDataContainer) {
             val doLockSettings: Int?
             if (lmEntity.pdc
-                    .has(NamespacedKeys.lockSettings, PersistentDataType.INTEGER)
+                .has(NamespacedKeys.lockSettings, PersistentDataType.INTEGER)
             ) {
                 doLockSettings = lmEntity.pdc
                     .get(NamespacedKeys.lockSettings, PersistentDataType.INTEGER)
-                if (doLockSettings == null || doLockSettings != 1) {
+                if (doLockSettings == null || doLockSettings != 1)
                     return
-                }
             } else {
                 return
             }
@@ -979,17 +969,15 @@ class LevelManager : LevelInterface2 {
         text.replace("%z%", lmEntity.livingEntity.location.blockZ)
         text.replace("%player-uuid%", playerId)
         text.replace("%player%", playerName)
-        if (text.contains("%rand_")){
+        if (text.contains("%rand_"))
             RandomVarianceGenerator.generateVariance(lmEntity, text)
-        }
 
         for (placeholder in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
             text.replaceIfExists(placeholder.key){ placeholder.value.getPlaceholder(lmEntity) }
         }
 
-        if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled) {
+        if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled)
             text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text, lmEntity.invalidPlaceholderReplacement)
-        }
 
         return text.text
     }
@@ -1048,17 +1036,6 @@ class LevelManager : LevelInterface2 {
         LevelledMobs.instance.nametagQueueManager.addToQueue(QueueItem(lmEntity, nametag, players))
     }
 
-
-    /*
-     * Credit
-     * - Thread: https://www.spigotmc.org/threads/changing-an-entitys-nametag-with-packets.482855/
-     *
-     * - Users:
-     *   - @CoolBoy (https://www.spigotmc.org/members/CoolBoy.102500/)
-     *   - @Esophose (https://www.spigotmc.org/members/esophose.34168/)
-     *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
-     */
-
     fun startNametagAutoUpdateTask() {
         Log.inf("&fTasks: &7Starting async nametag auto update task...")
 
@@ -1077,9 +1054,9 @@ class LevelManager : LevelInterface2 {
             val task = Consumer { _: ScheduledTask? -> runnable.run() }
             nametagTimerTask =
                 SchedulerResult(Bukkit.getAsyncScheduler().runAtFixedRate(main, task, 0, period, TimeUnit.SECONDS))
-        } else {
-            nametagTimerTask = SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period))
         }
+        else
+            nametagTimerTask = SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period))
     }
 
     private fun checkLEWCache() {
@@ -1180,20 +1157,13 @@ class LevelManager : LevelInterface2 {
         player: Player,
         entityToPlayer: MutableMap<LivingEntityWrapper, MutableList<Player>>
     ) {
-        if (!entity.isValid) {
-            return  // async task, entity can despawn whilst it is running
-        }
+        if (!entity.isValid) return  // async task, entity can despawn whilst it is running
 
         // Mob must be a livingentity that is ...living.
-        if (entity !is LivingEntity || entity is Player
-            || !entity.isValid
-        ) {
+        if (entity !is LivingEntity || entity is Player || !entity.isValid)
             return
-        }
         // this is mostly so for spawner mobs and spawner egg mobs as they have a 20 tick delay in before proessing
-        if (entity.ticksLived < 30) {
-            return
-        }
+        if (entity.ticksLived < 30) return
 
         var wrapperHasReference = false
         val lmEntity = LivingEntityWrapper.getInstance(entity)
@@ -1220,9 +1190,9 @@ class LevelManager : LevelInterface2 {
                 val hasKey = entityToPlayer.containsKey(lmEntity)
                 val players = if (hasKey) entityToPlayer[lmEntity]!! else mutableListOf()
                 players.add(player)
-                if (!hasKey) {
+                if (!hasKey)
                     entityToPlayer[lmEntity] = players
-                }
+
                 wrapperHasReference = true
             }
 
@@ -1271,8 +1241,7 @@ class LevelManager : LevelInterface2 {
 
     private fun checkIfReadyForRelevelling(lmEntity: LivingEntityWrapper): Boolean {
         val opts = LevelledMobs.instance.rulesManager.getRulePlayerLevellingOptions(lmEntity)
-        if (opts?.preserveEntityTime == null)
-            return true
+        if (opts?.preserveEntityTime == null) return true
 
         if (!lmEntity.pdc.has(NamespacedKeys.lastDamageTime, PersistentDataType.LONG))
             return true
@@ -1336,9 +1305,8 @@ class LevelManager : LevelInterface2 {
         lmEntity: LivingEntityWrapper,
         player: Player
     ) {
-        if (!lmEntity.livingEntity.isValid) {
-            return
-        }
+        if (!lmEntity.livingEntity.isValid) return
+
         // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         val maxDistance = 128.0.pow(2.0)
         val location = player.location
@@ -1531,9 +1499,7 @@ class LevelManager : LevelInterface2 {
             if (creeper.explosionRadius != 3)
                 creeper.explosionRadius = 3
 
-            DebugManager.log(
-                DebugType.CREEPER_BLAST_RADIUS, lmEntity
-            ) { "mulp: null, result: 3" }
+            DebugManager.log(DebugType.CREEPER_BLAST_RADIUS, lmEntity) { "mulp: null, result: 3" }
             return
         }
 
@@ -1541,7 +1507,7 @@ class LevelManager : LevelInterface2 {
         val damage = main.mobDataManager.getAdditionsForLevel(
             lmEntity,
             Addition.CREEPER_BLAST_DAMAGE, 3f
-        ).amount
+        ).multiplierAmount
 
         if (damage == 0.0f) return
 
@@ -2096,11 +2062,11 @@ class LevelManager : LevelInterface2 {
         // remove PDC value
         val main = LevelledMobs.instance
         synchronized(lmEntity.livingEntity.persistentDataContainer) {
-            if (lmEntity.pdc.has(NamespacedKeys.levelKey, PersistentDataType.INTEGER)) {
+            if (lmEntity.pdc.has(NamespacedKeys.levelKey, PersistentDataType.INTEGER))
                 lmEntity.pdc.remove(NamespacedKeys.levelKey)
-            }
+
             if (lmEntity.pdc
-                    .has(NamespacedKeys.overridenEntityNameKey, PersistentDataType.STRING)
+                .has(NamespacedKeys.overridenEntityNameKey, PersistentDataType.STRING)
             ) {
                 lmEntity.pdc.remove(NamespacedKeys.overridenEntityNameKey)
             }

@@ -33,11 +33,10 @@ class YmlParsingHelper(
     ): Boolean? {
         val useName = getKeyNameFromConfig(cs, name)
 
-        return if (cs[useName] != null) {
+        return if (cs[useName] != null)
             cs.getBoolean(useName)
-        } else {
+        else
             defaultValue
-        }
     }
 
     fun getString(
@@ -79,11 +78,10 @@ class YmlParsingHelper(
     ): Int? {
         val useName = getKeyNameFromConfig(cs, name)
 
-        return if (cs[useName] != null) {
+        return if (cs[useName] != null)
             cs.getInt(useName)
-        } else {
+        else
             defaultValue
-        }
     }
 
     private fun getDouble(
@@ -128,9 +126,8 @@ class YmlParsingHelper(
         val useName = getKeyNameFromConfig(cs, name)
 
         if (cs[useName] != null) {
-            if (cs.getInt(useName) > 0) {
+            if (cs.getInt(useName) > 0)
                 return cs.getInt(useName)
-            }
 
             val temp = cs.getString(useName)
             val useDefaultValue: Long? = defaultValue?.toLong()
@@ -139,9 +136,9 @@ class YmlParsingHelper(
                 Math.toIntExact(result)
             else
                 defaultValue
-        } else {
-            return defaultValue
         }
+        else
+            return defaultValue
     }
 
     fun getIntTimeUnitMS(
@@ -151,14 +148,14 @@ class YmlParsingHelper(
         val useName = getKeyNameFromConfig(cs, name)
 
         if (cs[useName] != null) {
-            if (cs.getLong(useName) > 0) {
+            if (cs.getLong(useName) > 0)
                 return cs.getLong(useName)
-            }
+
             val temp = cs.getString(useName)
             return parseTimeUnit(temp, defaultValue, true, null) ?: defaultValue
-        } else {
-            return defaultValue
         }
+        else
+            return defaultValue
     }
 
     fun getStringOrList(
@@ -201,11 +198,10 @@ class YmlParsingHelper(
             if (cs == null) return defaultValue
             val useName = getKeyNameFromConfig(cs, name)
 
-            return if (cs[useName] is Float || cs[useName] is Double || cs[useName] is Int) {
+            return if (cs[useName] is Float || cs[useName] is Double || cs[useName] is Int)
                 cs.getDouble(useName).toFloat()
-            } else {
+            else
                 defaultValue
-            }
         }
 
         fun getStringSet(
@@ -218,9 +214,8 @@ class YmlParsingHelper(
             val results: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
             // rather than use addAll we'll make sure there no empty strings
             for (item in cs.getStringList(useName)) {
-                if (item.isNotEmpty()) {
+                if (item.isNotEmpty())
                     results.add(item)
-                }
             }
 
             return results
@@ -253,11 +248,10 @@ class YmlParsingHelper(
 
             val useName = getKeyNameFromConfig(cs, name)
 
-            return if (cs[useName] != null) {
+            return if (cs[useName] != null)
                 cs.getDouble(useName)
-            } else {
+            else
                 defaultValue
-            }
         }
 
         fun getString(
@@ -286,9 +280,7 @@ class YmlParsingHelper(
             val obj = cs[useKey] ?: return null
 
             when (obj) {
-                is ConfigurationSection -> {
-                    return obj
-                }
+                is ConfigurationSection -> { return obj }
 
                 is Map<*, *> -> {
                     val result = MemoryConfiguration()
@@ -319,9 +311,7 @@ class YmlParsingHelper(
             if (obj == null) return null
 
             when (obj) {
-                is ConfigurationSection -> {
-                    return obj
-                }
+                is ConfigurationSection -> { return obj }
 
                 is Map<*, *> -> {
                     val result = MemoryConfiguration()
@@ -346,9 +336,8 @@ class YmlParsingHelper(
         ): String {
             if (!key.contains(".")) {
                 for (enumeratedKey in cs.getKeys(false)) {
-                    if (key.equals(enumeratedKey, ignoreCase = true)) {
+                    if (key.equals(enumeratedKey, ignoreCase = true))
                         return enumeratedKey
-                    }
                 }
 
                 return key
@@ -364,31 +353,25 @@ class YmlParsingHelper(
                 val checkKeyName = if (sb.isEmpty()) thisKey else sb.toString()
                 val useCS = if (keysFound == 0) cs else objToCS(cs, checkKeyName)
 
-                if (useCS == null) {
-                    break
-                }
+                if (useCS == null) break
 
                 for (enumeratedKey in useCS.getKeys(false)) {
                     if (thisKey.equals(enumeratedKey, ignoreCase = true)) {
-                        if (sb.isNotEmpty()) {
-                            sb.append(".")
-                        }
+                        if (sb.isNotEmpty()) sb.append(".")
+
                         sb.append(enumeratedKey)
                         foundKey = true
                         keysFound++
                         break
                     }
                 }
-                if (!foundKey) {
-                    break
-                }
+                if (!foundKey) break
             }
 
             // if only some of the keys were found then add the remaining ones
             for (i in keysFound until periodSplit.size) {
-                if (sb.isNotEmpty()) {
-                    sb.append(".")
-                }
+                if (sb.isNotEmpty()) sb.append(".")
+
                 sb.append(periodSplit[i])
             }
 
@@ -407,14 +390,11 @@ class YmlParsingHelper(
                 }
             }
 
-            if (foundKeyName == null) {
-                return mutableListOf()
-            }
+            if (foundKeyName == null) return mutableListOf()
 
             val result = cs.getStringList(foundKeyName)
-            if (result.isEmpty() && cs.getString(foundKeyName) != null && "" != cs.getString(foundKeyName)) {
+            if (result.isEmpty() && cs.getString(foundKeyName) != null && "" != cs.getString(foundKeyName))
                 result.add(cs.getString(foundKeyName))
-            }
 
             return result
         }
@@ -439,9 +419,8 @@ class YmlParsingHelper(
         }
 
         val temp = cs.getString(foundKeyName)
-        if (!temp.isNullOrEmpty()) {
+        if (!temp.isNullOrEmpty())
             results.addAll(temp.split(","))
-        }
 
         return results
     }

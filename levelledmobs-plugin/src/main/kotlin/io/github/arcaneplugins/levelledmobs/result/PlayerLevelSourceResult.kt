@@ -23,4 +23,11 @@ class PlayerLevelSourceResult {
     constructor(stringResult: String?){
         this.stringResult = stringResult ?: ""
     }
+
+    override fun toString(): String {
+        return if (isNumericResult)
+            numericResult.toString()
+        else
+            stringResult ?: super.toString()
+    }
 }

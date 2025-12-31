@@ -18,15 +18,16 @@ import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import io.papermc.paper.datacomponent.DataComponentTypes
 import java.util.TreeMap
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
@@ -66,9 +67,8 @@ class CustomDropsHandler {
         private set
 
     fun load(){
-        if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement()) {
+        if (ExternalCompatibilityManager.instance.doesLMIMeetVersionRequirement())
             this.lmItemsParser = LMItemsParser()
-        }
     }
 
     fun clearDrops(){
@@ -210,7 +210,7 @@ class CustomDropsHandler {
 
         if (!processingInfo.equippedOnly){
             processingInfo.addition =
-                main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).amount
+                main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2F).multiplierAmount
         }
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRuleCheckIfNoDropMultiplierEntitiy(
@@ -320,7 +320,7 @@ class CustomDropsHandler {
             }
 
             alreadyProcessedIds.add(id)
-            val dropInstance = customItemGroups[id.trim { it <= ' ' }]
+            val dropInstance = customItemGroups[id.trim()]
             info.allDropInstances.add(dropInstance!!)
 
             for (baseItem in dropInstance.customItems) {
@@ -1103,6 +1103,7 @@ class CustomDropsHandler {
         return info.itemWasEquipped
     }
 
+    @Suppress("UnstableApiUsage")
     private fun isMobWearingItem(
         info: CustomDropProcessingInfo,
         customDropItem: CustomDropItem
@@ -1115,28 +1116,39 @@ class CustomDropsHandler {
         if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet))
             return true
 
-        if (EnchantmentTarget.ARMOR_HEAD.includes(item.type)){
+        val equippable = item.getData(DataComponentTypes.EQUIPPABLE) ?: return false
+
+        if (equippable.slot() == EquipmentSlot.HEAD){
             if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
             return item.isSimilar(equipment.helmet)
         }
-        if (EnchantmentTarget.ARMOR_TORSO.includes(item.type)){
+
+        if (equippable.slot() == EquipmentSlot.CHEST){
             if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
             return item.isSimilar(equipment.chestplate)
         }
-        if (EnchantmentTarget.ARMOR_LEGS.includes(item.type)){
+
+        if (equippable.slot() == EquipmentSlot.LEGS){
             if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
             return item.isSimilar(equipment.leggings)
         }
-        if (EnchantmentTarget.ARMOR_FEET.includes(item.type)){
+
+        if (equippable.slot() == EquipmentSlot.FEET){
             if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
             return item.isSimilar(equipment.boots)
         }
 
-        if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
-        if (item.isSimilar(equipment.itemInMainHand)) return true
-        if (item.isSimilar(info.equippedItemsInfo?.offhand)) return true
+        if (equippable.slot() == EquipmentSlot.HAND){
+            if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
+            return item.isSimilar(equipment.itemInMainHand)
+        }
 
-        return item.isSimilar(equipment.itemInOffHand)
+        if (equippable.slot() == EquipmentSlot.OFF_HAND){
+            if (item.isSimilar(info.equippedItemsInfo?.offhand)) return true
+            return item.isSimilar(equipment.itemInOffHand)
+        }
+
+        return false
     }
 
     private fun madePlayerLevelRequirement(
@@ -1286,8 +1298,8 @@ class CustomDropsHandler {
     }
 
     private fun executeTheCommand(command: String, timesToRun: Int) {
-        (0 until timesToRun).forEach { i ->
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+        repeat(timesToRun) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
         }
     }
 
@@ -1308,13 +1320,13 @@ class CustomDropsHandler {
             val nums = rangedValue.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             if (nums.size != 2) continue
 
-            if (!Utils.isInteger(nums[0].trim { it <= ' ' }) || !Utils.isInteger(
-                    nums[1].trim { it <= ' ' })
+            if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(
+                    nums[1].trim())
             ) {
                 continue
             }
-            var min = nums[0].trim { it <= ' ' }.toInt()
-            val max = nums[1].trim { it <= ' ' }.toInt()
+            var min = nums[0].trim().toInt()
+            val max = nums[1].trim().toInt()
             if (max < min) min = max
 
             val rangedNum = LevelledMobs.instance.random.nextInt(max - min + 1) + min

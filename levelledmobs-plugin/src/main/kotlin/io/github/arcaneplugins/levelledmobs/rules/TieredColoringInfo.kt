@@ -45,17 +45,16 @@ class TieredColoringInfo : Cloneable {
             }
 
             for (i in 0..1) {
-                val num = numbers[i].trim { it <= ' ' }
+                val num = numbers[i].trim()
                 if (!isInteger(num)) {
                     Log.war("Invalid number in tiered coloring key: $key")
                     return null
                 }
 
-                if (i == 0) {
+                if (i == 0)
                     coloringInfo.minLevel = num.toInt()
-                } else {
+                else
                     coloringInfo.maxLevel = num.toInt()
-                }
             }
 
             return coloringInfo
@@ -63,11 +62,10 @@ class TieredColoringInfo : Cloneable {
     }
 
     override fun toString(): String {
-        return if (isDefault) {
+        return if (isDefault)
             text + "default&r"
-        } else {
+        else
             "$text$minLevel-$maxLevel&r"
-        }
     }
 
     fun cloneItem(): TieredColoringInfo? {

@@ -1,15 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.SuggestionInfo
-import dev.jorel.commandapi.arguments.ArgumentSuggestions
-import dev.jorel.commandapi.arguments.IntegerArgument
-import dev.jorel.commandapi.arguments.ListArgumentBuilder
-import dev.jorel.commandapi.arguments.StringArgument
-import dev.jorel.commandapi.executors.CommandArguments
-import dev.jorel.commandapi.executors.CommandExecutor
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.commands.MessagesHelper
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.managers.LevelManager
 import io.github.arcaneplugins.levelledmobs.managers.MobDataManager
@@ -17,15 +13,16 @@ import io.github.arcaneplugins.levelledmobs.misc.LivingEntityPlaceholder
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.RequestedLevel
 import io.github.arcaneplugins.levelledmobs.result.AdditionalLevelInformation
-import io.github.arcaneplugins.levelledmobs.result.MinAndMaxHolder
 import io.github.arcaneplugins.levelledmobs.util.PaperUtils
 import io.github.arcaneplugins.levelledmobs.util.SpigotUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import java.util.Locale
+import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import java.util.Random
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
-import java.util.function.Consumer
+import java.util.concurrent.TimeUnit
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -46,51 +43,63 @@ import kotlin.math.min
  * @author lokka30
  * @since v2.0.0
  */
-object SummonSubcommand {
-    fun createInstance(): CommandAPICommand {
-        return CommandAPICommand("summon")
-            .withPermission("levelledmobs.command.summon")
-            .withShortDescription("Various commands for summoning mobs.")
-            .withFullDescription("Various commands for summoning mobs.")
-            .executes(CommandExecutor { sender, args -> processCmd(sender, args) })
-            .withOptionalArguments(IntegerArgument("number")
-                .replaceSuggestions(ArgumentSuggestions.strings(Utils.oneToNine)))
-            .withOptionalArguments(StringArgument("mobtype")
-                .replaceSuggestions(ArgumentSuggestions.strings(getEntityNames())))
-            .withOptionalArguments(IntegerArgument("moblevel")
-            .replaceSuggestions(ArgumentSuggestions.strings(Utils.oneToNine)))
-            .withOptionalArguments(StringArgument("designator")
-                .replaceSuggestions(ArgumentSuggestions.strings("here", "at-player", "at-location")))
-            .withOptionalArguments(
-                ListArgumentBuilder<String>("values")
-                    .allowAnyValue(true)
-                    .allowDuplicates(true)
-                    .withList { info -> buildTabSuggestions(info) }
-                    .withStringMapper()
-                    .buildGreedy()
-            )
+object SummonSubcommand : CommandBase("levelledmobs.command.summon"){
+    override val description = "Various commands for summoning mobs."
+
+    fun buildCommand() : LiteralCommandNode<CommandSourceStack> {
+        return createLiteralCommand("summon")
+            .executes { ctx -> processCmd(ctx)
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .then(createNumberArgument("number")
+                .executes { ctx -> processCmd(ctx)
+                    return@executes Command.SINGLE_SUCCESS }
+                .then(createStringArgument("mobtype")
+                    .suggests { _, builder -> getEntityNames(builder) }
+                    .executes { ctx -> processCmd(ctx)
+                        return@executes Command.SINGLE_SUCCESS
+                    }
+                    .then(createNumberArgument("moblevel")
+                        .executes { ctx -> processCmd(ctx)
+                            return@executes Command.SINGLE_SUCCESS
+                        }
+                        .then(createStringArgument("designator")
+                            .suggests { _, builder -> builder.suggest("here").suggest("at-player")
+                                .suggest("at-location").buildFuture() }
+                            .executes { ctx -> processCmd(ctx)
+                                return@executes Command.SINGLE_SUCCESS
+                            }
+                            .then(createGreedyStringArgument("values")
+                                .suggests { ctx, builder -> buildTabSuggestions(ctx, builder) }
+                                .executes { ctx -> processCmd(ctx)
+                                    return@executes Command.SINGLE_SUCCESS
+                                })))))
+            .build()
     }
 
     private fun processCmd(
-        sender: CommandSender,
-        args: CommandArguments
+        ctx: CommandContext<CommandSourceStack>
     ){
-        val amount = args.get("number") as? Int
-        val mobLevel = args.get("moblevel") as? Int
-        val mobType = args.get("mobtype") as? String
-        val designator = args.get("designator") as? String?: "here"
-        val values = args.rawArgsMap["values"]
+        val sender = ctx.source.sender
+        commandSender = sender
+        val amount = getIntegerArgument(ctx, "number")
+        val mobLevel = getIntegerArgument(ctx, "moblevel")
+        val mobType = getStringArgument(ctx, "mobtype")
+        var designator = getStringArgument(ctx, "designator")
+        val values = getStringArgument(ctx, "values")
 
-        if (amount == null || mobLevel == null || mobType == null) {
-            MessagesHelper.showMessage(sender, "command.levelledmobs.summon.usage")
+        if (designator.isEmpty()) designator = "here"
+
+        if (amount == null || mobLevel == null || mobType.isEmpty()) {
+            showMessage("command.levelledmobs.summon.usage")
             return
         }
 
         val entityType: EntityType
         try {
-            entityType = EntityType.valueOf(mobType.uppercase(Locale.getDefault()))
+            entityType = EntityType.valueOf(mobType.uppercase())
         } catch (_: IllegalArgumentException) {
-            MessagesHelper.showMessage(sender, "command.levelledmobs.summon.invalid-entity-type", "%entityType%", mobType)
+            showMessage("command.levelledmobs.summon.invalid-entity-type", "%entityType%", mobType)
             return
         }
 
@@ -103,21 +112,21 @@ object SummonSubcommand {
         }
         var nbtData: String? = null
 
-        val miscArgs = if (values != null) Utils.splitStringWithQuotes(values) else mutableListOf()
+        val miscArgs = splitStringWithQuotes(values, false)
         // 0           1   2   3   4
         // <nbtdata>
         // at-player   <player>
         // at-location <x> <y> <z> <world>
-        for (i in 0..<miscArgs.size){
+        for (i in 2..<miscArgs.size){
             val arg = miscArgs[i]
-            if (arg.startsWith("{") && arg.endsWith("}"))
+            if (arg.startsWith('{') && arg.endsWith('}'))
                 nbtData = arg
         }
 
         when (designator.lowercase()){
             "here" -> {
                 if (location == null){
-                    MessagesHelper.showMessage(sender, "command.levelledmobs.summon.here.usage")
+                    showMessage("command.levelledmobs.summon.here.usage")
                     return
                 }
 
@@ -140,7 +149,7 @@ object SummonSubcommand {
                 var world: World? = null
                 for (i in 0..<miscArgs.size){
                     val arg = miscArgs[i]
-                    if (arg.startsWith("{")) continue
+                    if (arg.startsWith('{')) continue
                     when (i){
                         0 -> { xStr = arg }
                         1 -> { yStr = arg }
@@ -148,16 +157,17 @@ object SummonSubcommand {
                         3 -> {
                             world = Bukkit.getWorld(arg)
                             if (world == null){
-                                MessagesHelper.showMessage(sender,
-                            "command.levelledmobs.summon.atLocation.invalid-world","%world%", arg)
+                                showMessage("command.levelledmobs.summon.atLocation.invalid-world",
+                                    "%world%",
+                                    arg
+                                )
                                 return
                             }
                         }
                     }
                 }
                 if (world == null){
-                    MessagesHelper.showMessage(sender,
-                        "command.levelledmobs.summon.atLocation.usage-console")
+                    showMessage("command.levelledmobs.summon.atLocation.usage-console")
                     return
                 }
 
@@ -188,13 +198,13 @@ object SummonSubcommand {
                     var world: World? = null
 
                     val target = Bukkit.getPlayer(arg)
-                    if (target == null) {
+                    if (target == null)
                         offline = true
-                    } else if (sender is Player) {
+                    else if (sender is Player) {
                         // Vanished player compatibility.
-                        if (!sender.canSee(target) && !sender.isOp) {
+                        if (!sender.canSee(target) && !sender.isOp)
                             offline = true
-                        }
+
                         location = (target.location)
                         world = location.world
                     } else {
@@ -203,7 +213,7 @@ object SummonSubcommand {
                     }
 
                     if (offline || world == null) {
-                        MessagesHelper.showMessage(sender, "common.player-offline", "%player%", arg)
+                        showMessage("common.player-offline", "%player%", arg)
                         return
                     }
 
@@ -224,20 +234,25 @@ object SummonSubcommand {
                     break
                 }
 
-                if (!didSummon){
-                    MessagesHelper.showMessage(sender, "command.levelledmobs.summon.atPlayer.usage")
-                }
+                if (!didSummon)
+                    showMessage("command.levelledmobs.summon.atPlayer.usage")
             }
-            else -> {
-                MessagesHelper.showMessage(sender, "command.levelledmobs.summon.usage")
-            }
+            else -> showMessage("command.levelledmobs.summon.usage")
         }
     }
 
     private fun buildTabSuggestions(
-        info: SuggestionInfo<CommandSender>
-    ): MutableList<String>{
-        val args = Utils.splitStringWithQuotes(info.currentInput)
+        ctx: CommandContext<CommandSourceStack>,
+        builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions>{
+        val args = splitStringWithQuotes(ctx.input, true)
+        val prefix = StringBuilder()
+        val existingItems = mutableListOf<String>()
+
+        for (i in 6..<args.size){
+            existingItems.add(args[i].lowercase())
+            prefix.append(args[i]).append(' ')
+        }
 
         // 0  1      2  3      4 5           6   7   8   9
         // lm summon 10 zombie 9 here
@@ -245,38 +260,33 @@ object SummonSubcommand {
         //                       at-location <x> <y> <z> <world>
 
         when (args[5].lowercase()){
-            "here" -> { return mutableListOf() }
+            "here" -> { return builder.buildFuture() }
             "at-player" -> {
-                val suggestions = mutableListOf<String>()
                 for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-                    if (info.sender is Player) {
-                        val player = info.sender as Player
-                        if (player.canSee(onlinePlayer) || player.isOp) {
-                            suggestions.add(onlinePlayer.name)
-                        }
-                    } else {
-                        suggestions.add(onlinePlayer.name)
+                    if (ctx.source.sender is Player) {
+                        val player = ctx.source.sender as Player
+                        if (player.canSee(onlinePlayer) || player.isOp)
+                            builder.suggest(onlinePlayer.name)
                     }
+                    else
+                        builder.suggest(onlinePlayer.name)
                 }
-                return suggestions
+                return builder.buildFuture()
             }
             "at-location" -> {
-                if (args.size in 6..8) {
-                    return Utils.oneToNine
-                }
+                if (args.size in 6..8)
+                    Utils.getOneToNineSuggestions(builder)
                 else if (args.size == 9){
-                    val worlds = mutableListOf<String>()
                     for (world in Bukkit.getWorlds()){
-                        worlds.add(world.name)
+                        builder.suggest("$prefix${world.name}")
                     }
-                    return worlds
+                    return builder.buildFuture()
                 }
                 // TODO: add NBT suggestions
             }
-            else -> { return mutableListOf() }
         }
 
-        return mutableListOf()
+        return builder.buildFuture()
     }
 
     enum class SummonType {
@@ -297,16 +307,7 @@ object SummonSubcommand {
                 options.lmPlaceholder.entityType
             )
         ) {
-            var messages = main.messagesCfg.getStringList(
-                "command.levelledmobs.summon.not-levellable"
-            )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(
-                messages, "%entity%",
-                options.lmPlaceholder.typeName
-            )
-            messages = Utils.colorizeAllInList(messages)
-            messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
+            showMessage("command.levelledmobs.summon.not-levellable")
             return
         }
 
@@ -314,58 +315,29 @@ object SummonSubcommand {
             && (main.levelInterface.getLevellableState(options.lmPlaceholder)
                     !== LevellableState.ALLOWED)
         ) {
-            var messages = main.messagesCfg.getStringList(
-                "command.levelledmobs.summon.not-levellable"
-            )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(
-                messages, "%entity%",
-                options.lmPlaceholder.typeName
-            )
-            messages = Utils.colorizeAllInList(messages)
-            messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
+            showMessage("command.levelledmobs.summon.not-levellable")
             return
         }
 
-        if (options.amount < 1) {
-            var messages = main.messagesCfg.getStringList(
-                "command.levelledmobs.summon.amount-limited.min"
-            )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.colorizeAllInList(messages)
-            messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
-        }
+        if (options.amount < 1)
+            showMessage("command.levelledmobs.summon.amount-limited.min")
 
-        val maxAmount: Int = main.helperSettings.getInt(
+        val maxAmount = main.helperSettings.getInt(
             "customize-summon-command-limit", 100
         )
         if (options.amount > maxAmount) {
             options.amount = maxAmount
-
-            var messages = main.messagesCfg.getStringList(
-                "command.levelledmobs.summon.amount-limited.max"
-            )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount.toString())
-            messages = Utils.colorizeAllInList(messages)
-            messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
+            showMessage("command.levelledmobs.summon.amount-limited.max")
         }
 
-        val levels: MinAndMaxHolder = main.levelManager.getMinAndMaxLevels(options.lmPlaceholder)
+        val levels = main.levelManager.getMinAndMaxLevels(options.lmPlaceholder)
 
         if (options.requestedLevel!!.levelMin < levels.min && !sender.hasPermission(
                 "levelledmobs.command.summon.bypass-level-limit"
             ) && !options.override
         ) {
             options.requestedLevel!!.setMinAllowedLevel(levels.minAsInt)
-
-            var messages = main.messagesCfg.getStringList(
-                "command.levelledmobs.summon.level-limited.min"
-            )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(messages, "%minLevel%", levels.min.toString())
-            messages = Utils.colorizeAllInList(messages)
-            messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
+            showMessage("command.levelledmobs.summon.level-limited.min")
         }
 
         if (options.requestedLevel!!.levelMax > levels.max && !sender.hasPermission(
@@ -373,26 +345,19 @@ object SummonSubcommand {
             ) && !options.override
         ) {
             options.requestedLevel!!.setMaxAllowedLevel(levels.maxAsInt)
-
-            var messages = main.messagesCfg.getStringList(
-                "command.levelledmobs.summon.level-limited.max"
-            )
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.prefix)
-            messages = Utils.replaceAllInList(messages, "%maxLevel%", levels.max.toString())
-            messages = Utils.colorizeAllInList(messages)
-            messages.forEach(Consumer { s: String? -> sender.sendMessage(s!!) })
+            showMessage("command.levelledmobs.summon.level-limited.max")
         }
 
-        if (options.summonType === SummonType.HERE) {
+        if (options.summonType === SummonType.HERE)
             location = addVarianceToLocation(location)
-        }
 
         if (options.summonType === SummonType.HERE || options.summonType === SummonType.AT_PLAYER) {
             val distFromPlayer = main.helperSettings.getInt(
                 "summon-command-spawn-distance-from-player", 5
             )
             if (distFromPlayer > 0 && target != null) {
-                val locationTemp = getSpawnLocation(target, location, options.lmPlaceholder.entityType!!)
+                // val locationTemp = getSpawnLocation(target, location, options.lmPlaceholder.entityType!!)
+                val locationTemp = getSpawnLocation(location, options)
                 if (locationTemp == null) {
                     sender.sendMessage("Unable to find a suitable spawn location")
                     return
@@ -407,49 +372,26 @@ object SummonSubcommand {
             }
         }
 
-        repeat(options.amount) {
-            assert(location.world != null)
-            val useLevel = if (options.requestedLevel!!.hasLevelRange) ThreadLocalRandom.current().nextInt(
-                options.requestedLevel!!.levelRangeMin,
-                options.requestedLevel!!.levelRangeMax + 1
-            ) else options.requestedLevel!!.level
-
-            val entity = location.world
-                .spawnEntity(location, options.lmPlaceholder.entityType!!)
-
-            if (entity is LivingEntity) {
-                val lmEntity = LivingEntityWrapper.getInstance(entity)
-                lmEntity.summonedLevel = useLevel
-                lmEntity.isNewlySpawned = true
-                synchronized(LevelManager.summonedOrSpawnEggs_Lock) {
-                    main.levelManager.summonedOrSpawnEggs.put(lmEntity.livingEntity, null)
-                }
-                if (!options.nbtData.isNullOrEmpty()) {
-                    lmEntity.nbtData = mutableListOf(options.nbtData!!)
-                }
-                lmEntity.summonedSender = sender
-                synchronized(lmEntity.livingEntity.persistentDataContainer) {
-                    lmEntity.pdc
-                        .set(NamespacedKeys.wasSummoned, PersistentDataType.INTEGER, 1)
-                }
-                MobDataManager.populateAttributeCache(lmEntity)
-                main.levelInterface.applyLevelToMob(
-                    lmEntity, useLevel, true, options.override,
-                    mutableSetOf(AdditionalLevelInformation.NOT_APPLICABLE)
-                )
-                lmEntity.free()
-            }
+        val future = CompletableFuture<Boolean>()
+        val wrapper = SchedulerWrapper(options.player){
+            spawnMobs(sender, options, location)
+            future.complete(true)
         }
+        wrapper.runDirectlyInBukkit = true
+        wrapper.runDirectlyInFolia = sender is Player
+        wrapper.locationForRegionScheduler = location
+        wrapper.run()
 
-        val printResults: Boolean = main.helperSettings.getBoolean("print-lm-summon-results", true)
+        future.get(100L, TimeUnit.MILLISECONDS)
+
+        val printResults = main.helperSettings.getBoolean("print-lm-summon-results", true)
 
         when (options.summonType) {
             SummonType.HERE -> {
                 if (printResults) {
-                    MessagesHelper.showMessage(sender,
-                        "command.levelledmobs.summon.here.success",
-                        arrayOf("%amount%", "%level%", "%entity%"),
-                        arrayOf(
+                    showMessage("command.levelledmobs.summon.here.success",
+                        mutableListOf("%amount%", "%level%", "%entity%"),
+                        mutableListOf(
                             options.amount.toString(), options.requestedLevel.toString(),
                             options.lmPlaceholder.typeName
                         )
@@ -459,10 +401,9 @@ object SummonSubcommand {
 
             SummonType.AT_LOCATION -> {
                 if (printResults) {
-                    MessagesHelper.showMessage(sender,
-                        "command.levelledmobs.summon.atLocation.success",
-                        arrayOf("%amount%", "%level%", "%entity%", "%x%", "%y%", "%z%", "%world%"),
-                        arrayOf(
+                    showMessage("command.levelledmobs.summon.atLocation.success",
+                        mutableListOf("%amount%", "%level%", "%entity%", "%x%", "%y%", "%z%", "%world%"),
+                        mutableListOf(
                             options.amount.toString(),
                             options.requestedLevel.toString(),
                             options.lmPlaceholder.typeName,
@@ -480,13 +421,13 @@ object SummonSubcommand {
                     val playerName: String =
                         if (main.ver.isRunningPaper) PaperUtils.getPlayerDisplayName(target)
                         else SpigotUtils.getPlayerDisplayName(target)
-                    MessagesHelper.showMessage(sender,
+                    showMessage(
                         "command.levelledmobs.summon.atPlayer.success",
-                        arrayOf(
+                        mutableListOf(
                             "%amount%", "%level%", "%entity%", "%targetUsername%",
                             "%targetDisplayname%"
                         ),
-                        arrayOf(
+                        mutableListOf(
                             options.amount.toString(),
                             options.requestedLevel.toString(),
                             options.lmPlaceholder.typeName,
@@ -503,15 +444,59 @@ object SummonSubcommand {
         }
     }
 
+    private fun spawnMobs(
+        sender: CommandSender,
+        options: SummonMobOptions,
+        location: Location
+    ){
+        val main = LevelledMobs.instance
+        val requestedLevel = options.requestedLevel!!
+
+        repeat(options.amount) {
+            assert(location.world != null)
+
+            val useLevel = if (requestedLevel.hasLevelRange) ThreadLocalRandom.current().nextInt(
+                requestedLevel.levelRangeMin,
+                requestedLevel.levelRangeMax + 1
+            ) else requestedLevel.level
+
+            val entity = location.world
+                .spawnEntity(location, options.lmPlaceholder.entityType!!)
+
+            if (entity is LivingEntity) {
+                val lmEntity = LivingEntityWrapper.getInstance(entity)
+                lmEntity.summonedLevel = useLevel
+                lmEntity.isNewlySpawned = true
+                synchronized(LevelManager.summonedOrSpawnEggs_Lock) {
+                    main.levelManager.summonedOrSpawnEggs.put(lmEntity.livingEntity, null)
+                }
+                if (!options.nbtData.isNullOrEmpty())
+                    lmEntity.nbtData = mutableListOf(options.nbtData!!)
+
+                lmEntity.summonedSender = sender
+                synchronized(lmEntity.livingEntity.persistentDataContainer) {
+                    lmEntity.pdc
+                        .set(NamespacedKeys.wasSummoned, PersistentDataType.INTEGER, 1)
+                }
+                MobDataManager.populateAttributeCache(lmEntity)
+                main.levelInterface.applyLevelToMob(
+                    lmEntity, useLevel, true, options.override,
+                    mutableSetOf(AdditionalLevelInformation.NOT_APPLICABLE)
+                )
+                lmEntity.free()
+            }
+        }
+    }
+
     private fun getSpawnLocation(
-        player: Player,
         location: Location,
-        entityType: EntityType
+        options: SummonMobOptions
     ): Location? {
         if (location.world == null) return null
+        val entityType = options.lmPlaceholder.entityType!!
 
         val main = LevelledMobs.instance
-        var maxDistFromPlayer: Int? = main.helperSettings.getInt2(
+        var maxDistFromPlayer = main.helperSettings.getInt2(
             "summon-command-spawn-max-distance-from-player", null
         )
 
@@ -530,15 +515,51 @@ object SummonSubcommand {
             ).toDouble(), maxDistFromPlayer.toDouble()
         ).toInt()
 
-        val blockCandidates = mutableListOf<Block>()
         val blocksNeeded = if (entityType == EntityType.ENDERMAN || entityType == EntityType.RAVAGER) 3
         else 2
 
+        val completableFuture = CompletableFuture<MutableList<Block>>()
+        val target = options.player!!
+        var wrapper = SchedulerWrapper(target){
+            val blockCandidates = getBlockCandidates(
+                minDistFromPlayer, maxDistFromPlayer, target, location
+            )
+            completableFuture.complete(blockCandidates)
+        }
+        wrapper.runDirectlyInBukkit = true
+        if (options.sender is Player) wrapper.runDirectlyInFolia = true
+        wrapper.run()
+        val blockCandidates = completableFuture.get(100L, TimeUnit.MILLISECONDS)
+        if (blockCandidates.isEmpty()) return null
+
+        blockCandidates.shuffle()
+
+        val futureCandidate = CompletableFuture<Location?>()
+        wrapper = SchedulerWrapper(target){
+            val foundLocation = checkBlockCandidates(blockCandidates, blocksNeeded, location.world)
+            futureCandidate.complete(foundLocation)
+        }
+        wrapper.runDirectlyInBukkit = true
+        if (options.sender is Player) wrapper.runDirectlyInFolia = true
+        wrapper.run()
+
+        val foundLocation = futureCandidate.get(500L, TimeUnit.MILLISECONDS)
+        return foundLocation
+    }
+
+    private fun getBlockCandidates(
+        minDistFromPlayer: Int,
+        maxDistFromPlayer: Int,
+        target: Player,
+        location: Location
+    ): MutableList<Block>{
+        val blockCandidates = mutableListOf<Block>()
+
         @Suppress("UNUSED_PARAMETER")
         for (i in 0..9) {
-            val useDistance: Int = if (minDistFromPlayer != maxDistFromPlayer) ThreadLocalRandom.current()
+            val useDistance = if (minDistFromPlayer != maxDistFromPlayer) ThreadLocalRandom.current()
                 .nextInt(minDistFromPlayer, maxDistFromPlayer) else maxDistFromPlayer
-            val startingLocation: Location = getLocationNearPlayer(player, location, useDistance)
+            val startingLocation = getLocationNearPlayer(target, location, useDistance)
             var tempLocation = startingLocation.clone()
             var foundBlock = false
             val maxYVariance = max((maxDistFromPlayer - useDistance).toDouble(), 10.0).toInt()
@@ -568,15 +589,19 @@ object SummonSubcommand {
             if (blockCandidates.size >= 10) break
         }
 
-        if (blockCandidates.isEmpty()) return null
+        return blockCandidates
+    }
 
-        blockCandidates.shuffle()
-
+    private fun checkBlockCandidates(
+        blockCandidates: MutableList<Block>,
+        blocksNeeded: Int,
+        world: World
+    ): Location? {
         // return first block from the candiates that has 2 air spaces above it
         for (block in blockCandidates) {
             var notGoodSpot = false
             for (i in 1 until blocksNeeded + 1) {
-                val temp = location.world.getBlockAt(block.x, block.y + i, block.z)
+                val temp = world.getBlockAt(block.x, block.y + i, block.z)
                 if (!temp.isPassable) {
                     notGoodSpot = true
                     break
@@ -600,37 +625,53 @@ object SummonSubcommand {
         var newZ = location.blockZ
 
         var rotation = ((player.location.yaw - 180) % 360).toDouble()
-        if (rotation < 0) {
-            rotation += 360.0
-        }
+        if (rotation < 0) rotation += 360.0
 
-        if (0 <= rotation && rotation < 22.5) // N
-        {
-            newZ -= useDistFromPlayer
-        } else if (22.5 <= rotation && rotation < 67.5) { // NE
-            newX += useDistFromPlayer
-            newZ -= useDistFromPlayer
-        } else if (67.5 <= rotation && rotation < 112.5) // E
-        {
-            newX += useDistFromPlayer
-        } else if (112.5 <= rotation && rotation < 157.5) { // SE
-            newX += useDistFromPlayer
-            newZ += useDistFromPlayer
-        } else if (157.5 <= rotation && rotation < 202.5) // S
-        {
-            newZ += useDistFromPlayer
-        } else if (202.5 <= rotation && rotation < 247.5) { // SW
-            newX -= useDistFromPlayer
-            newZ += useDistFromPlayer
-        } else if (247.5 <= rotation && rotation < 292.5) // W
-        {
-            newX -= useDistFromPlayer
-        } else if (292.5 <= rotation && rotation < 337.5) { // NW
-            newX -= useDistFromPlayer
-            newZ -= useDistFromPlayer
-        } else  // N
-        {
-            newZ -= useDistFromPlayer
+        when (rotation) {
+            in 0.0..<22.5 // N
+                -> {
+                newZ -= useDistFromPlayer
+            }
+
+            in 22.5..<67.5 -> { // NE
+                newX += useDistFromPlayer
+                newZ -= useDistFromPlayer
+            }
+
+            in 67.5..<112.5 // E
+                -> {
+                newX += useDistFromPlayer
+            }
+
+            in 112.5..<157.5 -> { // SE
+                newX += useDistFromPlayer
+                newZ += useDistFromPlayer
+            }
+
+            in 157.5..<202.5 // S
+                -> {
+                newZ += useDistFromPlayer
+            }
+
+            in 202.5..<247.5 -> { // SW
+                newX -= useDistFromPlayer
+                newZ += useDistFromPlayer
+            }
+
+            in 247.5..<292.5 // W
+                -> {
+                newX -= useDistFromPlayer
+            }
+
+            in 292.5..<337.5 -> { // NW
+                newX -= useDistFromPlayer
+                newZ -= useDistFromPlayer
+            }
+
+            else  // N
+                -> {
+                newZ -= useDistFromPlayer
+            }
         }
 
         return Location(location.world, newX.toDouble(), location.blockY.toDouble(), newZ.toDouble())
@@ -643,98 +684,51 @@ object SummonSubcommand {
         zStr: String,
         world: World
     ): Location? {
-        var x = 0.0
-        var y = 0.0
-        var z = 0.0
-        var xRelative = false
-        var yRelative = false
-        var zRelative = false
-
-        if (sender is Player || sender is BlockCommandSender) {
-            //Player or Command blocks
-            if (xStr[0] == '~') {
-                x = if (sender is Player) {
-                    sender.location.x
-                } else {
-                    (sender as BlockCommandSender).block.x.toDouble()
-                }
-
-                if (xStr.length > 1) {
-                    val addition: Double
-                    try {
-                        addition = xStr.substring(1).toDouble()
-                    } catch (_: NumberFormatException) {
-                        return null
-                    }
-                    x += addition
-                }
-
-                xRelative = true
-            }
-            if (yStr[0] == '~') {
-                y = if (sender is Player) {
-                    sender.location.y
-                } else {
-                    (sender as BlockCommandSender).block.y.toDouble()
-                }
-
-                if (yStr.length > 1) {
-                    val addition: Double
-                    try {
-                        addition = yStr.substring(1).toDouble()
-                    } catch (_: NumberFormatException) {
-                        return null
-                    }
-
-                    y += addition
-                }
-
-                yRelative = true
-            }
-            if (zStr[0] == '~') {
-                z = if (sender is Player) {
-                    sender.location.z
-                } else {
-                    (sender as BlockCommandSender).block.z.toDouble()
-                }
-
-                if (zStr.length > 1) {
-                    val addition: Double
-                    try {
-                        addition = zStr.substring(1).toDouble()
-                    } catch (_: NumberFormatException) {
-                        return null
-                    }
-                    z += addition
-                }
-
-                zRelative = true
-            }
-        }
-
-        if (!xRelative) {
-            try {
-                x = xStr.toDouble()
-            } catch (_: NumberFormatException) {
-                return null
-            }
-        }
-        if (!yRelative) {
-            try {
-                y = yStr.toDouble()
-            } catch (_: NumberFormatException) {
-                return null
-            }
-        }
-        if (!zRelative) {
-            try {
-                z = zStr.toDouble()
-            } catch (_: NumberFormatException) {
-                return null
-            }
-        }
+        val x = processRelativeCoords(sender, xStr, CoordType.X) ?: return null
+        val y = processRelativeCoords(sender, yStr, CoordType.Y) ?: return null
+        val z = processRelativeCoords(sender, zStr, CoordType.Z) ?: return null
 
         return Location(world, x, y, z)
+    }
+
+    private fun processRelativeCoords(
+        sender: CommandSender,
+        input: String,
+        coordType: CoordType
+    ): Double? {
+        if (input.isEmpty()) return null
+
+        if (input[0] != '~') {
+            return try { input.toDouble() }
+            catch (_: NumberFormatException) { null }
+        }
+
+        var result = if (sender is Player) {
+            when (coordType) {
+                CoordType.X -> sender.location.z
+                CoordType.Y -> sender.location.y
+                CoordType.Z -> sender.location.z
+            }
+        }
+        else {
+            when (coordType) {
+                CoordType.X -> (sender as BlockCommandSender).block.x.toDouble()
+                CoordType.Y -> (sender as BlockCommandSender).block.y.toDouble()
+                CoordType.Z -> (sender as BlockCommandSender).block.z.toDouble()
+            }
+        }
+
+        if (input.length > 1) {
+            val addition: Double
+            try {
+                addition = input.substring(1).toDouble()
+            } catch (_: NumberFormatException) {
+                return null
+            }
+            result += addition
+        }
+
+        return result
     }
 
     private fun addVarianceToLocation(
@@ -765,12 +759,17 @@ object SummonSubcommand {
         return oldLocation
     }
 
-    private fun getEntityNames(): MutableList<String>{
-        val entityNames = mutableListOf<String>()
-
+    private fun getEntityNames(
+        builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions>{
         for (entityType in EntityType.entries) {
-            entityNames.add(entityType.toString().lowercase(Locale.getDefault()))
+            builder.suggest(entityType.toString().lowercase())
         }
-        return entityNames
+
+        return builder.buildFuture()
+    }
+
+    private enum class CoordType{
+        X, Y, Z
     }
 }

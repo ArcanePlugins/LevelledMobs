@@ -34,10 +34,7 @@ class ChunkLoadListener : Listener {
         // Check each entity in the chunk
         for (entity in event.chunk.entities) {
             // Must be a *living* entity
-
-            if (entity !is LivingEntity) {
-                continue
-            }
+            if (entity !is LivingEntity) continue
 
             checkEntity(entity, event)
         }

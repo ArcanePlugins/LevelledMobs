@@ -157,9 +157,7 @@ class NmsNametagSender : NametagSender {
 
         try {
             val itemsById = def.fieldInt2ObjectMap!![entityDataPreClone] as Map<Int, Any>
-            if (itemsById.isEmpty()) {
-                return null
-            }
+            if (itemsById.isEmpty()) return null
 
             for (objDataItem in itemsById.values) {
                 val accessor = def.methodGetAccessor!!.invoke(objDataItem)
@@ -198,7 +196,7 @@ class NmsNametagSender : NametagSender {
 
                 // .id()
                 val objDataId = def.methodDataWatcherGetId!!.invoke(objData) as Int
-                if (objDataId < 2 || objDataId > 3) continue
+                if (objDataId !in 2..3) continue
 
                 results.add(objData)
             }
@@ -221,7 +219,7 @@ class NmsNametagSender : NametagSender {
             if (itemsById.isEmpty()) return results
 
             for (objDataId in itemsById.keys) {
-                if (objDataId < 2 || objDataId > 3) continue
+                if (objDataId !in 2..3) continue
 
                 val objDataItem = itemsById[objDataId]
                 val accessor = def.methodGetAccessor!!.invoke(objDataItem)
@@ -263,7 +261,7 @@ class NmsNametagSender : NametagSender {
             return if (comp == null) Optional.empty() else Optional.of(comp)
         }
 
-        val leftText = if (displayNameIndex > 0) resolveText(mobName.substring(0, displayNameIndex)) else null
+        val leftText = if (displayNameIndex > 0) resolveText(mobName.take(displayNameIndex)) else null
 
         val rightText =
             if (mobName.length > displayNameIndex + displayName.length) resolveText(mobName.substring(displayNameIndex + displayName.length)) else null
@@ -271,9 +269,9 @@ class NmsNametagSender : NametagSender {
             if (def.useTranslationComponents) getTranslatableComponent(def.getTranslationKey(livingEntity)) else getTextComponent(
                 livingEntity.name
             )
-        } else {
-            getTextComponent(resolveText(nametag.overriddenName))
         }
+        else
+            getTextComponent(resolveText(nametag.overriddenName))
 
         // for whatever reason if you use an empty component,
         // the nametag will get duplicated with each call of this function

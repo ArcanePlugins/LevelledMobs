@@ -50,11 +50,10 @@ abstract class CustomDropBase(
 
     open val amountAsString: String
         get() {
-            return if (this.hasAmountRange) {
+            return if (this.hasAmountRange)
                 "$amountRangeMin-$amountRangeMax"
-            } else {
+            else
                 amount.toString()
-            }
         }
 
     fun setAmountRangeFromString(
@@ -65,10 +64,8 @@ abstract class CustomDropBase(
         }
 
         if (!numberOrNumberRange.contains("-")) {
-            if (!Utils.isDouble(numberOrNumberRange)) {
+            if (!Utils.isDouble(numberOrNumberRange))
                 return false
-            }
-
 
             this.amount = numberOrNumberRange.toDouble().toInt()
             this.hasAmountRange = false
@@ -76,9 +73,7 @@ abstract class CustomDropBase(
         }
 
         val nums = numberOrNumberRange.split("-")
-        if (nums.size != 2) {
-            return false
-        }
+        if (nums.size != 2) return false
 
         if (!Utils.isDouble(nums[0].trim()) || !Utils.isDouble(nums[1].trim())
         ) {

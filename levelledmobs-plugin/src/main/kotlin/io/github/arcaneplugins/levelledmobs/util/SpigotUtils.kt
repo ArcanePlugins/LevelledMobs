@@ -44,11 +44,10 @@ object SpigotUtils {
         meta: ItemMeta,
         lore: MutableList<String>?
     ) {
-        if (lore == null) {
+        if (lore == null)
             meta.lore = null
-        } else {
+        else
             meta.lore = colorizeAllInList(lore)
-        }
     }
 
     fun updateItemDisplayName(
@@ -61,18 +60,15 @@ object SpigotUtils {
     fun getPlayerDisplayName(
         player: Player?
     ): String {
-        if (player == null) {
-            return ""
-        }
+        if (player == null) return ""
+
         return player.displayName
     }
 
     fun getPlayersKiller(
         event: PlayerDeathEvent
     ): LivingEntityWrapper? {
-        if (event.deathMessage == null) {
-            return null
-        }
+        if (event.deathMessage == null) return null
 
         val entityDamageEvent = event.entity.lastDamageCause
         if (entityDamageEvent == null || entityDamageEvent.isCancelled
@@ -85,22 +81,18 @@ object SpigotUtils {
         var killer: LivingEntity? = null
 
         if (damager is Projectile) {
-            if (damager.shooter is LivingEntity) {
+            if (damager.shooter is LivingEntity)
                 killer = damager.shooter as LivingEntity?
-            }
-        } else if (damager is LivingEntity) {
+        }
+        else if (damager is LivingEntity)
             killer = damager
-        }
 
-        if (killer == null || killer.name.isEmpty() || killer is Player) {
+        if (killer == null || killer.name.isEmpty() || killer is Player)
             return null
-        }
 
         val lmKiller = LivingEntityWrapper.getInstance(killer)
         lmKiller.associatedPlayer = event.entity
-        if (!lmKiller.isLevelled) {
-            return lmKiller
-        }
+        if (!lmKiller.isLevelled) return lmKiller
 
         val nametagResult = LevelledMobs.instance.levelManager.getNametag(lmKiller,
             isDeathNametag = true,
@@ -108,9 +100,8 @@ object SpigotUtils {
         )
         var deathMessage = nametagResult.nametagNonNull
             .replace("%player%", event.entity.name)
-        if (deathMessage.isEmpty() || "disabled".equals(deathMessage, ignoreCase = true)) {
+        if (deathMessage.isEmpty() || "disabled".equals(deathMessage, ignoreCase = true))
             return lmKiller
-        }
 
         if (nametagResult.hadCustomDeathMessage) {
             var nametag = nametagResult.nametagNonNull
@@ -123,9 +114,8 @@ object SpigotUtils {
             }
             event.deathMessage = colorizeAll(nametag.replace("%player%", event.entity.name))
         } else {
-            if (deathMessage.contains("{DisplayName}")) {
+            if (deathMessage.contains("{DisplayName}"))
                 deathMessage = deathMessage.replace("{DisplayName}", capitalize(lmKiller.nameIfBaby))
-            }
 
             event.deathMessage = colorizeAll(replaceEx(event.deathMessage!!, killer.name, deathMessage))
         }

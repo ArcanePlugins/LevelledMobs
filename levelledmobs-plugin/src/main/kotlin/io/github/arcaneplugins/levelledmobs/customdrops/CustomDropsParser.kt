@@ -18,7 +18,6 @@ import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.util.MessageUtils.colorizeAll
 import io.github.arcaneplugins.levelledmobs.util.MiscUtils
 import io.github.arcaneplugins.levelledmobs.util.Utils
-import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
 import org.bukkit.Material
@@ -148,19 +147,19 @@ class CustomDropsParser(
             val mobTypeOrGroups = item.split(";")
 
             for (mobTypeOrGroupPre in mobTypeOrGroups) {
-                var mobTypeOrGroup = mobTypeOrGroupPre.trim { it <= ' ' }
+                var mobTypeOrGroup = mobTypeOrGroupPre.trim()
                 if (mobTypeOrGroup.isEmpty()) continue
-                if (mobTypeOrGroup.lowercase(Locale.getDefault()).startsWith("file-version"))
+                if (mobTypeOrGroup.lowercase().startsWith("file-version"))
                     continue
 
                 var universalGroup: CustomUniversalGroups? = null
                 val isEntityTable = (mobTypeOrGroup.equals("drop-table", ignoreCase = true))
-                val isUniversalGroup = mobTypeOrGroup.lowercase(Locale.getDefault()).startsWith("all_")
+                val isUniversalGroup = mobTypeOrGroup.lowercase().startsWith("all_")
 
                 if (isUniversalGroup) {
                     try {
                         universalGroup = CustomUniversalGroups.valueOf(
-                            mobTypeOrGroup.uppercase(Locale.getDefault())
+                            mobTypeOrGroup.uppercase()
                         )
                     } catch (_: Exception) {
                         hadError("invalid universal group in customdrops.yml: $mobTypeOrGroup")
@@ -172,15 +171,15 @@ class CustomDropsParser(
                         continue
 
                     var isBabyMob = false
-                    if (mobTypeOrGroup.lowercase(Locale.getDefault()).startsWith("baby_")) {
+                    if (mobTypeOrGroup.lowercase().startsWith("baby_")) {
                         isBabyMob = true
                         mobTypeOrGroup = mobTypeOrGroup.substring(5)
                     }
 
                     try {
-                        entityType = EntityType.valueOf(mobTypeOrGroup.uppercase(Locale.getDefault()))
+                        entityType = EntityType.valueOf(mobTypeOrGroup.uppercase())
                     } catch (_: Exception) {
-                        if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.uppercase(Locale.getDefault())))
+                        if (!invalidEntityTypesToIgnore.contains(mobTypeOrGroup.uppercase()))
                             hadError("invalid mob type in customdrops.yml: $mobTypeOrGroup")
 
                         continue
@@ -561,7 +560,7 @@ class CustomDropsParser(
             val excludes = ymlHelper.getString("excludemobs")!!.split(";")
             item.excludedMobs.clear()
             for (exclude in excludes) {
-                item.excludedMobs.add(exclude.trim { it <= ' ' })
+                item.excludedMobs.add(exclude.trim())
             }
         }
 
@@ -652,9 +651,9 @@ class CustomDropsParser(
             useList = YmlParsingHelper.getListFromConfigItem(cs2, "allowed-list")
 
         for (item in useList!!) {
-            if (item.trim { it <= ' ' }.isEmpty()) continue
+            if (item.trim().isEmpty()) continue
 
-            if ("*" == item.trim { it <= ' ' }) {
+            if ("*" == item.trim()) {
                 cachedModalList.includeAll = true
                 continue
             }
@@ -806,7 +805,7 @@ class CustomDropsParser(
         cs: ConfigurationSection
     ) {
         for (key in cs.getKeys(false)) {
-            if (!key.lowercase(Locale.getDefault()).startsWith("ranged"))
+            if (!key.lowercase().startsWith("ranged"))
                 continue
 
             val value = cs.getString(key)
@@ -869,7 +868,7 @@ class CustomDropsParser(
 
         for (flag in item.itemFlagsStrings!!) {
             try {
-                val newFlag = ItemFlag.valueOf(flag.trim { it <= ' ' }.uppercase(Locale.getDefault()))
+                val newFlag = ItemFlag.valueOf(flag.trim().uppercase())
                 results.add(newFlag)
             } catch (_: Exception) {
                 hadError("Invalid itemflag: $flag, item: ${item.material.name}, mobOrGroup: ${dropInstance.getMobOrGroupName()}")
@@ -932,7 +931,7 @@ class CustomDropsParser(
                 return true
             }
             try {
-                material = Material.valueOf(useMaterialName.uppercase(Locale.getDefault()))
+                material = Material.valueOf(useMaterialName.uppercase())
             } catch (_: Exception) {
                 hadError("Invalid material type specified in customdrops.yml for: ${dropInstance.getMobOrGroupName()}, $useMaterialName")
                 return false
@@ -1003,7 +1002,7 @@ class CustomDropsParser(
         for (entTypeStr in typeNames.keys) {
             val isBaby = entTypeStr.endsWith("_2")
             val ent = EntityType.valueOf(
-                if (isBaby) entTypeStr.substring(0, entTypeStr.length - 2) else entTypeStr
+                if (isBaby) entTypeStr.dropLast(2) else entTypeStr
             )
             val dropInstance = if (isBaby) handler.customDropsitemsBabies[ent]!!
             else handler.getCustomDropsitems()[ent]!!
@@ -1040,9 +1039,8 @@ class CustomDropsParser(
             sbMain.append(override).append(overallChance)
             for (baseItem in value.customItems) {
                 val result = showCustomDropsDebugInfo2(baseItem)
-                if (result.isNotEmpty()) {
+                if (result.isNotEmpty())
                     sbMain.append("\n").append(result)
-                }
             }
         }
 
@@ -1093,13 +1091,10 @@ class CustomDropsParser(
             sb.append(baseItem.permissions).append("&r")
         }
 
-        if (baseItem.noSpawner) {
-            sb.append(", nospn")
-        }
+        if (baseItem.noSpawner) sb.append(", nospn")
 
-        if (baseItem.causeOfDeathReqs != null) {
+        if (baseItem.causeOfDeathReqs != null)
             sb.append(", ").append(baseItem.causeOfDeathReqs)
-        }
 
         if (baseItem.hasGroupId) {
             sb.append(", gId: &b")

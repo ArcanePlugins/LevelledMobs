@@ -67,7 +67,7 @@ object RandomVarianceGenerator {
 
         val result = ThreadLocalRandom.current().nextInt(useMin, useMax)
         DebugManager.log(DebugType.RANDOM_NUMBER, lmEntity){
-            "min $useMin, max: $useMax, result: $result"
+            "min $useMin, max: ${useMax - 1}, result: $result"
         }
 
         return result.toString()

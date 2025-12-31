@@ -59,12 +59,12 @@ class MinAndMax : Comparable<MinAndMax>{
             if (nums.size != 2) return null
 
 
-            if (!Utils.isDouble(nums[0].trim { it <= ' ' }) || !Utils.isDouble(nums[1].trim { it <= ' ' }))
+            if (!Utils.isDouble(nums[0].trim()) || !Utils.isDouble(nums[1].trim()))
                 return null
 
             val result = MinAndMax()
-            result.min = nums[0].trim { it <= ' ' }.toDouble().toFloat()
-            result.max = nums[1].trim { it <= ' ' }.toDouble().toFloat()
+            result.min = nums[0].trim().toDouble().toFloat()
+            result.max = nums[1].trim().toDouble().toFloat()
 
             return result
         }
@@ -75,8 +75,8 @@ class MinAndMax : Comparable<MinAndMax>{
 
     override fun toString(): String {
         return if (this.min == this.max) {
-            if (showAsInt) minAsInt.toString()
-            else min.toString()
+            if (showAsInt) "$minAsInt"
+            else "$min"
         } else {
             if (showAsInt) "$minAsInt-$maxAsInt"
             else "$min-$max"

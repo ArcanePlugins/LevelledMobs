@@ -31,9 +31,7 @@ object MythicMobUtils {
         // io.lumine.mythic.bukkit.MythicBukkit
 
         val mmMain = Bukkit.getPluginManager().getPlugin("MythicMobs")
-        if (mmMain == null || !mmMain.isEnabled) {
-            return null
-        }
+        if (mmMain == null || !mmMain.isEnabled) return null
 
         val def = LevelledMobs.instance.definitions
 
@@ -53,9 +51,7 @@ object MythicMobUtils {
                 mobExecutorObj, lmEntity.livingEntity.uniqueId
             ) as Optional<*>
 
-            if (activeMobObj.isEmpty) {
-                return null
-            }
+            if (activeMobObj.isEmpty) return null
 
             val mobTypeObj = def.fieldMMtype!![activeMobObj.get()]
             val result = MythicMobsMobInfo()

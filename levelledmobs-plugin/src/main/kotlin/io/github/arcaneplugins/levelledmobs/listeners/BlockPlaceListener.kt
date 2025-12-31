@@ -69,33 +69,26 @@ class BlockPlaceListener : Listener {
                         if (i == 1) {
                             val entityType = EntityType.valueOf(valueStr)
                             cs.spawnedType = entityType
-                        } else {
+                        } else
                             targetPdc.set(key, PersistentDataType.STRING, valueStr)
-                        }
                     }
                 }
             } else if (sourcePdc.has(key, PersistentDataType.INTEGER)) {
                 val valueInt = sourcePdc.get(key, PersistentDataType.INTEGER)
-                if (i < 6 && valueInt != null) {
+                if (i < 6 && valueInt != null)
                     targetPdc.set(key, PersistentDataType.INTEGER, valueInt)
-                } else if (valueInt != null) {
+                else if (valueInt != null) {
                     when (i) {
                         6 -> cs.delay = valueInt
                         7 -> cs.maxNearbyEntities = valueInt
                         8 -> {
-                            if (cs.maxSpawnDelay < valueInt) {
-                                cs.maxSpawnDelay = valueInt
-                            }
+                            cs.maxSpawnDelay = cs.maxSpawnDelay.coerceAtLeast(valueInt)
                             cs.minSpawnDelay = valueInt
                         }
-
                         9 -> {
-                            if (cs.minSpawnDelay > valueInt) {
-                                cs.minSpawnDelay = valueInt
-                            }
+                            cs.minSpawnDelay = cs.minSpawnDelay.coerceAtMost(valueInt)
                             cs.maxSpawnDelay = valueInt
                         }
-
                         10 -> cs.requiredPlayerRange = valueInt
                         11 -> cs.spawnCount = valueInt
                         12 -> cs.spawnRange = valueInt

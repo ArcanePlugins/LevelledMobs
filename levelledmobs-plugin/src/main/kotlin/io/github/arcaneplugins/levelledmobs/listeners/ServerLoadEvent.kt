@@ -28,8 +28,7 @@ class ServerLoadEvent : Listener {
             }
             scheduler.runDelayed(10L)
         }
-        else if (MainCompanion.instance.showCustomDrops){
+        else if (MainCompanion.instance.showCustomDrops)
             LevelledMobs.instance.customDropsHandler.customDropsParser.showCustomDropsDebugInfo(null)
-        }
     }
 }

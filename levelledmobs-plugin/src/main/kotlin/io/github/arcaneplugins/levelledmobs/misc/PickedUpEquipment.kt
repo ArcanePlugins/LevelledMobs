@@ -32,9 +32,7 @@ class PickedUpEquipment(
         this.ee = lmEntity.livingEntity.equipment
 
         val slotNumber = getItemEquippedSlot()
-        if (slotNumber >= 0) {
-            storeItemInPDC(slotNumber)
-        }
+        if (slotNumber >= 0) storeItemInPDC(slotNumber)
     }
 
     fun getMobPickedUpItems(): MutableList<ItemStack> {
@@ -94,7 +92,7 @@ class PickedUpEquipment(
         for (key in pdcKey.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
             if (key.length < 3 || key.length % 2 != 0) continue
             val slotNumber = Character.getNumericValue(key[0])
-            if (slotNumber < 0 || slotNumber > 6) continue
+            if (slotNumber !in 0..6) continue
 
             slotMappings[slotNumber] = key.substring(2)
         }
@@ -104,27 +102,13 @@ class PickedUpEquipment(
         val itmStk = itemStack!!
         val eeNN = ee!!
 
-        if (itmStk.isSimilar(eeNN.itemInMainHand)) {
-            return 0
-        }
-        if (itmStk.isSimilar(eeNN.itemInOffHand)) {
-            return 1
-        }
-        if (eeNN.helmet != null && itmStk.isSimilar(eeNN.helmet)) {
-            return 2
-        }
-        if (eeNN.chestplate != null && itmStk.isSimilar(eeNN.chestplate)) {
-            return 3
-        }
-        if (eeNN.leggings != null && itmStk.isSimilar(eeNN.leggings)) {
-            return 4
-        }
-        if (eeNN.boots != null && itmStk.isSimilar(eeNN.boots)) {
-            return 5
-        }
-        if (itmStk.isSimilar(eeNN.itemInMainHand)) {
-            return 6
-        }
+        if (itmStk.isSimilar(eeNN.itemInMainHand)) return 0
+        if (itmStk.isSimilar(eeNN.itemInOffHand)) return 1
+        if (eeNN.helmet != null && itmStk.isSimilar(eeNN.helmet)) return 2
+        if (eeNN.chestplate != null && itmStk.isSimilar(eeNN.chestplate)) return 3
+        if (eeNN.leggings != null && itmStk.isSimilar(eeNN.leggings)) return 4
+        if (eeNN.boots != null && itmStk.isSimilar(eeNN.boots)) return 5
+        if (itmStk.isSimilar(eeNN.itemInMainHand)) return 6
 
         return -1
     }

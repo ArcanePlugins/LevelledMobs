@@ -28,12 +28,12 @@ object KyoriNametags {
 
         // this component holds the component of the mob name and will show the translated name on clients
         val mobNameComponent: Component = if (nametagResult.overriddenName == null) {
-            if (def.useTranslationComponents) {
+            if (def.useTranslationComponents)
                 Component.translatable(mobKey)
-            } else {
+            else
                 Component.text(livingEntity.name)
-            }
-        } else {
+        }
+        else {
             LegacyComponentSerializer
                 .legacyAmpersand()
                 .deserialize(nametagResult.overriddenName!!)
@@ -87,9 +87,9 @@ object KyoriNametags {
         lmEntity.free()
 
         // this component holds the component of the mob name and will show the translated name on clients
-        val mobNameComponent: Component = if (nametagResult.overriddenName == null) {
+        val mobNameComponent: Component = if (nametagResult.overriddenName == null)
             Component.translatable(mobKey)
-        } else {
+        else {
             LegacyComponentSerializer
                 .legacyAmpersand()
                 .deserialize(nametagResult.overriddenName!!)

@@ -7,6 +7,11 @@ package io.github.arcaneplugins.levelledmobs.result
  * @since 4.0
  */
 data class MultiplierResult(
-    val amount: Float,
+    val multiplierAmount: Float,
+    val baseModAmount: Float?,
     val isAddition: Boolean
-)
+){
+    override fun toString(): String {
+        return "multiplier: $multiplierAmount, base amount: $baseModAmount, is addition: $isAddition"
+    }
+}

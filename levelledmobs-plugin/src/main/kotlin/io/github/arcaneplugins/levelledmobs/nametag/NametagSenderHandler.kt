@@ -13,9 +13,7 @@ class NametagSenderHandler {
     private var currentUtil: NametagSender? = null
 
     fun getCurrentUtil(): NametagSender? {
-        if (this.currentUtil != null) {
-            return this.currentUtil
-        }
+        if (this.currentUtil != null) return this.currentUtil
 
         this.currentUtil = NmsNametagSender()
 
@@ -27,8 +25,7 @@ class NametagSenderHandler {
     }
 
     fun refresh() {
-        if (currentUtil is NmsNametagSender) {
+        if (currentUtil is NmsNametagSender)
             (currentUtil as NmsNametagSender).refresh()
-        }
     }
 }

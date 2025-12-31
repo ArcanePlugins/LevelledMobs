@@ -92,9 +92,7 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.mobNBTData != null) {
                 val nbt = ruleInfo.mobNBTData
-                if (!nbt!!.doMerge) {
-                    nbtData.clear()
-                }
+                if (!nbt!!.doMerge) nbtData.clear()
 
                 nbtData.addAll(nbt.items)
             }
@@ -107,9 +105,8 @@ class RulesManager {
         var result = 0.0
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.sunlightBurnAmount != null) {
+            if (ruleInfo.sunlightBurnAmount != null)
                 result = ruleInfo.sunlightBurnAmount!!
-            }
         }
 
         return result
@@ -119,9 +116,8 @@ class RulesManager {
         var result: Int? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.maxRandomVariance != null) {
+            if (ruleInfo.maxRandomVariance != null)
                 result = ruleInfo.maxRandomVariance
-            }
         }
 
         return result
@@ -133,9 +129,8 @@ class RulesManager {
         var entitiesList: CachedModalList<String>? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.conditionsNoDropEntities != null) {
+            if (ruleInfo.conditionsNoDropEntities != null)
                 entitiesList = ruleInfo.conditionsNoDropEntities
-            }
         }
 
         return entitiesList != null && entitiesList.isIncludedInList(
@@ -150,14 +145,14 @@ class RulesManager {
         val dropRules = CustomDropsRuleSet()
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.customDropsUseForMobs != null) {
+            if (ruleInfo.customDropsUseForMobs != null)
                 dropRules.useDrops = ruleInfo.customDropsUseForMobs!!
-            }
+
             if (ruleInfo.chunkKillOptions != null) {
-                if (dropRules.chunkKillOptions == null) dropRules.chunkKillOptions = ruleInfo.chunkKillOptions
-                else {
+                if (dropRules.chunkKillOptions == null)
+                    dropRules.chunkKillOptions = ruleInfo.chunkKillOptions
+                else
                     dropRules.chunkKillOptions!!.merge(ruleInfo.chunkKillOptions)
-                }
             }
             dropRules.useDropTableIds.addAll(ruleInfo.customDropDropTableIds)
         }
@@ -179,9 +174,8 @@ class RulesManager {
         var result = false
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.lockEntity != null) {
+            if (ruleInfo.lockEntity != null)
                 result = ruleInfo.lockEntity!!
-            }
         }
 
         return result
@@ -194,12 +188,11 @@ class RulesManager {
         var babyMobsInheritAdultSetting = true // default
         var allowedEntitiesList: CachedModalList<String>? = null
         for (ruleInfo in lmInterface.getApplicableRules()) {
-            if (ruleInfo.conditionsEntities != null) {
+            if (ruleInfo.conditionsEntities != null)
                 allowedEntitiesList = ruleInfo.conditionsEntities
-            }
-            if (ruleInfo.babyMobsInheritAdultSetting != null) {
+
+            if (ruleInfo.babyMobsInheritAdultSetting != null)
                 babyMobsInheritAdultSetting = ruleInfo.babyMobsInheritAdultSetting!!
-            }
         }
 
         return if (lmInterface is LivingEntityWrapper) {
@@ -220,44 +213,20 @@ class RulesManager {
     fun getFineTuningAttributes(
         lmEntity: LivingEntityWrapper
     ): FineTuningAttributes? {
-        var allMobAttribs: FineTuningAttributes? = null
-        var thisMobAttribs: FineTuningAttributes? = null
+        var result: FineTuningAttributes? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.allMobMultipliers != null) {
-                val multipliers = ruleInfo.allMobMultipliers!!
-                if (allMobAttribs == null || multipliers.doNotMerge) {
-                    allMobAttribs = multipliers.cloneItem() as FineTuningAttributes
-                    if (multipliers.doNotMerge) {
-                        thisMobAttribs = null
-                    }
-                } else {
-                    allMobAttribs.merge(multipliers)
-                }
-            }
+            if (ruleInfo.mobMultipliers == null) continue
 
-            if (ruleInfo.specificMobMultipliers != null
-                && ruleInfo.specificMobMultipliers!!.containsKey(lmEntity.nameIfBaby)
-            ) {
-                val tempAttribs = ruleInfo.specificMobMultipliers!![lmEntity.nameIfBaby]
-                if (thisMobAttribs == null || tempAttribs!!.doNotMerge) {
-                    thisMobAttribs = tempAttribs!!.cloneItem() as FineTuningAttributes
+            val multipliers = ruleInfo.mobMultipliers!!
 
-                    if (tempAttribs.doNotMerge) allMobAttribs = null
-                    else allMobAttribs?.merge(thisMobAttribs)
-                } else {
-                    thisMobAttribs.merge(tempAttribs)
-                }
-            }
+            if (result == null)
+                result = multipliers.cloneItem() as FineTuningAttributes
+            else
+                result.merge(multipliers)
         }
 
-        if (allMobAttribs != null) {
-            if (thisMobAttribs != null)
-                allMobAttribs.merge(thisMobAttribs)
-            return allMobAttribs
-        } else {
-            return thisMobAttribs
-        }
+        return result
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -292,9 +261,8 @@ class RulesManager {
     fun getRuleCreeperMaxBlastRadius(lmEntity: LivingEntityWrapper): Int {
         var maxBlast = 5
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.creeperMaxDamageRadius != null) {
+            if (ruleInfo.creeperMaxDamageRadius != null)
                 maxBlast = ruleInfo.creeperMaxDamageRadius!!
-            }
         }
 
         return maxBlast
@@ -304,9 +272,8 @@ class RulesManager {
         var result: String? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.invalidPlaceholderReplacement != null) {
+            if (ruleInfo.invalidPlaceholderReplacement != null)
                 result = ruleInfo.invalidPlaceholderReplacement
-            }
         }
 
         return result
@@ -365,9 +332,8 @@ class RulesManager {
     fun getRuleMobLevelInheritance(lmEntity: LivingEntityWrapper): Boolean {
         var result = true
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.mobLevelInheritance != null) {
+            if (ruleInfo.mobLevelInheritance != null)
                 result = ruleInfo.mobLevelInheritance!!
-            }
         }
 
         return result
@@ -379,9 +345,8 @@ class RulesManager {
         var result = MobCustomNameStatus.NOT_SPECIFIED
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.conditionsMobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED) {
+            if (ruleInfo.conditionsMobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED)
                 result = ruleInfo.conditionsMobCustomnameStatus
-            }
         }
 
         return result
@@ -391,9 +356,8 @@ class RulesManager {
         var result = MobTamedStatus.NOT_SPECIFIED
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.conditionsMobTamedStatus != MobTamedStatus.NOT_SPECIFIED) {
+            if (ruleInfo.conditionsMobTamedStatus != MobTamedStatus.NOT_SPECIFIED)
                 result = ruleInfo.conditionsMobTamedStatus
-            }
         }
 
         return result
@@ -407,9 +371,8 @@ class RulesManager {
         var minLevel = 1
 
         for (ruleInfo in lmInterface.getApplicableRules()) {
-            if (ruleInfo.restrictionsMinLevel != null) {
+            if (ruleInfo.restrictionsMinLevel != null)
                 minLevel = ruleInfo.restrictionsMinLevel!!
-            }
         }
 
         return minLevel
@@ -422,21 +385,18 @@ class RulesManager {
         for (ruleInfo in lmInterface.getApplicableRules()) {
             if (ruleInfo.restrictionsMaxLevel != null) {
                 maxLevel = ruleInfo.restrictionsMaxLevel!!
-                if (firstMaxLevel < 0 && maxLevel > 0) {
+                if (firstMaxLevel < 0 && maxLevel > 0)
                     firstMaxLevel = maxLevel
-                }
             }
         }
 
         if (maxLevel <= 0 && lmInterface.summonedLevel != null) {
-            if (maxLevel == 0 && firstMaxLevel > 0) {
+            if (maxLevel == 0 && firstMaxLevel > 0)
                 maxLevel = firstMaxLevel
-            }
 
             val summonedLevel = lmInterface.summonedLevel!!
-            if (summonedLevel > maxLevel) {
+            if (summonedLevel > maxLevel)
                 maxLevel = summonedLevel
-            }
         }
 
         return maxLevel
@@ -463,9 +423,11 @@ class RulesManager {
     fun getRuleNametag(lmEntity: LivingEntityWrapper): String {
         var nametag = ""
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (!ruleInfo.nametag.isNullOrEmpty()) {
-                nametag = if ("disabled".equals(ruleInfo.nametag, ignoreCase = true)) "" else ruleInfo.nametag!!
-            }
+            if (!ruleInfo.nametag.isNullOrEmpty())
+                nametag = if ("disabled".equals(ruleInfo.nametag, ignoreCase = true))
+                    ""
+                else
+                    ruleInfo.nametag!!
         }
 
         return nametag
@@ -478,9 +440,8 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             val nametagRule =
                 if (isLevelled) ruleInfo.nametagPlaceholderLevelled else ruleInfo.nametagPlaceholderUnlevelled
-            if (nametagRule != null) {
+            if (nametagRule != null)
                 nametag = nametagRule
-            }
         }
 
         return nametag
@@ -489,9 +450,8 @@ class RulesManager {
     fun getRuleNametagCreatureDeath(lmEntity: LivingEntityWrapper): String {
         var nametag = ""
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (!ruleInfo.nametagCreatureDeath.isNullOrEmpty()) {
+            if (!ruleInfo.nametagCreatureDeath.isNullOrEmpty())
                 nametag = ruleInfo.nametagCreatureDeath!!
-            }
         }
 
         return nametag
@@ -502,11 +462,10 @@ class RulesManager {
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
             if (ruleInfo.healthIndicator != null) {
-                if (indicator == null || !ruleInfo.healthIndicator!!.doMerge) {
+                if (indicator == null || !ruleInfo.healthIndicator!!.doMerge)
                     indicator = ruleInfo.healthIndicator!!.cloneItem() as HealthIndicator
-                } else {
+                else
                     indicator.merge(ruleInfo.healthIndicator!!.cloneItem() as HealthIndicator)
-                }
             }
         }
 
@@ -520,26 +479,24 @@ class RulesManager {
 
         try {
             for (ruleInfo in lmEntity.getApplicableRules()) {
-                if (ruleInfo.nametagVisibilityEnum != null) {
+                if (ruleInfo.nametagVisibilityEnum != null)
                     result = ruleInfo.nametagVisibilityEnum
-                }
             }
-        } catch (_: ConcurrentModificationException) { }
-
-        return if (result.isNullOrEmpty()) {
-            mutableListOf(NametagVisibilityEnum.MELEE)
-        } else {
-            result
         }
+        catch (_: ConcurrentModificationException) { }
+
+        return if (result.isNullOrEmpty())
+            mutableListOf(NametagVisibilityEnum.MELEE)
+        else
+            result
     }
 
     fun getRuleNametagVisibleTime(lmEntity: LivingEntityWrapper): Long {
         var result = 4000L
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.nametagVisibleTime != null) {
+            if (ruleInfo.nametagVisibleTime != null)
                 result = ruleInfo.nametagVisibleTime!!
-            }
         }
 
         return result
@@ -550,20 +507,17 @@ class RulesManager {
         var tieredText: String? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.tieredColoringInfos != null) {
+            if (ruleInfo.tieredColoringInfos != null)
                 coloringInfo = ruleInfo.tieredColoringInfos
-            }
         }
 
-        if (coloringInfo == null) {
-            return null
-        }
+        if (coloringInfo == null) return null
 
         val mobLevel = lmEntity.getMobLevel
         for (info in coloringInfo) {
-            if (info.isDefault) {
+            if (info.isDefault)
                 tieredText = info.text
-            }
+
             if (mobLevel >= info.minLevel && mobLevel <= info.maxLevel) {
                 tieredText = info.text
                 break
@@ -577,9 +531,8 @@ class RulesManager {
         var result = false
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.passengerMatchLevel != null) {
+            if (ruleInfo.passengerMatchLevel != null)
                 result = ruleInfo.passengerMatchLevel!!
-            }
         }
 
         return result
@@ -598,11 +551,10 @@ class RulesManager {
             val doMerge =
                 ruleInfo.mergeEntityNameOverrides != null && ruleInfo.mergeEntityNameOverrides!!
             if (ruleInfo.entityNameOverrides != null) {
-                if (entityNameOverrides != null && doMerge) {
+                if (entityNameOverrides != null && doMerge)
                     entityNameOverrides.putAll(ruleInfo.entityNameOverrides!!)
-                } else {
+                else
                     entityNameOverrides = ruleInfo.entityNameOverrides
-                }
             }
 
             if (ruleInfo.entityNameOverridesLevel != null) {
@@ -657,9 +609,7 @@ class RulesManager {
         entityNameOverridesLevel: MutableMap<String, MutableList<LevelTierMatching>>?,
         lmEntity: LivingEntityWrapper
     ): LevelTierMatching? {
-        if (entityNameOverridesLevel == null) {
-            return null
-        }
+        if (entityNameOverridesLevel == null) return null
 
         var allEntities: LevelTierMatching? = null
         var thisMob: LevelTierMatching? = null
@@ -687,11 +637,10 @@ class RulesManager {
         var result: Particle? = Particle.SOUL
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.spawnerParticle != null) {
+            if (ruleInfo.spawnerParticle != null)
                 result = ruleInfo.spawnerParticle
-            } else if (ruleInfo.useNoSpawnerParticles != null && ruleInfo.useNoSpawnerParticles!!) {
+            else if (ruleInfo.useNoSpawnerParticles != null && ruleInfo.useNoSpawnerParticles!!)
                 result = null
-            }
         }
 
         return result
@@ -701,15 +650,12 @@ class RulesManager {
         var result = 10
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.spawnerParticlesCount != null) {
+            if (ruleInfo.spawnerParticlesCount != null)
                 result = ruleInfo.spawnerParticlesCount!!
-            }
         }
 
         // max limit of 100 counts which would take 5 seconds to show
-        if (result > 100) {
-            result = 100
-        }
+        if (result > 100) result = 100
 
         return result
     }
@@ -718,9 +664,8 @@ class RulesManager {
         var result: CachedModalList<VanillaBonusEnum>? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.vanillaBonuses != null) {
+            if (ruleInfo.vanillaBonuses != null)
                 result = ruleInfo.vanillaBonuses
-            }
         }
 
         return result ?: CachedModalList()
@@ -730,9 +675,8 @@ class RulesManager {
         var result = 0
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.maximumDeathInChunkThreshold != null) {
+            if (ruleInfo.maximumDeathInChunkThreshold != null)
                 result = ruleInfo.maximumDeathInChunkThreshold!!
-            }
         }
 
         return result
@@ -742,9 +686,8 @@ class RulesManager {
         var result = 0
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.chunkMaxCoolDownTime != null) {
+            if (ruleInfo.chunkMaxCoolDownTime != null)
                 result = ruleInfo.chunkMaxCoolDownTime!!
-            }
         }
 
         return result
@@ -754,9 +697,8 @@ class RulesManager {
         var result = 0
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.maxAdjacentChunks != null) {
+            if (ruleInfo.maxAdjacentChunks != null)
                 result = ruleInfo.maxAdjacentChunks!!
-            }
         }
 
         return result
@@ -766,9 +708,8 @@ class RulesManager {
         var deathMessages: DeathMessages? = null
 
         for (ruleInfo in lmEntity.getApplicableRules()) {
-            if (ruleInfo.deathMessages != null) {
+            if (ruleInfo.deathMessages != null)
                 deathMessages = ruleInfo.deathMessages
-            }
         }
 
         return deathMessages?.getDeathMessage()
@@ -786,9 +727,8 @@ class RulesManager {
         }
 
         for (ruleInfo in rulesInEffect) {
-            if (!ruleInfo.ruleIsEnabled || ruleInfo.isTempDisabled) {
+            if (!ruleInfo.ruleIsEnabled || ruleInfo.isTempDisabled)
                 continue
-            }
 
             if (lmInterface is LivingEntityWrapper && !isRuleApplicableEntity(
                     lmInterface, ruleInfo
@@ -807,9 +747,9 @@ class RulesManager {
                     applicableRules.allApplicableRulesDidNotMakeChance.add(ruleInfo)
                 }
                 continue
-            } else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance!!) {
-                applicableRules.allApplicableRulesMadeChance.add(ruleInfo)
             }
+            else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance!!)
+                applicableRules.allApplicableRulesMadeChance.add(ruleInfo)
 
             applicableRules.allApplicableRules.add(ruleInfo)
             checkIfRuleShouldBeTempDisabled(ruleInfo, lmInterface)
@@ -843,19 +783,17 @@ class RulesManager {
         ruleInfo: RuleInfo,
         lmInterface: LivingEntityInterface
     ) {
-        if (lmInterface !is LivingEntityWrapper) {
+        if (lmInterface !is LivingEntityWrapper)
             return
-        }
 
         // don't increment the count when just checking nametags, etc
-        if (!lmInterface.isNewlySpawned && !lmInterface.isRulesForceAll) {
+        if (!lmInterface.isNewlySpawned && !lmInterface.isRulesForceAll)
             return
-        }
 
         synchronized(ruleLocker) {
-            if (!rulesCooldown.containsKey(ruleInfo.ruleName)) {
+            if (!rulesCooldown.containsKey(ruleInfo.ruleName))
                 rulesCooldown[ruleInfo.ruleName] = mutableListOf()
-            }
+
             val instants: MutableList<Instant>? = rulesCooldown[ruleInfo.ruleName]
             instants!!.add(Instant.now())
             if (ruleInfo.conditionsTimesToCooldownActivation == null
@@ -957,9 +895,7 @@ class RulesManager {
 
         if (ri.conditionsMMnames != null) {
             var mmName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
-            if (mmName.isEmpty()) {
-                mmName = "(none)"
-            }
+            if (mmName.isEmpty()) mmName = "(none)"
 
             val result = ri.conditionsMMnames!!.isIncludedInList(mmName, lmEntity)
             val mmNameFinal = mmName
@@ -1117,15 +1053,12 @@ class RulesManager {
 
         if (ri.conditionsScoreboardTags != null) {
             val tags = lmEntity.livingEntity.scoreboardTags
-            if (tags.isEmpty()) {
-                tags.add("(none)")
-            }
+            if (tags.isEmpty()) tags.add("(none)")
 
             var madeCriteria = false
             for (tag in tags) {
-                if (ri.conditionsScoreboardTags!!.isIncludedInList(tag, lmEntity)) {
+                if (ri.conditionsScoreboardTags!!.isIncludedInList(tag, lmEntity))
                     madeCriteria = true
-                }
             }
 
             DebugManager.log(
@@ -1261,9 +1194,7 @@ class RulesManager {
             else
                 ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface)
 
-            if (wgRegions.isEmpty()) {
-                wgRegions.add("(none)")
-            }
+            if (wgRegions.isEmpty()) wgRegions.add("(none)")
 
             for (regionName in wgRegions) {
                 if (ri.conditionsWGregions!!.isIncludedInList(regionName, null)) {
@@ -1394,28 +1325,20 @@ class RulesManager {
         perms: CachedModalList<String>,
         player: Player
     ): Boolean {
-        if (perms.includeAll) {
-            return true
-        }
-        if (perms.excludeAll) {
-            return false
-        }
-        if (perms.isEmpty()) {
-            return true
-        }
+        if (perms.includeAll) return true
+        if (perms.excludeAll) return false
+        if (perms.isEmpty()) return true
 
         for (perm in perms.excludedList) {
             val permCheck = "levelledmobs.permission.$perm"
-            if (player.hasPermission(permCheck)) {
+            if (player.hasPermission(permCheck))
                 return false
-            }
         }
 
         for (perm in perms.includedList) {
             val permCheck = "levelledmobs.permission.$perm"
-            if (player.hasPermission(permCheck)) {
+            if (player.hasPermission(permCheck))
                 return true
-            }
         }
 
         return perms.isBlacklist
@@ -1426,9 +1349,7 @@ class RulesManager {
     ) {
         biomeGroupMappings.clear()
 
-        if (customBiomeGroups == null) {
-            return
-        }
+        if (customBiomeGroups == null) return
 
         for ((key, groupMembers) in customBiomeGroups) {
             val newList = TreeSet(String.CASE_INSENSITIVE_ORDER)
@@ -1445,9 +1366,8 @@ class RulesManager {
 
     private fun checkTempDisabledRules() {
         synchronized(ruleLocker) {
-            if (rulesCooldown.isEmpty()) {
-                return
-            }
+            if (rulesCooldown.isEmpty()) return
+
             val iterator =
                 rulesCooldown.keys.iterator()
             while (iterator.hasNext()) {
@@ -1493,13 +1413,10 @@ class RulesManager {
 
             for (ruleName in rulesCooldown.keys) {
                 val rule = ruleNameMappings[ruleName]
-                if (rule?.conditionsCooldownTime == null) {
-                    continue
-                }
-                sb.append(System.lineSeparator())
+                if (rule?.conditionsCooldownTime == null) continue
 
-                sb.append(ruleName)
-                sb.append(": seconds left: ")
+                sb.append(System.lineSeparator())
+                sb.append(ruleName).append(": seconds left: ")
                 val instant = rulesCooldown[ruleName]!![0]
                 val millisecondsSince = Duration.between(instant, Instant.now()).toMillis()
                 val duration = Duration.ofMillis(
@@ -1517,9 +1434,8 @@ class RulesManager {
 
         synchronized(ruleLocker) {
             for (rule in rulesInEffect) {
-                if (!rule.ruleIsEnabled) {
-                    continue
-                }
+                if (!rule.ruleIsEnabled) continue
+
                 if (sb.isNotEmpty()) sb.append("\n")
                 sb.append(rule.formatRulesVisually(true, mutableListOf("id")))
             }
@@ -1549,9 +1465,8 @@ class RulesManager {
             val hexString = StringBuilder(2 * hash.size)
             for (b in hash) {
                 val hex = Integer.toHexString(0xff and b.toInt())
-                if (hex.length == 1) {
-                    hexString.append('0')
-                }
+                if (hex.length == 1) hexString.append('0')
+
                 hexString.append(hex)
             }
             return hexString.toString()

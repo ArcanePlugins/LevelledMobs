@@ -43,11 +43,10 @@ class NametagTimerChecker {
                 while (!playersQueue.isEmpty()) {
                     val item = playersQueue.poll() ?: continue
 
-                    if (item.isPlayerJoin) {
+                    if (item.isPlayerJoin)
                         nametagCooldownQueue[item.player] = WeakHashMap()
-                    } else {
+                    else
                         nametagCooldownQueue.remove(item.player)
-                    }
                 }
             }
             if (nametagCooldownQueue.isEmpty()) return
@@ -99,9 +98,7 @@ class NametagTimerChecker {
         player: Player,
         coolDown: Map.Entry<Player, WeakHashMap<LivingEntity, Instant>>
     ) {
-        if (!livingEntity.isValid) {
-            return
-        }
+        if (!livingEntity.isValid) return
 
         val startInclusive = coolDown.value[livingEntity]
         if (startInclusive == null) {
@@ -123,11 +120,10 @@ class NametagTimerChecker {
             val lmEntity = LivingEntityWrapper.getInstance(livingEntity)
             val usesLoS = lmEntity.nametagVisibilityEnum.contains(NametagVisibilityEnum.TARGETED)
 
-            if (usesLoS && livingEntity.hasLineOfSight(player)) {
+            if (usesLoS && livingEntity.hasLineOfSight(player))
                 coolDown.value[livingEntity] = Instant.now()
-            } else {
+            else
                 entitiesToRemove.add(livingEntity)
-            }
 
             lmEntity.free()
         }

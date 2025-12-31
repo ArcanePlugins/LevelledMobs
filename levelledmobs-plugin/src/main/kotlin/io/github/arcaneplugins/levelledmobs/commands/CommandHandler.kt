@@ -1,67 +1,64 @@
 package io.github.arcaneplugins.levelledmobs.commands
 
-import dev.jorel.commandapi.CommandAPI
-import dev.jorel.commandapi.CommandAPIBukkitConfig
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.exceptions.UnsupportedVersionException
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.commands.subcommands.CommandFallback
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.DebugSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.InfoSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.KillSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.ReloadSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.RulesSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerEggCommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SpawnerSubcommand
+import io.github.arcaneplugins.levelledmobs.commands.subcommands.SummonSubcommand
 import io.github.arcaneplugins.levelledmobs.util.Log
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandMap
 
 object CommandHandler {
-    private val COMMANDS = mutableListOf<CommandAPICommand>()
     var hadErrorLoading = false
         private set
 
-    fun load(loadingStage: LoadingStage){
-        when (loadingStage) {
-            LoadingStage.ON_LOAD -> {
-                try{
-                    Log.inf("Loading commands")
-                    val commandCfg = CommandAPIBukkitConfig(LevelledMobs.instance)
-                        .silentLogs(true)
-                        .verboseOutput(false)
-                        .skipReloadDatapacks(true)
-                        .beLenientForMinorVersions(true)
-                    CommandAPI.onLoad(commandCfg)
-                    registerCommands()
-                }
-                catch (e: UnsupportedVersionException){
-                    hadErrorLoading = true
-                    Log.sev(e.message!!)
-                    Log.war("The plugin may continue to work with limited commands. Please see if an updated version of LevelledMobs is available.")
-                    loadFallbackCommands()
-                }
-                catch (e: Exception){
-                    hadErrorLoading = true
-                    loadFallbackCommands()
-                    throw e
-                }
-            }
-
-            LoadingStage.ON_ENABLE -> {
-                if (!hadErrorLoading){
-                    Log.inf("Enabling commands")
-                    CommandAPI.onEnable()
-                }
-            }
-
-            LoadingStage.ON_DISABLE -> {
-                if (!hadErrorLoading){
-                    Log.inf("Unregistering commands")
-                    unregisterCommands()
-                }
-            }
-
-            LoadingStage.FORCED -> {
-                if (!hadErrorLoading){
-                    Log.inf("Manually registering commands")
-                    registerCommands()
-                }
+    fun load(){
+        try {
+            LevelledMobs.instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
+                commands.registrar().register(
+                    buildMainCommand(),
+                    "Manage the LevelledMobs plugin",
+                    mutableListOf("lm", "lvlmobs", "leveledmobs")
+                )
             }
         }
+        catch (_: NoSuchMethodError) {
+            hadErrorLoading = true
+            Log.war("The plugin may continue to work with limited commands. Note that this is expected on Spigot servers.")
+            loadFallbackCommands()
+        }
+    }
+
+    private fun buildMainCommand() : LiteralCommandNode<CommandSourceStack> {
+        return Commands.literal("levelledmobs")
+            .requires{
+                cmdSender -> cmdSender.sender.hasPermission("levelledmobs.command.levelledmobs")
+            }
+            .executes { ctx ->
+                MessagesHelper.showMessage(ctx.source.sender, "command.levelledmobs.main-usage")
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .then(DebugSubcommand.buildCommand())
+            .then(InfoSubcommand.buildCommand())
+            .then(KillSubcommand.buildCommand())
+            .then(ReloadSubcommand.buildCommand())
+            .then(RulesSubcommand.buildCommand())
+            .then(SpawnerEggCommand.buildCommand())
+            .then(SpawnerSubcommand.buildCommand())
+            .then(SummonSubcommand.buildCommand())
+            .build()
     }
 
     private fun loadFallbackCommands() {
@@ -76,22 +73,5 @@ object CommandHandler {
                 alias, LevelledMobs.instance.name, fallbackCommands
             )
         }
-    }
-
-    private fun registerCommands(){
-        COMMANDS.clear()
-        COMMANDS.add(LevelledMobsCommand.createInstance())
-        COMMANDS.forEach { cmd: CommandAPICommand -> cmd.register() }
-    }
-
-    private fun unregisterCommands(){
-        COMMANDS.forEach { cmd: CommandAPICommand -> CommandAPI.unregister(cmd.name) }
-    }
-
-    enum class LoadingStage {
-        ON_LOAD,
-        ON_ENABLE,
-        ON_DISABLE,
-        FORCED
     }
 }
