@@ -10,23 +10,27 @@ import java.util.TreeSet
  * @since 4.1.5
  */
 object KeyValidation {
-    val mainRuleSection = mutableSetOf(
-        "is-enabled",
-        "strategies",
-        "conditions",
-        "settings",
-        "modifiers",
-        "name",
-        "use-preset",
-        "custom-rule"
-    )
-
+    val mainRuleSection: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     val settings: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     val conditions: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     val modifiers: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     val strategies: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+    val strategyYCoordinate: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+    val strategySpawnDistance: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+    val strategySpawnDistanceCoords: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
 
     init {
+        mainRuleSection.addAll(mutableSetOf(
+            "is-enabled",
+            "strategies",
+            "conditions",
+            "settings",
+            "modifiers",
+            "name",
+            "use-preset",
+            "custom-rule"
+        ))
+
         settings.addAll(mutableSetOf(
             "attribute-modifier",
             "base-attribute-modifier",
@@ -116,6 +120,31 @@ object KeyValidation {
             "random",
             "weighted-random",
             "y-coordinate"
+        ))
+
+        strategyYCoordinate.addAll(mutableSetOf(
+            "start-height",
+            "end-height",
+            "period",
+            "increase-per-level",
+            "merge"
+        ))
+
+        strategySpawnDistance.addAll(mutableSetOf(
+            "ringed-tiers",
+            "buffer-distance",
+            "enable-height-modifier",
+            "transition-y-height",
+            "level-multiplier",
+            "y-height-period",
+            "scale-increase-downward",
+            "origin-coordinates",
+            "merge"
+        ))
+
+        strategySpawnDistanceCoords.addAll(mutableSetOf(
+            "x",
+            "z"
         ))
     }
 }

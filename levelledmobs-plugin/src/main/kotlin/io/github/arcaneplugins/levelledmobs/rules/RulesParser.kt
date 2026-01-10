@@ -1112,6 +1112,11 @@ class RulesParser {
             val ymlHelper2 = YmlParsingHelper(csYDistance)
             val yDistanceStrategy = YDistanceStrategy()
 
+            for (key in csYDistance.getKeys(false)){
+                if (!KeyValidation.strategyYCoordinate.contains(key))
+                    Log.war("Invalid y-coordinate option '$key', in rule: ${parsingInfo.ruleName}")
+            }
+
             yDistanceStrategy.shouldMerge = ymlHelper2.getBoolean("merge")
             yDistanceStrategy.startingYLevel = ymlHelper2.getInt2(
                  "start-height", yDistanceStrategy.startingYLevel
@@ -1121,6 +1126,9 @@ class RulesParser {
             )
             yDistanceStrategy.yPeriod = ymlHelper2.getInt2(
                  "period", yDistanceStrategy.yPeriod
+            )
+            yDistanceStrategy.increasePerLevel = ymlHelper2.getFloat2(
+                "increase-per-level", yDistanceStrategy.increasePerLevel
             )
 
             if (parsingInfo.levellingStrategy.containsKey(StrategyType.Y_COORDINATE))
@@ -1133,6 +1141,11 @@ class RulesParser {
         if (csSpawnDistance != null) {
             val ymlHelper2 = YmlParsingHelper(csSpawnDistance)
             val spawnDistanceStrategy = SpawnDistanceStrategy()
+
+            for (key in csSpawnDistance.getKeys(false)){
+                if (!KeyValidation.strategySpawnDistance.contains(key))
+                    Log.war("Invalid distance-from-origin option '$key', in rule: ${parsingInfo.ruleName}")
+            }
 
             spawnDistanceStrategy.shouldMerge = ymlHelper2.getBoolean("merge")
             spawnDistanceStrategy.ringedTiers = ymlHelper2.getFloat2(
@@ -1456,6 +1469,11 @@ class RulesParser {
         sds: SpawnDistanceStrategy
     ) {
         val spawnLocation = YmlParsingHelper.objToCS(cs, "origin-coordinates") ?: return
+
+        for (key in spawnLocation.getKeys(false)){
+            if (!KeyValidation.strategySpawnDistanceCoords.contains(key))
+                Log.war("Invalid origin-coordinates option '$key', in rule: ${parsingInfo.ruleName}")
+        }
 
         if (!"spawn".equals(spawnLocation.getString("x"), ignoreCase = true))
             sds.originCoordX = spawnLocation.getDouble("x").toFloat()
