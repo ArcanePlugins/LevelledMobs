@@ -93,6 +93,9 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                 .executes { ctx -> showCustomDrops(ctx.source.sender)
                     return@executes Command.SINGLE_SUCCESS
                 })
+            .then(createTargetWithConsoleOption("show-mob-groups"){
+                    ctx -> showMobGroups(ctx)
+            })
             .then(createLiteralCommand("show-pdc-keys")
                 .then(createStringArgument("console")
                     .suggests { _, builder -> builder.suggest("console").buildFuture() }
@@ -161,6 +164,26 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                     return@executes Command.SINGLE_SUCCESS
                 })
             .build()
+    }
+
+    private fun showMobGroups(
+        ctx: CommandContext<CommandSourceStack>
+    ){
+        val lmMobResult = RulesSubcommand.getLmMob(ctx) ?: return
+
+        val lmEntity = lmMobResult.lmEntity
+        val nameIfDifferent = if (lmEntity.nameIfBaby == lmEntity.typeName)
+            "" else " ${lmEntity.typeName}"
+        val entityMsg = "${lmEntity.nameIfBaby} (lvl ${lmEntity.getMobLevel}$nameIfDifferent), ${lmEntity.locationStr}"
+        val msg = "Showing groups for: $entityMsg\n${lmEntity.getApplicableGroupsAsString}"
+
+        if (lmMobResult.showOnConsole)
+            Log.inf(msg)
+        else {
+            ctx.source.sender.sendMessage(
+                MessageUtils.colorizeAll(msg)
+            )
+        }
     }
 
     private fun processDamageDebugOutput(
