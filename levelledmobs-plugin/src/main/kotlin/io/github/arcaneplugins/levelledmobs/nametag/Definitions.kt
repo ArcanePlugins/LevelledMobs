@@ -484,7 +484,9 @@ class Definitions{
         else {
             methodName = when (ver.majorVersionEnum) {
                 MinecraftMajorVersion.V1_21 -> {
-                    if (ver.revision >= 9)
+                    if (ver.revision >= 11)
+                        "aD"
+                    else if (ver.revision >= 9)
                         "aC"
                     else if (ver.revision >= 2 && ver.revision != 5)
                         "au"
@@ -543,6 +545,8 @@ class Definitions{
                 methodName =
                     if (ver.useMojangMappings)
                         "getId"
+                    else if (ver.revision >= 11)
+                        "aA"
                     else if (ver.revision >= 9)
                         "az"
                     else if (ver.revision == 5)

@@ -27,6 +27,7 @@ import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.inventory.EntityEquipment
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
@@ -1113,6 +1114,10 @@ class CustomDropsHandler {
         if (info.lmEntity == null) return false
         val equipment = info.lmEntity!!.livingEntity.equipment ?: return false
 
+        if (LevelledMobs.instance.ver.isRunningSpigot) return isMobWearingItemSpigot(
+                item, info, customDropItem, equipment
+        )
+
         if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet))
             return true
 
@@ -1149,6 +1154,40 @@ class CustomDropsHandler {
         }
 
         return false
+    }
+
+    @Suppress("removal")
+    private fun isMobWearingItemSpigot(
+        item: ItemStack,
+        info: CustomDropProcessingInfo,
+        customDropItem: CustomDropItem,
+        equipment: EntityEquipment
+    ) : Boolean{
+        if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet))
+            return true
+
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_HEAD.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
+            return item.isSimilar(equipment.helmet)
+        }
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_TORSO.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
+            return item.isSimilar(equipment.chestplate)
+        }
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_LEGS.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
+            return item.isSimilar(equipment.leggings)
+        }
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_FEET.includes(item.type)){
+            if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
+            return item.isSimilar(equipment.boots)
+        }
+
+        if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
+        if (item.isSimilar(equipment.itemInMainHand)) return true
+        if (item.isSimilar(info.equippedItemsInfo?.offhand)) return true
+
+        return item.isSimilar(equipment.itemInOffHand)
     }
 
     private fun madePlayerLevelRequirement(

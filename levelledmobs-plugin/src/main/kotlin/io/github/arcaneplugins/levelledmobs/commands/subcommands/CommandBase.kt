@@ -1,15 +1,20 @@
 package io.github.arcaneplugins.levelledmobs.commands.subcommands
 
+import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.arcaneplugins.levelledmobs.commands.MessagesBase
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
+import java.util.concurrent.CompletableFuture
 import java.util.regex.Pattern
 import org.bukkit.entity.Player
 
@@ -135,5 +140,46 @@ abstract class CommandBase(val basePermission: String) : MessagesBase() {
         }
 
         return results
+    }
+
+    fun createTargetWithConsoleOption(
+        name: String,
+        target: (ctx: CommandContext<CommandSourceStack>) -> Unit
+    ): LiteralCommandNode<CommandSourceStack>{
+        return createLiteralCommand(name)
+            .then(createStringArgument("option1")
+                .suggests { ctx, builder -> buildTargetSuggestions(ctx, builder) }
+                .executes { ctx -> target(ctx)
+                    return@executes Command.SINGLE_SUCCESS }
+                .then(createStringArgument("option2")
+                    .suggests { ctx, builder -> buildTargetSuggestions(ctx, builder) }
+                    .executes { ctx -> target(ctx)
+                        return@executes Command.SINGLE_SUCCESS }))
+            .executes { ctx -> target(ctx)
+                return@executes Command.SINGLE_SUCCESS
+            }
+            .build()
+    }
+
+    private fun buildTargetSuggestions(
+        ctx: CommandContext<CommandSourceStack>,
+        builder: SuggestionsBuilder
+    ) : CompletableFuture<Suggestions>{
+        var hasConsole = false
+        var hasLookingAt = false
+        val words = getOptionalResults(ctx, mutableListOf("option1", "option2"))
+
+        for (i in 3..<words.size){
+            val word = words[i]
+            if (word.startsWith("console", ignoreCase = true))
+                hasConsole = true
+            else if (word.startsWith("looking-at", ignoreCase = true))
+                hasLookingAt = true
+        }
+
+        if (!hasConsole) builder.suggest("console")
+        if (!hasLookingAt) builder.suggest("looking-at")
+
+        return builder.buildFuture()
     }
 }

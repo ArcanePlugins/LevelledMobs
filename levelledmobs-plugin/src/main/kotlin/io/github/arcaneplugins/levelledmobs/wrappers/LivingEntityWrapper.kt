@@ -29,7 +29,6 @@ import org.bukkit.entity.Bat
 import org.bukkit.entity.Boss
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Flying
 import org.bukkit.entity.Frog
 import org.bukkit.entity.Guardian
 import org.bukkit.entity.Hoglin
@@ -52,7 +51,7 @@ import org.bukkit.persistence.PersistentDataType
  */
 class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), LivingEntityInterface {
     // privates:
-    private var applicableGroups: MutableSet<String> = TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    private var applicableGroups: MutableSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
     private var hasCache = false
     private var isClearingData = false
     private var _livingEntity: LivingEntity? = null
@@ -105,7 +104,8 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         private val cache = Stack<LivingEntityWrapper>()
         private const val LOCKMAXRETRYTIMES = 3
         private val flyingMobNames = mutableListOf(
-            "ALLAY", "BEE", "BLAZE", "ENDER_DRAGON", "VEX", "WITHER", "PARROT", "BAT"
+            "ALLAY", "BAT", "BREEZE", "BEE", "BLAZE", "ENDER_DRAGON", "VEX", "WITHER",
+            "PARROT", "PHANTOM", "GHAST", "HAPPY_GHAST"
         )
 
         fun getInstance(
@@ -850,12 +850,12 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
         else if (livingEntity.world.environment == World.Environment.NETHER)
             groups.add(CustomUniversalGroups.ALL_NETHER_MOBS.toString())
 
-        if (livingEntity is Flying || flyingMobNames.contains(eType.name.uppercase()))
+        if (flyingMobNames.contains(eType.name.uppercase()))
             groups.add(CustomUniversalGroups.ALL_FLYING_MOBS.toString())
 
         // why bats aren't part of Flying interface is beyond me
-        if ((livingEntity !is Flying && livingEntity !is WaterMob
-                    && livingEntity !is Boss) && eType != EntityType.BAT
+        if (!flyingMobNames.contains(eType.name.uppercase()) && livingEntity !is WaterMob
+                    && livingEntity !is Boss
         ) {
             groups.add(CustomUniversalGroups.ALL_GROUND_MOBS.toString())
         }
@@ -871,6 +871,16 @@ class LivingEntityWrapper private constructor() : LivingEntityWrapperBase(), Liv
 
         return groups
     }
+
+    val getApplicableGroupsAsString: String
+        get() {
+            return "&8- &7Groups: &b" + getApplicableGroups().joinToString("&7, &b") + "&7."
+        }
+
+    val locationStr: String
+        get() {
+            return "${location.blockX}, ${location.blockY}, ${location.blockZ}"
+        }
 
     val hashCode: Int
         get() = if (isPopulated) livingEntity.hashCode() else 0

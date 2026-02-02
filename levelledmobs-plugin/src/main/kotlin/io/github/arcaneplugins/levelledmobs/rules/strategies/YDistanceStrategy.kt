@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.rules.strategies
 import java.util.concurrent.ThreadLocalRandom
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
+import kotlin.math.floor
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -15,6 +16,7 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
     var startingYLevel: Int? = null
     var endingYLevel: Int? = null
     var yPeriod: Int? = null
+    var increasePerLevel: Float? = null
 
     override val strategyType = StrategyType.Y_COORDINATE
     override var shouldMerge: Boolean = false
@@ -35,14 +37,18 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
 
         if (yds.yPeriod != null)
             this.yPeriod = yds.yPeriod
+
+        if (yds.increasePerLevel != null)
+            this.increasePerLevel = yds.increasePerLevel
     }
 
     override fun toString(): String {
         return String.format(
-            "y coord, start: %s, end: %s, yPeriod: %s",
+            "y coord, start: %s, end: %s, yPeriod: %s, increasePerLvl: %s",
             if (startingYLevel == null) 0 else startingYLevel,
             if (endingYLevel == null) 0 else endingYLevel,
-            if (yPeriod == null) 0 else yPeriod
+            if (yPeriod == null) 0 else yPeriod,
+            if (increasePerLevel == null) 0 else increasePerLevel
         )
     }
 
@@ -63,15 +69,26 @@ class YDistanceStrategy : LevellingStrategy, Cloneable {
         val diff = if (isDescending) yStart - yEnd else yEnd - yStart
 
         // make sure the mob location isn't past the end or start
-        mobYLocation = mobYLocation.coerceAtMost(highest)
-        mobYLocation = mobYLocation.coerceAtLeast(lowest)
+        if (isDescending && yPeriod == 0f && increasePerLevel == null)
+            mobYLocation = mobYLocation.coerceAtMost(highest)
+
+        if (yPeriod == 0f && increasePerLevel == null)
+            mobYLocation = mobYLocation.coerceAtLeast(lowest)
 
         val distanceBelow = if (isDescending)
             highest - mobYLocation
         else
             mobYLocation - lowest
 
-        if (yPeriod != 0f) {
+        if (increasePerLevel != null){
+            val firstStep = if (isDescending)
+                yStart - mobYLocation
+            else
+                mobYLocation - yStart
+
+            useLevel = floor(firstStep / increasePerLevel!!)
+        }
+        else if (yPeriod != 0f) {
             val lvlPerPeriod = (maxLevel - minLevel) / yPeriod
             val periodBelow = distanceBelow / yPeriod
             useLevel = minLevel + (lvlPerPeriod * periodBelow)

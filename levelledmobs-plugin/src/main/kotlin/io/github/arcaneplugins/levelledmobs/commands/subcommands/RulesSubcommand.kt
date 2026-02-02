@@ -79,18 +79,9 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
                 .executes { ctx -> showRule(ctx)
                     return@executes Command.SINGLE_SUCCESS
                 })
-            .then(createLiteralCommand("show-effective")
-                .then(createStringArgument("option1")
-                    .suggests { ctx, builder -> buildShowEffectiveSuggestions(ctx, builder) }
-                    .executes { ctx -> showEffectiveRules(ctx)
-                        return@executes Command.SINGLE_SUCCESS }
-                    .then(createStringArgument("option2")
-                        .suggests { ctx, builder -> buildShowEffectiveSuggestions(ctx, builder) }
-                        .executes { ctx -> showEffectiveRules(ctx)
-                            return@executes Command.SINGLE_SUCCESS }))
-                .executes { ctx -> showEffectiveRules(ctx)
-                    return@executes Command.SINGLE_SUCCESS
-                })
+            .then(createTargetWithConsoleOption("show-effective"){
+                ctx -> showEffectiveRules(ctx)
+            })
             .then(createLiteralCommand("help-discord")
                 .executes { ctx -> val message = MessagesHelper.getMessage("command.levelledmobs.rules.discord-invite")
                     showHyperlink(ctx.source.sender, message, "https://discord.gg/arcaneplugins-752310043214479462")
@@ -412,10 +403,61 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
     ) {
         val sender = ctx.source.sender
         commandSender = ctx.source.sender
+        val lmMobResult = getLmMob(ctx) ?: return
+
+        val lmEntity = lmMobResult.lmEntity
+        var entityName = lmEntity.typeName
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled
+            && ExternalCompatibilityManager.isMythicMob(lmEntity)
+        ) {
+            entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
+        }
+
+        val mobLevel = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
+        val messages = MessagesHelper.getMessage(
+            "command.levelledmobs.rules.effective-rules",
+            mutableListOf("%mobname%", "%entitytype%", "%location%", "%world%", "%level%"),
+            mutableListOf(
+                entityName, lmEntity.nameIfBaby, lmEntity.locationStr, lmEntity.worldName,
+                mobLevel
+            )
+        )
+
+        val sb = StringBuilder()
+        sb.append(
+            messages.joinToString("\n").replace(
+                LevelledMobs.instance.configUtils.prefix + " ", ""
+            )
+        )
+        if (lmMobResult.showOnConsole)
+            Log.inf(sb.toString())
+        else
+            sender.sendMessage(sb.toString())
+
+        if (!lmMobResult.showOnConsole) sb.setLength(0)
+
+        var mobHash: String? = null
+        if (lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING))
+            mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
+
+        val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
+            showEffectiveValues(lmEntity, lmMobResult.showOnConsole, mobHash)
+            lmEntity.free()
+            if (lmMobResult.showOnConsole) sender.sendMessage("Effective rules have been printed in the console")
+        }
+
+        lmEntity.inUseCount.getAndIncrement()
+        scheduler.runDelayed(25L)
+    }
+
+    fun getLmMob(
+        ctx: CommandContext<CommandSourceStack>
+    ): LmMobResult? {
+        val sender = ctx.source.sender
         val player = sender as? Player
         if (player == null) {
             sender.sendMessage("Must be run by a player")
-            return
+            return null
         }
 
         var showOnConsole = false
@@ -428,76 +470,14 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
                 findNearbyEntities = false
         }
 
-        val lmEntity: LivingEntityWrapper = getMobBeingLookedAt(player, findNearbyEntities, player)
-            ?: return
+        val result = getMobBeingLookedAt(player, findNearbyEntities, player)
 
-        var entityName = lmEntity.typeName
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled
-            && ExternalCompatibilityManager.isMythicMob(lmEntity)
-        ) {
-            entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)
-        }
-
-        val locationStr =
-            "${lmEntity.location.blockX}, ${lmEntity.location.blockY}, ${lmEntity.location.blockZ}"
-        val mobLevel: String = if (lmEntity.isLevelled) lmEntity.getMobLevel.toString() else "0"
-        val messages = MessagesHelper.getMessage(
-            "command.levelledmobs.rules.effective-rules",
-            mutableListOf("%mobname%", "%entitytype%", "%location%", "%world%", "%level%"),
-            mutableListOf(
-                entityName, lmEntity.nameIfBaby, locationStr, lmEntity.worldName,
-                mobLevel
-            )
-        )
-
-        val sb = StringBuilder()
-        sb.append(
-            messages.joinToString("\n").replace(
-                LevelledMobs.instance.configUtils.prefix + " ", ""
-            )
-        )
-        if (showOnConsole)
-            Log.inf(sb.toString())
+        return if (result == null)
+            null
         else
-            sender.sendMessage(sb.toString())
-
-        if (!showOnConsole) sb.setLength(0)
-
-        var mobHash: String? = null
-        if (lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING))
-            mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
-
-        val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
-            showEffectiveValues(lmEntity, showOnConsole, mobHash)
-            lmEntity.free()
-            if (showOnConsole) sender.sendMessage("Effective rules have been printed in the console")
-        }
-
-        lmEntity.inUseCount.getAndIncrement()
-        scheduler.runDelayed(25L)
+            LmMobResult(result, showOnConsole)
     }
 
-    private fun buildShowEffectiveSuggestions(
-        ctx: CommandContext<CommandSourceStack>,
-        builder: SuggestionsBuilder
-    ) : CompletableFuture<Suggestions>{
-        var hasConsole = false
-        var hasLookingAt = false
-        val words = getOptionalResults(ctx, mutableListOf("option1", "option2"))
-
-        for (i in 3..<words.size){
-            val word = words[i]
-            if (word.startsWith("console", ignoreCase = true))
-                hasConsole = true
-            else if (word.startsWith("looking-at", ignoreCase = true))
-                hasLookingAt = true
-        }
-
-        if (!hasConsole) builder.suggest("console")
-        if (!hasLookingAt) builder.suggest("looking-at")
-
-        return builder.buildFuture()
-    }
 
     fun getMobBeingLookedAt(
         player: Player,
