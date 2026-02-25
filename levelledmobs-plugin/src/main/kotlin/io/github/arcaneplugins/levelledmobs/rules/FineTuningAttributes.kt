@@ -112,6 +112,7 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
                 Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> { "zmbRnfrce" }
                 Addition.ATTRIBUTE_FOLLOW_RANGE -> { "flwRng" }
                 Addition.CUSTOM_XP_DROP -> { "xpDrp" }
+                Addition.MOB_SCALE -> { "mobScale" }
             }
         }
 
@@ -132,6 +133,7 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
                 LMMultiplier.ZOMBIE_SPAWN_REINFORCEMENTS -> { Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS }
                 LMMultiplier.FOLLOW_RANGE -> { Addition.ATTRIBUTE_FOLLOW_RANGE }
                 LMMultiplier.XP_DROP -> { Addition.CUSTOM_XP_DROP }
+                LMMultiplier.MOB_SCALE -> { Addition.MOB_SCALE }
             }
         }
 

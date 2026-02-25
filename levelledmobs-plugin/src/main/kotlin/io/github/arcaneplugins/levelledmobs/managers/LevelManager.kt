@@ -1437,6 +1437,7 @@ class LevelManager : LevelInterface2 {
                 Addition.ATTRIBUTE_FLYING_SPEED -> Utils.getAttribute(AttributeNames.FLYING_SPEED)
                 Addition.ATTRIBUTE_ATTACK_KNOCKBACK -> Utils.getAttribute(AttributeNames.ATTACK_KNOCKBACK)
                 Addition.ATTRIBUTE_FOLLOW_RANGE -> Utils.getAttribute(AttributeNames.FOLLOW_RANGE)
+                Addition.MOB_SCALE -> Utils.getAttribute(AttributeNames.MOB_SCALE)
                 Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
                     if (lmEntity.spawnReason.getMinecraftSpawnReason(lmEntity) == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS)
                         null
@@ -1934,7 +1935,8 @@ class LevelManager : LevelInterface2 {
             Addition.ATTRIBUTE_ATTACK_KNOCKBACK,
             Addition.ATTRIBUTE_FLYING_SPEED,
             Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE,
-            Addition.ATTRIBUTE_FOLLOW_RANGE
+            Addition.ATTRIBUTE_FOLLOW_RANGE,
+            Addition.MOB_SCALE
         )
 
         if (lmEntity.livingEntity is Zombie)

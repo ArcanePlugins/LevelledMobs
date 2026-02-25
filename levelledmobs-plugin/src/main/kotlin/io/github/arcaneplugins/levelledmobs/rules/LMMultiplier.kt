@@ -22,5 +22,6 @@ enum class LMMultiplier {
     HORSE_JUMP_STRENGTH,
     ZOMBIE_SPAWN_REINFORCEMENTS,
     FOLLOW_RANGE,
-    XP_DROP
+    XP_DROP,
+    MOB_SCALE
 }

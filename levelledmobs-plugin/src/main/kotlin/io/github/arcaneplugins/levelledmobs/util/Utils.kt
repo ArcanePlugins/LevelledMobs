@@ -113,6 +113,7 @@ object Utils {
                 AttributeNames.ATTACK_KNOCKBACK -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.attack_knockback"))
                 AttributeNames.FOLLOW_RANGE -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.follow_range"))
                 AttributeNames.SPAWN_REINFORCEMENTS -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("zombie.spawn_reinforcements"))
+                AttributeNames.MOB_SCALE -> Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.scale"))
             }
         }
 
@@ -129,6 +130,7 @@ object Utils {
             AttributeNames.ATTACK_KNOCKBACK -> Attribute.ATTACK_KNOCKBACK
             AttributeNames.FOLLOW_RANGE -> Attribute.FOLLOW_RANGE
             AttributeNames.SPAWN_REINFORCEMENTS -> Attribute.SPAWN_REINFORCEMENTS
+            AttributeNames.MOB_SCALE -> Attribute.SCALE
         }
     }
 

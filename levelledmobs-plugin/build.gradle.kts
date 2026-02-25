@@ -7,8 +7,8 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.3.0"
-    id("com.gradleup.shadow") version "9.2.2"
+    kotlin("jvm") version "2.3.10"
+    id("com.gradleup.shadow") version "9.3.1"
     id("idea")
     id("maven-publish")
 }
@@ -28,7 +28,7 @@ idea {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.10")
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
         exclude(group = "com.google.code.gson", module = "gson")
