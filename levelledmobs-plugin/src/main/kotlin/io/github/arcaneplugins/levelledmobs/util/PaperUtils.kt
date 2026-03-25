@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.util
 
-import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.util.Paper117Utils.serializeTextComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -66,15 +65,8 @@ object PaperUtils {
         if (player == null) return ""
 
         val comp = player.displayName()
-        return if (comp is TextComponent) {
-            if (LevelledMobs.instance.ver.minecraftVersion >= 1.17) {
-                // this is needed because PlainTextComponentSerializer is available in 1.17+
-                serializeTextComponent(comp)
-            } else {
-                LegacyComponentSerializer.legacySection()
-                    .serialize(comp)
-            }
-        }
+        return if (comp is TextComponent)
+            serializeTextComponent(comp)
         else
             comp.toString() // this is never happen but just in case.  it will return a bunch of garbage
     }

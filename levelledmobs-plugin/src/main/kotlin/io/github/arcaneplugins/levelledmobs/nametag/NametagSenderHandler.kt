@@ -17,9 +17,11 @@ class NametagSenderHandler {
 
         this.currentUtil = NmsNametagSender()
 
-        Log.inf(
-            "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
-        )
+        if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("26.1")) {
+            Log.inf(
+                "Using NMS version ${LevelledMobs.instance.ver.nmsVersion} for nametag support"
+            )
+        }
 
         return this.currentUtil
     }

@@ -82,16 +82,11 @@ class NmsNametagSender : NametagSender {
             val livingEntityId = def.methodGetId!!.invoke(internalLivingEntity) as Int
 
             val packet: Any
-            if (def.isOneNinteenThreeOrNewer) {
-                // List<DataWatcher.b<?>>
-                // java.util.List getAllNonDefaultValues() -> c
-                val getAllNonDefaultValues: List<*> = getNametagFields(entityData)
-                packet = def.ctorPacket!!
-                    .newInstance(livingEntityId, getAllNonDefaultValues)
-            } else {
-                packet = def.ctorPacket!!
-                    .newInstance(livingEntityId, entityData, true)
-            }
+            // List<DataWatcher.b<?>>
+            // java.util.List getAllNonDefaultValues() -> c
+            val getAllNonDefaultValues: List<*> = getNametagFields(entityData)
+            packet = def.ctorPacket!!
+                .newInstance(livingEntityId, getAllNonDefaultValues)
 
             val serverPlayer = def.methodPlayergetHandle!!.invoke(player)
             val connection = def.fieldConnection!![serverPlayer]
@@ -115,7 +110,7 @@ class NmsNametagSender : NametagSender {
         internalLivingEntity: Any
     ): Any? {
         // // 1.19 - 1.20.4 uses this method:
-        if (!def.isOneTwentyFiveOrNewer)
+        if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("1.21.5"))
             return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity)
 
         // constructor:
@@ -176,9 +171,8 @@ class NmsNametagSender : NametagSender {
         entityData: Any
     ): List<Any> {
         // 1.19.3 - 1.20.4 use the legacy method
-        if (!def.isOneTwentyFiveOrNewer)
+        if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("1.21.5"))
             return getNametagFieldsLegacy(entityData)
-
 
         // List<SynchedEntityData.DataValue<?>>
         val results: MutableList<Any> = LinkedList()

@@ -52,22 +52,10 @@ object ComponentUtils {
         args: Array<Any?>?
     ): Any? {
         try {
-            if (ver.minecraftVersion >= 1.19) {
-                if (args.isNullOrEmpty() || args[0] == null)
-                    return def.methodTranslatable!!.invoke(null, key)
+            if (args.isNullOrEmpty() || args[0] == null)
+                return def.methodTranslatable!!.invoke(null, key)
 
-                return def.methodTranslatableWithArgs!!.invoke(null, key, args)
-            } else {
-                return if (args.isNullOrEmpty()) {
-                    def.clazzTranslatableComponent!!
-                        .getConstructor(String::class.java)
-                        .newInstance(key)
-                } else {
-                    def.clazzTranslatableComponent!!
-                        .getConstructor(String::class.java, Array<Any>::class.java)
-                        .newInstance(key, args)
-                }
-            }
+            return def.methodTranslatableWithArgs!!.invoke(null, key, args)
         } catch (ex: Exception) {
             ex.printStackTrace()
             return null
