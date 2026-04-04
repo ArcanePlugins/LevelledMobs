@@ -252,7 +252,7 @@ class CustomDropsHandler {
             }
             processingInfo.writeAnyDebugMessages()
 
-            return CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride, false)
+            return CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride)
         }
 
         if (!equippedOnly) {
@@ -299,7 +299,7 @@ class CustomDropsHandler {
             processingInfo.writeAnyDebugMessages()
         }
 
-        return CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride, postCount > 0)
+        return CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride)
     }
 
     private fun buildDropsListFromGroupsAndEntity(
@@ -1089,8 +1089,7 @@ class CustomDropsHandler {
     ): Boolean {
         if (item.onlyDropIfEquipped && !info.itemWasEquipped) return false
 
-        if (info.equippedItemsInfo != null && info.equipmentClass != null &&
-            EquippedItemsInfo.droppedEquipmentByClass.contains(info.equipmentClass)){
+        if (info.equippedItemsInfo != null){
             // if we have dropped this equipment type already then don't drop multiples of it
             return false
         }

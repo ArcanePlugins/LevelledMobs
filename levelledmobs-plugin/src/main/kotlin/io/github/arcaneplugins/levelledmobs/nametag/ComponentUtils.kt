@@ -11,7 +11,6 @@ import io.github.arcaneplugins.levelledmobs.LevelledMobs
  */
 object ComponentUtils {
     private val def = LevelledMobs.instance.definitions
-    private val ver = LevelledMobs.instance.ver
 
     fun appendComponents(
         component: Any,

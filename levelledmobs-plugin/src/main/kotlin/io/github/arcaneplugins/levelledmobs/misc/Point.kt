@@ -17,26 +17,6 @@ class Point {
     private var y = 0
     private var z = 0
 
-    constructor(
-        worldName: String,
-        x: Int,
-        y: Int,
-        z: Int
-    ){
-        this.worldName = worldName
-        this.x = x
-        this.y = y
-        this.z = z
-    }
-
-    constructor(str: String) {
-        val split = str.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        this.worldName = split[0]
-        this.x = split[1].toInt()
-        this.y = split[2].toInt()
-        this.z = split[3].toInt()
-    }
-
     constructor(location: Location) {
         this.worldName = location.world.name
         this.x = location.blockX
@@ -44,15 +24,7 @@ class Point {
         this.z = location.blockZ
     }
 
-    private val coordinates: MutableList<Int>
-        get() = mutableListOf(x, y, z)
-
     override fun toString(): String {
         return "$worldName, $x, $y, $z"
-    }
-
-    fun matches(point1: Point, point2: Point): Boolean {
-        return (point1.worldName == point2.worldName &&
-                point1.toString() == point2.toString())
     }
 }

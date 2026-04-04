@@ -25,19 +25,7 @@ class MergeableStringList {
         this.doMerge = doMerge
     }
 
-    fun setItemFromString(input: String?) {
-        if (input == null) return
-
-        items.add(input)
-    }
-
     fun setItemFromList(input: Collection<String>?) {
-        if (input == null) return
-
-        items.addAll(input)
-    }
-
-    fun mergeFromList(input: Collection<String>?) {
         if (input == null) return
 
         items.addAll(input)

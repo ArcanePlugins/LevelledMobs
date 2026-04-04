@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.customdrops
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.enums.EquipmentClass
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import java.util.WeakHashMap
@@ -28,7 +27,6 @@ class EquippedItemsInfo {
     companion object{
         // only used on spigot servers
         private val customEquippedItems = WeakHashMap<LivingEntity, EquippedItemsInfo>()
-        val droppedEquipmentByClass = mutableSetOf<EquipmentClass>()
 
         fun getEntityEquippedItems(
             lmEntity: LivingEntityWrapper

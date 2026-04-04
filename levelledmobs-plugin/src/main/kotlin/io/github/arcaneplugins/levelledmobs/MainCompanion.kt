@@ -33,7 +33,6 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.colorizeAllInList
 import io.github.arcaneplugins.levelledmobs.util.Utils.replaceAllInList
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerResult
 import io.github.arcaneplugins.levelledmobs.wrappers.SchedulerWrapper
-import java.io.File
 import java.io.InvalidObjectException
 import java.time.Duration
 import java.time.Instant
@@ -46,7 +45,6 @@ import org.bstats.charts.SimplePie
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -98,15 +96,6 @@ class MainCompanion{
 
     fun load(){
         buildUniversalGroups()
-    }
-
-    private fun getSettingsVersion(): Int {
-        val main = LevelledMobs.instance
-        val file = File(main.dataFolder, "settings.yml")
-        if (!file.exists()) return 0
-
-        main.helperSettings.cs = YamlConfiguration.loadConfiguration(file)
-        return main.helperSettings.getInt("file-version")
     }
 
     // Note: also called by the reload subcommand.

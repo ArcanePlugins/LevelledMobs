@@ -43,7 +43,7 @@ object MiscUtils {
     fun getNBTDump(
         livingEntity: LivingEntity
     ): String {
-        return getNBTDumpObj(livingEntity)?.toString() ?: return ""
+        return getNBTDumpObj(livingEntity)?.toString() ?: ""
     }
 
     fun getNBTDumpObj(

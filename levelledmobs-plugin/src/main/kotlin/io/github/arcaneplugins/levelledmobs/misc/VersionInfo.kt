@@ -1,9 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
-import io.github.arcaneplugins.levelledmobs.util.Log
 import java.io.InvalidObjectException
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
-import java.util.logging.Logger
 
 /**
  * A custom implementation for comparing program versions

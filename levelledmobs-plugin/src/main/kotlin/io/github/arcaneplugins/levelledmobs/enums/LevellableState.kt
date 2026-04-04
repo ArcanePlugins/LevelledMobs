@@ -26,29 +26,6 @@ enum class LevellableState {
     DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE,
 
     /**
-     * A rule has been configured to block MythicMobs mobs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS,
-
-    /**
-     * A rule has been configured to block EliteMobs mobs from being levelled.
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS,
-
-    /**
-     * A rule has been configured to block Simple Pets from being levelled
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS,
-
-    /**
-     * A rule has been configured to block Elite Bosses from being levelled
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES,
-
-
-    DENIED_EXTERNAL_PLUGIN,
-
-    /**
      * A rule has been configured to block nametagged mobs from being levelled.
      */
     DENIED_CONFIGURATION_CONDITION_NAMETAGGED,
