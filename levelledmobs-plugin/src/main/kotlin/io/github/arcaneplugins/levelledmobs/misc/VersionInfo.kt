@@ -1,7 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.io.InvalidObjectException
 import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
+import java.util.logging.Logger
 
 /**
  * A custom implementation for comparing program versions
@@ -10,11 +12,18 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
  * @since 2.6.0
  */
 class VersionInfo(
-    val version: String
+    versionInput: String
 ) : Comparable<VersionInfo> {
     private var thisVerSplit = mutableListOf<Int>()
+    val version: String
 
     init {
+        val buildNum = versionInput.indexOf("build") // 26.1.1.build.15
+        version = if (buildNum > 0)
+            versionInput.substring(0, buildNum)
+        else
+            versionInput
+
         val split = version.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         for (numTemp in split) {
             if (!isDouble(numTemp))
