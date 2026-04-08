@@ -1,9 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import java.util.regex.Matcher
+import io.github.arcaneplugins.levelledmobs.misc.VersionInfo
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.regex.Pattern
 import org.bukkit.Bukkit
+import kotlin.text.split
 
 /**
  * Holds various parsed data on the server verion
@@ -14,8 +16,8 @@ import org.bukkit.Bukkit
  */
 class ServerVersionInfo {
     fun load(){
-        parseServerVersion()
         parseNMSVersion()
+        parseServerVersion()
 
         if (isRunningPaper && "unknown" == nmsVersion) {
             nmsVersion = Bukkit.getServer().minecraftVersion
@@ -23,18 +25,17 @@ class ServerVersionInfo {
         }
 
         // 1.21.6+ paper servers
-        useMojangMappings = isRunningPaper && minorVersion >= 21 && revision >= 6
+        useMojangMappings = minecraftVersion.isGreaterThanOrEqual("26.1") ||
+                isRunningPaper && minecraftVersion.isGreaterThanOrEqual("21.6")
     }
 
     var majorVersion = 0
-        private set
-    var majorVersionEnum: MinecraftMajorVersion? = null
         private set
     var minorVersion = 0
         private set
     var revision = 0
         private set
-    var minecraftVersion = 0.0
+    var minecraftVersion = VersionInfo("0.0")
         private set
     private var isOneTwentyFiveOrNewer = false
     var useOldEnums = false
@@ -56,7 +57,6 @@ class ServerVersionInfo {
     var nmsVersion = "unknown"
         private set
     private val versionPattern: Pattern = Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?")
-    private val versionShortPattern: Pattern = Pattern.compile(".*\\.(v\\d+_\\d+)(?:.+)?")
 
     private fun parseServerVersion(){
         if (isRunningPaper)
@@ -72,13 +72,13 @@ class ServerVersionInfo {
             minorVersion == 20 && revision >= 4 || minorVersion >= 21
 
         // 1.21.3 changed various enums to interfaces
-        useOldEnums = minorVersion < 21 || minorVersion == 21 && revision < 3
+        useOldEnums = minecraftVersion.isLessThanOrEquals("1.21.3")
 
-        useNewHorseJumpAttrib = minorVersion >= 21 || (minorVersion == 20 && revision >= 6)
-
-        useSimpleName = (isRunningPaper && isOneTwentyFiveOrNewer && !isRunningFolia
+        useSimpleName = minecraftVersion.isGreaterThanOrEqual("26.1") ||
+                (isRunningPaper && isOneTwentyFiveOrNewer && !isRunningFolia
                 || isRunningFabric)
-                && (!isRunningFolia || minorVersion >= 22)
+                && (!isRunningFolia || minecraftVersion.isGreaterThanOrEqual("1.22.0"))
+
     }
 
     private fun parsePaperVersion(){
@@ -91,61 +91,25 @@ class ServerVersionInfo {
             minecraftVersion = minecraftVersion.take(space)
 
         // 1.20.4
-        val versions = minecraftVersion.split(".")
-        for (i in versions.indices) {
-            when (i) {
-                0 -> this.majorVersion = versions[i].toInt()
-                1 -> this.minorVersion = versions[i].toInt()
-                2 -> this.revision = versions[i].toInt()
-            }
-        }
-
-        this.majorVersionEnum =
-            MinecraftMajorVersion.valueOf("V${majorVersion}_$minorVersion")
-        this.minecraftVersion = "$majorVersion.$minorVersion".toDouble()
+        parseVersions(minecraftVersion)
     }
 
     private fun parseBukkitVersion() {
-        val bukkitVersion = Bukkit.getBukkitVersion()
         // 1.19.2-R0.1-SNAPSHOT --> 1.19.2
-        val firstDash = bukkitVersion.indexOf("-")
-        val versions = bukkitVersion.take(firstDash).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
-            .toTypedArray()
-        for (i in versions.indices) {
-            when (i) {
-                0 -> this.majorVersion = versions[i].toInt()
-                1 -> this.minorVersion = versions[i].toInt()
-                2 -> this.revision = versions[i].toInt()
-            }
-        }
+        val bukkitVersion = Bukkit.getBukkitVersion().split('-')[0]
+
+        parseVersions(bukkitVersion)
     }
 
     private fun parseNMSVersion() {
         if (isRunningFabric) return
-        // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
-        val nmsRegex: Matcher = versionPattern.matcher(
+        if (minecraftVersion.isGreaterThanOrEqual("26.1")) return
+
+        // example: 26.1-R0.1-SNAPSHOT
+        Log.infTemp("version: ${Bukkit.getServer().javaClass.canonicalName}")
+        val nmsRegex = versionPattern.matcher(
             Bukkit.getServer().javaClass.canonicalName
         )
-        val nmsShortRegex: Matcher = versionShortPattern.matcher(
-            Bukkit.getServer().javaClass.canonicalName
-        )
-
-        if (nmsShortRegex.find()) {
-            // example: 1.18
-            var versionStr = nmsShortRegex
-                .group(1).uppercase()
-
-            try {
-                this.majorVersionEnum =
-                    MinecraftMajorVersion.valueOf(versionStr.uppercase())
-                versionStr = versionStr.replace("_", ".").replace("V", "")
-                this.minecraftVersion = versionStr.toDouble()
-            } catch (e: Exception) {
-                LevelledMobs.instance.logger.warning(
-                    "LevelledMobs: Could not extract the minecraft version from '${Bukkit.getServer().javaClass.canonicalName}'. ${e.message}"
-                )
-            }
-        }
 
         // example: v1_18_R2
         if (nmsRegex.find())
@@ -156,6 +120,20 @@ class ServerVersionInfo {
                     .javaClass.canonicalName
             )
         }
+    }
+
+    private fun parseVersions(version: String){
+        val versions = version.split(".")
+
+        for (i in versions.indices) {
+            when (i) {
+                0 -> this.majorVersion = versions[i].toInt()
+                1 -> this.minorVersion = versions[i].toInt()
+                2 -> this.revision = versions[i].toInt()
+            }
+        }
+
+        this.minecraftVersion = VersionInfo(version)
     }
 
     val isRunningFabric: Boolean
@@ -219,9 +197,5 @@ class ServerVersionInfo {
 
     override fun toString(): String {
         return "$majorVersion.$minorVersion.$revision - $nmsVersion"
-    }
-
-    enum class MinecraftMajorVersion {
-        V1_19, V1_20, V1_21
     }
 }

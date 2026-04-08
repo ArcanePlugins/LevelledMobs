@@ -5,7 +5,6 @@ import java.util.UUID
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
 import io.github.arcaneplugins.levelledmobs.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.debug.DebugType
-import io.github.arcaneplugins.levelledmobs.enums.EquipmentClass
 import io.github.arcaneplugins.levelledmobs.rules.CustomDropsRuleSet
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import org.bukkit.entity.Player
@@ -37,7 +36,6 @@ class CustomDropProcessingInfo {
     var groupLimits: GroupLimits? = null
     var customDropId: String? = null
     var itemWasEquipped = false
-    var equipmentClass: EquipmentClass? = null
     var newDrops: MutableList<ItemStack>? = null
     var dropInstance: CustomDropInstance? = null
     var equippedItemsInfo: EquippedItemsInfo? = null
@@ -62,9 +60,6 @@ class CustomDropProcessingInfo {
 
         val count = itemsDroppedById.getOrDefault(dropBase.uid, 0) + amountDropped
         itemsDroppedById[dropBase.uid] = count
-
-        if (equipmentClass != null && dropBase is CustomDropItem && equippedItemsInfo != null)
-            EquippedItemsInfo.droppedEquipmentByClass.add(equipmentClass!!)
     }
 
     fun getDropItemsCountForGroup(dropBase: CustomDropBase): Int {

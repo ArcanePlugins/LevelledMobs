@@ -15,7 +15,6 @@ object NamespacedKeys {
     val noLevelKey = NamespacedKey(LevelledMobs.instance, "noLevel")
     val wasBabyMobKey = NamespacedKey(LevelledMobs.instance, "wasBabyMob")
     val overridenEntityNameKey = NamespacedKey(LevelledMobs.instance, "overridenEntityName")
-    val hasCustomNameTag = NamespacedKey(LevelledMobs.instance, "hasCustomNameTag")
     val playerLevellingId = NamespacedKey(LevelledMobs.instance, "playerLevelling_Id")
     val playerLevellingValue = NamespacedKey(LevelledMobs.instance, "playerLevelling_Value")
     val chanceRuleAllowed = NamespacedKey(LevelledMobs.instance, "chanceRule_Allowed")

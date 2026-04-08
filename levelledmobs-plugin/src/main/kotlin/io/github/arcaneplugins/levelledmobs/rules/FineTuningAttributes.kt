@@ -5,7 +5,6 @@ import io.github.arcaneplugins.levelledmobs.enums.Addition
 import io.github.arcaneplugins.levelledmobs.misc.EffectiveInfo
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import kotlin.collections.iterator
-import kotlin.collections.set
 
 /**
  * Holds any custom multipliers values parsed from rules.yml
@@ -112,6 +111,7 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
                 Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> { "zmbRnfrce" }
                 Addition.ATTRIBUTE_FOLLOW_RANGE -> { "flwRng" }
                 Addition.CUSTOM_XP_DROP -> { "xpDrp" }
+                Addition.MOB_SCALE -> { "mobScale" }
             }
         }
 
@@ -132,6 +132,7 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
                 LMMultiplier.ZOMBIE_SPAWN_REINFORCEMENTS -> { Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS }
                 LMMultiplier.FOLLOW_RANGE -> { Addition.ATTRIBUTE_FOLLOW_RANGE }
                 LMMultiplier.XP_DROP -> { Addition.CUSTOM_XP_DROP }
+                LMMultiplier.MOB_SCALE -> { Addition.MOB_SCALE }
             }
         }
 
@@ -144,40 +145,6 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
                 multiplier.isAddition,
                 multiplier.isBaseModifier
             )
-        }
-
-        private fun dulicateMap1(
-            source: MutableMap<Addition, Multiplier>
-        ): MutableMap<Addition, Multiplier>{
-            val copy = mutableMapOf<Addition, Multiplier>()
-
-            for (item in source) {
-                val sourceAddition = item.key
-                val sourceMultiplier = item.value
-
-                copy[sourceAddition] = duplicateMultiplier(sourceMultiplier)
-            }
-
-            return copy
-        }
-
-        private fun dulicateMap2(
-            source: MutableMap<String, MutableMap<Addition, Multiplier>>
-        ): MutableMap<String, MutableMap<Addition, Multiplier>>{
-            val copy = mutableMapOf<String, MutableMap<Addition, Multiplier>>()
-
-            for (item in source){
-                val sourceMob = item.key
-                val sourceValues = item.value
-                val copiedMap = mutableMapOf<Addition, Multiplier>()
-
-                for (item2 in sourceValues)
-                    copiedMap[item2.key] = duplicateMultiplier(item2.value)
-
-                copy[sourceMob] = copiedMap
-            }
-
-            return copy
         }
 
         private fun copyMultipliers(

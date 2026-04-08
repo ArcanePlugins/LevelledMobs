@@ -43,7 +43,7 @@ object MiscUtils {
     fun getNBTDump(
         livingEntity: LivingEntity
     ): String {
-        return getNBTDumpObj(livingEntity)?.toString() ?: return ""
+        return getNBTDumpObj(livingEntity)?.toString() ?: ""
     }
 
     fun getNBTDumpObj(
@@ -51,8 +51,7 @@ object MiscUtils {
     ): Any? {
         val def = LevelledMobs.instance.definitions
         val ver = LevelledMobs.instance.ver
-        val useNewerMethod = (ver.minecraftVersion >= 1.21 && ver.revision >= 6
-                || ver.minecraftVersion >= 1.22)
+        val useNewerMethod = ver.minecraftVersion.isGreaterThanOrEqual("1.21.6")
 
         try {
             val internalLivingEntity = def.methodGetHandle!!.invoke(livingEntity)
@@ -99,7 +98,7 @@ object MiscUtils {
             var byteArraySize = -1
             val classType = def.methodGetType!!.invoke(entry.value)
             val className = (def.methodGetName!!.invoke(classType) as String).lowercase()
-            if (entry.value.javaClass.isAssignableFrom(def.classByteArrayTag!!))
+            if (entry.value.javaClass.isAssignableFrom(def.clazzByteArrayTag!!))
                 byteArraySize = def.methodByteArrayTagSize!!.invoke(entry.value) as Int
 
             results[entry.key] = if (byteArraySize >= 0)

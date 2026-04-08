@@ -10,12 +10,18 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
  * @since 2.6.0
  */
 class VersionInfo(
-    val version: String
+    versionInput: String
 ) : Comparable<VersionInfo> {
-    private val versionStr: String? = null
     private var thisVerSplit = mutableListOf<Int>()
+    val version: String
 
     init {
+        val buildNum = versionInput.indexOf("build") // 26.1.1.build.15
+        version = if (buildNum > 0)
+            versionInput.substring(0, buildNum)
+        else
+            versionInput
+
         val split = version.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         for (numTemp in split) {
             if (!isDouble(numTemp))
@@ -28,6 +34,22 @@ class VersionInfo(
         repeat(thisVerSplit.size - 4) {
             thisVerSplit.add(0)
         }
+    }
+
+    fun isLessThan(version: String): Boolean {
+        return compareTo(VersionInfo(version)) == -1
+    }
+
+    fun isLessThanOrEquals(version: String): Boolean {
+        return compareTo(VersionInfo(version)) <= 0
+    }
+
+    fun isGreaterThan(version: String): Boolean {
+        return compareTo(VersionInfo(version)) == 1
+    }
+
+    fun isGreaterThanOrEqual(version: String): Boolean {
+        return compareTo(VersionInfo(version)) >= 0
     }
 
     override fun compareTo(other: VersionInfo): Int {
@@ -56,10 +78,14 @@ class VersionInfo(
         if (other == this) return true
         if (other !is VersionInfo) return false
 
-        return this.versionStr == other.version
+        return this.version == other.version
     }
 
     override fun hashCode(): Int {
-        return this.versionStr.hashCode()
+        return this.version.hashCode()
+    }
+
+    override fun toString(): String {
+        return version
     }
 }

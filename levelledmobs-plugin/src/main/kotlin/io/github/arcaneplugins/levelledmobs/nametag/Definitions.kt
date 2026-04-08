@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.nametag
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
-import io.github.arcaneplugins.levelledmobs.nametag.ServerVersionInfo.MinecraftMajorVersion
 import io.github.arcaneplugins.levelledmobs.util.Log
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -24,8 +23,6 @@ import org.bukkit.entity.LivingEntity
  */
 class Definitions{
     internal var hasKiori = false
-    internal var isOneNinteenThreeOrNewer = false
-    internal var isOneTwentyFiveOrNewer = false
     private var hasMiniMessage = false
     var useTranslationComponents = false
     private var useLegacySerializer = false
@@ -40,9 +37,10 @@ class Definitions{
     var clazzTagValueOutput: Class<*>? = null
         private set
     private var clazzIChatMutableComponent: Class<*>? = null
+    private var clazzComponent: Class<*>? = null
+    private var clazzMutableComponent: Class<*>? = null
+    private var clazzCommonComponents: Class<*>? = null
     private var clazzIChatBaseComponent: Class<*>? = null
-    var clazzTranslatableComponent: Class<*>? = null
-        private set
     private var clazzCraftLivingEntity: Class<*>? = null
     private var clazzCraftEntity: Class<*>? = null
     var clazzEntity: Class<*>? = null
@@ -68,14 +66,12 @@ class Definitions{
         private set
     var clazzNbtCompount: Class<*>? = null
         private set
-
-    var classByteArrayTag: Class<*>? = null
+    var clazzByteArrayTag: Class<*>? = null
         private set
     var clazzNBTTagType: Class<*>? = null
         private set
     var clazzNBTBase: Class<*>? = null
         private set
-
 
     // mythic mobs:
     private var clazzMMmobExecutor: Class<*>? = null
@@ -208,14 +204,6 @@ class Definitions{
     }
 
     private fun build() {
-        this.isOneNinteenThreeOrNewer =
-            ver.minorVersion == 19 && ver.revision >= 3 ||
-                    ver.minorVersion >= 20
-
-        this.isOneTwentyFiveOrNewer =
-            ver.minorVersion == 20 && ver.revision >= 5 ||
-                    ver.minorVersion >= 21
-
         try {
             buildClasses()
 
@@ -248,12 +236,29 @@ class Definitions{
 
     private fun buildClasses() {
         if (!ver.isRunningPaper) {
-            this.clazzIChatMutableComponent = Class.forName(
-                "net.minecraft.network.chat.IChatMutableComponent"
+            if (ver.minecraftVersion.isGreaterThanOrEqual("26.1")){
+                this.clazzComponent = Class.forName(
+                    "net.minecraft.network.chat.Component"
+                )
+            }
+            else{
+                this.clazzIChatMutableComponent = Class.forName(
+                    "net.minecraft.network.chat.IChatMutableComponent"
+                )
+
+                this.clazzIChatBaseComponent = Class.forName(
+                    "net.minecraft.network.chat.IChatBaseComponent"
+                )
+            }
+        }
+
+        if (ver.minecraftVersion.isGreaterThanOrEqual("26.1")){
+            this.clazzMutableComponent = Class.forName(
+                "net.minecraft.network.chat.MutableComponent"
             )
 
-            this.clazzIChatBaseComponent = Class.forName(
-                "net.minecraft.network.chat.IChatBaseComponent"
+            this.clazzCommonComponents = Class.forName(
+                "net.minecraft.network.chat.CommonComponents"
             )
         }
 
@@ -270,7 +275,7 @@ class Definitions{
             NmsMappings.getMapping("clazzDataWatcher")
         )
 
-        if (isOneTwentyFiveOrNewer){
+        if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5")){
             // net.minecraft.network.syncher.SynchedEntityData$Builder ->
             this.clazzDataWatcherBuilder = Class.forName(
                 NmsMappings.getMapping("clazzDataWatcherBuilder")
@@ -365,20 +370,28 @@ class Definitions{
         //    net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> h
         // 1.21.6+:
         //    void saveWithoutId(net.minecraft.world.level.storage.ValueOutput) -> d
+        if (ver.isRunningSpigot) return // paper only command
+        val isTwentySixOneOrNewer = ver.minecraftVersion.isGreaterThanOrEqual("26.1")
 
         try {
-            this.clazzNbtCompount = Class.forName("net.minecraft.nbt.NBTTagCompound")
-            this.classByteArrayTag = Class.forName("net.minecraft.nbt.ByteArrayTag")
-            this.clazzNBTTagType = Class.forName("net.minecraft.nbt.NBTTagType")
-            this.clazzNBTBase = Class.forName("net.minecraft.nbt.NBTBase")
+            var className = if (isTwentySixOneOrNewer)
+                "CompoundTag" else "NBTTagCompound"
+            this.clazzNbtCompount = Class.forName("net.minecraft.nbt.$className")
+            this.clazzByteArrayTag = Class.forName("net.minecraft.nbt.ByteArrayTag")
+            className = if (isTwentySixOneOrNewer)
+                "TagType" else "NBTTagType"
+            this.clazzNBTTagType = Class.forName("net.minecraft.nbt.$className")
+            className = if (isTwentySixOneOrNewer)
+                "Tag" else "NBTBase"
+            this.clazzNBTBase = Class.forName("net.minecraft.nbt.$className")
 
             this.methodGetName = clazzNBTTagType!!.getDeclaredMethod("getName")
             this.methodGetType = clazzNBTBase!!.getDeclaredMethod("getType")
-            this.methodByteArrayTagSize = classByteArrayTag!!.getMethod("size")
+            this.methodByteArrayTagSize = clazzByteArrayTag!!.getMethod("size")
             this.fieldTags = clazzNbtCompount!!.getDeclaredField("tags")
             fieldTags!!.trySetAccessible()
 
-            if (ver.minorVersion >= 21 && ver.revision >= 6 || ver.minorVersion >= 22) {
+            if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.6")) {
                 /*
                     net.minecraft.util.ProblemReporter p = net.minecraft.util.ProblemReporter.DISCARDING;
                     net.minecraft.world.level.storage.TagValueOutput tvo = net.minecraft.world.level.storage.TagValueOutput.createWithoutContext(p);
@@ -414,12 +427,25 @@ class Definitions{
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
         // 1.19.0 = a, everything else  = b
 
-        val methodName = if (ver.minecraftVersion == 1.19 && ver.revision == 0
+        /*
+        * val methodName = if (ver.minecraftVersion == 1.19 && ver.revision == 0
         ) "a" else "b"
 
         this.methodComponentAppend = clazzIChatMutableComponent!!.getDeclaredMethod(
             methodName, this.clazzIChatBaseComponent
         )
+        * */
+
+        if (ver.minecraftVersion.isGreaterThanOrEqual("26.1")){
+            this.methodComponentAppend = clazzMutableComponent!!.getDeclaredMethod(
+                "append", this.clazzComponent
+            )
+        }
+        else{
+            this.methodComponentAppend = clazzIChatMutableComponent!!.getDeclaredMethod(
+                "b", this.clazzIChatBaseComponent
+            )
+        }
     }
 
     private fun getMethodTextComponents() {
@@ -429,21 +455,18 @@ class Definitions{
         // net.minecraft.network.chat.Component ->
         //     net.minecraft.network.chat.MutableComponent empty()
 
-        val methodName = if (ver.minecraftVersion >= 1.20) {
-            if (ver.revision >= 3 || ver.minorVersion >= 21 && ver.revision >= 2) // 1.20.3+, 1.20.0 - 2 or 1.21.2+
-                "i" else "h"
-        } else {
-            // 1.19.0 = g, 1.19.1+ = h
-            if (ver.revision == 0) "g" else "h"
+        if (ver.minecraftVersion.isGreaterThanOrEqual("26.1")) {
+            this.methodEmptyComponent = clazzComponent!!.getDeclaredMethod("empty")
+            this.methodTextComponent = clazzComponent!!.getDeclaredMethod(
+                "nullToEmpty", String::class.java)
         }
-
-        // net.minecraft.network.chat.Component ->
-        //     net.minecraft.network.chat.MutableComponent empty()
-        this.methodEmptyComponent = clazzIChatBaseComponent!!.getDeclaredMethod(methodName)
-
-        // net.minecraft.network.chat.Component ->
-        //    net.minecraft.network.chat.Component nullToEmpty(java.lang.String) -> a
-        this.methodTextComponent = clazzIChatBaseComponent!!.getDeclaredMethod("a", String::class.java)
+        else {
+            this.methodEmptyComponent = clazzIChatBaseComponent!!.getDeclaredMethod("h")
+            // net.minecraft.network.chat.Component ->
+            //    net.minecraft.network.chat.Component nullToEmpty(java.lang.String) -> a
+            this.methodTextComponent = clazzIChatBaseComponent!!.getDeclaredMethod(
+                "a", String::class.java)
+        }
     }
 
     private fun getMethodTranslatable() {
@@ -452,17 +475,28 @@ class Definitions{
         // # {"fileName":"Component.java","id":"sourceFile"}
         // net.minecraft.network.chat.Component ->
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String) ->
-        this.methodTranslatable = clazzIChatBaseComponent!!.getDeclaredMethod(
-            "c",
-            String::class.java
-        )
 
-        // net.minecraft.network.chat.Component ->
-        // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[]) ->
-        this.methodTranslatableWithArgs = clazzIChatBaseComponent!!.getDeclaredMethod(
-            "a",
-            String::class.java, Array<Any>::class.java
-        )
+        if (ver.minecraftVersion.isGreaterThanOrEqual("26.1")) {
+            this.methodTranslatable = clazzComponent!!.getDeclaredMethod(
+                "translatable", String::class.java
+            )
+            // net.minecraft.network.chat.Component ->
+            // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[]) ->
+            this.methodTranslatableWithArgs = clazzComponent!!.getDeclaredMethod(
+                "translatable",
+                String::class.java, Array<Any>::class.java
+            )
+        }
+        else{
+            this.methodTranslatable = clazzIChatBaseComponent!!.getDeclaredMethod(
+                "c",
+                String::class.java
+            )
+            this.methodTranslatableWithArgs = clazzIChatBaseComponent!!.getDeclaredMethod(
+                "a",
+                String::class.java, Array<Any>::class.java
+            )
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -477,50 +511,17 @@ class Definitions{
 
         // # {"fileName":"Entity.java","id":"sourceFile"}
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
-        var methodName: String
-
-        if (ver.useMojangMappings)
-            methodName = "getEntityData"
+        var methodName = if (ver.useMojangMappings)
+            "getEntityData"
         else {
-            methodName = when (ver.majorVersionEnum) {
-                MinecraftMajorVersion.V1_21 -> {
-                    if (ver.revision >= 11)
-                        "aD"
-                    else if (ver.revision >= 9)
-                        "aC"
-                    else if (ver.revision >= 2 && ver.revision != 5)
-                        "au"
-                    else
-                        "ar"
-                }
-
-                MinecraftMajorVersion.V1_20 -> {
-                    if (ver.revision >= 5) {
-                        // 1.20.5+
-                        "ap"
-                    } else if (ver.revision >= 3) {
-                        // 1.20.3 - .4
-                        "an"
-                    } else if (ver.revision == 2) {
-                        // 1.20.2
-                        "al"
-                    } else {
-                        // 1.20 - 1.20.1
-                        "aj"
-                    }
-                }
-
-                MinecraftMajorVersion.V1_19 -> {
-                    if (ver.revision >= 4)
-                        "aj"
-                    else if (ver.revision == 3)
-                        "al"
-                    else
-                        "ai"
-                }
-
-                else -> throw RuntimeException("Unable to determine NMS method name for your Minecraft server version. Is your server version compatible?")
-            }
+            if (ver.revision >= 11)
+                "aD"
+            else if (ver.revision >= 9)
+                "aC"
+            else if (ver.revision >= 2 && ver.revision != 5)
+                "au"
+            else
+                "ar"
         }
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
@@ -529,7 +530,7 @@ class Definitions{
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         methodName =
             if (ver.useMojangMappings) "set"
-            else if (isOneTwentyFiveOrNewer) "a"
+            else if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5")) "a"
             else "b"
 
         this.methodSet = clazzDataWatcher!!.getMethod(
@@ -540,51 +541,23 @@ class Definitions{
         // # {"fileName":"ChunkStatusUpdateListener.java","id":"sourceFile"}
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
-        when (ver.majorVersionEnum) {
-            MinecraftMajorVersion.V1_21 -> {
-                methodName =
-                    if (ver.useMojangMappings)
-                        "getId"
-                    else if (ver.revision >= 11)
-                        "aA"
-                    else if (ver.revision >= 9)
-                        "az"
-                    else if (ver.revision == 5)
-                        "ao" // 1.21.5 only
-                    else if (ver.revision >= 2)
-                        "ar" // 1.21.2 - 1.21.4, 1.21.6+
-                    else
-                        "an"
-            }
-            MinecraftMajorVersion.V1_20 -> {
-                methodName =
-                    if (ver.revision >= 5) {
-                        // 1.20.5+
-                        "al"
-                    }
-                    else if (ver.revision >= 3) {
-                        // 1.20.3 - .4
-                        "aj"
-                    } else {
-                        if (ver.revision >= 2) "ah" else "af"
-                    }
-            }
-            else -> {
-                methodName = if (ver.revision >= 4) {
-                    "af"
-                } else if (this.isOneNinteenThreeOrNewer) {
-                    // 1.19.3
-                    "ah"
-                } else {
-                    // 1.18 - 1.19.2
-                    "ae"
-                }
-            }
-        }
+        methodName =
+            if (ver.useMojangMappings)
+                "getId"
+            else if (ver.revision >= 11) // 1.21.x
+                "aA"
+            else if (ver.revision >= 9)
+                "az"
+            else if (ver.revision == 5)
+                "ao" // 1.21.5 only
+            else if (ver.revision >= 2)
+                "ar" // 1.21.2 - 1.21.4, 1.21.6+
+            else
+                "an"
 
         this.methodGetId = clazzEntity!!.getDeclaredMethod(methodName)
 
-        if (isOneTwentyFiveOrNewer){
+        if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5")){
             // net.minecraft.network.syncher.SynchedEntityData$Builder ->
             //     net.minecraft.network.syncher.SynchedEntityData$Builder define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
             methodDataWatcherBuilderDefine =
@@ -616,11 +589,8 @@ class Definitions{
         methodName =
             if (ver.useMojangMappings)
                 "send"
-            else if (ver.majorVersionEnum == MinecraftMajorVersion.V1_20 && ver.revision >= 2 ||
-                ver.minorVersion >= 21)
-                "b"
             else
-                "a"
+                "b"
 
         this.methodSend = clazzServerPlayerConnection!!.getDeclaredMethod(methodName, clazzPacket)
 
@@ -662,41 +632,35 @@ class Definitions{
             NmsMappings.getMapping("methodGetDescriptionId")
         )
 
-        if (this.isOneNinteenThreeOrNewer) {
-            // the methods here were added in 1.19.3
+        // the methods here were added in 1.19.3
 
-            // java.util.List getNonDefaultValues() ->
+        // java.util.List getNonDefaultValues() ->
 
-            this.methodGetNonDefaultValues = clazzDataWatcher!!.getDeclaredMethod(
-                NmsMappings.getMapping("methodGetNonDefaultValues")
-            )
+        this.methodGetNonDefaultValues = clazzDataWatcher!!.getDeclaredMethod(
+            NmsMappings.getMapping("methodGetNonDefaultValues")
+        )
 
-            // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-            this.methodSynchedEntityDataDefine = clazzDataWatcher!!.getMethod(
-                NmsMappings.getMapping("methodSynchedEntityDataDefine"),
-                clazzDataWatcherObject, Any::class.java
-            )
+        // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
+        this.methodSynchedEntityDataDefine = clazzDataWatcher!!.getMethod(
+            NmsMappings.getMapping("methodSynchedEntityDataDefine"),
+            clazzDataWatcherObject, Any::class.java
+        )
 
-            // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
-            // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            methodName = if (ver.minorVersion == 20 && ver.revision <= 4)
-                "c"
-            else
-                NmsMappings.getMapping("methodDataWatcherGetItem")
-            // 1.19, 1.20.5 = b, 1.20 - 1.20.4+ = c
+        // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
+        // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
+        methodName = NmsMappings.getMapping("methodDataWatcherGetItem")
 
-            this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(
-                methodName,
-                clazzDataWatcherObject
-            )
-            methodDataWatcherGetItem!!.setAccessible(true)
+        this.methodDataWatcherGetItem = clazzDataWatcher!!.getDeclaredMethod(
+            methodName,
+            clazzDataWatcherObject
+        )
+        methodDataWatcherGetItem!!.setAccessible(true)
 
-            // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
-            //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
-            this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod(
-                NmsMappings.getMapping("methodDataWatcherItemValue")
-            )
-        }
+        // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
+        //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() ->
+        this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod(
+            NmsMappings.getMapping("methodDataWatcherItemValue")
+        )
     }
 
     @Throws(NoSuchFieldException::class)
@@ -714,20 +678,15 @@ class Definitions{
         // # {"fileName":"ServerPlayer.java","id":"sourceFile"}
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
-        val fieldName = when (ver.majorVersionEnum) {
-            MinecraftMajorVersion.V1_21 -> {
-                if (ver.useMojangMappings)
-                    "connection"
-                else if (ver.revision >= 6)
-                    "g"
-                else if (ver.revision >= 2)
-                    "f"
-                else
-                    "c"
-            }
-            MinecraftMajorVersion.V1_20 -> "c"
-            else -> /* 1.19 */ "b"
-        }
+        val fieldName =
+            if (ver.useMojangMappings)
+                "connection"
+            else if (ver.revision >= 6)
+                "g"
+            else if (ver.revision >= 2)
+                "f"
+            else
+                "c"
 
         this.fieldConnection = clazzEntityPlayer!!.getDeclaredField(fieldName)
 
@@ -752,24 +711,17 @@ class Definitions{
             Int::class.javaPrimitiveType, clazzDataWatcherSerializer
         )
 
-        if (isOneTwentyFiveOrNewer)
+        if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5"))
             this.ctorSynchedEntityDataBuilder = clazzDataWatcherBuilder!!.getConstructor(clazzSyncedDataHolder)
         else
             this.ctorSynchedEntityData = clazzDataWatcher!!.getConstructor(clazzEntity)
 
-        if (this.isOneNinteenThreeOrNewer) {
-            // starting with 1.19.3 use this one:
-            // public net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata(int,java.util.List<DataWatcher.b<?>>)
+        // starting with 1.19.3 use this one:
+        // public net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata(int,java.util.List<DataWatcher.b<?>>)
 
-            this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
-                Int::class.javaPrimitiveType, MutableList::class.java
-            )
-        } else {
-            // up to 1.19.2 use this one:
-            this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
-                Int::class.javaPrimitiveType, clazzDataWatcher, Boolean::class.javaPrimitiveType
-            )
-        }
+        this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
+            Int::class.javaPrimitiveType, MutableList::class.java
+        )
 
         if (!ver.useOldEnums){
             // AttributeModifier(attribute.key, additionValue.toDouble(), modifierOperation, EquipmentSlotGroup.ANY)

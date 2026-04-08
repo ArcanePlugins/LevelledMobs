@@ -8,11 +8,9 @@ import io.github.arcaneplugins.levelledmobs.enums.InternalSpawnReason
 import io.github.arcaneplugins.levelledmobs.enums.LevellableState
 import io.github.arcaneplugins.levelledmobs.util.Log
 import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
-import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
@@ -27,7 +25,6 @@ import org.bukkit.event.entity.EntityTransformEvent
  * @version 2.4.0
  */
 class EntityTransformListener : Listener {
-    val damageMappings = mutableMapOf<UUID, Player>()
     private var lastPriority: EventPriority? = null
     private val settingName = "entity-transform-event"
 

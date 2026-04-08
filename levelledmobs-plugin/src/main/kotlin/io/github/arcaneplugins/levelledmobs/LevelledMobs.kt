@@ -110,9 +110,9 @@ class LevelledMobs : JavaPlugin() {
         val timer = QuickTimer()
 
         this.ver.load()
-        if (ver.minecraftVersion < 1.21){
+        if (ver.minecraftVersion.isLessThan("1.21.1"))
             Log.sev("This minecraft version is NOT supported. Use at your own risk!")
-        }
+
         NmsMappings.load()
         this.definitions.load()
         CommandHandler.load()

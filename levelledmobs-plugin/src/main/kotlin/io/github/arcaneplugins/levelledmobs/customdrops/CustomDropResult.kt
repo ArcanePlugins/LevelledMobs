@@ -10,6 +10,5 @@ import org.bukkit.inventory.ItemStack
  */
 class CustomDropResult(
     val stackToItem: MutableList<Map.Entry<ItemStack, CustomDropItem>>,
-    val hasOverride: Boolean,
-    val didAnythingDrop: Boolean
+    val hasOverride: Boolean
 )
