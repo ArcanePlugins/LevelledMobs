@@ -1113,7 +1113,7 @@ class CustomDropsHandler {
         if (info.lmEntity == null) return false
         val equipment = info.lmEntity!!.livingEntity.equipment ?: return false
 
-        if (LevelledMobs.instance.ver.isRunningSpigot) return isMobWearingItemSpigot(
+        if (!LevelledMobs.instance.ver.isRunningPaper) return isMobWearingItemSpigot(
                 item, info, customDropItem, equipment
         )
 

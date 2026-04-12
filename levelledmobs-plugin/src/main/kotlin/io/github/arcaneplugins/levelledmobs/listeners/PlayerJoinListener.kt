@@ -66,7 +66,7 @@ class PlayerJoinListener : Listener {
             }
 
             if (CommandHandler.hadErrorLoading){
-                if (main.ver.isRunningSpigot){
+                if (!main.ver.isRunningPaper){
                     event.player.sendMessage(
                         MessageUtils.colorizeAll(
                             "&b&lLevelledMobs:&r &6The command framework is NOT supported on Spigot.&r\n" +

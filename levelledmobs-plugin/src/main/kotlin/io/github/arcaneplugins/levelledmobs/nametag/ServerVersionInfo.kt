@@ -150,20 +150,6 @@ class ServerVersionInfo {
             return this._isRunningFabric!!
         }
 
-    val isRunningSpigot: Boolean
-        get() {
-            if (this._isRunningSpigot == null) {
-                try {
-                    Class.forName("net.md_5.bungee.api.ChatColor")
-                    this._isRunningSpigot = true
-                } catch (_: ClassNotFoundException) {
-                    this._isRunningSpigot = false
-                }
-            }
-
-            return this._isRunningSpigot!!
-        }
-
     val isRunningPaper: Boolean
         get() {
             if (this._isRunningPaper == null) {
