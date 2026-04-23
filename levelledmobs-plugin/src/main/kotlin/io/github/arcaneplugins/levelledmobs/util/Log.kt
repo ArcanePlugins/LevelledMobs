@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.util
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 
 /**
@@ -18,24 +19,31 @@ object Log {
     }
 
     fun inf(msg: String?) {
-        if (LevelledMobs.instance.ver.isRunningPaper) {
-            LevelledMobs.instance.logger.info(
-                MessageUtils.colorizeAll(msg)
-            )
-        }
+        if (LevelledMobs.instance.ver.isRunningPaper)
+            sendMessagePaper(msg)
         else
             Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
     }
 
     fun war(msg: String) {
-        LevelledMobs.instance.logger.warning(
-            MessageUtils.removeColorCodes(msg)
-        )
+        if (LevelledMobs.instance.ver.isRunningPaper)
+            sendMessagePaper("&e[WARN] $msg")
+        else
+            Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
     }
 
     fun sev(msg: String) {
-        LevelledMobs.instance.logger.severe(
-            MessageUtils.removeColorCodes(msg)
-        )
+        if (LevelledMobs.instance.ver.isRunningPaper)
+            sendMessagePaper("&e[SEVERE] $msg")
+        else
+            Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
+    }
+
+    private fun sendMessagePaper(msg: String?){
+        if (msg == null) return
+
+        val serializer = LegacyComponentSerializer.legacyAmpersand()
+        val msgComp = serializer.deserialize("$PREFIX$msg")
+        Bukkit.getServer().consoleSender.sendMessage { msgComp }
     }
 }
