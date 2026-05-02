@@ -1,5 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 group = "io.github.arcaneplugins"
 description = description
@@ -7,18 +7,14 @@ version = version
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
     id("com.gradleup.shadow") version "9.4.0"
     id("idea")
     id("maven-publish")
+    id("java-library")
+    id("kotlin")
+    id("org.jetbrains.dokka")
 }
-
-apply(plugin = "java")
-apply(plugin = "java-library")
-apply(plugin = "kotlin")
-apply(plugin = "com.gradleup.shadow")
-apply(plugin = "maven-publish")
-apply(plugin = "org.jetbrains.dokka")
 
 idea {
     module {
@@ -28,7 +24,7 @@ idea {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
+    //implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
         exclude(group = "com.google.code.gson", module = "gson")
@@ -86,7 +82,7 @@ tasks {
     kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
-            apiVersion.set(KOTLIN_2_1)
+            apiVersion.set(KotlinVersion.KOTLIN_2_3)
         }
     }
 

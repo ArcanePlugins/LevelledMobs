@@ -33,7 +33,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.persistence.PersistentDataType
-import kotlin.math.floor
 
 /**
  * The main CustomDropsclass that holds useful functions for parsing, instantizing and more of
@@ -713,18 +712,25 @@ class CustomDropsHandler {
         if (!checkEquippedChances(info, dropBase)) return
 
         var newDropAmount = dropBase.amount
+        var newDropAmountD: Double? = null
+
         if (dropBase.hasAmountRange) {
             val change = ThreadLocalRandom.current()
                 .nextInt(0, dropBase.amountRangeMax - dropBase.amountRangeMin + 1)
             newDropAmount = dropBase.amountRangeMin + change
         }
 
-        if (!dropBase.amountFormula.isNullOrEmpty())
-            newDropAmount = floor(evaluateNumberFormula(
-                dropBase.amountFormula,
-                "amount-formula",
-                info.lmEntity!!
-            ).result).toInt()
+        if (!dropBase.amountFormula.isNullOrEmpty()) {
+            newDropAmountD =
+                evaluateNumberFormula(
+                    dropBase.amountFormula,
+                    "amount-formula",
+                    info.lmEntity!!
+                ).result
+
+            info.formulaResult = newDropAmountD
+            newDropAmount = newDropAmountD.toInt()
+        }
 
         if (dropBase.hasGroupId && info.groupLimits != null) {
             val gl = info.groupLimits!!
@@ -760,7 +766,7 @@ class CustomDropsHandler {
             if (info.deathByFire)
                 newItem = getCookedVariantOfMeat(dropBase.itemStack!!)
 
-            if (newDropAmount > 1) newItem.amount = newDropAmount
+            if (newDropAmount > 1 && !dropBase.isExternalItem) newItem.amount = newDropAmount
 
             if (!dropBase.noMultiplier && !info.doNotMultiplyDrops) {
                 main.levelManager.multiplyDrop(info.lmEntity!!, newItem, info.addition)
@@ -769,7 +775,7 @@ class CustomDropsHandler {
             else if (newDropAmount > newItem.maxStackSize)
                 newDropAmount = newItem.maxStackSize
 
-            if (newItem.amount != newDropAmount)
+            if (!dropBase.isExternalItem && newItem.amount != newDropAmount)
                 newItem.amount = newDropAmount
 
             if (info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_EQUIPS)) {
@@ -781,9 +787,13 @@ class CustomDropsHandler {
                 )
             } else if (!info.equippedOnly && main.debugManager.isDebugTypeEnabled(DebugType.CUSTOM_DROPS)) {
                 val retryMsg = if (info.retryNumber > 0) ", retry: " + info.retryNumber else ""
+                var amountMsg = ""
+                if (newDropAmountD != null) amountMsg = newDropAmountD.toString()
+                else if (dropBase.externalAmount != null && dropBase.externalAmount!! > 0.0) dropBase.externalAmount.toString()
+                else dropBase.amount.toString()
 
                 info.addDebugMessage(
-                    "&8 - &7item: &b${newItem.type.name}&7, amount: &b${dropBase.amountAsString}&7, newAmount: &b$newDropAmount&7, " +
+                    "&8 - &7item: &b${newItem.type.name}&7, amount: &b${dropBase.amountAsString}&7, newAmount: &b$amountMsg&7, " +
                             "chance: &b${dropBase.chance?.showMatchedChance()}&7, chanceRole: " +
                             "&b${Utils.round(chanceRole.toDouble(), 4)}&7, dropped: &btrue&7$retryMsg."
                 )
@@ -1087,7 +1097,8 @@ class CustomDropsHandler {
         info: CustomDropProcessingInfo,
         item: CustomDropItem
     ): Boolean {
-        if (item.onlyDropIfEquipped && !info.itemWasEquipped) return false
+        if (!item.onlyDropIfEquipped) return true
+        if (!info.itemWasEquipped) return false
 
         if (info.equippedItemsInfo != null){
             // if we have dropped this equipment type already then don't drop multiples of it
