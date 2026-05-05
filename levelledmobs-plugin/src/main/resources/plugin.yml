@@ -3,7 +3,7 @@ version: '${version}'
 description: '${description}'
 authors: [ 'PenalBuffalo', 'lokka30', 'UltimaOath' ]
 website: 'https://github.com/ArcanePlugins/LevelledMobs/'
-folia-supported: true
+folia-supported: false
 
 main: 'io.github.arcaneplugins.levelledmobs.LevelledMobs'
 api-version: '1.19'
