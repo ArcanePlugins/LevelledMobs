@@ -64,6 +64,7 @@ class MainCompanion{
     var killSkipConditions = KillSkipConditions()
     var hadRulesLoadError = false
         private set
+    val errorMessages = mutableListOf<String>()
     var useAdventure = false
     var reloadSender: CommandSender? = null
     var hasFinishedLoading = false
@@ -477,7 +478,7 @@ class MainCompanion{
                         updateResult = colorizeAllInList(updateResult)
 
                         updateResult.forEach(Consumer { message: String ->
-                            Log.war(message)
+                            Log.war(message, false)
                         })
                     } else if (isOutOfDate) {
                         // for some reason config#getStringList doesn't allow defaults??

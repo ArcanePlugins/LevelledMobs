@@ -155,6 +155,14 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                 .executes { ctx -> parseOutputTo(ctx)
                     return@executes Command.SINGLE_SUCCESS
                 })
+            .then(createLiteralCommand("show-errors")
+                .then(createStringArgument("clear")
+                    .suggests { _, builder -> builder.suggest("clear").buildFuture() }
+                    .executes { ctx -> showErrors(ctx)
+                        return@executes Command.SINGLE_SUCCESS })
+                .executes { ctx -> showErrors(ctx)
+                    return@executes Command.SINGLE_SUCCESS
+                })
             .then(createLiteralCommand("view-debug-status")
                 .executes { ctx -> ctx.source.sender.sendMessage(LevelledMobs.instance.debugManager.getDebugStatus())
                     return@executes Command.SINGLE_SUCCESS
@@ -164,6 +172,45 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
                     return@executes Command.SINGLE_SUCCESS
                 })
             .build()
+    }
+
+    private fun showErrors(
+        ctx: CommandContext<CommandSourceStack>
+    ){
+        val errors = MainCompanion.instance.errorMessages
+        if (errors.isEmpty()){
+            ctx.source.sender.sendMessage("There are no errors currently recorded")
+            return
+        }
+
+        val clear = getStringArgument(ctx, "clear", null)
+
+        if ("clear".equals(clear, ignoreCase = true)){
+            if (ctx.source.sender.hasPermission("$basePermission.show-errors.clear")) {
+                errors.clear()
+                ctx.source.sender.sendMessage("Recorded errors have been cleared")
+            }
+            else
+                ctx.source.sender.sendMessage("You don't have the required permission for this command.")
+
+            return
+        }
+
+        val msgCount = if (errors.size == 1)
+            "There is 1 error" else "There are ${errors.size} errors"
+        val sb = StringBuilder("$msgCount:\n")
+        var isFirst = true
+
+        for (error in errors){
+            if (isFirst)
+                isFirst = false
+            else
+                sb.append("\n")
+
+            sb.append(error)
+        }
+
+        ctx.source.sender.sendMessage(sb.toString())
     }
 
     private fun showMobGroups(

@@ -177,6 +177,7 @@ class LevelledMobs : JavaPlugin() {
 
     fun reloadLM(sender: CommandSender) {
         NotifyManager.clearLastError()
+        mainCompanion.errorMessages.clear()
         customDropsHandler.customDropsParser.invalidExternalItems.clear()
         var reloadStartedMsg = messagesCfg.getStringList(
             "command.levelledmobs.reload.started"
@@ -240,5 +241,12 @@ class LevelledMobs : JavaPlugin() {
         reloadFinishedMsg.forEach(Consumer { s: String ->
             sender.sendMessage(s)
         })
+
+        if (mainCompanion.errorMessages.isNotEmpty() && sender is Player){
+            sender.sendMessage("There were errors reported. Check the console or " +
+                    "run the following command to view them:\n" +
+                    "/lm debug show-errors"
+            )
+        }
     }
 }

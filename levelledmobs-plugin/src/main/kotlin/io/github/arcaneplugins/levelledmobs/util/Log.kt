@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.util
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 
@@ -25,11 +26,14 @@ object Log {
             Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
     }
 
-    fun war(msg: String) {
+    fun war(msg: String, recordError: Boolean = true) {
         if (LevelledMobs.instance.ver.isRunningPaper)
             sendMessagePaper("&e[WARN] $msg")
         else
             Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
+
+        if (recordError && !MainCompanion.instance.errorMessages.contains(msg))
+            MainCompanion.instance.errorMessages += msg
     }
 
     fun sev(msg: String) {
@@ -37,6 +41,9 @@ object Log {
             sendMessagePaper("&e[SEVERE] $msg")
         else
             Bukkit.getServer().consoleSender.sendMessage(MessageUtils.colorizeAll(PREFIX + msg))
+
+        if (!MainCompanion.instance.errorMessages.contains(msg))
+            MainCompanion.instance.errorMessages += msg
     }
 
     private fun sendMessagePaper(msg: String?){
