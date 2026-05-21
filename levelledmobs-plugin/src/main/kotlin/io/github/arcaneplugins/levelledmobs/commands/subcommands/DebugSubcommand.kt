@@ -184,21 +184,30 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
         }
 
         val clear = getStringArgument(ctx, "clear", null)
+        val doClear = "clear".equals(clear, ignoreCase = true)
 
-        if ("clear".equals(clear, ignoreCase = true)){
-            if (ctx.source.sender.hasPermission("$basePermission.show-errors.clear")) {
+        showErrors(ctx.source.sender, doClear)
+    }
+
+    fun showErrors(sender: CommandSender, doClear: Boolean){
+        val errors = MainCompanion.instance.errorMessages
+
+        if (doClear){
+            if (sender.hasPermission("$basePermission.show-errors.clear")) {
                 errors.clear()
-                ctx.source.sender.sendMessage("Recorded errors have been cleared")
+                sender.sendMessage("Recorded errors have been cleared")
             }
             else
-                ctx.source.sender.sendMessage("You don't have the required permission for this command.")
+                sender.sendMessage("You don't have the required permission for this command.")
 
             return
         }
 
-        val msgCount = if (errors.size == 1)
+        val msg = if (errors.size == 1)
             "There is 1 error" else "There are ${errors.size} errors"
-        val sb = StringBuilder("$msgCount:\n")
+        val sb = StringBuilder(msg)
+        if (errors.isNotEmpty()) sb.append(":\n")
+
         var isFirst = true
 
         for (error in errors){
@@ -210,7 +219,7 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
             sb.append(error)
         }
 
-        ctx.source.sender.sendMessage(sb.toString())
+        sender.sendMessage(sb.toString())
     }
 
     private fun showMobGroups(

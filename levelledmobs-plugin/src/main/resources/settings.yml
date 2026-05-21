@@ -48,8 +48,8 @@ use-update-checker: true
 # ||  It is recommended that you keep this enabled.
 use-adventure: true
 
-# ||  If LM reported errors on the console they are record
-# ||  and notifies any admins when the join the server
+# ||  If LM reported errors on the console they are recorded
+# ||  and notifies admins users when joining
 notify-admins-of-errors-upon-join: true
 
 # ||  ADVANCED USERS ONLY
