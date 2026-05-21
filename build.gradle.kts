@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
     id("org.jetbrains.dokka") version "2.0.0"
 }
 
@@ -12,11 +12,13 @@ dependencies{
     compileOnly("io.github.arcaneplugins:levelledmobs-plugin:$version")
 }
 
+
 subprojects {
-    apply(plugin = "org.jetbrains.dokka")
+    plugins.apply("org.jetbrains.dokka")
 }
 
 val javadocJar = tasks.register<Jar>("javadocJar") {
+    description = "LevelledMobs javadocs"
     archiveClassifier.set("javadoc")
 }
 

@@ -48,6 +48,10 @@ use-update-checker: true
 # ||  It is recommended that you keep this enabled.
 use-adventure: true
 
+# ||  If LM reported errors on the console they are recorded
+# ||  and notifies admins users when joining
+notify-admins-of-errors-upon-join: true
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  If your server software (e.g. Paper) has the Adventure
@@ -198,4 +202,4 @@ event-priorities:
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point
 #   ---------------  -  ------------------------------
 #
-file-version: 39
+file-version: 40

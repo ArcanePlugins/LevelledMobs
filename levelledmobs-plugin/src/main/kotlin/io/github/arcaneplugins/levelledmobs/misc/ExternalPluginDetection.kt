@@ -107,13 +107,16 @@ class ExternalPluginDetection(
                     null, "" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.STRING) }
                     "double" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.DOUBLE)?.toString() }
                     "integer", "int" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.INTEGER)?.toString() }
-                    "byte_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BYTE_ARRAY)?.toString() }
+                    "byte_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BYTE_ARRAY)?.contentToString()
+                    }
                     "byte" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BYTE)?.toString() }
                     "boolean", "bool" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.BOOLEAN)?.toString() }
                     "float" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.FLOAT)?.toString() }
-                    "integer_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.INTEGER_ARRAY)?.toString() }
+                    "integer_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.INTEGER_ARRAY)?.contentToString()
+                    }
                     "long" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG)?.toString() }
-                    "long_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG_ARRAY)?.toString() }
+                    "long_array" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.LONG_ARRAY)?.contentToString()
+                    }
                     "short" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.SHORT)?.toString() }
                     "tag_container" -> { keyValue = lmEntity.pdc.get(namespaceKey, PersistentDataType.TAG_CONTAINER)?.toString() }
                     else -> {

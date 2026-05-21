@@ -1,9 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.listeners
 
 import io.github.arcaneplugins.levelledmobs.LevelledMobs
+import io.github.arcaneplugins.levelledmobs.MainCompanion
 import io.github.arcaneplugins.levelledmobs.commands.CommandHandler
-import io.github.arcaneplugins.levelledmobs.managers.NotifyManager
-import io.github.arcaneplugins.levelledmobs.misc.FileLoader
 import io.github.arcaneplugins.levelledmobs.misc.NamespacedKeys
 import io.github.arcaneplugins.levelledmobs.misc.PlayerQueueItem
 import io.github.arcaneplugins.levelledmobs.util.Log
@@ -48,38 +47,52 @@ class PlayerJoinListener : Listener {
         if (!LevelledMobs.instance.ver.isRunningFolia)
             updateNametagsInWorldAsync(event.player, event.player.world.entities)
 
-        if (event.player.isOp) {
-            if (main.mainCompanion.hadRulesLoadError)
-                event.player.sendMessage(FileLoader.getFileLoadErrorMessage())
+        if (event.player.isOp)
+            processOpOnlyStuff(event)
+    }
 
-            if (NotifyManager.opHasMessage){
-                event.player.sendMessage(NotifyManager.pendingMessage!!)
-                NotifyManager.clearLastError()
-            }
+    private fun processOpOnlyStuff(event: PlayerJoinEvent){
+        val notifyAdmins = LevelledMobs.instance.helperSettings.getBoolean(
+            "notify-admins-of-errors-upon-join", true)
 
-            if (main.customDropsHandler.customDropsParser.hadParsingError){
+        if (notifyAdmins && MainCompanion.instance.errorMessages.isNotEmpty()) {
+            event.player.sendMessage(
+                "LevelledMobs reported errors. Check the console or " +
+                        "run the following command to view them:\n" +
+                        "/lm debug show-errors"
+            )
+        }
+
+//        if (main.mainCompanion.hadRulesLoadError)
+//            event.player.sendMessage(FileLoader.getFileLoadErrorMessage())
+//
+//        if (NotifyManager.opHasMessage){
+//            event.player.sendMessage(NotifyManager.pendingMessage!!)
+//            NotifyManager.clearLastError()
+//        }
+//
+//        if (main.customDropsHandler.customDropsParser.hadParsingError){
+//            event.player.sendMessage(
+//                MessageUtils.colorizeAll(
+//                    "&b&lLevelledMobs:&r &6There was an error parsing customdrops.yml&r\n" +
+//                            "Check the console log for more details"
+//                ))
+//        }
+
+        if (CommandHandler.hadErrorLoading){
+            if (!main.ver.isRunningPaper){
                 event.player.sendMessage(
                     MessageUtils.colorizeAll(
-                    "&b&lLevelledMobs:&r &6There was an error parsing customdrops.yml&r\n" +
-                            "Check the console log for more details"
-                ))
+                        "&b&lLevelledMobs:&r &6The command framework is NOT supported on Spigot.&r\n" +
+                                "Only a few commands will be available."
+                    ))
             }
-
-            if (CommandHandler.hadErrorLoading){
-                if (main.ver.isRunningSpigot){
-                    event.player.sendMessage(
-                        MessageUtils.colorizeAll(
-                            "&b&lLevelledMobs:&r &6The command framework is NOT supported on Spigot.&r\n" +
-                                    "Only a few commands will be available."
-                        ))
-                }
-                else{
-                    event.player.sendMessage(
-                        MessageUtils.colorizeAll(
-                            "&b&lLevelledMobs:&r &6There was an error loading the command framework.&r\n" +
-                                    "Only a few commands will be available."
-                        ))
-                }
+            else{
+                event.player.sendMessage(
+                    MessageUtils.colorizeAll(
+                        "&b&lLevelledMobs:&r &6There was an error loading the command framework.&r\n" +
+                                "Only a few commands will be available."
+                    ))
             }
         }
     }

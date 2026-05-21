@@ -370,7 +370,7 @@ class Definitions{
         //    net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> h
         // 1.21.6+:
         //    void saveWithoutId(net.minecraft.world.level.storage.ValueOutput) -> d
-        if (ver.isRunningSpigot) return // paper only command
+        if (!ver.isRunningPaper) return // paper only command
         val isTwentySixOneOrNewer = ver.minecraftVersion.isGreaterThanOrEqual("26.1")
 
         try {

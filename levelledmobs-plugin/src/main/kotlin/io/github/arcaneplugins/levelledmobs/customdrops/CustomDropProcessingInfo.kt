@@ -36,6 +36,7 @@ class CustomDropProcessingInfo {
     var groupLimits: GroupLimits? = null
     var customDropId: String? = null
     var itemWasEquipped = false
+    var formulaResult: Double? = null
     var newDrops: MutableList<ItemStack>? = null
     var dropInstance: CustomDropInstance? = null
     var equippedItemsInfo: EquippedItemsInfo? = null

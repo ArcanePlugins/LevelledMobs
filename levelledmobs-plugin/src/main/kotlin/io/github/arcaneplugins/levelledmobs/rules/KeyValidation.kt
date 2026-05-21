@@ -102,7 +102,6 @@ object KeyValidation {
             "spawn-reasons",
             "stop-processing",
             "structures",
-            "vanilla-bonus",
             "within-coordinates",
             "worldguard-region-owners",
             "worldguard-regions",

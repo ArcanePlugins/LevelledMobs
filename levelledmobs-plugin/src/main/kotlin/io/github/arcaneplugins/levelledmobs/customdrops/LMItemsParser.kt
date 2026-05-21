@@ -83,13 +83,8 @@ class LMItemsParser {
         val itemRequest = ExternalItemRequest(item.externalItemId!!)
         itemRequest.itemType = item.externalType
         itemRequest.amount = item.externalAmount
-        if (info != null && !item.amountFormula.isNullOrEmpty()){
-            itemRequest.amount = CustomDropsHandler.evaluateNumberFormula(
-                item.amountFormula,
-                "amount-formula",
-                info.lmEntity!!
-            ).result
-        }
+        if (info != null && info.formulaResult != null)
+            itemRequest.amount = info.formulaResult
 
         if (main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
             itemRequest.getMultipleItems = "-" == itemRequest.itemId

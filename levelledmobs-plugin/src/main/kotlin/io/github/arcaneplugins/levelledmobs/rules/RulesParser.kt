@@ -366,7 +366,7 @@ class RulesParser {
                                 val key = if (input.size == 1) input.first().lowercase() else input[1].lowercase()
                                 val structure: Structure?
 
-                                if (LevelledMobs.instance.ver.isRunningPaper && LevelledMobs.instance.ver.minorVersion >= 21){
+                                if (LevelledMobs.instance.ver.isRunningPaper){
                                     val registry = RegistryAccess.registryAccess().getRegistry(
                                         RegistryKey.STRUCTURE
                                     )
