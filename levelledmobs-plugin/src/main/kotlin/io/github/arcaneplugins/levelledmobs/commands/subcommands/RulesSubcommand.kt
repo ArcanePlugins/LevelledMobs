@@ -429,19 +429,13 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
                 LevelledMobs.instance.configUtils.prefix + " ", ""
             )
         )
-        if (lmMobResult.showOnConsole)
-            Log.inf(sb.toString())
-        else
-            sender.sendMessage(sb.toString())
-
-        if (!lmMobResult.showOnConsole) sb.setLength(0)
 
         var mobHash: String? = null
         if (lmEntity.pdc.has(NamespacedKeys.mobHash, PersistentDataType.STRING))
             mobHash = lmEntity.pdc.get(NamespacedKeys.mobHash, PersistentDataType.STRING)
 
         val scheduler = SchedulerWrapper(lmEntity.livingEntity) {
-            showEffectiveValues(lmEntity, lmMobResult.showOnConsole, mobHash)
+            showEffectiveValues(lmEntity, sb.toString(), lmMobResult.showOnConsole, mobHash)
             lmEntity.free()
             if (lmMobResult.showOnConsole) sender.sendMessage("Effective rules have been printed in the console")
         }
@@ -564,6 +558,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
 
     private fun showEffectiveValues(
         lmEntity: LivingEntityWrapper,
+        infoMsg: String,
         showOnConsole: Boolean,
         mobHash: String?
     ) {
@@ -661,9 +656,9 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
         RuleInfo.formatRule(sb, values)
 
         if (showOnConsole)
-            Log.inf(sb.toString())
+            Log.inf("$infoMsg$sb")
         else
-            commandSender!!.sendMessage(colorizeAll(sb.toString()))
+            commandSender!!.sendMessage(colorizeAll("$infoMsg$sb"))
     }
 
     private fun getPlayerLevellingFormatting(

@@ -15,6 +15,7 @@ import io.github.arcaneplugins.levelledmobs.misc.CachedModalList
 import io.github.arcaneplugins.levelledmobs.rules.strategies.CustomStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.LevellingStrategy
 import io.github.arcaneplugins.levelledmobs.rules.strategies.StrategyType
+import io.github.arcaneplugins.levelledmobs.util.Log
 import java.util.Objects
 import java.util.TreeMap
 import org.bukkit.Particle
@@ -236,7 +237,8 @@ class RuleInfo(
                 .filter { v -> v.key.ruleType != RuleType.CONDITION &&
                         v.key.ruleType != RuleType.APPLY_SETTING &&
                         v.key.ruleType != RuleType.STRATEGY &&
-                        v.key.ruleType != RuleType.NO_CATEGORY }
+                        v.key.ruleType != RuleType.NO_CATEGORY &&
+                        v.key.fieldName != "Companion"}
                 .iterator()
             ){
                 if (!hadMisc){

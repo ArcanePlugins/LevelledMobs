@@ -69,6 +69,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeoutException
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -908,7 +909,7 @@ class LevelManager : LevelInterface2 {
         val entityHealthRounded = if (entityHealth < 1.0 && entityHealth > 0.0) 1 else Utils.round(entityHealth).toInt()
         val roundedMaxHealth: String = Utils.round(maxHealth).toString()
         val roundedMaxHealthInt = (Utils.round(maxHealth).toInt()).toString()
-        val percentHealthTemp = (entityHealth / maxHealth * 100.0).roundToInt().toDouble()
+        val percentHealthTemp = getEntityHealthRemaining(lmEntity, entityHealth, maxHealth)
         val percentHealth = if (percentHealthTemp < 1.0) 1 else percentHealthTemp.toInt()
         val playerId = player?.uniqueId?.toString() ?: ""
         val playerName = player?.name ?: ""
@@ -980,6 +981,31 @@ class LevelManager : LevelInterface2 {
             text.text = ExternalCompatibilityManager.getPapiPlaceholder(player, text.text, lmEntity.invalidPlaceholderReplacement)
 
         return text.text
+    }
+
+    private fun getEntityHealthRemaining(
+        lmEntity: LivingEntityWrapper,
+        entityHealth: Double,
+        maxHealth: Double
+    ): Double{
+        try{
+            // have run into an issue where a mob is reporting 'Infinity' health
+            // and will cause the exception caught below
+            return (entityHealth / maxHealth * 100.0).roundToInt().toDouble()
+        }
+        catch (e: IllegalArgumentException){
+            var entityName = lmEntity.nameIfBaby
+            if (ExternalCompatibilityManager.hasMythicMobsInstalled
+                && ExternalCompatibilityManager.isMythicMob(lmEntity)
+            ) {
+                entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity) +
+                        " (${lmEntity.nameIfBaby})"
+            }
+
+            Log.sev("Error getting health remaining ${e.message} for mob: $entityName, location: ${lmEntity.locationStr} in " +
+                    "${lmEntity.worldName}, health: $entityHealth, maxHealth: $maxHealth")
+            return 0.0
+        }
     }
 
     private fun getHealthPercentRemaining(
@@ -1901,7 +1927,7 @@ class LevelManager : LevelInterface2 {
 
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, true, sb::toString)
         }
-        catch (_: java.util.concurrent.TimeoutException){
+        catch (_: TimeoutException){
             DebugManager.log(DebugType.APPLY_LEVEL_RESULT, lmEntity, false){
                 "Timed out applying level to mob"
             }
