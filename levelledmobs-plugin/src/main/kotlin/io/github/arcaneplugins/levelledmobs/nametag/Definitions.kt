@@ -274,21 +274,19 @@ class Definitions{
             NmsMappings.getMapping("clazzDataWatcher")
         )
 
-        if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5")){
-            // net.minecraft.network.syncher.SynchedEntityData$Builder ->
-            this.clazzDataWatcherBuilder = Class.forName(
-                NmsMappings.getMapping("clazzDataWatcherBuilder")
-            )
+        // net.minecraft.network.syncher.SynchedEntityData$Builder ->
+        this.clazzDataWatcherBuilder = Class.forName(
+            NmsMappings.getMapping("clazzDataWatcherBuilder")
+        )
 
-            this.clazzSyncedDataHolder = Class.forName(
-                "net.minecraft.network.syncher.SyncedDataHolder"
-            )
+        this.clazzSyncedDataHolder = Class.forName(
+            "net.minecraft.network.syncher.SyncedDataHolder"
+        )
 
-            // net.minecraft.network.syncher.SynchedEntityData$DataValue ->
-            this.clazzDataWatcherValue = Class.forName(
-                NmsMappings.getMapping("clazzDataWatcherValue")
-            )
-        }
+        // net.minecraft.network.syncher.SynchedEntityData$DataValue ->
+        this.clazzDataWatcherValue = Class.forName(
+            NmsMappings.getMapping("clazzDataWatcherValue")
+        )
 
         // net.minecraft.network.syncher.SynchedEntityData$DataItem ->
         this.clazzDataWatcherItem = Class.forName(
@@ -529,8 +527,7 @@ class Definitions{
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
         methodName =
             if (ver.useMojangMappings) "set"
-            else if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5")) "a"
-            else "b"
+            else "a"
 
         this.methodSet = clazzDataWatcher!!.getMethod(
             methodName, clazzDataWatcherObject,
@@ -556,24 +553,20 @@ class Definitions{
 
         this.methodGetId = clazzEntity!!.getDeclaredMethod(methodName)
 
-        if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5")){
-            // net.minecraft.network.syncher.SynchedEntityData$Builder ->
-            //     net.minecraft.network.syncher.SynchedEntityData$Builder define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-            methodDataWatcherBuilderDefine =
-                clazzDataWatcherBuilder!!.getDeclaredMethod(
-                    NmsMappings.getMapping("methodDataWatcherBuilderDefine"),
-                    clazzDataWatcherObject, Any::class.java)
+        methodDataWatcherBuilderDefine =
+            clazzDataWatcherBuilder!!.getDeclaredMethod(
+                NmsMappings.getMapping("methodDataWatcherBuilderDefine"),
+                clazzDataWatcherObject, Any::class.java)
 
-            // net.minecraft.network.syncher.SynchedEntityData build() ->
-            methodDataWatcherBuilderBuild = clazzDataWatcherBuilder!!.getDeclaredMethod(
-                NmsMappings.getMapping("methodDataWatcherBuilderBuild")
-            )
+        // net.minecraft.network.syncher.SynchedEntityData build() ->
+        methodDataWatcherBuilderBuild = clazzDataWatcherBuilder!!.getDeclaredMethod(
+            NmsMappings.getMapping("methodDataWatcherBuilderBuild")
+        )
 
-            // int id() ->
-            methodDataWatcherGetId = clazzDataWatcherValue!!.getDeclaredMethod(
-                NmsMappings.getMapping("methodDataWatcherGetId")
-            )
-        }
+        // int id() ->
+        methodDataWatcherGetId = clazzDataWatcherValue!!.getDeclaredMethod(
+            NmsMappings.getMapping("methodDataWatcherGetId")
+        )
 
         this.methodPlayergetHandle = clazzCraftPlayer!!.getDeclaredMethod("getHandle")
 
@@ -703,14 +696,10 @@ class Definitions{
             Int::class.javaPrimitiveType, clazzDataWatcherSerializer
         )
 
-        if (ver.minecraftVersion.isGreaterThanOrEqual("1.21.5"))
-            this.ctorSynchedEntityDataBuilder = clazzDataWatcherBuilder!!.getConstructor(clazzSyncedDataHolder)
-        else
-            this.ctorSynchedEntityData = clazzDataWatcher!!.getConstructor(clazzEntity)
+        this.ctorSynchedEntityDataBuilder = clazzDataWatcherBuilder!!.getConstructor(clazzSyncedDataHolder)
 
         // starting with 1.19.3 use this one:
         // public net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata(int,java.util.List<DataWatcher.b<?>>)
-
         this.ctorPacket = clazzClientboundSetEntityDataPacket!!.getConstructor(
             Int::class.javaPrimitiveType, MutableList::class.java
         )

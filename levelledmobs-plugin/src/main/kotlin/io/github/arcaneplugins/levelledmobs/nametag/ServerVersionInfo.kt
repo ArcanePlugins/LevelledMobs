@@ -25,7 +25,7 @@ class ServerVersionInfo {
 
         // 1.21.6+ paper servers
         useMojangMappings = minecraftVersion.isGreaterThanOrEqual("26.1") ||
-                isRunningPaper && minecraftVersion.isGreaterThanOrEqual("21.6")
+                isRunningPaper && minecraftVersion.isGreaterThanOrEqual("1.21.6")
     }
 
     var majorVersion = 0
