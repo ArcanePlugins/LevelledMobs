@@ -7,11 +7,13 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.UUID
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -79,6 +81,10 @@ class Definitions{
     private var clazzMMmobType: Class<*>? = null
 
     // methods:
+    var methodClickEvent: Method? = null
+        private set
+    var methodGetTranslationKey: Method? = null
+        private set
     var methodSaveWithoutId: Method? = null
         private set
     var methodWithoutContext: Method? = null
@@ -140,6 +146,8 @@ class Definitions{
         private set
 
     // fields
+    var fieldSUGGESTCOMMAND: Field? = null
+        private set
     var fieldDISCARDING: Field? = null
         private set
     var fieldOPTIONALCOMPONENT: Field? = null
@@ -499,8 +507,9 @@ class Definitions{
     @Suppress("DEPRECATION")
     fun getTranslationKey(livingEntity: LivingEntity): String {
         // only needed for spigot. paper has a built-in method
+        // String EntityType#getTranslationKey()
 
-        return Bukkit.getUnsafe().getTranslationKey(livingEntity.type)
+        return methodGetTranslationKey!!.invoke(livingEntity.type) as String
     }
 
     private fun buildSimpleMethods() {
@@ -646,6 +655,19 @@ class Definitions{
         this.methodDataWatcherItemValue = clazzDataWatcherItem!!.getDeclaredMethod(
             NmsMappings.getMapping("methodDataWatcherItemValue")
         )
+
+        if (!ver.isRunningPaper)
+            methodGetTranslationKey = EntityType::class.java.getMethod("getTranslationKey")
+
+        if (ver.isRunningPaper && ver.minecraftVersion.isGreaterThanOrEqual("26.2")){
+            val clazzAction = Class.forName($$"net.kyori.adventure.text.event.ClickEvent$Action")
+            val clazzPayload = Class.forName($$"net.kyori.adventure.text.event.ClickEvent$Payload")
+
+            methodClickEvent = ClickEvent::class.java.getMethod("clickEvent",
+                clazzAction,
+                clazzPayload
+            )
+        }
     }
 
     @Throws(NoSuchFieldException::class)
@@ -688,6 +710,11 @@ class Definitions{
 
         if (!ver.useOldEnums)
             fieldEquipmentSlotAny = clazzEquipmentSlotGroup!!.getDeclaredField("ANY")
+
+        if (ver.isRunningPaper && ver.minecraftVersion.isGreaterThanOrEqual("26.2")) {
+            val clazz = Class.forName($$"net.kyori.adventure.text.event.ClickEvent$Action")
+            fieldSUGGESTCOMMAND = clazz.getField("SUGGEST_COMMAND")
+        }
     }
 
     @Throws(NoSuchMethodException::class)
