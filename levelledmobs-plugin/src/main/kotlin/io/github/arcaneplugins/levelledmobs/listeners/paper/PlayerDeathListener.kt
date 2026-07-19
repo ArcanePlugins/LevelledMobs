@@ -186,27 +186,6 @@ class PlayerDeathListener {
         else MobInfo(mobKey, itemComp)
     }
 
-    private fun findMobInfoLegacy(
-        tc: TranslatableComponent
-    ): MobInfo? {
-        var mobKey: String? = null
-        var itemComp: Component? = null
-
-        for (c in tc.arguments()) {
-            val tc2 = c.asTranslationArgument().value() as? TranslatableComponent
-
-            if (tc2 != null) {
-                if ("chat.square_brackets" == tc2.key()) // this is when the mob was holding a weapon
-                    itemComp = tc2
-                else
-                    mobKey = tc2.key()
-            }
-        }
-
-        return if (mobKey == null) null
-        else MobInfo(mobKey, itemComp)
-    }
-
     private fun buildPlayerComponent(player: Player): Component {
         if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("26.2"))
             return buildPlayerComponentLegacy(player)
