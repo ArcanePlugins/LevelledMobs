@@ -45,7 +45,7 @@ class SpawnDistanceStrategy : LevellingStrategy, Cloneable{
             spawnLocation = Location(
                 lmEntity.livingEntity.world,
                 useX,
-                spawnLocation.y,
+                lmEntity.livingEntity.location.y,
                 useZ
             )
         }

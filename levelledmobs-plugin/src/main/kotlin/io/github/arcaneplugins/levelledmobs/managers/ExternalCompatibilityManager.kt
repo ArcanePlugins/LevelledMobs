@@ -124,7 +124,7 @@ class ExternalCompatibilityManager {
             val requiredVersion = VersionInfo("1.1.0")
             val lmiVersion = VersionInfo(lmi.description.version)
 
-            lmiMeetsVersionRequirement = requiredVersion <= lmiVersion
+            lmiMeetsVersionRequirement = requiredVersion.isLessThanOrEquals(lmiVersion)
         } catch (e: InvalidObjectException) {
             e.printStackTrace()
             lmiMeetsVersionRequirement = false
@@ -143,7 +143,7 @@ class ExternalCompatibilityManager {
             val requiredVersion = VersionInfo("1.3.0")
             val lmiVersion = VersionInfo(lmi.description.version)
 
-            lmiMeetsVersionRequirement2 = requiredVersion <= lmiVersion
+            lmiMeetsVersionRequirement2 = requiredVersion.isLessThanOrEquals(lmiVersion)
         } catch (e: InvalidObjectException) {
             e.printStackTrace()
             lmiMeetsVersionRequirement2 = false
@@ -306,7 +306,7 @@ class ExternalCompatibilityManager {
                     try {
                         val pluginVer = VersionInfo(version)
                         val cutoverVersion = VersionInfo("7.3.12")
-                        useNewerEliteMobsKey = pluginVer >= cutoverVersion
+                        useNewerEliteMobsKey = pluginVer.isGreaterThanOrEqual(cutoverVersion)
                     } catch (e: InvalidObjectException) {
                         Log.war("Got error comparing EliteMob versions: ${e.message}")
                         // default to newer version on error

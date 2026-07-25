@@ -564,7 +564,7 @@ class CustomDropsHandler {
         }
 
         if (!info.equippedOnly && dropBase is CustomDropItem)
-            info.itemWasEquipped = isMobWearingItem(info, dropBase)
+            info.itemWasEquipped = isMobWearingOrHoldingItem(info, dropBase)
 
         // equip-chance and equip-drop-chance:
         if (!info.equippedOnly && dropBase is CustomDropItem) {
@@ -1100,11 +1100,6 @@ class CustomDropsHandler {
         if (!item.onlyDropIfEquipped) return true
         if (!info.itemWasEquipped) return false
 
-        if (info.equippedItemsInfo != null){
-            // if we have dropped this equipment type already then don't drop multiples of it
-            return false
-        }
-
         if (item.equippedChance != null && item.equippedChance!!.isAssuredChance
             || !item.onlyDropIfEquipped
         ) {
@@ -1115,7 +1110,7 @@ class CustomDropsHandler {
     }
 
     @Suppress("UnstableApiUsage")
-    private fun isMobWearingItem(
+    private fun isMobWearingOrHoldingItem(
         info: CustomDropProcessingInfo,
         customDropItem: CustomDropItem
     ): Boolean {
@@ -1131,35 +1126,42 @@ class CustomDropsHandler {
         if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet))
             return true
 
-        val equippable = item.getData(DataComponentTypes.EQUIPPABLE) ?: return false
+        val equippable = item.getData(DataComponentTypes.EQUIPPABLE)
 
-        if (equippable.slot() == EquipmentSlot.HEAD){
-            if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
-            return item.isSimilar(equipment.helmet)
+        if (equippable != null) {
+            if (equippable.slot() == EquipmentSlot.HEAD) {
+                if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
+                return item.isSimilar(equipment.helmet)
+            }
+
+            if (equippable.slot() == EquipmentSlot.CHEST) {
+                if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
+                return item.isSimilar(equipment.chestplate)
+            }
+
+            if (equippable.slot() == EquipmentSlot.LEGS) {
+                if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
+                return item.isSimilar(equipment.leggings)
+            }
+
+            if (equippable.slot() == EquipmentSlot.FEET) {
+                if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
+                return item.isSimilar(equipment.boots)
+            }
+
+            if (equippable.slot() == EquipmentSlot.HAND){
+                if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
+                return item.isSimilar(equipment.itemInMainHand)
+            }
+
+            if (equippable.slot() == EquipmentSlot.OFF_HAND){
+                if (item.isSimilar(info.equippedItemsInfo?.offhand)) return true
+                return item.isSimilar(equipment.itemInOffHand)
+            }
         }
-
-        if (equippable.slot() == EquipmentSlot.CHEST){
-            if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
-            return item.isSimilar(equipment.chestplate)
-        }
-
-        if (equippable.slot() == EquipmentSlot.LEGS){
-            if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
-            return item.isSimilar(equipment.leggings)
-        }
-
-        if (equippable.slot() == EquipmentSlot.FEET){
-            if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
-            return item.isSimilar(equipment.boots)
-        }
-
-        if (equippable.slot() == EquipmentSlot.HAND){
-            if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
-            return item.isSimilar(equipment.itemInMainHand)
-        }
-
-        if (equippable.slot() == EquipmentSlot.OFF_HAND){
-            if (item.isSimilar(info.equippedItemsInfo?.offhand)) return true
+        else{
+            // non-equippable items go here
+            if (item.isSimilar(equipment.itemInMainHand)) return true
             return item.isSimilar(equipment.itemInOffHand)
         }
 

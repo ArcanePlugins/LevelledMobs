@@ -456,8 +456,8 @@ class MainCompanion{
                         thisVersion = VersionInfo(currentVersion)
                         hangarVersion = VersionInfo(latestVersion)
 
-                        isOutOfDate = (thisVersion < hangarVersion)
-                        isNewerVersion = (thisVersion > hangarVersion)
+                        isOutOfDate = thisVersion.isLessThan(hangarVersion)
+                        isNewerVersion = thisVersion.isGreaterThan(hangarVersion)
                     } catch (e: InvalidObjectException) {
                         Log.war("Got exception creating version objects: ${e.message}")
 
