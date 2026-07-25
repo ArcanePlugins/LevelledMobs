@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.misc
 
 import java.io.InvalidObjectException
-import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
+import io.github.arcaneplugins.levelledmobs.util.Utils
 
 /**
  * A custom implementation for comparing program versions
@@ -11,7 +11,7 @@ import io.github.arcaneplugins.levelledmobs.util.Utils.isDouble
  */
 class VersionInfo(
     versionInput: String
-) : Comparable<VersionInfo> {
+) {
     private var thisVerSplit = mutableListOf<Int>()
     val version: String
 
@@ -24,65 +24,80 @@ class VersionInfo(
 
         val split = version.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         for (numTemp in split) {
-            if (!isDouble(numTemp))
+            if (!Utils.isDouble(numTemp))
                 throw InvalidObjectException("Version can only contain numbers and periods")
 
             val intD = numTemp.toInt()
             thisVerSplit.add(intD)
         }
 
-        repeat(thisVerSplit.size - 4) {
+        repeat(4 - thisVerSplit.size) {
             thisVerSplit.add(0)
         }
     }
 
     fun isLessThan(version: String): Boolean {
-        return compareTo(VersionInfo(version)) == -1
+        return isLessThan(VersionInfo(version))
+    }
+
+    fun isLessThan(version: VersionInfo): Boolean {
+        return compare(version) == CompareResult.LESS_THAN
     }
 
     fun isLessThanOrEquals(version: String): Boolean {
-        return compareTo(VersionInfo(version)) <= 0
+        return isLessThanOrEquals(VersionInfo(version))
+    }
+
+    fun isLessThanOrEquals(version: VersionInfo): Boolean {
+        val result = compare(version)
+        return result == CompareResult.LESS_THAN ||
+                result == CompareResult.EQUAL
     }
 
     fun isGreaterThan(version: String): Boolean {
-        return compareTo(VersionInfo(version)) == 1
+        return isGreaterThan(VersionInfo(version))
+    }
+
+    fun isGreaterThan(version: VersionInfo): Boolean {
+        return compare(version) == CompareResult.GREATER_THAN
     }
 
     fun isGreaterThanOrEqual(version: String): Boolean {
-        return compareTo(VersionInfo(version)) >= 0
+        return isGreaterThanOrEqual(VersionInfo(version))
     }
 
-    override fun compareTo(other: VersionInfo): Int {
+    fun isGreaterThanOrEqual(version: VersionInfo): Boolean {
+        val result = compare(version)
+        return result == CompareResult.GREATER_THAN ||
+                result == CompareResult.EQUAL
+    }
+
+    private fun compare(other: VersionInfo) : CompareResult {
         for (i in 0..3) {
             if (other.thisVerSplit.size <= i && thisVerSplit.size - 1 <= i)
                 break
+
             else if (other.thisVerSplit.size <= i)
-                return 1
+                return CompareResult.GREATER_THAN
             else if (thisVerSplit.size <= i)
-                return -1
+                return CompareResult.LESS_THAN
 
             val compareInt: Int = other.thisVerSplit[i]
             val thisInt = thisVerSplit[i]
 
             if (thisInt > compareInt)
-                return 1
+                return CompareResult.GREATER_THAN
             else if (thisInt < compareInt)
-                return -1
+                return CompareResult.LESS_THAN
         }
 
-        return 0
+        return CompareResult.EQUAL
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other == null) return false
-        if (other == this) return true
-        if (other !is VersionInfo) return false
-
-        return this.version == other.version
-    }
-
-    override fun hashCode(): Int {
-        return this.version.hashCode()
+    enum class CompareResult{
+        LESS_THAN,
+        EQUAL,
+        GREATER_THAN
     }
 
     override fun toString(): String {

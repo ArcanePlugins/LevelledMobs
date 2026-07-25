@@ -524,7 +524,7 @@ object RulesSubcommand : CommandBase("levelledmobs.command.rules") {
 
     private fun spawnParticles(location: Location, world: World) {
         val ver = LevelledMobs.instance.ver
-        val useSpell = ver.minecraftVersion.isGreaterThanOrEqual("1.21.1")
+        val useSpell = ver.minecraftVersion.isGreaterThanOrEqual("1.21.9")
 
         try {
             for (i in 1.. 40)    {

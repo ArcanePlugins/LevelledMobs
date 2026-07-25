@@ -7,6 +7,7 @@ import io.github.arcaneplugins.levelledmobs.wrappers.LivingEntityWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.TranslatableComponent
+import net.kyori.adventure.text.TranslationArgument
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.LivingEntity
@@ -24,17 +25,6 @@ import org.bukkit.event.entity.PlayerDeathEvent
  */
 class PlayerDeathListener {
     private var shouldCancelEvent = false
-    private var useNewerAdventureArgs = true
-
-    init {
-        val ver = LevelledMobs.instance.ver
-        // 1.20.5 and newer (technically must be at least build 53 of 1.20.6)
-        // Adventure 4.17.0 and newer
-        if (!ver.isRunningPaper || ver.minorVersion < 20 ||
-            (ver.minorVersion == 20 && ver.revision < 6)){
-            useNewerAdventureArgs = false
-        }
-    }
 
     fun onPlayerDeathEvent(event: PlayerDeathEvent): Boolean {
         this.shouldCancelEvent = false
@@ -114,34 +104,7 @@ class PlayerDeathListener {
             return
         }
         val tc = event.deathMessage() as TranslatableComponent
-
-        var mobKey: String? = null
-        var itemComp: Component? = null
-
-        if (useNewerAdventureArgs){
-            for (c in tc.arguments()) {
-                val tc2 = c.asComponent() as? TranslatableComponent
-                if (tc2 != null) {
-                    if ("chat.square_brackets" == tc2.key()) // this is when the mob was holding a weapon
-                        itemComp = tc2
-                    else
-                        mobKey = tc2.key()
-                }
-            }
-        }
-        else{
-            @Suppress("DEPRECATION")
-            for (c in tc.args()) {
-                if (c is TranslatableComponent) {
-                    if ("chat.square_brackets" == c.key()) // this is when the mob was holding a weapon
-                        itemComp = c
-                    else
-                        mobKey = c.key()
-                }
-            }
-        }
-
-        if (mobKey == null) return
+        val mobInfo = findMobInfo(tc) ?: return
 
         val mobName = nametagResult.nametagNonNull
         val displayNameIndex = mobName.indexOf("{DisplayName}")
@@ -156,7 +119,7 @@ class PlayerDeathListener {
                 .replaceText(replacementConfig)
             if (nametagResult.hadCustomDeathMessage) {
                 val displayName: TextReplacementConfig = TextReplacementConfig.builder().matchLiteral("{DisplayName}")
-                    .replacement(KyoriNametags.generateDeathMessage(mobKey, nametagResult)).build()
+                    .replacement(KyoriNametags.generateDeathMessage(mobInfo.mobKey, nametagResult)).build()
                 newCom = newCom.replaceText(displayName)
             }
         } else if (displayNameIndex < 0) {
@@ -174,11 +137,11 @@ class PlayerDeathListener {
                 if (mobName.length > displayNameIndex + 13) cs.deserialize(mobName.substring(displayNameIndex + 13)) else Component.empty()
 
             val mobNameComponent =
-                if (nametagResult.overriddenName == null) Component.translatable(mobKey) else cs.deserialize(
+                if (nametagResult.overriddenName == null) Component.translatable(mobInfo.mobKey) else cs.deserialize(
                     nametagResult.overriddenName!!
                 )
 
-            newCom = if (itemComp == null) {
+            newCom = if (mobInfo.itemComp == null) {
                 // mob wasn't using any weapon
                 // 2 arguments, example: "death.attack.mob": "%1$s was slain by %2$s"
                 Component.translatable(
@@ -193,7 +156,7 @@ class PlayerDeathListener {
                     tc.key(),
                     buildPlayerComponent(event.entity),
                     leftComp.append(mobNameComponent),
-                    itemComp
+                    mobInfo.itemComp
                 ).append(rightComp)
             }
         }
@@ -201,12 +164,54 @@ class PlayerDeathListener {
         event.deathMessage(newCom)
     }
 
+    private fun findMobInfo(
+        tc: TranslatableComponent
+    ): MobInfo? {
+        var mobKey: String? = null
+        var itemComp: Component? = null
+        val def = LevelledMobs.instance.definitions
+        //val args = def.methodGetArguments!!.invoke(tc) as List<*>
+
+        for (item in tc.arguments()) {
+            val c = item as TranslationArgument
+            val tc2 = c.asTranslationArgument().value() as? TranslatableComponent ?: continue
+
+            if ("chat.square_brackets" == tc2.key()) // this is when the mob was holding a weapon
+                itemComp = tc2
+            else
+                mobKey = tc2.key()
+        }
+
+        return if (mobKey == null) null
+        else MobInfo(mobKey, itemComp)
+    }
+
     private fun buildPlayerComponent(player: Player): Component {
-        val clickEvent = ClickEvent.clickEvent(
-            ClickEvent.Action.SUGGEST_COMMAND,
-            "/tell " + player.name + " "
-        )
+        if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("26.2"))
+            return buildPlayerComponentLegacy(player)
+
+        // 26.2 and newer changed the implementation, use reflection below
+
+        val def = LevelledMobs.instance.definitions
+        val suggestCommand = LevelledMobs.instance.definitions.fieldSUGGESTCOMMAND!!.get(null)
+
+        @Suppress("UNCHECKED_CAST")
+        val clickEvent = def.methodClickEvent!!.invoke(null,
+            suggestCommand,
+            ClickEvent.Payload.string("/tell " + player.name + " ")
+        ) as ClickEvent
 
         return Component.text(player.name).clickEvent(clickEvent)
     }
+
+    private fun buildPlayerComponentLegacy(player: Player): Component {
+        val clickEvent = ClickEvent.suggestCommand("/tell " + player.name + " ")
+
+        return Component.text(player.name).clickEvent(clickEvent)
+    }
+
+    private class MobInfo(
+        val mobKey: String,
+        val itemComp: Component?
+    )
 }

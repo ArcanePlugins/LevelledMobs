@@ -109,10 +109,6 @@ class NmsNametagSender : NametagSender {
         entityDataPreClone: Any,
         internalLivingEntity: Any
     ): Any? {
-        // // 1.19 - 1.20.4 uses this method:
-        if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("1.21.5"))
-            return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity)
-
         // constructor:
         // public a(SyncedDataHolder synceddataholder)
         // SynchedEntityData.Builder builder = new SynchedEntityData.Builder(internalLivingEntity);
@@ -142,38 +138,9 @@ class NmsNametagSender : NametagSender {
         return def.methodDataWatcherBuilderBuild!!.invoke(entityDataBuilder)
     }
 
-    private fun cloneEntityDataLegacy(
-        entityDataPreClone: Any,
-        internalLivingEntity: Any
-    ): Any? {
-        // constructor:
-        // public net.minecraft.network.syncher.DataWatcher(net.minecraft.world.entity.Entity)
-        val entityData = def.ctorSynchedEntityData!!.newInstance(internalLivingEntity)
-
-        try {
-            val itemsById = def.fieldInt2ObjectMap!![entityDataPreClone] as Map<Int, Any>
-            if (itemsById.isEmpty()) return null
-
-            for (objDataItem in itemsById.values) {
-                val accessor = def.methodGetAccessor!!.invoke(objDataItem)
-                val value = def.methodGetValue!!.invoke(objDataItem)
-                def.methodDefine!!.invoke(entityData, accessor, value)
-            }
-            return entityData
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return entityData
-    }
-
     private fun getNametagFields(
         entityData: Any
     ): List<Any> {
-        // 1.19.3 - 1.20.4 use the legacy method
-        if (LevelledMobs.instance.ver.minecraftVersion.isLessThan("1.21.5"))
-            return getNametagFieldsLegacy(entityData)
-
         // List<SynchedEntityData.DataValue<?>>
         val results: MutableList<Any> = LinkedList()
 
