@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.result
 
+import java.util.Optional
 import org.bukkit.entity.LivingEntity
 
 /**
@@ -14,6 +15,11 @@ class NametagResult(
     var overriddenName: String? = null
     var customDeathMessage: String? = null
     var killerMob: LivingEntity? = null
+
+    // Player-independent nametag component (an NMS/vanilla component) built lazily on the
+    // first packet send for this result and reused for every other viewing player. Avoids
+    // repeating MiniMessage/legacy deserialization and component conversion per player.
+    var cachedComponent: Optional<Any>? = null
 
     val nametagNonNull: String
         get() = nametag?: ""
