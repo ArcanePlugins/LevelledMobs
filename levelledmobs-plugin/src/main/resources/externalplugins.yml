@@ -85,8 +85,9 @@ gadgets-menu:
 my-pet:
   friendly-name: 'my-pet'
   plugin-name: 'MyPet'
-  key-name: 'MyPet'
-  key-type: 'metadata'
+  key-name: 'pet'
+  key-type: 'PDC'
+  key-valuetype: 'byte'
   requirement: 'exists'
 #  placeholder-name: '%mypet-menu-name%'
 
