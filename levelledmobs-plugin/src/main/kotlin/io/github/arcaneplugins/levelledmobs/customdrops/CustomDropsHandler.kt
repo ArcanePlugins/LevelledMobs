@@ -729,7 +729,6 @@ class CustomDropsHandler {
                 ).result
 
             info.formulaResult = newDropAmountD
-            newDropAmount = newDropAmountD.toInt()
         }
 
         if (dropBase.hasGroupId && info.groupLimits != null) {
@@ -751,8 +750,11 @@ class CustomDropsHandler {
         )
             Log.war("Could not get external custom item - LM_Items is not installed")
 
-        if (dropBase.isExternalItem && main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement())
+        if (dropBase.isExternalItem && main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
+            info.useAmount = newDropAmountD ?: newDropAmount.toDouble()
+            newDropAmountD = info.useAmount
             lmItemsParser!!.getExternalItem(dropBase, info)
+        }
 
         if (dropBase.itemStacks == null) return
 
@@ -790,7 +792,8 @@ class CustomDropsHandler {
                 var amountMsg = ""
                 if (newDropAmountD != null) amountMsg = newDropAmountD.toString()
                 else if (dropBase.externalAmount != null && dropBase.externalAmount!! > 0.0) dropBase.externalAmount.toString()
-                else dropBase.amount.toString()
+
+                if (amountMsg == "") amountMsg = dropBase.amount.toString()
 
                 info.addDebugMessage(
                     "&8 - &7item: &b${newItem.type.name}&7, amount: &b${dropBase.amountAsString}&7, newAmount: &b$amountMsg&7, " +
@@ -855,7 +858,7 @@ class CustomDropsHandler {
                         SpigotUtils.updateItemDisplayName(meta, colorizeAll(customName))
                 }
 
-                newItem.setItemMeta(meta)
+                newItem.itemMeta = meta
             }
 
             if (!info.equippedOnly) info.itemGotDropped(dropBase, newDropAmount)

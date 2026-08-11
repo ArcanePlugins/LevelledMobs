@@ -41,6 +41,7 @@ class CustomDropProcessingInfo {
     var dropInstance: CustomDropInstance? = null
     var equippedItemsInfo: EquippedItemsInfo? = null
     var overallChanceDebugMessage: String = ""
+    var useAmount: Double? = null
     private var debugTypeToUse = DebugType.CUSTOM_DROPS
     private val groupIDsDroppedAlready: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     private val itemsDroppedById = mutableMapOf<UUID, Int>()

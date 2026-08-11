@@ -90,6 +90,14 @@ my-pet:
   requirement: 'exists'
 #  placeholder-name: '%mypet-menu-name%'
 
+# for older my-pet versions:
+# my-pet:
+#   friendly-name: 'my-pet'
+#   plugin-name: 'MyPet'
+#   key-name: 'MyPet'
+#   key-type: 'metadata'
+#   requirement: 'exists'
+
 #
 #   ---------------  -  ------------------------------
 #        Section 02  |  Developer Settings / Do Not Edit Beyond This Point

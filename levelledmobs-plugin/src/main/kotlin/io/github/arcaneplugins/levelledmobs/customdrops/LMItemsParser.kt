@@ -82,8 +82,11 @@ class LMItemsParser {
         val main = LevelledMobs.instance
         val itemRequest = ExternalItemRequest(item.externalItemId!!)
         itemRequest.itemType = item.externalType
-        itemRequest.amount = item.externalAmount
-        if (info != null && info.formulaResult != null)
+        itemRequest.amount = item.amount.toDouble()
+        if (item.externalAmount != null) itemRequest.amount = item.externalAmount
+        else if (info?.useAmount != null) itemRequest.amount = info.useAmount
+
+        if (info?.formulaResult != null)
             itemRequest.amount = info.formulaResult
 
         if (main.mainCompanion.externalCompatibilityManager.doesLMIMeetVersionRequirement2()) {
