@@ -800,9 +800,9 @@ class LevelManager : LevelInterface2 {
         if (lmEntity.attributeValuesCache != null) return
 
         val whichOnes = mutableListOf<Attribute>()
-        for (placeholder in attributeStringList){
-            if (str.text.contains(placeholder.key))
-                whichOnes.add(placeholder.value)
+        for ((key, value) in attributeStringList){
+            if (str.text.contains(key))
+                whichOnes.add(value)
         }
 
         MobDataManager.instance.getAllAttributeValues(lmEntity, whichOnes)
@@ -844,9 +844,9 @@ class LevelManager : LevelInterface2 {
             if (lmEntity.rangedDamage != null) lmEntity.rangedDamage.toString() else "0"
         }
 
-        for (placeholder in strategyPlaceholders){
-            str.replaceIfExists(placeholder.key){
-                lmEntity.strategyResults.getOrDefault(placeholder.value, 0f).toString()
+        for ((key, value) in strategyPlaceholders){
+            str.replaceIfExists(key){
+                lmEntity.strategyResults.getOrDefault(value, 0f).toString()
             }
         }
 
@@ -866,8 +866,8 @@ class LevelManager : LevelInterface2 {
             return@replaceIfExists creeper?.explosionRadius?.toString() ?: "0"
         }
 
-        for (placeholder in attributeStringList){
-            str.replaceIfExists(placeholder.key){ lmEntity.attributeValuesCache?.get(placeholder.value)?.baseValue.toString() }
+        for ((key, value) in attributeStringList){
+            str.replaceIfExists(key){ lmEntity.attributeValuesCache?.get(value)?.baseValue.toString() }
         }
 
         str.replaceIfExists("%item-drop%"){ "1" }
@@ -973,8 +973,8 @@ class LevelManager : LevelInterface2 {
         if (text.contains("%rand_"))
             RandomVarianceGenerator.generateVariance(lmEntity, text)
 
-        for (placeholder in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
-            text.replaceIfExists(placeholder.key){ placeholder.value.getPlaceholder(lmEntity) }
+        for ((key, value) in ExternalCompatibilityManager.instance.externalPluginPlaceholders){
+            text.replaceIfExists(key){ value.getPlaceholder(lmEntity) }
         }
 
         if (usePAPI && text.contains("%") && ExternalCompatibilityManager.hasPapiInstalled)

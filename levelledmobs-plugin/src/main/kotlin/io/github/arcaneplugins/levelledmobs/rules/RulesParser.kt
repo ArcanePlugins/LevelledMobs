@@ -1570,7 +1570,7 @@ class RulesParser {
                 mobSpecificMultipliers[mobName] = parseResult2.result
             }
 
-            if (!mobSpecificMultipliers.isEmpty()) {
+            if (mobSpecificMultipliers.isNotEmpty()) {
                 if (isBaseModifier)
                     fineTuning.mobSpecificBaseModifiers = mobSpecificMultipliers
                 else

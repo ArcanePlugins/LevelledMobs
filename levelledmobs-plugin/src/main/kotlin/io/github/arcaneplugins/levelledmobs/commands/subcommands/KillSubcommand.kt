@@ -123,9 +123,9 @@ object KillSubcommand : CommandBase("levelledmobs.command.kill") {
         opts: Options
     ){
         var useArg = ""
-        for (i in 0..<opts.args.size){
-            if (opts.args[i].startsWith("/")) continue
-            useArg = opts.args[i]
+        for (element in opts.args){
+            if (element.startsWith("/")) continue
+            useArg = element
         }
 
         if (useArg.isEmpty()) {

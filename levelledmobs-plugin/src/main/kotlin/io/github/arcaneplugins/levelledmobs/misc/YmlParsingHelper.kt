@@ -286,8 +286,8 @@ class YmlParsingHelper(
                     val result = MemoryConfiguration()
                     val tempList = mutableMapOf<String, Any>()
                     @Suppress("UNCHECKED_CAST")
-                    for (entry in obj as MutableMap<Any, Any>){
-                        tempList[entry.key.toString()] = entry.value
+                    for ((key, value) in obj as MutableMap<Any, Any>){
+                        tempList[key.toString()] = value
                     }
 
                     result.addDefaults(tempList)

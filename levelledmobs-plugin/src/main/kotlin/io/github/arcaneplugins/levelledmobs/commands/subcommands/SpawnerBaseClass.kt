@@ -393,7 +393,7 @@ abstract class SpawnerBaseClass(
                 )
         }
 
-        item.setItemMeta(meta)
+        item.itemMeta = meta
     }
 
     internal fun giveItemToPlayer(

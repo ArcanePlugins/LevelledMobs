@@ -251,21 +251,21 @@ class FineTuningAttributes : MergableRule, Cloneable, EffectiveInfo {
             else
                 sb.append("&r")
 
-            for (mobName in items){
+            for ((key, value) in items){
                 if (isFirst)
                     isFirst = false
                 else
                     sb.append(", ")
 
                 var isFirstValues = true
-                sb.append("&b${mobName.key}:&r ")
-                for (mobValues in mobName.value){
+                sb.append("&b$key:&r ")
+                for ((_, value1) in value){
                     if (isFirstValues)
                         isFirstValues = false
                     else
                         sb.append(", ")
 
-                    sb.append(mobValues.value)
+                    sb.append(value1)
                 }
             }
 

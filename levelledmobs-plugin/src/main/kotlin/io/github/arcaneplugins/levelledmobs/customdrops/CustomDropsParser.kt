@@ -728,7 +728,7 @@ class CustomDropsParser(
                     val meta = item.itemStack
                         ?.itemMeta as EnchantmentStorageMeta
                     meta.addStoredEnchant(enchantment, enchantLevel, true)
-                    item.itemStack!!.setItemMeta(meta)
+                    item.itemStack!!.itemMeta = meta
                 }
                 else
                     item.itemStack!!.addUnsafeEnchantment(enchantment, enchantLevel)
@@ -822,7 +822,7 @@ class CustomDropsParser(
 
         if (item.customModelDataId != defaults.customModelData) {
             meta.setCustomModelData(item.customModelDataId)
-            item.itemStack!!.setItemMeta(meta)
+            item.itemStack!!.itemMeta = meta
             madeChanges = true
         }
 
@@ -834,7 +834,7 @@ class CustomDropsParser(
             madeChanges = true
         }
 
-        if (madeChanges) item.itemStack!!.setItemMeta(meta)
+        if (madeChanges) item.itemStack!!.itemMeta = meta
     }
 
     private fun parseItemFlags(
@@ -1206,16 +1206,16 @@ class CustomDropsParser(
                 else
                     meta.enchants.entries
 
-                for (enchant in enchantments) {
+                for ((key, value) in enchantments) {
                     if (sb2.isNotEmpty()) sb2.append(", ")
 
-                    val showKey = if (enchant.key.key.namespace == NamespacedKey.MINECRAFT_NAMESPACE)
-                        enchant.key.key().value()
+                    val showKey = if (key.key.namespace == NamespacedKey.MINECRAFT_NAMESPACE)
+                        key.key().value()
                     else
-                        enchant.key.key().toString()
+                        key.key().toString()
 
                     sb2.append(
-                        "&b$showKey&r (${enchant.value})"
+                        "&b$showKey&r ($value)"
                     )
                 }
             }

@@ -314,8 +314,7 @@ object  FileMigrator {
                                 } else {
                                     // non-array values go here.  Loop thru and find any subkeys under here
                                     val numOfPeriods: Int = countPeriods(key)
-                                    for (entry in oldConfigMap.entries) {
-                                        val enumeratedKey = entry.key
+                                    for ((enumeratedKey, fi) in oldConfigMap) {
                                         val numofperiodsEnumerated: Int = countPeriods(
                                             enumeratedKey!!
                                         )
@@ -323,7 +322,6 @@ object  FileMigrator {
                                                     && (numofperiodsEnumerated == numOfPeriods + 1
                                                     ) && !newConfigMap.containsKey(enumeratedKey))
                                         ) {
-                                            val fi = entry.value
 
                                             if (isSettings && settingsToRemove.contains(enumeratedKey)){
                                                 currentLine++
@@ -392,8 +390,7 @@ object  FileMigrator {
                                 )
                             ) {
                                 // here's where we add values from the old config not present in the new
-                                for (entry in oldConfigMap.entries) {
-                                    val oldValue = entry.key
+                                for ((oldValue, fiOld) in oldConfigMap) {
                                     if (!oldValue!!.startsWith(parentKey))
                                         continue
 
@@ -403,7 +400,6 @@ object  FileMigrator {
                                     if (!isEntitySameSubkey(parentKey, oldValue))
                                         continue
 
-                                    val fiOld = entry.value
                                     if (fiOld!!.isList) continue
 
                                     val padding: String = getPadding(depth * 2)

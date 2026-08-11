@@ -287,13 +287,13 @@ class RulesManager {
         for (ruleInfo in lmEntity.getApplicableRules()) {
             val theseStrategies = ruleInfo.levellingStrategy
 
-            for (thisStrategy in theseStrategies) {
-                val currentStrategy = strategies[thisStrategy.key]
+            for ((key, value) in theseStrategies) {
+                val currentStrategy = strategies[key]
 
-                if (currentStrategy == null || !thisStrategy.value.shouldMerge)
-                    strategies[thisStrategy.key] = thisStrategy.value
+                if (currentStrategy == null || !value.shouldMerge)
+                    strategies[key] = value
                 else
-                    currentStrategy.cloneItem().mergeRule(thisStrategy.value)
+                    currentStrategy.cloneItem().mergeRule(value)
             }
         }
 

@@ -147,8 +147,8 @@ object SummonSubcommand : CommandBase("levelledmobs.command.summon"){
                 var yStr = ""
                 var zStr = ""
                 var world: World? = null
-                for (i in 0..<miscArgs.size){
-                    val arg = miscArgs[i]
+                for ((i, element) in miscArgs.withIndex()){
+                    val arg = element
                     if (arg.startsWith('{')) continue
                     when (i){
                         0 -> { xStr = arg }
@@ -191,8 +191,7 @@ object SummonSubcommand : CommandBase("levelledmobs.command.summon"){
             }
             "at-player" -> {
                 var didSummon = false
-                for (i in 0..<miscArgs.size){
-                    val arg = miscArgs[i]
+                for (arg in miscArgs){
                     if (arg.startsWith("{")) continue
                     var offline = false
                     var world: World? = null

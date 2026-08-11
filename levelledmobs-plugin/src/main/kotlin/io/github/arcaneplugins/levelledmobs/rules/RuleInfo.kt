@@ -194,7 +194,7 @@ class RuleInfo(
             var hadStrategies = false
             var hadMisc = false
 
-            for (item in values.asSequence()
+            for ((key, value) in values.asSequence()
                 .filter { v -> v.key.ruleType == RuleType.CONDITION }
                 .sortedBy { v -> v.key.fieldName }
                 .iterator()
@@ -203,11 +203,11 @@ class RuleInfo(
                     hadConditions = true
                     sb.append("\n&lConditions:&r")
                 }
-                sb.append("\n   ").append(item.key.fieldName)
-                    .append(": ").append(item.value)
+                sb.append("\n   ").append(key.fieldName)
+                    .append(": ").append(value)
             }
 
-            for (item in values.asSequence()
+            for ((key, value) in values.asSequence()
                 .filter { v -> v.key.ruleType == RuleType.APPLY_SETTING }
                 .sortedBy { v -> v.key.fieldName }
                 .iterator()
@@ -216,11 +216,11 @@ class RuleInfo(
                     hadApplySettings = true
                     sb.append("\n&lApply Settings&r:")
                 }
-                sb.append("\n   ").append(item.key.fieldName)
-                    .append(": ").append(item.value)
+                sb.append("\n   ").append(key.fieldName)
+                    .append(": ").append(value)
             }
 
-            for (item in values.asSequence()
+            for ((key, value) in values.asSequence()
                 .filter { v -> v.key.ruleType == RuleType.STRATEGY }
                 .sortedBy { v -> v.key.fieldName }
                 .iterator()
@@ -229,11 +229,11 @@ class RuleInfo(
                     hadStrategies = true
                     sb.append("\n&lStrategies:&r")
                 }
-                sb.append("\n   ").append(item.key.fieldName)
-                    .append(": ").append(item.value)
+                sb.append("\n   ").append(key.fieldName)
+                    .append(": ").append(value)
             }
 
-            for (item in values.asSequence()
+            for ((key, value) in values.asSequence()
                 .filter { v -> v.key.ruleType != RuleType.CONDITION &&
                         v.key.ruleType != RuleType.APPLY_SETTING &&
                         v.key.ruleType != RuleType.STRATEGY &&
@@ -245,8 +245,8 @@ class RuleInfo(
                     hadMisc = true
                     sb.append("\n&lMisc:&r")
                 }
-                sb.append("\n   ").append(item.key.fieldName)
-                    .append(": ").append(item.value)
+                sb.append("\n   ").append(key.fieldName)
+                    .append(": ").append(value)
             }
         }
     }
@@ -255,7 +255,7 @@ class RuleInfo(
         if (preset == null) return
 
         try {
-            for (f in preset::javaClass.get().declaredFields) {
+            for (f in preset.javaClass.declaredFields) {
                 if (f.name == "Companion") continue
 
                 f.trySetAccessible()
@@ -264,7 +264,7 @@ class RuleInfo(
                 if (f.get(preset) == null) continue
 
                 var presetValue = f.get(preset)
-                val ruleValue = this::javaClass.get().getDeclaredField(f.name).get(this)
+                val ruleValue = this.javaClass.getDeclaredField(f.name).get(this)
                 var skipSettingValue = false
                 val mergableRule = presetValue as? MergableRule
 
@@ -305,18 +305,18 @@ class RuleInfo(
                     if (thisCachedModalList != null && presetValue.doMerge)
                         thisCachedModalList.mergeCachedModal(presetValue)
                     else
-                        this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
+                        this.javaClass.getDeclaredField(f.name).set(this, presetValue)
 
                     skipSettingValue = true
                 }
                 if (f.name == "levellingStrategy") {
                     val mergingStrategies = presetValue as MutableMap<StrategyType, LevellingStrategy>
 
-                    for (strategy in mergingStrategies){
-                        if (this.levellingStrategy.containsKey(strategy.key) && strategy.value.shouldMerge)
-                            this.levellingStrategy[strategy.key]!!.mergeRule(strategy.value)
+                    for ((key, value) in mergingStrategies){
+                        if (this.levellingStrategy.containsKey(key) && value.shouldMerge)
+                            this.levellingStrategy[key]!!.mergeRule(value)
                         else
-                            this.levellingStrategy[strategy.key] = strategy.value.cloneItem()
+                            this.levellingStrategy[key] = value.cloneItem()
                     }
 
                     skipSettingValue = true
@@ -341,7 +341,7 @@ class RuleInfo(
                 }
 
                 if (!skipSettingValue)
-                    this::javaClass.get().getDeclaredField(f.name).set(this, presetValue)
+                    this.javaClass.getDeclaredField(f.name).set(this, presetValue)
 
                 ruleSourceNames[f.name] = preset.ruleName
             }
@@ -394,7 +394,7 @@ class RuleInfo(
             sb.append("&r")
 
         try {
-            for (f in this::javaClass.get().declaredFields) {
+            for (f in this.javaClass.declaredFields) {
                 if (isForHash && f.isAnnotationPresent(ExcludeFromHash::class.java))
                     continue
                 if (!isForHash && f.isAnnotationPresent(DoNotShow::class.java))

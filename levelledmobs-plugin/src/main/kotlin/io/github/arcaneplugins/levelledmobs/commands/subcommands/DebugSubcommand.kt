@@ -427,13 +427,13 @@ object DebugSubcommand : CommandBase("levelledmobs.command.debug") {
         val sb = StringBuilder()
         var isFirst = true
 
-        for (items in results.entries){
+        for ((key, value) in results){
             if (isFirst)
                 isFirst = false
             else
                 sb.append("\n")
 
-            sb.append("key: &b${items.key}&r, ${items.value}")
+            sb.append("key: &b$key&r, $value")
         }
 
         val message = if (results.isEmpty()){

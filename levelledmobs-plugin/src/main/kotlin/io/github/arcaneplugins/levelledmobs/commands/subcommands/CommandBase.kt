@@ -134,8 +134,8 @@ abstract class CommandBase(val basePermission: String) : MessagesBase() {
     ): MutableList<String> {
         val results = mutableListOf<String>()
 
-        for (i in 0..<names.size){
-            val temp = getStringArgument(ctx, names[i])
+        for (element in names){
+            val temp = getStringArgument(ctx, element)
             if (temp.isNotEmpty()) results.add(temp)
         }
 

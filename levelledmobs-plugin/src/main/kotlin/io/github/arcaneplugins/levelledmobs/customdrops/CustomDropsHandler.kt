@@ -990,7 +990,7 @@ class CustomDropsHandler {
                 if (itemStack.type == Material.ENCHANTED_BOOK) {
                     val meta = itemStack.itemMeta as EnchantmentStorageMeta
                     meta.addStoredEnchant(enchantment, enchantLevel, true)
-                    itemStack.setItemMeta(meta)
+                    itemStack.itemMeta = meta
                 }
                 else
                     itemStack.addUnsafeEnchantment(enchantment, enchantLevel)
@@ -1003,7 +1003,7 @@ class CustomDropsHandler {
                 if (itemStack.type == Material.ENCHANTED_BOOK) {
                     val meta = itemStack.itemMeta as EnchantmentStorageMeta
                     meta.addStoredEnchant(enchantment, opts.defaultLevel!!, true)
-                    itemStack.setItemMeta(meta)
+                    itemStack.itemMeta = meta
                 }
                 else
                     itemStack.addUnsafeEnchantment(enchantment, opts.defaultLevel!!)
@@ -1019,9 +1019,7 @@ class CustomDropsHandler {
         val maximumDeathInChunkThreshold: Int = LevelledMobs.instance.rulesManager.getMaximumDeathInChunkThreshold(
             lmEntity
         )
-        if (maximumDeathInChunkThreshold <= 0) return false
-
-        return lmEntity.chunkKillcount >= maximumDeathInChunkThreshold
+        return maximumDeathInChunkThreshold > 0 && lmEntity.chunkKillcount >= maximumDeathInChunkThreshold
     }
 
     private fun shouldDenyDeathCause(
@@ -1133,28 +1131,23 @@ class CustomDropsHandler {
 
         if (equippable != null) {
             if (equippable.slot() == EquipmentSlot.HEAD) {
-                if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
-                return item.isSimilar(equipment.helmet)
+                return item.isSimilar(info.equippedItemsInfo?.helmet) || item.isSimilar(equipment.helmet)
             }
 
             if (equippable.slot() == EquipmentSlot.CHEST) {
-                if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
-                return item.isSimilar(equipment.chestplate)
+                return item.isSimilar(info.equippedItemsInfo?.chestplate) || item.isSimilar(equipment.chestplate)
             }
 
             if (equippable.slot() == EquipmentSlot.LEGS) {
-                if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
-                return item.isSimilar(equipment.leggings)
+                return item.isSimilar(info.equippedItemsInfo?.leggings) || item.isSimilar(equipment.leggings)
             }
 
             if (equippable.slot() == EquipmentSlot.FEET) {
-                if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
-                return item.isSimilar(equipment.boots)
+                return item.isSimilar(info.equippedItemsInfo?.boots) || item.isSimilar(equipment.boots)
             }
 
             if (equippable.slot() == EquipmentSlot.HAND){
-                if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
-                return item.isSimilar(equipment.itemInMainHand)
+                return item.isSimilar(info.equippedItemsInfo?.mainHand) || item.isSimilar(equipment.itemInMainHand)
             }
 
             if (equippable.slot() == EquipmentSlot.OFF_HAND){
@@ -1164,8 +1157,7 @@ class CustomDropsHandler {
         }
         else{
             // non-equippable items go here
-            if (item.isSimilar(equipment.itemInMainHand)) return true
-            return item.isSimilar(equipment.itemInOffHand)
+            return item.isSimilar(equipment.itemInMainHand) || item.isSimilar(equipment.itemInOffHand)
         }
 
         return false
@@ -1181,22 +1173,17 @@ class CustomDropsHandler {
         if (customDropItem.equipOnHelmet && item.isSimilar(equipment.helmet))
             return true
 
-        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_HEAD.includes(item.type)){
-            if (item.isSimilar(info.equippedItemsInfo?.helmet)) return true
-            return item.isSimilar(equipment.helmet)
-        }
-        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_TORSO.includes(item.type)){
-            if (item.isSimilar(info.equippedItemsInfo?.chestplate)) return true
-            return item.isSimilar(equipment.chestplate)
-        }
-        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_LEGS.includes(item.type)){
-            if (item.isSimilar(info.equippedItemsInfo?.leggings)) return true
-            return item.isSimilar(equipment.leggings)
-        }
-        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_FEET.includes(item.type)){
-            if (item.isSimilar(info.equippedItemsInfo?.boots)) return true
-            return item.isSimilar(equipment.boots)
-        }
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_HEAD.includes(item.type))
+            return item.isSimilar(info.equippedItemsInfo?.helmet) || item.isSimilar(equipment.helmet)
+
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_TORSO.includes(item.type))
+            return item.isSimilar(info.equippedItemsInfo?.chestplate) || item.isSimilar(equipment.chestplate)
+
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_LEGS.includes(item.type))
+            return item.isSimilar(info.equippedItemsInfo?.leggings) || item.isSimilar(equipment.leggings)
+
+        if (org.bukkit.enchantments.EnchantmentTarget.ARMOR_FEET.includes(item.type))
+            return item.isSimilar(info.equippedItemsInfo?.boots) || item.isSimilar(equipment.boots)
 
         if (item.isSimilar(info.equippedItemsInfo?.mainHand)) return true
         if (item.isSimilar(equipment.itemInMainHand)) return true

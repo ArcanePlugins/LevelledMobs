@@ -97,8 +97,8 @@ object SpawnerSubcommand : SpawnerBaseClass("levelledmobs.command.spawner") {
         }
 
         var hasGivePlayer = false
-        for (i in 0 until args.size) {
-            if ("/giveplayer".equals(args[i], ignoreCase = true)) {
+        for (element in args) {
+            if ("/giveplayer".equals(element, ignoreCase = true)) {
                 hasGivePlayer = true
                 break
             }

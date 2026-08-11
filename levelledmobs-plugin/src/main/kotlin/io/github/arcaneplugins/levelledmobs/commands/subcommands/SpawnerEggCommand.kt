@@ -70,8 +70,7 @@ object SpawnerEggCommand : SpawnerBaseClass("levelledmobs.command.spawner-egg") 
         if (commandSender is Player) info.player = commandSender!! as Player
 
         // arguments with no values go here:
-        for (i in 0 until args.size) {
-            val arg = args[i]
+        for (arg in args) {
             if ("/nolore".equals(arg, ignoreCase = true)) {
                 info.noLore = true
                 break

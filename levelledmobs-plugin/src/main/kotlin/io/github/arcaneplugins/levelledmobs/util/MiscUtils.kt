@@ -94,17 +94,17 @@ object MiscUtils {
         val compoundBukkitValues = value["BukkitValues"]
         val bukkitValues = def.fieldTags!!.get(compoundBukkitValues) as MutableMap<String, Any>
 
-        for (entry in bukkitValues.entries) {
+        for ((key, value1) in bukkitValues) {
             var byteArraySize = -1
-            val classType = def.methodGetType!!.invoke(entry.value)
+            val classType = def.methodGetType!!.invoke(value1)
             val className = (def.methodGetName!!.invoke(classType) as String).lowercase()
-            if (entry.value.javaClass.isAssignableFrom(def.clazzByteArrayTag!!))
-                byteArraySize = def.methodByteArrayTagSize!!.invoke(entry.value) as Int
+            if (value1.javaClass.isAssignableFrom(def.clazzByteArrayTag!!))
+                byteArraySize = def.methodByteArrayTagSize!!.invoke(value1) as Int
 
-            results[entry.key] = if (byteArraySize >= 0)
+            results[key] = if (byteArraySize >= 0)
                 "(byte array size $byteArraySize)"
             else
-                "${entry.value}  ($className)"
+                "$value1  ($className)"
         }
 
         return results.toSortedMap()
@@ -119,7 +119,7 @@ object MiscUtils {
             if (result.objectsAdded == null)
                 continue
 
-            for (i in 0 until result.objectsAdded!!.size) {
+            for (i in result.objectsAdded!!.indices) {
                 if (i > 0)
                     sb.append(", ")
                 else
@@ -133,7 +133,7 @@ object MiscUtils {
             if (result.objectsUpdated == null)
                 continue
 
-            for (i in 0 until result.objectsUpdated!!.size) {
+            for (i in result.objectsUpdated!!.indices) {
                 if (i > 0 || sb.isNotEmpty())
                     sb.append(", ")
 
@@ -147,7 +147,7 @@ object MiscUtils {
             if (result.objectsRemoved == null)
                 continue
 
-            for (i in 0 until result.objectsRemoved!!.size) {
+            for (i in result.objectsRemoved!!.indices) {
                 if (i > 0 || sb.isNotEmpty())
                     sb.append(", ")
 
