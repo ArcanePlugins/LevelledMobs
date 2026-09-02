@@ -69,7 +69,8 @@ class MainCompanion{
     var reloadSender: CommandSender? = null
     var hasFinishedLoading = false
     var showCustomDrops = false
-    private val entityDeathInChunkCounter = mutableMapOf<Long, MutableMap<EntityType, ChunkKillInfo>>()
+    private val entityDeathInChunkCounter =
+        mutableMapOf<Long, MutableMap<UUID, MutableMap<EntityType, ChunkKillInfo>>>()
     private val chunkKillNoticationTracker = mutableMapOf<Long, MutableMap<UUID, Instant>>()
     private val playerNetherPortals = mutableMapOf<Player, Location>()
     private val playerWorldPortals = mutableMapOf<Player, Location>()
@@ -306,23 +307,24 @@ class MainCompanion{
         val chunkKeysToRemove = mutableListOf<Long>()
 
         for (chunkKey in entityDeathInChunkCounter.keys) {
-            //                                 Cooldown time, entity counts
-            val pairList = entityDeathInChunkCounter[chunkKey] ?: continue
+            val playerCounts = entityDeathInChunkCounter[chunkKey] ?: continue
 
             val now = Instant.now()
 
-            for (entityType in pairList.keys) {
-                val chunkKillInfo = pairList[entityType]
-
-                (chunkKillInfo!!.entrySet as MutableSet).removeIf { e: Map.Entry<Instant, Int> ->
-                    e.key < now.minusSeconds(e.value.toLong())
+            for (pairList in playerCounts.values) {
+                for (chunkKillInfo in pairList.values) {
+                    (chunkKillInfo.entrySet as MutableSet).removeIf { e: Map.Entry<Instant, Int> ->
+                        e.key < now.minusSeconds(e.value.toLong())
+                    }
                 }
+
+                pairList.entries.removeIf { e: Map.Entry<EntityType, ChunkKillInfo> -> e.value.isEmpty }
             }
 
-            pairList.entries.removeIf { e: Map.Entry<EntityType, ChunkKillInfo> -> e.value.isEmpty }
+            playerCounts.entries.removeIf { e -> e.value.isEmpty() }
 
-            if (pairList.isEmpty()) {
-                // Remove the object to prevent iterate over exceed amount of empty pairList
+            if (playerCounts.isEmpty()) {
+                // Remove the object to prevent iterating over an excessive amount of empty player counts
                 chunkKeysToRemove.add(chunkKey)
             }
         }
@@ -354,17 +356,21 @@ class MainCompanion{
     }
 
     fun getorAddPairForSpecifiedChunk(
-        chunkKey: Long
+        chunkKey: Long,
+        userId: UUID
     ): MutableMap<EntityType, ChunkKillInfo> {
         synchronized(entityDeathInChunkCounterLock) {
             return entityDeathInChunkCounter.computeIfAbsent(chunkKey) {
+                mutableMapOf()
+            }.computeIfAbsent(userId) {
                 mutableMapOf()
             }
         }
     }
 
     fun getorAddPairForSpecifiedChunks(
-        chunkKeys: List<Long>
+        chunkKeys: List<Long>,
+        userId: UUID
     ): List<Map<EntityType, ChunkKillInfo>> {
         val results = mutableListOf<Map<EntityType, ChunkKillInfo>>()
 
@@ -372,6 +378,8 @@ class MainCompanion{
             for (chunkKey in chunkKeys) {
                 results.add(
                     entityDeathInChunkCounter.computeIfAbsent(chunkKey) {
+                        mutableMapOf()
+                    }.computeIfAbsent(userId) {
                         mutableMapOf()
                     }
                 )

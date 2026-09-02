@@ -167,12 +167,13 @@ class EntityDeathListener : Listener {
         val main = LevelledMobs.instance
         val chunkKey: Long = Utils.getChunkKey(lmEntity.location.chunk)
         val pairList: MutableMap<EntityType, ChunkKillInfo> = main.mainCompanion.getorAddPairForSpecifiedChunk(
-            chunkKey
+            chunkKey,
+            player.uniqueId
         )
         var numberOfEntityDeathInChunk =
             if (pairList.containsKey(lmEntity.entityType)) pairList[lmEntity.entityType]!!.count else 0
 
-        val adjacentChunksResult = getNumberOfEntityDeathsInAdjacentChunks(lmEntity )
+        val adjacentChunksResult = getNumberOfEntityDeathsInAdjacentChunks(lmEntity, player.uniqueId)
         if (adjacentChunksResult != null) {
             numberOfEntityDeathInChunk += adjacentChunksResult.entities
             adjacentChunksResult.chunkKeys.add(chunkKey)
@@ -211,7 +212,8 @@ class EntityDeathListener : Listener {
     }
 
     private fun getNumberOfEntityDeathsInAdjacentChunks(
-        lmEntity: LivingEntityWrapper
+        lmEntity: LivingEntityWrapper,
+        userId: UUID
     ): AdjacentChunksResult? {
         val adjacentChunksToCheck = LevelledMobs.instance.rulesManager.getAdjacentChunksToCheck(lmEntity)
         if (adjacentChunksToCheck <= 0) {
@@ -238,7 +240,8 @@ class EntityDeathListener : Listener {
         }
 
         val pairLists: List<Map<EntityType, ChunkKillInfo>> = MainCompanion.instance.getorAddPairForSpecifiedChunks(
-            result.chunkKeys
+            result.chunkKeys,
+            userId
         )
         for (pairList in pairLists) {
             result.entities += if (pairList.containsKey(lmEntity.entityType)) pairList[lmEntity.entityType]!!.count else 0
