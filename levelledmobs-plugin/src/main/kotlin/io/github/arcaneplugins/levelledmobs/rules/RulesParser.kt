@@ -779,6 +779,9 @@ class RulesParser {
         parsingInfo.maximumDeathInChunkThreshold = ymlHelper.getInt2(
             "maximum-death-in-chunk-threshold", parsingInfo.maximumDeathInChunkThreshold
         )
+        parsingInfo.chunkKillLimitPerPlayer = ymlHelper.getBoolean2(
+            "chunk-kill-limit-per-player", parsingInfo.chunkKillLimitPerPlayer
+        )
         parsingInfo.chunkMaxCoolDownTime = ymlHelper.getIntTimeUnit(
             "chunk-max-cooldown-seconds", parsingInfo.chunkMaxCoolDownTime
         )

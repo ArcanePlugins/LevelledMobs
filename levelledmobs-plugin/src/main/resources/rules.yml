@@ -491,6 +491,7 @@ custom-rules:
     is-enabled: true
     settings:
       maximum-death-in-chunk-threshold: 15
+      chunk-kill-limit-per-player: false
       max-adjacent-chunks: 5
       chunk-max-cooldown-seconds: 10m
       disable-vanilla-drops-on-chunk-max: false

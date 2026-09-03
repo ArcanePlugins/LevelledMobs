@@ -682,6 +682,17 @@ class RulesManager {
         return result
     }
 
+    fun getChunkKillLimitPerPlayer(lmEntity: LivingEntityWrapper): Boolean {
+        var result = false
+
+        for (ruleInfo in lmEntity.getApplicableRules()) {
+            if (ruleInfo.chunkKillLimitPerPlayer != null)
+                result = ruleInfo.chunkKillLimitPerPlayer!!
+        }
+
+        return result
+    }
+
     fun getMaxChunkCooldownTime(lmEntity: LivingEntityWrapper): Int {
         var result = 0
 

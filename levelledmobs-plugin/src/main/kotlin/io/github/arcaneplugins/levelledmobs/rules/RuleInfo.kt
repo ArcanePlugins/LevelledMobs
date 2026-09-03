@@ -83,6 +83,8 @@ class RuleInfo(
     var nametagVisibleTime: Long? = null
     @field:ExcludeFromHash @field:RuleFieldInfo("max death in chunk threshold", RuleType.APPLY_SETTING)
     var maximumDeathInChunkThreshold: Int? = null
+    @field:ExcludeFromHash @field:RuleFieldInfo("chunk kill limit per player", RuleType.APPLY_SETTING)
+    var chunkKillLimitPerPlayer: Boolean? = null
     @field:ExcludeFromHash @field:RuleFieldInfo("chunk max cooldown time", RuleType.APPLY_SETTING)
     var chunkMaxCoolDownTime: Int? = null
     @field:ExcludeFromHash @field:RuleFieldInfo("max adjacent chunks", RuleType.APPLY_SETTING)
