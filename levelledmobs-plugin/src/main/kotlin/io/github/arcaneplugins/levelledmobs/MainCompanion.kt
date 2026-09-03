@@ -49,6 +49,11 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 
+private sealed interface ChunkKillScope {
+    data object Shared : ChunkKillScope
+    data class Player(val userId: UUID) : ChunkKillScope
+}
+
 /**
  * This class contains methods used by the main class.
  *
@@ -70,7 +75,7 @@ class MainCompanion{
     var hasFinishedLoading = false
     var showCustomDrops = false
     private val entityDeathInChunkCounter =
-        mutableMapOf<Long, MutableMap<UUID, MutableMap<EntityType, ChunkKillInfo>>>()
+        mutableMapOf<Long, MutableMap<ChunkKillScope, MutableMap<EntityType, ChunkKillInfo>>>()
     private val chunkKillNoticationTracker = mutableMapOf<Long, MutableMap<UUID, Instant>>()
     private val playerNetherPortals = mutableMapOf<Player, Location>()
     private val playerWorldPortals = mutableMapOf<Player, Location>()
@@ -307,11 +312,11 @@ class MainCompanion{
         val chunkKeysToRemove = mutableListOf<Long>()
 
         for (chunkKey in entityDeathInChunkCounter.keys) {
-            val playerCounts = entityDeathInChunkCounter[chunkKey] ?: continue
+            val scopeCounts = entityDeathInChunkCounter[chunkKey] ?: continue
 
             val now = Instant.now()
 
-            for (pairList in playerCounts.values) {
+            for (pairList in scopeCounts.values) {
                 for (chunkKillInfo in pairList.values) {
                     (chunkKillInfo.entrySet as MutableSet).removeIf { e: Map.Entry<Instant, Int> ->
                         e.key < now.minusSeconds(e.value.toLong())
@@ -321,10 +326,10 @@ class MainCompanion{
                 pairList.entries.removeIf { e: Map.Entry<EntityType, ChunkKillInfo> -> e.value.isEmpty }
             }
 
-            playerCounts.entries.removeIf { e -> e.value.isEmpty() }
+            scopeCounts.entries.removeIf { e -> e.value.isEmpty() }
 
-            if (playerCounts.isEmpty()) {
-                // Remove the object to prevent iterating over an excessive amount of empty player counts
+            if (scopeCounts.isEmpty()) {
+                // Remove the object to prevent iterating over an excessive amount of empty scope counts
                 chunkKeysToRemove.add(chunkKey)
             }
         }
@@ -357,12 +362,14 @@ class MainCompanion{
 
     fun getorAddPairForSpecifiedChunk(
         chunkKey: Long,
-        userId: UUID
+        userId: UUID?
     ): MutableMap<EntityType, ChunkKillInfo> {
+        val scope = if (userId == null) ChunkKillScope.Shared else ChunkKillScope.Player(userId)
+
         synchronized(entityDeathInChunkCounterLock) {
             return entityDeathInChunkCounter.computeIfAbsent(chunkKey) {
                 mutableMapOf()
-            }.computeIfAbsent(userId) {
+            }.computeIfAbsent(scope) {
                 mutableMapOf()
             }
         }
@@ -370,16 +377,17 @@ class MainCompanion{
 
     fun getorAddPairForSpecifiedChunks(
         chunkKeys: List<Long>,
-        userId: UUID
+        userId: UUID?
     ): List<Map<EntityType, ChunkKillInfo>> {
         val results = mutableListOf<Map<EntityType, ChunkKillInfo>>()
+        val scope = if (userId == null) ChunkKillScope.Shared else ChunkKillScope.Player(userId)
 
         synchronized(entityDeathInChunkCounterLock) {
             for (chunkKey in chunkKeys) {
                 results.add(
                     entityDeathInChunkCounter.computeIfAbsent(chunkKey) {
                         mutableMapOf()
-                    }.computeIfAbsent(userId) {
+                    }.computeIfAbsent(scope) {
                         mutableMapOf()
                     }
                 )

@@ -35,6 +35,7 @@ object KeyValidation {
             "attribute-modifier",
             "base-attribute-modifier",
             "baby-mobs-inherit-adult-setting",
+            "chunk-kill-limit-per-player",
             "chunk-max-cooldown-seconds",
             "construct-level",
             "creature-death-nametag",
